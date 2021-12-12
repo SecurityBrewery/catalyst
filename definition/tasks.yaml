@@ -1,0 +1,107 @@
+swagger: "2.0"
+info: { version: "", title: "" }
+
+paths:
+  /tasks:
+    get:
+      tags: [ "tasks" ]
+      summary: "List tasks"
+      operationId: "listTasks"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { type: array, items: { $ref: "#/definitions/TaskResponse" } }
+          examples:
+            test: [ ]
+      security: [ { roles: [ "ticket:read" ] } ]
+
+definitions:
+  TaskForm:
+    type: object
+    required: [ name, type ]
+    properties:
+      name: { type: string, example: "Inform user" }
+      type: { type: string, enum: [ task, input, automation ], example: "task" }
+      done: { type: boolean }
+
+      owner: { type: string }
+      data: { type: object }
+
+      # automation
+      automation: { type: string }
+      payload: { type: object, additionalProperties: { type: string } }
+
+      # input
+      schema: { type: object }
+
+      # workflow
+      join: { type: boolean, example: false }
+      next: { type: object, additionalProperties: { type: string } }
+
+      created: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+      closed: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+
+  Task:
+    type: object
+    required: [ name, type, done, created ]
+    properties:
+      name: { type: string, example: "Inform user" }
+      type: { type: string, enum: [ task, input, automation ], example: "task" }
+      done: { type: boolean }
+
+      owner: { type: string }
+      data: { type: object }
+
+      # automation
+      automation: { type: string }
+      payload: { type: object, additionalProperties: { type: string } }
+
+      # input
+      schema: { type: object }
+
+      # workflow
+      join: { type: boolean, example: false }
+      next: { type: object, additionalProperties: { type: string } }
+
+      created: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+      closed: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+
+  TaskResponse:
+    type: object
+    required: [ name, type, done, created, order, active ]
+    properties:
+      name: { type: string, example: "Inform user" }
+      type: { type: string, enum: [ task, input, automation ], example: "task" }
+      done: { type: boolean }
+
+      owner: { type: string }
+      data: { type: object }
+
+      # automation
+      automation: { type: string }
+      payload: { type: object, additionalProperties: { type: string } }
+
+      # input
+      schema: { type: object }
+
+      # workflow
+      join: { type: boolean, example: false }
+      next: { type: object, additionalProperties: { type: string } }
+
+      created: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+      closed: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
+
+      # helper
+      order: { type: number, format: "int64", example: 2 }
+      active: { type: boolean, example: false }
+
+  TaskWithContext:
+    type: object
+    required: [ ticket_id, ticket_name, playbook_id, playbook_name, task_id, task ]
+    properties:
+      ticket_id: { type: number, format: "int64" }
+      ticket_name: { type: string }
+      playbook_id: { type: string }
+      playbook_name: { type: string }
+      task_id: { type: string }
+      task: { $ref: '#/definitions/TaskResponse' }

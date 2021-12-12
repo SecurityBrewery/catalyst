@@ -1,0 +1,85 @@
+name: Phishing
+tasks:
+  board:
+    name: Board Involvement?
+    description: Is a board member involved?
+    type: input
+    schema:
+      properties:
+        boardInvolved:
+          default: false
+          title: A board member is involved.
+          type: boolean
+      required:
+        - boardInvolved
+      title: Board Involvement?
+      type: object
+    next:
+      escalate: "boardInvolved == true"
+      mail-available: "boardInvolved == false"
+
+  escalate:
+    name: Escalate to CISO
+    description: Please escalate the task to the CISO
+    type: task
+
+  mail-available:
+    name: Mail available
+    type: input
+    schema:
+      oneOf:
+        - properties:
+            mail:
+              title: Mail
+              type: string
+              x-display: textarea
+            schemaKey:
+              const: 'yes'
+              type: string
+          required:
+            - mail
+          title: 'Yes'
+        - properties:
+            schemaKey:
+              const: 'no'
+              type: string
+          title: 'No'
+      title: Mail available
+      type: object
+    next:
+      block-sender: "schemaKey == 'yes'"
+      extract-iocs: "schemaKey == 'yes'"
+      search-email-gateway: "schemaKey == 'no'"
+
+  search-email-gateway:
+    name: Search email gateway
+    description: Please search email-gateway for the phishing mail.
+    type: task
+    next:
+      extract-iocs:
+
+  block-sender:
+    name: Block sender
+    type: task
+    next:
+      extract-iocs:
+
+  extract-iocs:
+    name: Extract IOCs
+    description: Please insert the IOCs
+    type: input
+    schema:
+      properties:
+        iocs:
+          items:
+            type: string
+          title: IOCs
+          type: array
+      title: Extract IOCs
+      type: object
+    next:
+      block-iocs:
+
+  block-iocs:
+    name: Block IOCs
+    type: task

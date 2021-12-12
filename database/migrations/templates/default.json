@@ -1,0 +1,79 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/object1618746510.json",
+  "title": "Default",
+  "type": "object",
+  "required": [
+    "severity",
+    "description",
+    "tlp"
+  ],
+  "properties": {
+    "severity": {
+      "$id": "#root/severity",
+      "title": "Severity",
+      "type": "string",
+      "default": "Medium",
+      "x-cols": 6,
+      "x-class": "pr-2",
+      "x-display": "icon",
+      "x-itemIcon": "icon",
+      "oneOf": [
+        {
+          "const": "Low",
+          "title": "Low",
+          "icon": "mdi-chevron-up"
+        },
+        {
+          "const": "Medium",
+          "title": "Medium",
+          "icon": "mdi-chevron-double-up"
+        },
+        {
+          "const": "High",
+          "title": "High",
+          "icon": "mdi-chevron-triple-up"
+        }
+      ]
+    },
+    "tlp": {
+      "$id": "#root/tlp",
+      "title": "TLP",
+      "type": "string",
+      "x-cols": 6,
+      "x-class": "pr-2",
+      "x-display": "icon",
+      "x-itemIcon": "icon",
+      "oneOf": [
+        {
+          "const": "White",
+          "title": "White",
+          "icon": "mdi-alpha-w"
+        },
+        {
+          "const": "Green",
+          "title": "Green",
+          "icon": "mdi-alpha-g"
+        },
+        {
+          "const": "Amber",
+          "title": "Amber",
+          "icon": "mdi-alpha-a"
+        },
+        {
+          "const": "Red",
+          "title": "Red",
+          "icon": "mdi-alpha-r"
+        }
+      ]
+    },
+    "description": {
+      "$id": "#root/description",
+      "title": "Description",
+      "type": "string",
+      "x-display": "textarea",
+      "x-class": "pr-2"
+    }
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/object1618746510.json",
+  "title": "Advanced",
+  "type": "object",
+  "properties": {
+    "severity": {
+      "$id": "#root/severity",
+      "title": "Severity",
+      "type": "string",
+      "default": "Medium",
+      "x-cols": 6,
+      "x-class": "pr-2",
+      "x-display": "icon",
+      "x-itemIcon": "icon",
+      "oneOf": [
+        {
+          "const": "Low",
+          "title": "Low",
+          "icon": "mdi-chevron-up"
+        },
+        {
+          "const": "Medium",
+          "title": "Medium",
+          "icon": "mdi-chevron-double-up"
+        },
+        {
+          "const": "High",
+          "title": "High",
+          "icon": "mdi-chevron-triple-up"
+        }
+      ]
+    },
+    "tlp": {
+      "$id": "#root/tlp",
+      "title": "TLP",
+      "type": "string",
+      "nx-enum": [
+        "White",
+        "Green",
+        "Amber",
+        "Red"
+      ],
+      "x-cols": 6,
+      "x-class": "pr-2",
+      "x-display": "icon",
+      "x-itemIcon": "icon",
+      "oneOf": [
+        {
+          "const": "White",
+          "title": "White",
+          "icon": "mdi-alpha-w"
+        },
+        {
+          "const": "Green",
+          "title": "Green",
+          "icon": "mdi-alpha-g"
+        },
+        {
+          "const": "Amber",
+          "title": "Amber",
+          "icon": "mdi-alpha-a"
+        },
+        {
+          "const": "Red",
+          "title": "Red",
+          "icon": "mdi-alpha-r"
+        }
+      ]
+    },
+    "description": {
+      "$id": "#root/description",
+      "title": "Description",
+      "type": "string",
+      "x-display": "textarea",
+      "x-class": "pr-2"
+    },
+
+    "type": {
+      "type": "object",
+      "title": "Select an incident type",
+      "oneOf": [
+        {
+          "title": "Malware",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "malware"
+            },
+            "malware_type": {
+              "type": "string",
+              "title": "Malware Type",
+              "enum": ["Ransomware", "Worm", "Virus"]
+            }
+          }
+        },
+        {
+          "title": "Phishing",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "phishing"
+            },
+            "phishing_type": {
+              "type": "string",
+              "title": "Phishing Type",
+              "enum": ["Normal", "Spear", "Whale"]
+            }
+          }
+        }
+      ],
+      "x-cols": 12
+    },
+    "apt": {
+      "type": "boolean",
+      "x-display": "switch",
+      "title": "APT involved?",
+      "x-cols": 6
+    },
+    "apt-group": {
+      "type": "string",
+      "title": "Select APT",
+      "enum": ["Lazarus Group", "Equation Group", "Fancy Bear (APT 28)", "OceanLotus (APT 32)", "Other"],
+      "x-if": "apt",
+      "x-cols": 6
+    },
+    "tactics": {
+      "type": "array",
+      "title": "MITRE Att&ck",
+      "description": "This description is used as a help message.",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "title": "Reconnaissance",
+            "properties": {
+              "tactic": {
+                "type": "string",
+                "const": "reconnaissance",
+                "title": "Tactic",
+                "description": "The adversary is trying to gather information they can use to plan future operations."
+              },
+              "techniques": {
+                "type": "array",
+                "title": "Techniques",
+                "items": {
+                  "type": "string",
+                  "oneOf": [
+                    {
+                      "const": "T1595",
+                      "title": "Active Scanning",
+                      "description": "Adversaries may execute active reconnaissance scans to gather information that can be used during targeting. Active scans are those where the adversary probes victim infrastructure via network traffic, as opposed to other forms of reconnaissance that do not involve direct interaction."
+                    },
+                    {
+                      "const": "T1592",
+                      "title": "Gather Victim Host Information"
+                    }
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "title": "Persistence",
+            "properties": {
+              "tactic": {
+                "type": "string",
+                "const": "persistence"
+              },
+              "techniques": {
+                "type": "string",
+                "title": "Techniques",
+                "oneOf": [
+                  {
+                    "const": "T1098",
+                    "title": "Account Manipulation"
+                  },
+                  {
+                    "const": "T1197",
+                    "title": "BITS Jobs"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "title": "Tags",
+      "items": {
+        "type": "string",
+        "examples": [
+          "misp",
+          "external report",
+          "internal report"
+        ]
+      }
+    }
+  },
+  "required": ["severity", "description", "tactics", "type"]
+}
+

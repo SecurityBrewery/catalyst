@@ -1,0 +1,94 @@
+swagger: "2.0"
+info: { version: "", title: "" }
+
+paths:
+  /currentuserdata:
+    get:
+      tags: [ "userdata" ]
+      summary: "Get current user data"
+      operationId: "currentUserData"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserDataResponse" }
+          examples:
+            test: { id: bob, name: "Bob Bad", email: "bob@example.org" }
+      security: [ { roles: [ "currentuserdata:read" ] } ]
+    put:
+      tags: [ "userdata" ]
+      summary: "Update current user data"
+      operationId: "updateCurrentUserData"
+      parameters:
+        - { name: "userdata", in: "body", description: "User data object that needs to be added", required: true, schema: { $ref: "#/definitions/UserData" }, x-example: { name: "Bob Bad", email: "bob@example.org" } }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserDataResponse" }
+          examples:
+            test: { id: bob, name: "Bob Bad", email: "bob@example.org" }
+      security: [ { roles: [ "currentuserdata:write" ] } ]
+
+  /userdata:
+    get:
+      tags: [ "userdata" ]
+      summary: "List userdata"
+      operationId: "listUserData"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { type: array, items: { $ref: "#/definitions/UserDataResponse" } }
+          examples:
+            test:
+              - { id: bob, name: "Bob Bad", email: "bob@example.org" }
+      security: [ { roles: [ "userdata:read" ] } ]
+
+  /userdata/{id}:
+    get:
+      tags: [ "userdata" ]
+      summary: "Get a single user data"
+      operationId: "getUserData"
+      parameters:
+        - { name: "id", in: "path", description: "User Data ID", required: true, type: string, x-example: "bob" }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserDataResponse" }
+          examples:
+            test:
+              id: bob
+              name: "Bob Bad"
+              email: "bob@example.org"
+      security: [ { roles: [ "userdata:read" ] } ]
+    put:
+      tags: [ "userdata" ]
+      summary: "Update an existing user data"
+      operationId: "updateUserData"
+      parameters:
+        - { name: "id", in: "path", description: "User Data ID", required: true, type: string, x-example: "bob" }
+        - { name: "userdata", in: "body", description: "User data object that needs to be added", required: true, schema: { $ref: "#/definitions/UserData" }, x-example: { name: "Bob Bad", email: "bob@example.org", blocked: false } }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserDataResponse" }
+          examples:
+            test: { id: bob, name: "Bob Bad", email: "bob@example.org" }
+      security: [ { roles: [ "userdata:write" ] } ]
+
+definitions:
+  UserData:
+    type: object
+    properties:
+      name: { type: string, x-example: "Robert Smith" }
+      email: { type: string, x-example: "bob@example.org" }
+      image: { type: string, x-display: "custom-avatar" }
+      timeformat: { title: "Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)", type: string }
+
+  UserDataResponse:
+    type: object
+    required: [ id ]
+    properties:
+      id: { type: string }
+      name: { type: string, x-example: "Robert Smith" }
+      email: { type: string, x-example: "bob@example.org" }
+      image: { type: string, x-display: "custom-avatar" }
+      timeformat: { title: "Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)", type: string }

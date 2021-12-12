@@ -1,0 +1,64 @@
+{{- /*gotype: github.com/SecurityBrewery/catalyst/generator.Swagger */ -}}
+package models
+
+import (
+    "fmt"
+    "strings"
+    "time"
+
+    "github.com/xeipuuv/gojsonschema"
+)
+
+var (
+    schemaLoader = gojsonschema.NewSchemaLoader()
+    {{ range $index, $element := .Definitions }}{{ $index }}Schema = new(gojsonschema.Schema)
+{{ end }})
+
+func init() {
+    err := schemaLoader.AddSchemas(
+    {{ range $index, $element := .Definitions }}gojsonschema.NewStringLoader(`{{ tojson $index $element }}`),
+    {{ end }}
+    )
+    if err != nil {
+        panic(err)
+    }
+
+    {{ range $index, $element := .Definitions }}{{ $index }}Schema = mustCompile(`#/definitions/{{ $index }}`)
+{{ end }}}
+
+{{ range $index, $element := .Definitions }}
+type {{ $index }} struct {
+	{{ range $pindex, $pelement := .Properties }} {{ camel $pindex }} {{ gotype $pindex $pelement $element.Required }} `json:"{{ $pindex }}{{ if omitempty $pindex $element.Required }},omitempty{{ end }}"`
+{{ end }}}
+
+{{ end }}
+
+func mustCompile(uri string) *gojsonschema.Schema {
+    s, err := schemaLoader.Compile(gojsonschema.NewReferenceLoader(uri))
+    if err != nil {
+        panic(err)
+    }
+    return s
+}
+
+func validate(s *gojsonschema.Schema, b []byte) error {
+	res, err := s.Validate(gojsonschema.NewStringLoader(string(b)))
+    if err != nil {
+        return err
+    }
+
+    if len(res.Errors()) > 0 {
+        var l []string
+        for _, e := range res.Errors() {
+            l = append(l, e.String())
+        }
+        return fmt.Errorf("validation failed: %v", strings.Join(l, ", "))
+    }
+    return nil
+}
+
+const (
+{{ range $index, $element := .Definitions }}{{ range $pindex, $pelement := .Properties }}{{ range $eindex, $eelement := .Enum }}
+{{ $index | camel }}{{ $pindex | camel }}{{ $eelement | camel }} = "{{ $eelement }}"
+{{ end }}{{ end }}{{ end }}
+)

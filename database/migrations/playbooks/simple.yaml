@@ -1,0 +1,37 @@
+name: Simple
+tasks:
+  input:
+    name: Enter something to hash
+    type: input
+    schema:
+      title: Something
+      type: object
+      properties:
+        something:
+          type: string
+          title: Something
+          default: ""
+    next:
+      hash: "something != ''"
+
+  hash:
+    name: Hash the something
+    type: automation
+    automation: hash.sha1
+    payload:
+      default: "playbook.tasks['input'].data['something']"
+    next:
+      comment: "hash != ''"
+
+  comment:
+    name: Comment the hash
+    type: automation
+    automation: comment
+    payload:
+      default: "playbook.tasks['hash'].data['hash']"
+    next:
+      done: "done"
+
+  done:
+    name: You can close this case now
+    type: task

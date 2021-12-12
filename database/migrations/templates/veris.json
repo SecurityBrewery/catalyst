@@ -1,0 +1,3644 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "security_incident": {
+      "title": "Incident confirmation",
+      "type": "string",
+      "description": "Was this a confirmed security incident?",
+      "enum": [
+        "Confirmed",
+        "Suspected",
+        "Near miss",
+        "False positive"
+      ],
+      "x-cols": 6
+    },
+    "confidence": {
+      "title": "Confidence",
+      "type": "string",
+      "enum": [
+        "High",
+        "Medium",
+        "Low",
+        "None"
+      ],
+      "x-cols": 6
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string",
+      "description": "Give a good descriptive summary of the incident in several sentences. Use natural language instead of VERIS notation, but we should be able to 'VERISize' the incident pretty well from just this description.",
+      "x-display": "textarea",
+      "x-cols": 12
+    },
+    "timeline": {
+      "title": "Timeline",
+      "additionalProperties": false,
+      "properties": {
+        "incident": {
+          "title": "Incident",
+          "description": "When did this incident initially occur?",
+          "additionalProperties": false,
+          "properties": {
+            "year": {
+              "title": "Year",
+              "type": "integer",
+              "maximum": 2022,
+              "minimum": 1950,
+              "x-cols": 3,
+              "x-class": "pr-1"
+            },
+            "month": {
+              "title": "Month",
+              "type": "integer",
+              "maximum": 12,
+              "minimum": 1,
+              "x-cols": 3,
+              "x-class": "pr-1"
+            },
+            "day": {
+              "title": "Day",
+              "type": "integer",
+              "maximum": 31,
+              "minimum": 1,
+              "x-cols": 3,
+              "x-class": "pr-1"
+            },
+            "time": {
+              "title": "Time",
+              "description": "Use the format '05:45:00 PM'",
+              "type": "string",
+              "pattern": "^0[1-9]|1[0-2]:[0-5][0-9]:[0-5][0-9] [AP]M$",
+              "x-cols": 3
+            }
+          },
+          "required": [
+            "year"
+          ],
+          "type": "object"
+        },
+        "compromise": {
+          "title": "Compromise",
+          "description": "How long from the first action to the first compromise of an attribute?",
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "title": "Unit",
+              "x-cols": 6,
+              "type": "string",
+              "enum": [
+                "Seconds",
+                "Minutes",
+                "Hours",
+                "Days",
+                "Weeks",
+                "Months",
+                "Years",
+                "Never",
+                "NA",
+                "Unknown"
+              ],
+              "x-class": "pr-2"
+            },
+            "value": {
+              "title": "Value",
+              "x-cols": 6,
+              "type": "number"
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "type": "object"
+        },
+        "exfiltration": {
+          "title": "Exfiltration",
+          "description": "How long from initial compromise to first known data exfiltration?",
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "title": "Unit",
+              "x-cols": 6,
+              "type": "string",
+              "enum": [
+                "Seconds",
+                "Minutes",
+                "Hours",
+                "Days",
+                "Weeks",
+                "Months",
+                "Years",
+                "Never",
+                "NA",
+                "Unknown"
+              ],
+              "x-class": "pr-2"
+            },
+            "value": {
+              "title": "Value",
+              "x-cols": 6,
+              "type": "number"
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "type": "object"
+        },
+        "discovery": {
+          "title": "Discovery",
+          "description": "How long from compromise until the incident was discovered by the victim organization?",
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "title": "Unit",
+              "x-cols": 6,
+              "type": "string",
+              "enum": [
+                "Seconds",
+                "Minutes",
+                "Hours",
+                "Days",
+                "Weeks",
+                "Months",
+                "Years",
+                "Never",
+                "NA",
+                "Unknown"
+              ],
+              "x-class": "pr-2"
+            },
+            "value": {
+              "title": "Value",
+              "x-cols": 6,
+              "type": "number"
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "type": "object"
+        },
+        "containment": {
+          "title": "Containment",
+          "description": "How long did it take the organization to contain the incident once it was discovered?",
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "title": "Unit",
+              "x-cols": 6,
+              "type": "string",
+              "enum": [
+                "Seconds",
+                "Minutes",
+                "Hours",
+                "Days",
+                "Weeks",
+                "Months",
+                "Years",
+                "Never",
+                "NA",
+                "Unknown"
+              ],
+              "x-class": "pr-2"
+            },
+            "value": {
+              "title": "Value",
+              "x-cols": 6,
+              "type": "number"
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "incident"
+      ],
+      "type": "object"
+    },
+    "victim": {
+      "title": "Victim",
+      "description": "[More Info](http://veriscommunity.net/victim-demo.html)",
+      "additionalProperties": false,
+      "properties": {
+        "employee_count": {
+          "title": "Employee Count",
+          "description": "Number of employees.  Only use the count of the individual instance of a business (e.g. franchise location vs entire company) if the action vector was explicitly something unique to this individual instance. (i.e. This franchisee used a non-standard POS system that was then compromised.)",
+          "type": "string",
+          "enum": [
+            "Small",
+            "1 to 10",
+            "11 to 100",
+            "101 to 1000",
+            "Large",
+            "1001 to 10000",
+            "10001 to 25000",
+            "25001 to 50000",
+            "50001 to 100000",
+            "Over 100000",
+            "Unknown"
+          ],
+          "x-cols": 4
+        },
+        "industry": {
+          "title": "Industry",
+          "description": "Victim NAICS Code. You can look it up [here](http://www.farsmarterbids.com/reference/naics-list.php) or [here](http://www.naics.com/search).",
+          "maxLength": 6,
+          "minLength": 2,
+          "pattern": "(00|11|2[1-3]|3[1-3]|4[24589]|5[1-6]|6[1-2]|7[12]|81|92)-?\\d{0,4}",
+          "type": "string",
+          "x-cols": 4
+        },
+        "government": {
+          "title": "Government",
+          "description": "The level of government if industry starts with 92.  Otherwise 'NA'",
+          "items": {
+            "type": "string",
+            "default": "NA",
+            "enum": [
+              "Federal",
+              "Regional",
+              "Local",
+              "Unknown",
+              "Other",
+              "NA"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 4
+        },
+        "locations_affected": {
+          "title": "Location affected",
+          "description": "The number of victim locations, (stores, offices, etc), affected",
+          "type": "integer",
+          "x-cols": 3
+        },
+        "country": {
+          "title": "Country",
+          "description": "Victim country of operation",
+          "items": {
+            "type": "string",
+            "default": "Unknown",
+            "enum": [
+              "Unknown",
+              "AD",
+              "AE",
+              "AF",
+              "AG",
+              "AI",
+              "AL",
+              "AM",
+              "AO",
+              "AQ",
+              "AR",
+              "AS",
+              "AT",
+              "AU",
+              "AW",
+              "AX",
+              "AZ",
+              "BA",
+              "BB",
+              "BD",
+              "BE",
+              "BF",
+              "BG",
+              "BH",
+              "BI",
+              "BJ",
+              "BL",
+              "BM",
+              "BN",
+              "BO",
+              "BQ",
+              "BR",
+              "BS",
+              "BT",
+              "BV",
+              "BW",
+              "BY",
+              "BZ",
+              "CA",
+              "CC",
+              "CD",
+              "CF",
+              "CG",
+              "CH",
+              "CI",
+              "CK",
+              "CL",
+              "CM",
+              "CN",
+              "CO",
+              "CR",
+              "CU",
+              "CV",
+              "CW",
+              "CX",
+              "CY",
+              "CZ",
+              "DE",
+              "DJ",
+              "DK",
+              "DM",
+              "DO",
+              "DZ",
+              "EC",
+              "EE",
+              "EG",
+              "EH",
+              "ER",
+              "ES",
+              "ET",
+              "FI",
+              "FJ",
+              "FK",
+              "FM",
+              "FO",
+              "FR",
+              "GA",
+              "GB",
+              "GD",
+              "GE",
+              "GF",
+              "GG",
+              "GH",
+              "GI",
+              "GL",
+              "GM",
+              "GN",
+              "GP",
+              "GQ",
+              "GR",
+              "GS",
+              "GT",
+              "GU",
+              "GW",
+              "GY",
+              "HK",
+              "HM",
+              "HN",
+              "HR",
+              "HT",
+              "HU",
+              "ID",
+              "IE",
+              "IL",
+              "IM",
+              "IN",
+              "IO",
+              "IQ",
+              "IR",
+              "IS",
+              "IT",
+              "JE",
+              "JM",
+              "JO",
+              "JP",
+              "KE",
+              "KG",
+              "KH",
+              "KI",
+              "KM",
+              "KN",
+              "KP",
+              "KR",
+              "KW",
+              "KY",
+              "KZ",
+              "LA",
+              "LB",
+              "LC",
+              "LI",
+              "LK",
+              "LR",
+              "LS",
+              "LT",
+              "LU",
+              "LV",
+              "LY",
+              "MA",
+              "MC",
+              "MD",
+              "ME",
+              "MF",
+              "MG",
+              "MH",
+              "MK",
+              "ML",
+              "MM",
+              "MN",
+              "MO",
+              "MP",
+              "MQ",
+              "MR",
+              "MS",
+              "MT",
+              "MU",
+              "MV",
+              "MW",
+              "MX",
+              "MY",
+              "MZ",
+              "NA",
+              "NC",
+              "NE",
+              "NF",
+              "NG",
+              "NI",
+              "NL",
+              "NO",
+              "NP",
+              "NR",
+              "NU",
+              "NZ",
+              "OM",
+              "PA",
+              "PE",
+              "PF",
+              "PG",
+              "PH",
+              "PK",
+              "PL",
+              "PM",
+              "PN",
+              "PR",
+              "PS",
+              "PT",
+              "PW",
+              "PY",
+              "QA",
+              "RE",
+              "RO",
+              "RS",
+              "RU",
+              "RW",
+              "SA",
+              "SB",
+              "SC",
+              "SD",
+              "SE",
+              "SG",
+              "SH",
+              "SI",
+              "SJ",
+              "SK",
+              "SL",
+              "SM",
+              "SN",
+              "SO",
+              "SR",
+              "SS",
+              "ST",
+              "SV",
+              "SX",
+              "SY",
+              "SZ",
+              "TC",
+              "TD",
+              "TF",
+              "TG",
+              "TH",
+              "TJ",
+              "TK",
+              "TL",
+              "TM",
+              "TN",
+              "TO",
+              "TR",
+              "TT",
+              "TV",
+              "TW",
+              "TZ",
+              "UA",
+              "UG",
+              "UM",
+              "US",
+              "UY",
+              "UZ",
+              "VA",
+              "VC",
+              "VE",
+              "VG",
+              "VI",
+              "VN",
+              "VU",
+              "WF",
+              "WS",
+              "YE",
+              "YT",
+              "ZA",
+              "ZM",
+              "ZW",
+              "XK",
+              "Other"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 3
+        },
+        "region": {
+          "title": "Region",
+          "description": "The [UN M.49](https://en.wikipedia.org/wiki/UN_M.49) super-region and sub-region joined together. e.g. North America: 019021. South America (Brazil): 019005, Asia: 142000, East Asia (includes China): 142030, West Asia (Middle East): 142145, South Asia (India): 142034, Eastern Europe: 150151, Western Europe: 150155.  Use 000000 if you do not know and 000001 for 'other' (includes international waters and outer space).  If you only know the super-region, use zero's for the region.  (e.g. 019000 for Americas.)",
+          "items": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6,
+            "pattern": "\\d{6}"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 3
+        },
+        "state": {
+          "title": "State",
+          "description": "ALL CAPS.  For US states, you can use the [ISO_3166-2 2-character state code](https://en.wikipedia.org/wiki/ISO_3166-2:US), otherwise use the full [ISO_3166-2 Country subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2)",
+          "type": "string",
+          "x-cols": 3
+        },
+        "notes": {
+          "title": "Notes",
+          "minLength": 1,
+          "type": "string",
+          "x-display": "textarea"
+        }
+      },
+      "required": [
+        "country",
+        "employee_count",
+        "industry",
+        "government"
+      ],
+      "type": "object"
+    },
+    "action": {
+      "title": "Action",
+      "description": "What threat actions were involved? [More Info](http://veriscommunity.net/actions.html)",
+      "oneOf": [
+        {
+          "title": "Hacking",
+          "description": "Think things a person does at a keyboard (rather than by a program). [More Info](http://veriscommunity.net/actions.html#section-hacking)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema1"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Abuse of functionality",
+                  "Brute force",
+                  "Buffer overflow",
+                  "Cache poisoning",
+                  "Cryptanalysis",
+                  "CSRF",
+                  "DoS",
+                  "Exploit misconfig",
+                  "Exploit vuln",
+                  "Footprinting",
+                  "Forced browsing",
+                  "Format string attack",
+                  "Fuzz testing",
+                  "HTTP request smuggling",
+                  "HTTP request splitting",
+                  "HTTP response smuggling",
+                  "HTTP Response Splitting",
+                  "Insecure deserialization",
+                  "Integer overflows",
+                  "LDAP injection",
+                  "Mail command injection",
+                  "MitM",
+                  "Null byte injection",
+                  "Offline cracking",
+                  "OS commanding",
+                  "Pass-the-hash",
+                  "Path traversal",
+                  "Reverse engineering",
+                  "RFI",
+                  "Routing detour",
+                  "Session fixation",
+                  "Session prediction",
+                  "Session replay",
+                  "Soap array abuse",
+                  "Special element injection",
+                  "SQLi",
+                  "SSI injection",
+                  "URL redirector abuse",
+                  "Use of backdoor or C2",
+                  "Use of stolen creds",
+                  "User breakout",
+                  "Virtual machine escape",
+                  "XML attribute blowup",
+                  "XML entity expansion",
+                  "XML external entities",
+                  "XML injection",
+                  "XPath injection",
+                  "XQuery injection",
+                  "XSS",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "vector": {
+              "title": "Vector",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "3rd party desktop",
+                  "Backdoor or C2",
+                  "Command shell",
+                  "Desktop sharing",
+                  "Desktop sharing software",
+                  "Hypervisor",
+                  "Inter-tenant",
+                  "Other",
+                  "Partner",
+                  "Physical access",
+                  "VPN",
+                  "Web application",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "cve": {
+              "title": "CVE",
+              "description": "CVE(s) exploited through hacking",
+              "type": "string"
+            }
+          },
+          "required": [
+            "vector",
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Malware",
+          "description": "Think things a program does (rather than a person on a keyboard) [More Info](http://veriscommunity.net/actions.html#section-malware)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema2"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Adminware",
+                  "Adware",
+                  "Backdoor",
+                  "Brute force",
+                  "C2",
+                  "Capture app data",
+                  "Capture stored data",
+                  "Click fraud",
+                  "Click fraud and cryptocurrency mining",
+                  "Client-side attack",
+                  "Cryptocurrency mining",
+                  "Destroy data",
+                  "In-memory",
+                  "Modify data",
+                  "Disable controls",
+                  "DoS",
+                  "Downloader",
+                  "Exploit misconfig",
+                  "Exploit vuln",
+                  "Export data",
+                  "Packet sniffer",
+                  "Password dumper",
+                  "RAM scraper",
+                  "Ransomware",
+                  "RAT",
+                  "Rootkit",
+                  "Scan network",
+                  "Spam",
+                  "Spyware/Keylogger",
+                  "SQL injection",
+                  "Trojan",
+                  "Worm",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "vector": {
+              "title": "Vector",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Direct install",
+                  "Download by malware",
+                  "Email",
+                  "Email attachment",
+                  "Email autoexecute",
+                  "Email link",
+                  "Email unknown",
+                  "Email other",
+                  "Instant messaging",
+                  "Network propagation",
+                  "Remote injection",
+                  "Removable media",
+                  "Software update",
+                  "Web application",
+                  "Web application - download",
+                  "Web application - drive-by",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "name": {
+              "title": "Name",
+              "description": "Common name(s) or strain(s) of malware",
+              "type": "string",
+              "x-cols": 6
+            },
+            "cve": {
+              "title": "CVE",
+              "description": "CVE(s) exploited by this malware",
+              "type": "string",
+              "x-cols": 6
+            }
+          },
+          "required": [
+            "vector",
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Social",
+          "description": "Actions done to a person. [More Info](http://veriscommunity.net/actions.html#section-social)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema3"
+            },
+            "variety": {
+              "title": "Variety",
+              "description": "Varities of social tactics",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Baiting",
+                  "Bribery",
+                  "Elicitation",
+                  "Extortion",
+                  "Forgery",
+                  "Influence",
+                  "Phishing",
+                  "Pretexting",
+                  "Propaganda",
+                  "Scam",
+                  "Spam",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "vector": {
+              "title": "Vector",
+              "description": "Vectors of communication",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Documents",
+                  "Email",
+                  "IM",
+                  "In-person",
+                  "Phone",
+                  "Removable media",
+                  "SMS",
+                  "Social media",
+                  "Software",
+                  "Website",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "target": {
+              "title": "Target",
+              "description": "Target of social tactics",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Auditor",
+                  "Call center",
+                  "Cashier",
+                  "Customer",
+                  "Developer",
+                  "End-user",
+                  "End-user or employee",
+                  "Executive",
+                  "Finance",
+                  "Former employee",
+                  "Guard",
+                  "Helpdesk",
+                  "Human resources",
+                  "Maintenance",
+                  "Manager",
+                  "Other employee",
+                  "Partner",
+                  "System admin",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "vector",
+            "variety",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Error",
+          "description": "Unintentional actions. [More Info](http://veriscommunity.net/actions.html#section-error)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema4"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Capacity shortage",
+                  "Classification error",
+                  "Data entry error",
+                  "Disposal error",
+                  "Gaffe",
+                  "Loss",
+                  "Maintenance error",
+                  "Malfunction",
+                  "Misconfiguration",
+                  "Misdelivery",
+                  "Misinformation",
+                  "Omission",
+                  "Physical accidents",
+                  "Programming error",
+                  "Publishing error",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "vector": {
+              "title": "Vector",
+              "description": "Reasons errors occurred",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Carelessness",
+                  "Inadequate personnel",
+                  "Inadequate processes",
+                  "Inadequate technology",
+                  "Other",
+                  "Random error",
+                  "Web application",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety",
+            "vector"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Misuse",
+          "description": "Unapproved use of legitimate access or permissions. [More Info](http://veriscommunity.net/actions.html#section-misuse)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema5"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Data mishandling",
+                  "Email misuse",
+                  "Illicit content",
+                  "Knowledge abuse",
+                  "Net misuse",
+                  "Possession abuse",
+                  "Privilege abuse",
+                  "Snap picture",
+                  "Unapproved hardware",
+                  "Unapproved software",
+                  "Unapproved workaround",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "vector": {
+              "title": "Vector",
+              "description": "Vectors or access methods",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "LAN access",
+                  "Non-corporate",
+                  "Physical access",
+                  "Remote access",
+                  "Web application",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "vector",
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Physical",
+          "description": "Actions involving proximity and physical contact. [More Info](http://veriscommunity.net/actions.html#section-physical)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema6"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Assault",
+                  "Bypassed controls",
+                  "Connection",
+                  "Destruction",
+                  "Disabled controls",
+                  "Skimmer",
+                  "Snooping",
+                  "Surveillance",
+                  "Tampering",
+                  "Theft",
+                  "Wiretapping",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "vector": {
+              "title": "Vector",
+              "description": "Vector of physical access",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Partner facility",
+                  "Partner vehicle",
+                  "Personal residence",
+                  "Personal vehicle",
+                  "Public facility",
+                  "Public vehicle",
+                  "Victim grounds",
+                  "Victim public area",
+                  "Victim secure area",
+                  "Victim work area",
+                  "Unknown",
+                  "Other"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "vector",
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Environmental",
+          "description": "Forces of nature. Cannot include intentional actions. [More Info](http://veriscommunity.net/actions.html#section-environmental)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema7"
+            },
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of environmental events",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Deterioration",
+                  "Earthquake",
+                  "EMI",
+                  "ESD",
+                  "Fire",
+                  "Flood",
+                  "Hazmat",
+                  "Humidity",
+                  "Hurricane",
+                  "Ice",
+                  "Landslide",
+                  "Leak",
+                  "Lightning",
+                  "Meteorite",
+                  "Particulates",
+                  "Pathogen",
+                  "Power failure",
+                  "Temperature",
+                  "Tornado",
+                  "Tsunami",
+                  "Vermin",
+                  "Volcano",
+                  "Wind",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Unknown",
+          "description": "The action taken was unknown",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema8"
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Infiltrate",
+                  "Exfiltrate",
+                  "Elevate",
+                  "Lateral movement",
+                  "Deploy payload",
+                  "Other",
+                  "Unknown",
+                  "NA"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "type": "object"
+    },
+    "actor": {
+      "title": "Actor",
+      "description": "What entity did the threat action? [More Info](http://veriscommunity.net/actors.html)",
+      "oneOf": [
+        {
+          "title": "External",
+          "description": "Unaffiliated with the victim. [More Info](http://veriscommunity.net/actors.html#section-external)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema1"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Acquaintance",
+                  "Activist",
+                  "Auditor",
+                  "Competitor",
+                  "Customer",
+                  "Force majeure",
+                  "Former employee",
+                  "Nation-state",
+                  "Organized crime",
+                  "State-affiliated",
+                  "Terrorist",
+                  "Unaffiliated",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "motive": {
+              "title": "Motive",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Convenience",
+                  "Espionage",
+                  "Fear",
+                  "Financial",
+                  "Fun",
+                  "Grudge",
+                  "Ideology",
+                  "NA",
+                  "Secondary",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "description": "Misc external actor notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "country": {
+              "title": "Country",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Unknown",
+                  "AD",
+                  "AE",
+                  "AF",
+                  "AG",
+                  "AI",
+                  "AL",
+                  "AM",
+                  "AO",
+                  "AQ",
+                  "AR",
+                  "AS",
+                  "AT",
+                  "AU",
+                  "AW",
+                  "AX",
+                  "AZ",
+                  "BA",
+                  "BB",
+                  "BD",
+                  "BE",
+                  "BF",
+                  "BG",
+                  "BH",
+                  "BI",
+                  "BJ",
+                  "BL",
+                  "BM",
+                  "BN",
+                  "BO",
+                  "BQ",
+                  "BR",
+                  "BS",
+                  "BT",
+                  "BV",
+                  "BW",
+                  "BY",
+                  "BZ",
+                  "CA",
+                  "CC",
+                  "CD",
+                  "CF",
+                  "CG",
+                  "CH",
+                  "CI",
+                  "CK",
+                  "CL",
+                  "CM",
+                  "CN",
+                  "CO",
+                  "CR",
+                  "CU",
+                  "CV",
+                  "CW",
+                  "CX",
+                  "CY",
+                  "CZ",
+                  "DE",
+                  "DJ",
+                  "DK",
+                  "DM",
+                  "DO",
+                  "DZ",
+                  "EC",
+                  "EE",
+                  "EG",
+                  "EH",
+                  "ER",
+                  "ES",
+                  "ET",
+                  "FI",
+                  "FJ",
+                  "FK",
+                  "FM",
+                  "FO",
+                  "FR",
+                  "GA",
+                  "GB",
+                  "GD",
+                  "GE",
+                  "GF",
+                  "GG",
+                  "GH",
+                  "GI",
+                  "GL",
+                  "GM",
+                  "GN",
+                  "GP",
+                  "GQ",
+                  "GR",
+                  "GS",
+                  "GT",
+                  "GU",
+                  "GW",
+                  "GY",
+                  "HK",
+                  "HM",
+                  "HN",
+                  "HR",
+                  "HT",
+                  "HU",
+                  "ID",
+                  "IE",
+                  "IL",
+                  "IM",
+                  "IN",
+                  "IO",
+                  "IQ",
+                  "IR",
+                  "IS",
+                  "IT",
+                  "JE",
+                  "JM",
+                  "JO",
+                  "JP",
+                  "KE",
+                  "KG",
+                  "KH",
+                  "KI",
+                  "KM",
+                  "KN",
+                  "KP",
+                  "KR",
+                  "KW",
+                  "KY",
+                  "KZ",
+                  "LA",
+                  "LB",
+                  "LC",
+                  "LI",
+                  "LK",
+                  "LR",
+                  "LS",
+                  "LT",
+                  "LU",
+                  "LV",
+                  "LY",
+                  "MA",
+                  "MC",
+                  "MD",
+                  "ME",
+                  "MF",
+                  "MG",
+                  "MH",
+                  "MK",
+                  "ML",
+                  "MM",
+                  "MN",
+                  "MO",
+                  "MP",
+                  "MQ",
+                  "MR",
+                  "MS",
+                  "MT",
+                  "MU",
+                  "MV",
+                  "MW",
+                  "MX",
+                  "MY",
+                  "MZ",
+                  "NA",
+                  "NC",
+                  "NE",
+                  "NF",
+                  "NG",
+                  "NI",
+                  "NL",
+                  "NO",
+                  "NP",
+                  "NR",
+                  "NU",
+                  "NZ",
+                  "OM",
+                  "PA",
+                  "PE",
+                  "PF",
+                  "PG",
+                  "PH",
+                  "PK",
+                  "PL",
+                  "PM",
+                  "PN",
+                  "PR",
+                  "PS",
+                  "PT",
+                  "PW",
+                  "PY",
+                  "QA",
+                  "RE",
+                  "RO",
+                  "RS",
+                  "RU",
+                  "RW",
+                  "SA",
+                  "SB",
+                  "SC",
+                  "SD",
+                  "SE",
+                  "SG",
+                  "SH",
+                  "SI",
+                  "SJ",
+                  "SK",
+                  "SL",
+                  "SM",
+                  "SN",
+                  "SO",
+                  "SR",
+                  "SS",
+                  "ST",
+                  "SV",
+                  "SX",
+                  "SY",
+                  "SZ",
+                  "TC",
+                  "TD",
+                  "TF",
+                  "TG",
+                  "TH",
+                  "TJ",
+                  "TK",
+                  "TL",
+                  "TM",
+                  "TN",
+                  "TO",
+                  "TR",
+                  "TT",
+                  "TV",
+                  "TW",
+                  "TZ",
+                  "UA",
+                  "UG",
+                  "UM",
+                  "US",
+                  "UY",
+                  "UZ",
+                  "VA",
+                  "VC",
+                  "VE",
+                  "VG",
+                  "VI",
+                  "VN",
+                  "VU",
+                  "WF",
+                  "WS",
+                  "YE",
+                  "YT",
+                  "ZA",
+                  "ZM",
+                  "ZW",
+                  "XK",
+                  "Other"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "region": {
+              "title": "Region",
+              "description": "The [UN M.49](https://en.wikipedia.org/wiki/UN_M.49) super-region and sub-region joined together. e.g. North America: 019021. South America (Brazil): 019005, Asia: 142000, East Asia (includes China): 142030, West Asia (Middle East): 142145, South Asia (India): 142034, Eastern Europe: 150151, Western Europe: 150155.  Use 000000 if you do not know and 000001 for 'other' (includes international waters and outer space).  If you only know the super-region, use zero's for the region.  (e.g. 019000 for Americas.)",
+              "items": {
+                "type": "string",
+                "maxLength": 6,
+                "minLength": 6,
+                "pattern": "\\d{6}"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "name": {
+              "title": "Name",
+              "description": "Actor name (if known). e.g. 'lizard squad'",
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "variety",
+            "motive"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Interal",
+          "description": "The victim or a part thereof (such as an employee). [More Info](http://veriscommunity.net/actors.html#section-internal)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema2"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Auditor",
+                  "Call center",
+                  "Cashier",
+                  "Developer",
+                  "End-user",
+                  "Executive",
+                  "Finance",
+                  "Guard",
+                  "Helpdesk",
+                  "Human resources",
+                  "Maintenance",
+                  "Manager",
+                  "System admin",
+                  "Doctor or nurse",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "motive": {
+              "title": "Motive",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Convenience",
+                  "Espionage",
+                  "Fear",
+                  "Financial",
+                  "Fun",
+                  "Grudge",
+                  "Ideology",
+                  "Secondary",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "job_change": {
+              "title": "Job Change",
+              "description": "Recent job change PRIOR to incident? (i.e., not asking if 'let go' afterwards)",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Demoted",
+                  "Hired",
+                  "Job eval",
+                  "Lateral move",
+                  "Let go",
+                  "Passed over",
+                  "Personal issues",
+                  "Promoted",
+                  "Reprimanded",
+                  "Resigned",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "notes": {
+              "title": "Notes",
+              "description": "Misc internal actor notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "motive",
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Partner",
+          "description": "An entity with an organizational relationship to the victim, but not the victim. [More Info](http://veriscommunity.net/actors.html#section-partner)",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema3"
+            },
+            "motive": {
+              "title": "Motive",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Convenience",
+                  "Espionage",
+                  "Fear",
+                  "Financial",
+                  "Fun",
+                  "Grudge",
+                  "Ideology",
+                  "Secondary",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "description": "Misc partner actor notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "industry": {
+              "title": "Industry",
+              "maxLength": 6,
+              "minLength": 2,
+              "pattern": "\\d{2}-?\\d{0,4}",
+              "type": "string",
+              "x-cols": 4
+            },
+            "country": {
+              "title": "Country",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Unknown",
+                  "AD",
+                  "AE",
+                  "AF",
+                  "AG",
+                  "AI",
+                  "AL",
+                  "AM",
+                  "AO",
+                  "AQ",
+                  "AR",
+                  "AS",
+                  "AT",
+                  "AU",
+                  "AW",
+                  "AX",
+                  "AZ",
+                  "BA",
+                  "BB",
+                  "BD",
+                  "BE",
+                  "BF",
+                  "BG",
+                  "BH",
+                  "BI",
+                  "BJ",
+                  "BL",
+                  "BM",
+                  "BN",
+                  "BO",
+                  "BQ",
+                  "BR",
+                  "BS",
+                  "BT",
+                  "BV",
+                  "BW",
+                  "BY",
+                  "BZ",
+                  "CA",
+                  "CC",
+                  "CD",
+                  "CF",
+                  "CG",
+                  "CH",
+                  "CI",
+                  "CK",
+                  "CL",
+                  "CM",
+                  "CN",
+                  "CO",
+                  "CR",
+                  "CU",
+                  "CV",
+                  "CW",
+                  "CX",
+                  "CY",
+                  "CZ",
+                  "DE",
+                  "DJ",
+                  "DK",
+                  "DM",
+                  "DO",
+                  "DZ",
+                  "EC",
+                  "EE",
+                  "EG",
+                  "EH",
+                  "ER",
+                  "ES",
+                  "ET",
+                  "FI",
+                  "FJ",
+                  "FK",
+                  "FM",
+                  "FO",
+                  "FR",
+                  "GA",
+                  "GB",
+                  "GD",
+                  "GE",
+                  "GF",
+                  "GG",
+                  "GH",
+                  "GI",
+                  "GL",
+                  "GM",
+                  "GN",
+                  "GP",
+                  "GQ",
+                  "GR",
+                  "GS",
+                  "GT",
+                  "GU",
+                  "GW",
+                  "GY",
+                  "HK",
+                  "HM",
+                  "HN",
+                  "HR",
+                  "HT",
+                  "HU",
+                  "ID",
+                  "IE",
+                  "IL",
+                  "IM",
+                  "IN",
+                  "IO",
+                  "IQ",
+                  "IR",
+                  "IS",
+                  "IT",
+                  "JE",
+                  "JM",
+                  "JO",
+                  "JP",
+                  "KE",
+                  "KG",
+                  "KH",
+                  "KI",
+                  "KM",
+                  "KN",
+                  "KP",
+                  "KR",
+                  "KW",
+                  "KY",
+                  "KZ",
+                  "LA",
+                  "LB",
+                  "LC",
+                  "LI",
+                  "LK",
+                  "LR",
+                  "LS",
+                  "LT",
+                  "LU",
+                  "LV",
+                  "LY",
+                  "MA",
+                  "MC",
+                  "MD",
+                  "ME",
+                  "MF",
+                  "MG",
+                  "MH",
+                  "MK",
+                  "ML",
+                  "MM",
+                  "MN",
+                  "MO",
+                  "MP",
+                  "MQ",
+                  "MR",
+                  "MS",
+                  "MT",
+                  "MU",
+                  "MV",
+                  "MW",
+                  "MX",
+                  "MY",
+                  "MZ",
+                  "NA",
+                  "NC",
+                  "NE",
+                  "NF",
+                  "NG",
+                  "NI",
+                  "NL",
+                  "NO",
+                  "NP",
+                  "NR",
+                  "NU",
+                  "NZ",
+                  "OM",
+                  "PA",
+                  "PE",
+                  "PF",
+                  "PG",
+                  "PH",
+                  "PK",
+                  "PL",
+                  "PM",
+                  "PN",
+                  "PR",
+                  "PS",
+                  "PT",
+                  "PW",
+                  "PY",
+                  "QA",
+                  "RE",
+                  "RO",
+                  "RS",
+                  "RU",
+                  "RW",
+                  "SA",
+                  "SB",
+                  "SC",
+                  "SD",
+                  "SE",
+                  "SG",
+                  "SH",
+                  "SI",
+                  "SJ",
+                  "SK",
+                  "SL",
+                  "SM",
+                  "SN",
+                  "SO",
+                  "SR",
+                  "SS",
+                  "ST",
+                  "SV",
+                  "SX",
+                  "SY",
+                  "SZ",
+                  "TC",
+                  "TD",
+                  "TF",
+                  "TG",
+                  "TH",
+                  "TJ",
+                  "TK",
+                  "TL",
+                  "TM",
+                  "TN",
+                  "TO",
+                  "TR",
+                  "TT",
+                  "TV",
+                  "TW",
+                  "TZ",
+                  "UA",
+                  "UG",
+                  "UM",
+                  "US",
+                  "UY",
+                  "UZ",
+                  "VA",
+                  "VC",
+                  "VE",
+                  "VG",
+                  "VI",
+                  "VN",
+                  "VU",
+                  "WF",
+                  "WS",
+                  "YE",
+                  "YT",
+                  "ZA",
+                  "ZM",
+                  "ZW",
+                  "XK",
+                  "Other"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "region": {
+              "title": "Region",
+              "description": "The [UN M.49](https://en.wikipedia.org/wiki/UN_M.49) super-region and sub-region joined together. e.g. North America: 019021. South America (Brazil): 019005, Asia: 142000, East Asia (includes China): 142030, West Asia (Middle East): 142145, South Asia (India): 142034, Eastern Europe: 150151, Western Europe: 150155.  Use 000000 if you do not know and 000001 for 'other' (includes international waters and outer space).  If you only know the super-region, use zero's for the region.  (e.g. 019000 for Americas.)",
+              "items": {
+                "type": "string",
+                "maxLength": 6,
+                "minLength": 6,
+                "pattern": "\\d{6}"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 4
+            },
+            "name": {
+              "title": "Name",
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "country",
+            "motive"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Unknown",
+          "description": "If the actor is unknown, you *must* add a note of some type, otherwise the incident will not validate.",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema4"
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "type": "object"
+    },
+    "asset": {
+      "title": "Assets",
+      "description": "What assets were affected by the incident actions.  Data types and record count will be covered in the attributes section.  [More Info](http://veriscommunity.net/assets.html)",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "total_amount": {
+          "title": "Total Amount",
+          "type": "number"
+        },
+        "assets": {
+          "title": "Assets",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "variety": {
+                "title": "Variety",
+                "description": "What varieties of assets were compromised?",
+                "type": "string",
+                "enum": [
+                  "M - Disk drive",
+                  "M - Disk media",
+                  "M - Documents",
+                  "M - Flash drive",
+                  "M - Payment card",
+                  "M - Smart card",
+                  "M - Tapes",
+                  "M - Other",
+                  "M - Unknown",
+                  "M - Fax",
+                  "N - Access reader",
+                  "N - Broadband",
+                  "N - Camera",
+                  "N - Firewall",
+                  "N - HSM",
+                  "N - IDS",
+                  "N - LAN",
+                  "N - NAS",
+                  "N - PBX",
+                  "N - PLC",
+                  "N - Private WAN",
+                  "N - Public WAN",
+                  "N - Router or switch",
+                  "N - RTU",
+                  "N - SAN",
+                  "N - Telephone",
+                  "N - VoIP adapter",
+                  "N - WLAN",
+                  "N - Other",
+                  "N - Unknown",
+                  "P - Auditor",
+                  "P - Call center",
+                  "P - Cashier",
+                  "P - Customer",
+                  "P - Developer",
+                  "P - End-user",
+                  "P - End-user or employee",
+                  "P - Executive",
+                  "P - Finance",
+                  "P - Former employee",
+                  "P - Guard",
+                  "P - Helpdesk",
+                  "P - Human resources",
+                  "P - Maintenance",
+                  "P - Manager",
+                  "P - Other employee",
+                  "P - Partner",
+                  "P - System admin",
+                  "P - Other",
+                  "P - Unknown",
+                  "S - Authentication",
+                  "S - Backup",
+                  "S - Configuration or patch management",
+                  "S - Code repository",
+                  "S - Database",
+                  "S - DCS",
+                  "S - DHCP",
+                  "S - Directory",
+                  "S - DNS",
+                  "S - File",
+                  "S - ICS",
+                  "S - Log",
+                  "S - Mail",
+                  "S - Mainframe",
+                  "S - Payment switch",
+                  "S - POS controller",
+                  "S - Print",
+                  "S - Proxy",
+                  "S - Remote access",
+                  "S - VM host",
+                  "S - Web application",
+                  "S - Other",
+                  "S - Unknown",
+                  "T - ATM",
+                  "T - Gas terminal",
+                  "T - Kiosk",
+                  "T - PED pad",
+                  "T - Other",
+                  "T - Unknown",
+                  "U - Auth token",
+                  "U - Desktop",
+                  "U - Desktop or laptop",
+                  "U - Laptop",
+                  "U - Media",
+                  "U - Mobile phone",
+                  "U - Peripheral",
+                  "U - POS terminal",
+                  "U - Tablet",
+                  "U - Telephone",
+                  "U - VoIP phone",
+                  "U - Other",
+                  "U - Unknown",
+                  "E - Telemetry",
+                  "E - Telematics",
+                  "E - Other",
+                  "E - Unknown",
+                  "Unknown",
+                  "Other"
+                ]
+              },
+              "amount": {
+                "title": "Amount",
+                "description": "How many total systems were compromised?",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "variety"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "ownership": {
+          "title": "Ownership",
+          "description": "Who owns the affected asset? This can allow us to identify employee-owned (BYOD) assets.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Customer",
+              "Employee",
+              "NA",
+              "Partner",
+              "Unknown",
+              "Victim",
+              "Other"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 6
+        },
+        "cloud": {
+          "title": "On-Premise or Cloud",
+          "description": "Only answer if you know for sure if the asset was hosted in a cloud service.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "On-Premise Asset(s)",
+              "External Cloud Asset(s)",
+              "Other",
+              "Unknown",
+              "NA"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 6
+        },
+        "hosting": {
+          "title": "Hosting Location",
+          "description": "Where is the affected asset hosted/located?",
+          "items": {
+            "type": "string",
+            "enum": [
+              "External - unknown environment",
+              "External - dedicated environment",
+              "External - shared environment",
+              "Internal",
+              "NA",
+              "Other",
+              "Unknown"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 4
+        },
+        "management": {
+          "title": "Management",
+          "description": "Independent of physical location, who administers and maintains the affected asset?",
+          "items": {
+            "type": "string",
+            "enum": [
+              "External",
+              "Internal",
+              "Co-managed",
+              "NA",
+              "Unknown",
+              "Other"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 4
+        },
+        "role": {
+          "title": "IT or OT",
+          "description": "Is the asset Information Technology (IT) such as email or the domain controller or Operational Technology (OT) such as rail-switching computers for a railroad or manufacturing robots for a manufacturing company.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "IT",
+              "OT",
+              "Unknown",
+              "Other",
+              "NA"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true,
+          "x-cols": 4
+        },
+        "notes": {
+          "title": "Notes",
+          "minLength": 1,
+          "type": "string",
+          "x-display": "textarea"
+        },
+        "country": {
+          "title": "Country",
+          "description": "The country hosting the asset.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "AD",
+              "AE",
+              "AF",
+              "AG",
+              "AI",
+              "AL",
+              "AM",
+              "AO",
+              "AQ",
+              "AR",
+              "AS",
+              "AT",
+              "AU",
+              "AW",
+              "AX",
+              "AZ",
+              "BA",
+              "BB",
+              "BD",
+              "BE",
+              "BF",
+              "BG",
+              "BH",
+              "BI",
+              "BJ",
+              "BL",
+              "BM",
+              "BN",
+              "BO",
+              "BQ",
+              "BR",
+              "BS",
+              "BT",
+              "BV",
+              "BW",
+              "BY",
+              "BZ",
+              "CA",
+              "CC",
+              "CD",
+              "CF",
+              "CG",
+              "CH",
+              "CI",
+              "CK",
+              "CL",
+              "CM",
+              "CN",
+              "CO",
+              "CR",
+              "CU",
+              "CV",
+              "CW",
+              "CX",
+              "CY",
+              "CZ",
+              "DE",
+              "DJ",
+              "DK",
+              "DM",
+              "DO",
+              "DZ",
+              "EC",
+              "EE",
+              "EG",
+              "EH",
+              "ER",
+              "ES",
+              "ET",
+              "FI",
+              "FJ",
+              "FK",
+              "FM",
+              "FO",
+              "FR",
+              "GA",
+              "GB",
+              "GD",
+              "GE",
+              "GF",
+              "GG",
+              "GH",
+              "GI",
+              "GL",
+              "GM",
+              "GN",
+              "GP",
+              "GQ",
+              "GR",
+              "GS",
+              "GT",
+              "GU",
+              "GW",
+              "GY",
+              "HK",
+              "HM",
+              "HN",
+              "HR",
+              "HT",
+              "HU",
+              "ID",
+              "IE",
+              "IL",
+              "IM",
+              "IN",
+              "IO",
+              "IQ",
+              "IR",
+              "IS",
+              "IT",
+              "JE",
+              "JM",
+              "JO",
+              "JP",
+              "KE",
+              "KG",
+              "KH",
+              "KI",
+              "KM",
+              "KN",
+              "KP",
+              "KR",
+              "KW",
+              "KY",
+              "KZ",
+              "LA",
+              "LB",
+              "LC",
+              "LI",
+              "LK",
+              "LR",
+              "LS",
+              "LT",
+              "LU",
+              "LV",
+              "LY",
+              "MA",
+              "MC",
+              "MD",
+              "ME",
+              "MF",
+              "MG",
+              "MH",
+              "MK",
+              "ML",
+              "MM",
+              "MN",
+              "MO",
+              "MP",
+              "MQ",
+              "MR",
+              "MS",
+              "MT",
+              "MU",
+              "MV",
+              "MW",
+              "MX",
+              "MY",
+              "MZ",
+              "NA",
+              "NC",
+              "NE",
+              "NF",
+              "NG",
+              "NI",
+              "NL",
+              "NO",
+              "NP",
+              "NR",
+              "NU",
+              "NZ",
+              "OM",
+              "PA",
+              "PE",
+              "PF",
+              "PG",
+              "PH",
+              "PK",
+              "PL",
+              "PM",
+              "PN",
+              "PR",
+              "PS",
+              "PT",
+              "PW",
+              "PY",
+              "QA",
+              "RE",
+              "RO",
+              "RS",
+              "RU",
+              "RW",
+              "SA",
+              "SB",
+              "SC",
+              "SD",
+              "SE",
+              "SG",
+              "SH",
+              "SI",
+              "SJ",
+              "SK",
+              "SL",
+              "SM",
+              "SN",
+              "SO",
+              "SR",
+              "SS",
+              "ST",
+              "SV",
+              "SX",
+              "SY",
+              "SZ",
+              "TC",
+              "TD",
+              "TF",
+              "TG",
+              "TH",
+              "TJ",
+              "TK",
+              "TL",
+              "TM",
+              "TN",
+              "TO",
+              "TR",
+              "TT",
+              "TV",
+              "TW",
+              "TZ",
+              "UA",
+              "UG",
+              "UM",
+              "US",
+              "UY",
+              "UZ",
+              "VA",
+              "VC",
+              "VE",
+              "VG",
+              "VI",
+              "VN",
+              "VU",
+              "WF",
+              "WS",
+              "YE",
+              "YT",
+              "ZA",
+              "ZM",
+              "ZW",
+              "XK",
+              "Other"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "assets",
+        "cloud"
+      ]
+    },
+    "attribute": {
+      "title": "Attribute",
+      "description": "What attributes were compromised? [More Info](http://veriscommunity.net/attributes.html)",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "confidentiality": {
+          "title": "Confidentiality",
+          "description": "Was data (potentially) disclosed to an unauthorized party? [More Info](http://veriscommunity.net/attributes.html#section-confidentiality)",
+          "additionalProperties": false,
+          "properties": {
+            "data_disclosure": {
+              "title": "Data Disclosure",
+              "description": "Was data disclosed?  This is the core determiner if this incident is a breach.  If this is 'Yes', it will be considered a breach.  If it is anything else, it will only be an incident.",
+              "type": "string",
+              "enum": [
+                "No",
+                "Potentially",
+                "Yes",
+                "Unknown"
+              ],
+              "x-cols": 6
+            },
+            "data_total": {
+              "title": "Data Total",
+              "description": "Total records breached",
+              "type": "integer",
+              "x-cols": 6
+            },
+            "data": {
+              "title": "Compromised Data",
+              "description": "Varieties (and amount) of data compromised. Click the red \u2018Add\u2019 button to record multiple data varieties.",
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "amount": {
+                    "title": "Amount",
+                    "type": "integer"
+                  },
+                  "variety": {
+                    "title": "Variety",
+                    "type": "string",
+                    "enum": [
+                      "Bank",
+                      "Classified",
+                      "Copyrighted",
+                      "Credentials",
+                      "Digital certificate",
+                      "Internal",
+                      "Medical",
+                      "Payment",
+                      "Personal",
+                      "Secrets",
+                      "Source code",
+                      "System",
+                      "Virtual currency",
+                      "Other",
+                      "Unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "variety"
+                ],
+                "type": "object"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "data_victim": {
+              "title": "Data Victim",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Customer",
+                  "Employee",
+                  "Partner",
+                  "Patient",
+                  "Student",
+                  "Victim organization",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "state": {
+              "title": "State",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Processed",
+                  "Stored",
+                  "Stored encrypted",
+                  "Stored unencrypted",
+                  "Transmitted",
+                  "Transmitted encrypted",
+                  "Transmitted unencrypted",
+                  "Other",
+                  "Unknown",
+                  "Printed"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "data_disclosure"
+          ],
+          "type": "object"
+        },
+        "integrity": {
+          "title": "Integrity",
+          "description": "Was a person manipulated or the state of a system changed? [More Info](http://veriscommunity.net/attributes.html#section-integrity)",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Alter behavior",
+                  "Created account",
+                  "Defacement",
+                  "Fraudulent transaction",
+                  "Hardware tampering",
+                  "Log tampering",
+                  "Misrepresentation",
+                  "Modify configuration",
+                  "Modify data",
+                  "Modify privileges",
+                  "Repurpose",
+                  "Software installation",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "availability": {
+          "title": "Availability",
+          "description": "Was something rendered partially or wholly unavailable? [More Info](http://veriscommunity.net/attributes.html#section-availability)",
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Acceleration",
+                  "Degradation",
+                  "Destruction",
+                  "Interruption",
+                  "Loss",
+                  "Obscuration",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true,
+              "x-cols": 6,
+              "x-class": "pr-2"
+            },
+            "duration": {
+              "description": "Specific value of the specific selected unit, (i.e., # of 'days').",
+              "additionalProperties": false,
+              "properties": {
+                "unit": {
+                  "title": "Unit",
+                  "x-cols": 6,
+                  "type": "string",
+                  "enum": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years",
+                    "Never",
+                    "NA",
+                    "Unknown"
+                  ],
+                  "x-class": "pr-2"
+                },
+                "value": {
+                  "title": "Value",
+                  "x-cols": 6,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit"
+              ],
+              "type": "object",
+              "x-cols": 6
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "unknown": {
+          "title": "Unknown",
+          "properties": {
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            },
+            "result": {
+              "title": "Result",
+              "description": "The result of the action.  If there's a difference between action result and actor intent, use the result not intent.",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "targeted": {
+      "title": "Targeted vs Opportunistic",
+      "description": "Was this a targeted or opportunistic attack? [More Info](http://veriscommunity.net/discovery.html#section-target-opportunistic)<br />N/A: Not an attack (e.g., unintentional actions)<br />Opportunistic: Victim was NOT pre-selected as a target; they were identified/attacked because they exhibited a weakness the attacker knew how to exploit.<br />Targeted: The victim is pre-selected as a target; the attacker(s) then determined what weaknesses exist within the target that could be exploited.",
+      "type": "string",
+      "enum": [
+        "Opportunistic",
+        "Targeted",
+        "NA",
+        "Unknown"
+      ]
+    },
+    "discovery_method": {
+      "title": "Discovery Method",
+      "description": "What discovery method was involved? [More Info](http://veriscommunity.net/discovery.html#section-discovery-method)",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "title": "External",
+          "description": "Discovered by an external entity.",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema1"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Actor disclosure",
+                  "Audit",
+                  "Customer",
+                  "Emergency response team",
+                  "Found documents",
+                  "Fraud detection",
+                  "Incident response",
+                  "Law enforcement",
+                  "Other",
+                  "Security researcher",
+                  "Suspicious traffic",
+                  "Unknown",
+                  "Unrelated 3rd party"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Internal",
+          "description": "Discovered by an external partner.",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema2"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Antivirus",
+                  "Break in discovered",
+                  "Data loss prevention",
+                  "Financial audit",
+                  "Fraud detection",
+                  "Hids",
+                  "Incident response",
+                  "Infrastructure monitoring",
+                  "It review",
+                  "Log review",
+                  "Nids",
+                  "Other",
+                  "Reported by employee",
+                  "Security alarm",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Partner",
+          "description": "Discovered by a partner of the victim.",
+          "additionalProperties": false,
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema3"
+            },
+            "variety": {
+              "title": "Variety",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Antivirus",
+                  "Audit",
+                  "Incident response",
+                  "Monitoring service",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        {
+          "title": "Other",
+          "type": "boolean",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema4"
+            }
+          },
+          "x-cols": 6
+        },
+        {
+          "title": "Unknown",
+          "type": "boolean",
+          "properties": {
+            "schemaKey": {
+              "type": "string",
+              "const": "subSchema5"
+            }
+          },
+          "x-cols": 6
+        }
+      ],
+      "type": "object"
+    },
+    "discovery_notes": {
+      "title": "Discovery Notes",
+      "description": "How was the incident discovered? [More Info](http://veriscommunity.net/discovery.html#section-discovery-method)",
+      "minLength": 1,
+      "type": "string"
+    },
+    "value_chain": {
+      "title": "Value Chain",
+      "description": "Capabilities and investments an attacker must aquire prior to the actions on target.  May be internal to the actors organization (vertically integrated org), or external (purchased in a criminal market).",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "development": {
+          "title": "Development",
+          "description": "Software that must be developed to accomplish the actions on target.",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of development investments",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Bot",
+                  "Exploit",
+                  "Exploit Kits",
+                  "Payload",
+                  "Persona",
+                  "Ransomware",
+                  "Trojan",
+                  "Website",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "non-distribution services": {
+          "title": "Non-Distribution Services",
+          "description": "Services provided and used by malicious actors other than those used for distribution of actor content",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of non-distribution service investments",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "C2",
+                  "Counter AV",
+                  "DNS",
+                  "Escrow",
+                  "Hashcracking",
+                  "Marketplace",
+                  "Proxy",
+                  "VPN",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "targeting": {
+          "title": "Targeting",
+          "description": "Things that identify exploitable opportunities.  These overlap heavily with data varieties that are compromised.",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of targeting investments",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Default credentials",
+                  "Email addresses",
+                  "Lost or stolen credentials",
+                  "Misconfigurations",
+                  "Partner",
+                  "Personal Information",
+                  "Organizational Information",
+                  "Vulnerabilities",
+                  "Weaknesses",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "distribution": {
+          "title": "Distribution",
+          "description": "Services used to distribute actor content.",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of distribution investments",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Botnet",
+                  "Compromised server",
+                  "Direct",
+                  "Email",
+                  "Loader",
+                  "Partner",
+                  "Phone",
+                  "Website",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "cash-out": {
+          "title": "Cash Out",
+          "description": "Methods for converting something (likely the attribute compromised) into currency.",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of cash-out investments",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Cryptocurrency",
+                  "Direct",
+                  "Fraud",
+                  "Hijacked rewards",
+                  "Provide service",
+                  "Sell stolen goods",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "money laundering": {
+          "title": "Money Laundering",
+          "description": "Methods for concealing the origins of illegally obtained money.",
+          "additionalProperties": false,
+          "properties": {
+            "variety": {
+              "title": "Variety",
+              "description": "Varieties of money laundering",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Bank",
+                  "Company",
+                  "Cryptocurrency tumbling",
+                  "Employment",
+                  "Gambling",
+                  "Physical",
+                  "Provide service",
+                  "Re-shipping",
+                  "Smurfing",
+                  "NA",
+                  "Other",
+                  "Unknown"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "notes": {
+              "title": "Notes",
+              "minLength": 1,
+              "type": "string",
+              "x-display": "textarea"
+            }
+          },
+          "required": [
+            "variety"
+          ],
+          "type": "object"
+        },
+        "NA": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "impact": {
+      "title": "Impact",
+      "description": "[Impact Info](http://veriscommunity.net/impact.html)",
+      "additionalProperties": false,
+      "properties": {
+        "overall_rating": {
+          "title": "Overall Rating",
+          "type": "string",
+          "enum": [
+            "Catastrophic",
+            "Damaging",
+            "Painful",
+            "Distracting",
+            "Insignificant",
+            "Unknown"
+          ]
+        },
+        "iso_currency_code": {
+          "title": "ISO 4217 currency code",
+          "description": "ISO_4217 currency code. [More Info](https://en.wikipedia.org/wiki/ISO_4217)",
+          "type": "string",
+          "enum": [
+            "AED",
+            "AFN",
+            "ALL",
+            "AMD",
+            "ANG",
+            "AOA",
+            "ARS",
+            "AUD",
+            "AWG",
+            "AZN",
+            "BAM",
+            "BBD",
+            "BDT",
+            "BGN",
+            "BHD",
+            "BIF",
+            "BMD",
+            "BND",
+            "BOB",
+            "BRL",
+            "BSD",
+            "BTN",
+            "BWP",
+            "BYR",
+            "BZD",
+            "CAD",
+            "CDF",
+            "CHF",
+            "CLP",
+            "CNY",
+            "COP",
+            "CRC",
+            "CUC",
+            "CUP",
+            "CVE",
+            "CZK",
+            "DJF",
+            "DKK",
+            "DOP",
+            "DZD",
+            "EGP",
+            "ERN",
+            "ETB",
+            "EUR",
+            "FJD",
+            "FKP",
+            "GBP",
+            "GEL",
+            "GGP",
+            "GHS",
+            "GIP",
+            "GMD",
+            "GNF",
+            "GTQ",
+            "GYD",
+            "HKD",
+            "HNL",
+            "HRK",
+            "HTG",
+            "HUF",
+            "IDR",
+            "ILS",
+            "IMP",
+            "INR",
+            "IQD",
+            "IRR",
+            "ISK",
+            "JEP",
+            "JMD",
+            "JOD",
+            "JPY",
+            "KES",
+            "KGS",
+            "KHR",
+            "KMF",
+            "KPW",
+            "KRW",
+            "KWD",
+            "KYD",
+            "KZT",
+            "LAK",
+            "LBP",
+            "LKR",
+            "LRD",
+            "LSL",
+            "LTL",
+            "LVL",
+            "LYD",
+            "MAD",
+            "MDL",
+            "MGA",
+            "MKD",
+            "MMK",
+            "MNT",
+            "MOP",
+            "MRO",
+            "MUR",
+            "MVR",
+            "MWK",
+            "MXN",
+            "MYR",
+            "MZN",
+            "NAD",
+            "NGN",
+            "NIO",
+            "NOK",
+            "NPR",
+            "NZD",
+            "OMR",
+            "PAB",
+            "PEN",
+            "PGK",
+            "PHP",
+            "PKR",
+            "PLN",
+            "PYG",
+            "QAR",
+            "RON",
+            "RSD",
+            "RUB",
+            "RWF",
+            "SAR",
+            "SBD",
+            "SCR",
+            "SDG",
+            "SEK",
+            "SGD",
+            "SHP",
+            "SLL",
+            "SOS",
+            "SPL",
+            "SRD",
+            "STD",
+            "SVC",
+            "SYP",
+            "SZL",
+            "THB",
+            "TJS",
+            "TMT",
+            "TND",
+            "TOP",
+            "TRY",
+            "TTD",
+            "TVD",
+            "TWD",
+            "TZS",
+            "UAH",
+            "UGX",
+            "USD",
+            "UYU",
+            "UZS",
+            "VEF",
+            "VND",
+            "VUV",
+            "WST",
+            "XAF",
+            "XCD",
+            "XDR",
+            "XOF",
+            "XPF",
+            "YER",
+            "ZAR",
+            "ZMK",
+            "ZWD",
+            "XBT",
+            "BCH",
+            "Ether",
+            "Litecoin",
+            "XMR",
+            "ZEC"
+          ]
+        },
+        "overall_amount": {
+          "title": "Overall amount",
+          "description": "The total amount lost in the given ISO currency code.",
+          "type": "number",
+          "x-cols": 4
+        },
+        "overall_min_amount": {
+          "title": "Overall minimum account",
+          "description": "When 'overall_amount' would be a range, use this field for the minimum of that range. Note: Values here will not appear in searches for 'overall_amount'.",
+          "type": "number",
+          "x-cols": 4
+        },
+        "overall_max_amount": {
+          "title": "Overall maximum account",
+          "description": "When 'overall_amount' would be a range, use this field for the maximum of that range. Note: Values here will not appear in searches for 'overall_amount'.",
+          "type": "number",
+          "x-cols": 4
+        },
+        "loss": {
+          "title": "Reported Losses",
+          "description": "Were any losses or costs reported for this incident? (Definitions for loss varieties and ratings are [here](http://veriscommunity.net/impact.html#section-loss-estimation))",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "variety": {
+                "title": "Variety",
+                "type": "string",
+                "enum": [
+                  "Asset and fraud",
+                  "Brand damage",
+                  "Business disruption",
+                  "Competitive advantage",
+                  "Legal and regulatory",
+                  "Operating costs",
+                  "Response and recovery",
+                  "Other"
+                ]
+              },
+              "rating": {
+                "title": "Rating",
+                "type": "string",
+                "enum": [
+                  "Major",
+                  "Moderate",
+                  "Minor",
+                  "None",
+                  "Unknown"
+                ]
+              },
+              "amount": {
+                "title": "Amount",
+                "type": "number"
+              },
+              "min_amount": {
+                "title": "Min Amount",
+                "type": "number"
+              },
+              "max_amount": {
+                "title": "Max Amount",
+                "type": "number"
+              }
+            },
+            "required": [
+              "variety"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "notes": {
+          "title": "Notes",
+          "minLength": 1,
+          "type": "string",
+          "x-display": "textarea"
+        }
+      },
+      "required": [
+        "overall_rating"
+      ],
+      "type": "object"
+    },
+    "notes": {
+      "title": "Notes",
+      "minLength": 1,
+      "type": "string",
+      "description": "Record notes about the incident.",
+      "x-display": "textarea"
+    },
+    "corrective_action": {
+      "title": "Corrective Action",
+      "description": "What corrective action(s) are planned (or recommended) to prevent and/or detect similar incidents in the future?<br />This can include general recommendations, specific changes to policy, procedures, personnel, and technology, short-term and long-term strategies, etc. Don't simply copy what the investigator said. Tie to the root causes listed above, and focus on practical, effective corrective actions.",
+      "type": "string",
+      "x-cols": 6
+    },
+    "cost_corrective_action": {
+      "title": "Cost Corrective Action",
+      "type": "string",
+      "enum": [
+        "Difficult and expensive",
+        "Something in-between",
+        "Simple and cheap",
+        "Unknown"
+      ],
+      "x-cols": 6
+    },
+    "control_failure": {
+      "title": "Control Failure",
+      "description": "What were the root control failures or weaknesses that allowed this incident to occur?<br />Obviously, there may be a multitude of factors that could be listed here. Include as many as you want, but focus on the issues most pertinent to why the incident occurred.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "actor",
+    "action",
+    "discovery_method",
+    "schema_version",
+    "asset",
+    "timeline",
+    "incident_id",
+    "security_incident",
+    "summary"
+  ],
+  "type": "object"
+}

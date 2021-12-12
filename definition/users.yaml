@@ -1,0 +1,122 @@
+swagger: "2.0"
+info: { version: "", title: "" }
+
+paths:
+  /currentuser:
+    get:
+      tags: [ "users" ]
+      summary: "Get current user"
+      operationId: "currentUser"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserResponse" }
+          examples:
+            test: { id: bob, roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: false }
+      security: [ { roles: [ "currentuser:read" ] } ]
+
+  /users:
+    get:
+      tags: [ "users" ]
+      summary: "List users"
+      operationId: "listUsers"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { type: array, items: { $ref: "#/definitions/UserResponse" } }
+          examples:
+            test:
+              - { id: bob, blocked: false, roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], apikey: false }
+              - { id: script, roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
+      security: [ { roles: [ "user:read" ] } ]
+    post:
+      tags: [ "users" ]
+      summary: "Create user"
+      operationId: "createUser"
+      parameters:
+        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { id: "syncscript", roles: [ "analyst" ] } }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/NewUserResponse" }
+          examples:
+            test: { id: "syncscript", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ], secret: "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH", blocked: false }
+      security: [ { roles: [ "user:write" ] } ]
+  /users/{id}:
+    get:
+      tags: [ "users" ]
+      summary: "Get a single user"
+      operationId: "getUser"
+      parameters:
+        - { name: "id", in: "path", description: "user ID", required: true, type: string, x-example: "script" }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserResponse" }
+          examples:
+            test: { id: "script", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
+      security: [ { roles: [ "user:read" ] } ]
+    put:
+      tags: [ "users" ]
+      summary: "Update user"
+      operationId: "updateUser"
+      parameters:
+        - { name: "id", in: "path", description: "Template ID", required: true, type: string, x-example: "bob" }
+        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { roles: [ "analyst", "admin" ] } }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/UserResponse" }
+          examples:
+            test:
+              id: bob
+              roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+              apikey: false
+              blocked: false
+      security: [ { roles: [ "user:write" ] } ]
+    delete:
+      tags: [ "users" ]
+      summary: "Delete user"
+      operationId: "deleteUser"
+      parameters:
+        - { name: "id", in: "path", description: "user ID", required: true, type: string, x-example: "script" }
+      responses:
+        "204": { description: "successful operation" }
+      security: [ { roles: [ "user:write" ] } ]
+
+definitions:
+  UserForm:
+    type: object
+    required: [ id, blocked, roles, apikey ]
+    properties:
+      id: { type: string }
+      blocked: { type: boolean }
+      apikey: { type: boolean }
+      roles: { type: array, items: { type: string } }
+
+  User:
+    type: object
+    required: [ blocked, apikey, roles ]
+    properties:
+      blocked: { type: boolean }
+      apikey: { type: boolean }
+      roles: { type: array, items: { type: string } }
+      sha256: { type: string } # for api keys
+
+  UserResponse:
+    type: object
+    required: [ id, blocked, roles, apikey ]
+    properties:
+      id: { type: string }
+      blocked: { type: boolean }
+      apikey: { type: boolean }
+      roles: { type: array, items: { type: string } }
+
+  NewUserResponse:
+    type: object
+    required: [ id, blocked, roles ]
+    properties:
+      id: { type: string }
+      blocked: { type: boolean }
+      roles: { type: array, items: { type: string } }
+      secret: { type: string }

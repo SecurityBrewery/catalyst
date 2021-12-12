@@ -1,0 +1,52 @@
+swagger: "2.0"
+info: { version: "", title: "" }
+
+paths:
+  /graph/{col}/{id}:
+    get:
+      tags: [ "graph" ]
+      summary: "Graph"
+      operationId: "graph"
+      parameters:
+        - { name: "col", in: "path", description: "Graph Start", required: true, type: string, x-example: "tickets" }
+        - { name: "id", in: "path", description: "Graph Start", required: true, type: string, x-example: "88" }
+        - { name: "depth", in: "query", description: "Graph Start", required: true, type: integer, x-example: 1 }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/Graph" }
+          examples:
+            test:
+              nodes:
+                - { id: "artifacts/94d5cab6f5fe3422a447ab15436e7a672bc0c09a", name: "94d5cab6f5fe3422a447ab15436e7a672bc0c09a" }
+                - { id: "artifacts/http%3A%2F%2Fwww.customerviral.io%2Fscalable%2Fvertical%2Fkiller", name: "http://www.customerviral.io/scalable/vertical/killer" }
+                - { id: "artifacts/leadreintermediate.io", name: "leadreintermediate.io" }
+                - { id: "tickets/88", name: "live zebra" }
+              links:
+                - { id: "296239", sid: "tickets/88", tid: "artifacts/http%3A%2F%2Fwww.customerviral.io%2Fscalable%2Fvertical%2Fkiller" }
+                - { id: "296240", sid: "tickets/88", tid: "artifacts/leadreintermediate.io" }
+                - { id: "296242", sid: "tickets/88", tid: "artifacts/94d5cab6f5fe3422a447ab15436e7a672bc0c09a" }
+      security: [ { roles: [ "ticket:read" ] } ]
+
+definitions:
+  Graph:
+    type: object
+    properties:
+      nodes: { type: array, items: { $ref: "#/definitions/Node" } }
+      links: { type: array, items: { $ref: "#/definitions/Link" } }
+
+  Node:
+    type: object
+    required: [ id, name ]
+    properties:
+      id: { type: string }
+      name: { type: string }
+
+  Link:
+    type: object
+    required: [ id, tid, sid ]
+    properties:
+      id: { type: string }
+      # name: { type: string }
+      tid: { type: string }
+      sid: { type: string }

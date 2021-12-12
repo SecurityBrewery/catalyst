@@ -1,0 +1,184 @@
+package test
+
+import (
+    "bytes"
+    "context"
+    "encoding/json"
+    "github.com/SecurityBrewery/catalyst/database"
+    "github.com/go-openapi/swag"
+    "io"
+    "net/http"
+    "net/http/httptest"
+    "testing"
+    "time"
+
+    "github.com/gin-gonic/gin"
+    "github.com/stretchr/testify/assert"
+    "github.com/tidwall/gjson"
+    "github.com/tidwall/sjson"
+
+    "github.com/SecurityBrewery/catalyst/database/busdb"
+    "github.com/SecurityBrewery/catalyst/generated/models"
+    "github.com/SecurityBrewery/catalyst/test"
+)
+
+func TestService(t *testing.T) {
+    gin.SetMode(gin.TestMode)
+
+    type args struct {
+        method string
+        url    string
+        data   interface{}
+    }
+    type want struct {
+        status int
+        body   interface{}
+    }
+    tests := []struct {
+        name string
+        args args
+        want want
+    }{
+        {{range .Operations}}
+        {
+            name: "{{ pascalize .Name }}",
+            args: args{method: "{{ .Method }}", url: {{ path .BasePath .Path .Params | printf "%#v" }}{{ if .Params | body }}, data: {{ .Params | body | printf "%#v" }}{{ end }}},
+            want: want{
+                status: {{ with index .Responses 0 }}{{ .Code }},
+                body: {{ if ne (len .Examples) 0 }}{{ with index .Examples 0 }}{{ .Example | printf "%#v" }}{{ end }}{{ else }}nil{{ end }}{{ end }},
+            },
+        }, {{ end }}
+    }
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            ctx, _, _, _, _, db, _, server, cleanup, err := test.Server(t)
+            if err != nil {
+                t.Fatal(err)
+            }
+            defer cleanup()
+
+            if err := test.SetupTestData(ctx, db); err != nil {
+                t.Fatal(err)
+            }
+
+            setUser := func(context *gin.Context) {
+                busdb.SetContext(context, test.Bob)
+            }
+            server.ApiGroup.Use(setUser)
+
+            server.ConfigureRoutes()
+            w := httptest.NewRecorder()
+
+            // setup request
+            var req *http.Request
+            if tt.args.data != nil {
+                b, err := json.Marshal(tt.args.data)
+                if err != nil {
+                    t.Fatal(err)
+                }
+
+                req = httptest.NewRequest(tt.args.method, tt.args.url, bytes.NewBuffer(b))
+                req.Header.Set("Content-Type", "application/json")
+            } else {
+                req = httptest.NewRequest(tt.args.method, tt.args.url, nil)
+            }
+
+            // run request
+            server.ServeHTTP(w, req)
+
+            result := w.Result()
+
+            // assert results
+            if result.StatusCode != tt.want.status {
+                msg, _ := io.ReadAll(result.Body)
+
+                t.Fatalf("Status got = %v, want %v: %s", result.Status, tt.want.status, msg)
+            }
+            if tt.want.status != http.StatusNoContent {
+                jsonEqual(t, result.Body, tt.want.body)
+            }
+        })
+    }
+}
+
+func jsonEqual(t *testing.T, got io.Reader, want interface{}) {
+    var gotObject, wantObject interface{}
+
+    // load bytes
+    wantBytes, err := json.Marshal(want)
+    if err != nil {
+        t.Fatal(err)
+    }
+    gotBytes, err := io.ReadAll(got)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    fields := []string{
+        "created", "modified", "logs.0.created",
+		"artifacts.0.enrichments.hash\\.sha1.created",
+		"artifacts.1.enrichments.hash\\.sha1.created",
+		"artifacts.2.enrichments.hash\\.sha1.created",
+
+        "playbooks.simple.tasks.input.created",
+        "playbooks.simple.tasks.hash.created",
+        "playbooks.simple.tasks.escalate.created",
+
+        "playbooks.phishing.tasks.input.created",
+        "playbooks.phishing.tasks.hash.created",
+        "playbooks.phishing.tasks.escalate.created",
+
+		"playbooks.phishing.tasks.block-ioc.created",
+		"playbooks.phishing.tasks.block-iocs.created",
+		"playbooks.phishing.tasks.block-sender.created",
+		"playbooks.phishing.tasks.board.created",
+		"playbooks.phishing.tasks.board.closed",
+		"playbooks.phishing.tasks.escalate.created",
+		"playbooks.phishing.tasks.extract-iocs.created",
+		"playbooks.phishing.tasks.fetch-iocs.created",
+		"playbooks.phishing.tasks.mail-available.created",
+		"playbooks.phishing.tasks.search-email-gateway.created",
+
+        "0.playbooks.phishing.tasks.block-ioc.created",
+        "0.playbooks.phishing.tasks.block-iocs.created",
+        "0.playbooks.phishing.tasks.block-sender.created",
+        "0.playbooks.phishing.tasks.board.created",
+        "0.playbooks.phishing.tasks.escalate.created",
+        "0.playbooks.phishing.tasks.extract-iocs.created",
+        "0.playbooks.phishing.tasks.fetch-iocs.created",
+        "0.playbooks.phishing.tasks.mail-available.created",
+        "0.playbooks.phishing.tasks.search-email-gateway.created",
+
+        "tickets.0.playbooks.phishing.tasks.block-ioc.created",
+        "tickets.0.playbooks.phishing.tasks.block-iocs.created",
+        "tickets.0.playbooks.phishing.tasks.block-sender.created",
+        "tickets.0.playbooks.phishing.tasks.board.created",
+        "tickets.0.playbooks.phishing.tasks.escalate.created",
+        "tickets.0.playbooks.phishing.tasks.extract-iocs.created",
+        "tickets.0.playbooks.phishing.tasks.fetch-iocs.created",
+        "tickets.0.playbooks.phishing.tasks.mail-available.created",
+        "tickets.0.playbooks.phishing.tasks.search-email-gateway.created",
+
+        "secret", "0.created", "comments.0.created",
+    }
+    for _, field := range fields {
+        gField := gjson.GetBytes(wantBytes, field)
+        if gField.Exists() && gjson.GetBytes(gotBytes, field).Exists() {
+            gotBytes, err = sjson.SetBytes(gotBytes, field, gField.Value())
+            if err != nil {
+                t.Fatal(err)
+            }
+        }
+    }
+
+    // normalize bytes
+    if err = json.Unmarshal(wantBytes, &wantObject); err != nil {
+        t.Fatal(err)
+    }
+    if err := json.Unmarshal(gotBytes, &gotObject); err != nil {
+        t.Fatal(string(gotBytes), err)
+    }
+
+    // compare
+    assert.Equal(t, wantObject, gotObject)
+}

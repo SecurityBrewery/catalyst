@@ -1,0 +1,59 @@
+swagger: "2.0"
+info: { version: "", title: "" }
+
+paths:
+  /settings:
+    get:
+      tags: [ "settings" ]
+      summary: "Get settings"
+      operationId: "getSettings"
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/Settings" }
+          examples:
+            test:
+              version: "0.0.0-test"
+              tier: community
+              timeformat: "YYYY-MM-DDThh:mm:ss"
+              ticketTypes:
+                - { icon: "mdi-alert", id: "alert", name: "Alerts", default_template: "default", default_playbooks: [ ] }
+                - { icon: "mdi-radioactive", id: "incident", name: "Incidents", default_template: "default", default_playbooks: [ ] }
+                - { icon: "mdi-fingerprint", id: "investigation", name: "Forensic Investigations", default_template: "default", default_playbooks: [ ] }
+                - { icon: "mdi-target", id: "hunt", name: "Threat Hunting", default_template: "default", default_playbooks: [ ] }
+              artifactStates:
+                - { icon: "mdi-help-circle-outline", id: "unknown", name: "Unknown", color: "info" }
+                - { icon: "mdi-skull", id: "malicious", name: "Malicious", color: "error" }
+                - { icon: "mdi-check", id: "clean", name: "Clean", color: "success" }
+              roles: [
+                  "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write",
+                  "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read",
+                  "admin:userdata:write", "analyst:automation:read",
+                  "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read",
+                  "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read",
+                  "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write",
+                  "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write",
+                  "engineer:playbook:write", "engineer:rule:write", "engineer:template:write",
+                  "engineer:tickettype:write" ]
+      security: [ { roles: [ "settings:read" ] } ]
+
+definitions:
+  Settings:
+    type: object
+    required: [ version, tier, timeformat, ticketTypes, artifactStates ]
+    properties:
+      version: { title: "Version", type: string }
+      tier: { title: "Tier", type: string, enum: [ "community", "enterprise" ] }
+      timeformat: { title: "Time Format", type: string }
+      ticketTypes: { title: "Ticket Types", type: array, items: { $ref: "#/definitions/TicketTypeResponse" } }
+      artifactStates: { title: "Artifact States", type: array, items: { $ref: "#/definitions/Type" } }
+      roles: { title: "Roles", type: array, items: { type: string } }
+
+  Type:
+    type: object
+    required: [ id, name, icon ]
+    properties:
+      id: { title: ID, type: string, x-cols: 3, x-class: pr-2 }
+      name: { title: Name, type: string, x-cols: 3, x-class: pr-2 }
+      icon: { title: "Icon (https://materialdesignicons.com)", type: string, x-cols: 3, x-class: pr-2 }
+      color: { title: Color, type: string, x-cols: 3, enum: [ error, info, success, warning ] }
