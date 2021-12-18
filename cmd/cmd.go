@@ -20,7 +20,7 @@ import (
 type CLI struct {
 	Secret          string `env:"SECRET"           required:""  help:"A random secret value (can be created with 'openssl rand -hex 32')"`
 	ExternalAddress string `env:"EXTERNAL_ADDRESS" required:""`
-	CatalystAddress string `env:"CATALYST_ADDRESS" default:"http://catalyst"`
+	CatalystAddress string `env:"CATALYST_ADDRESS" default:"http://catalyst:8000"`
 
 	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
 	OIDCClientID      string   `env:"OIDC_CLIENT_ID"      default:"catalyst"`
