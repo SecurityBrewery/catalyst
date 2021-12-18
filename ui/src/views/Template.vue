@@ -12,7 +12,7 @@
 
     <v-text-field label="Name" v-model="template.name" class="flex-grow-0 flex-shrink-0" :readonly="readonly"></v-text-field>
 
-    <AdvancedJSONSchemaEditor v-if="schema" @save="save" :schema="schema" :readonly="readonly"></AdvancedJSONSchemaEditor>
+    <AdvancedJSONSchemaEditor v-if="schema" @save="save" :schema="schema" :readonly="readonly" :hidepreview="false"></AdvancedJSONSchemaEditor>
   </div>
 </template>
 
