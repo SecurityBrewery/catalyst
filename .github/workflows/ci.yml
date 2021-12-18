@@ -2,6 +2,7 @@ name: CI
 on:
   push: { branches: [ main ] }
   pull_request:
+  release: { types: [ published ] }
 
 env:
   REGISTRY: ghcr.io
@@ -63,8 +64,8 @@ jobs:
       - name: Version
         if: ${{ github.ref != '' }}
         run: |
-          echo ${{ github.ref }}
-          echo ${{ github.ref }} > VERSION
+          echo ${{ github.ref_name }}
+          echo ${{ github.ref_name }} > VERSION
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
@@ -76,18 +77,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-  # deploy:
-  #   name: Deploy
-  #   runs-on: self-hosted
-  #   needs: [ build ]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: docker/login-action@v1
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #     - run: docker-compose -f docker-compose.yml -f docker-compose.demo.yml pull
-  #     - run: docker-compose -f docker-compose.yml -f docker-compose.demo.yml up -d --remove-orphans --force-recreate
-  #     - run: docker-compose -f docker-compose.yml -f docker-compose.demo.yml restart
