@@ -182,7 +182,7 @@ export default Vue.extend({
       }
       this.$router.push({
         name: "Ticket",
-        params: { id: this.goto.toString() }
+        params: { id: this.goto.toString(), type: "-" }
       });
     },
     openTicketList: function (type: string) {
