@@ -363,7 +363,7 @@
                     v-model="valids[selectedTaskPlaybook.toString() + '-' + selectedTask.id]"
                     class="clearfix"
                 >
-                  <h3>Input</h3>
+                  <h3 v-if="selectedTask.task.schema">Input</h3>
                   <v-jsf
                       v-if="selectedTask.task.schema"
                       v-model="tdata[selectedTaskPlaybook.toString() + '-' + selectedTask.id]"
