@@ -7,8 +7,14 @@
 - 
 <a href="https://catalyst-soar.com/docs/category/catalyst-handbook">The Catalyst Handbook (Documentation)</a>
 -
-<a href="https://try.catalyst-soar.com">Try online</a> (user: bob, password: bob)
+<a href="https://try.catalyst-soar.com">Try online</a>
 </h4>
+<h4 align="center">
+<a href="https://twitter.com/securitybrewery">Twitter</a>
+- 
+<a href="https://discord.gg/nrmpveWvZX">Discord</a>
+</h4>
+
 
 Catalyst is an incident response platform or SOAR (Security Orchestration, Automation and Response) system. It can help
 you to automate your alert handling and incident response procedures.
