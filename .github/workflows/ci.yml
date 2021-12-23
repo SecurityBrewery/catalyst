@@ -46,6 +46,7 @@ jobs:
         with: { name: ui, path: ui/dist, retention-days: 1 }
 
   build:
+    if: github.event_name != 'pull_request'
     name: Build
     runs-on: ubuntu-latest
     needs: [ build-npm, test ]

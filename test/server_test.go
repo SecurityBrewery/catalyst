@@ -177,6 +177,7 @@ func assertZipFile(t *testing.T, r *zip.Reader) {
 	for _, f := range r.File {
 		names = append(names, f.Name)
 	}
+	log.Println(names) // TODO
 
 	if !includes(t, names, "minio/catalyst-8125/test.txt") {
 		t.Error("Minio file missing")
