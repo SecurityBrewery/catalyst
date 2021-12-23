@@ -45,8 +45,8 @@ type Database struct {
 	tickettypeCollection *busdb.Collection
 	jobCollection        *busdb.Collection
 
-	relatedCollection  *busdb.Collection
-	containsCollection *busdb.Collection
+	relatedCollection *busdb.Collection
+	// containsCollection *busdb.Collection
 }
 
 type Config struct {
@@ -66,6 +66,7 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 	if err != nil {
 		return nil, err
 	}
+
 	client, err := driver.NewClient(driver.ClientConfig{
 		Connection:     conn,
 		Authentication: driver.BasicAuthentication(config.User, config.Password),
@@ -76,58 +77,58 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 
 	hooks.DatabaseAfterConnect(ctx, client, name)
 
-	db, err := setupDB(ctx, client, name)
+	arangoDB, err := SetupDB(ctx, client, name)
 	if err != nil {
 		return nil, fmt.Errorf("DB setup failed: %w", err)
 	}
 
-	if err = migrations.PerformMigrations(ctx, db); err != nil {
+	if err = migrations.PerformMigrations(ctx, arangoDB); err != nil {
 		return nil, fmt.Errorf("migrations failed: %w", err)
 	}
 
-	ticketCollection, err := db.Collection(ctx, TicketCollectionName)
+	ticketCollection, err := arangoDB.Collection(ctx, TicketCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	templateCollection, err := db.Collection(ctx, TemplateCollectionName)
+	templateCollection, err := arangoDB.Collection(ctx, TemplateCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	playbookCollection, err := db.Collection(ctx, PlaybookCollectionName)
+	playbookCollection, err := arangoDB.Collection(ctx, PlaybookCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	relatedCollection, err := db.Collection(ctx, RelatedTicketsCollectionName)
+	relatedCollection, err := arangoDB.Collection(ctx, RelatedTicketsCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	automationCollection, err := db.Collection(ctx, AutomationCollectionName)
+	automationCollection, err := arangoDB.Collection(ctx, AutomationCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	userdataCollection, err := db.Collection(ctx, UserDataCollectionName)
+	userdataCollection, err := arangoDB.Collection(ctx, UserDataCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	userCollection, err := db.Collection(ctx, UserCollectionName)
+	userCollection, err := arangoDB.Collection(ctx, UserCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	tickettypeCollection, err := db.Collection(ctx, TicketTypeCollectionName)
+	tickettypeCollection, err := arangoDB.Collection(ctx, TicketTypeCollectionName)
 	if err != nil {
 		return nil, err
 	}
-	jobCollection, err := db.Collection(ctx, JobCollectionName)
-	if err != nil {
-		return nil, err
-	}
-
-	hookedDB, err := busdb.NewDatabase(ctx, db, bus)
+	jobCollection, err := arangoDB.Collection(ctx, JobCollectionName)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Database{
+	hookedDB, err := busdb.NewDatabase(ctx, arangoDB, bus)
+	if err != nil {
+		return nil, err
+	}
+
+	db := &Database{
 		BusDatabase:          hookedDB,
 		bus:                  bus,
 		Index:                index,
@@ -141,10 +142,12 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 		userCollection:       busdb.NewCollection(userCollection, hookedDB),
 		tickettypeCollection: busdb.NewCollection(tickettypeCollection, hookedDB),
 		jobCollection:        busdb.NewCollection(jobCollection, hookedDB),
-	}, nil
+	}
+
+	return db, nil
 }
 
-func setupDB(ctx context.Context, client driver.Client, dbName string) (driver.Database, error) {
+func SetupDB(ctx context.Context, client driver.Client, dbName string) (driver.Database, error) {
 	databaseExists, err := client.DatabaseExists(ctx, dbName)
 	if err != nil {
 		return nil, err
@@ -174,4 +177,17 @@ func setupDB(ctx context.Context, client driver.Client, dbName string) (driver.D
 	}
 
 	return db, nil
+}
+
+func (db *Database) Truncate(ctx context.Context) {
+	db.templateCollection.Truncate(ctx)
+	db.ticketCollection.Truncate(ctx)
+	db.playbookCollection.Truncate(ctx)
+	db.automationCollection.Truncate(ctx)
+	db.userdataCollection.Truncate(ctx)
+	db.userCollection.Truncate(ctx)
+	db.tickettypeCollection.Truncate(ctx)
+	db.jobCollection.Truncate(ctx)
+	db.relatedCollection.Truncate(ctx)
+	// db.containsCollection.Truncate(ctx)
 }

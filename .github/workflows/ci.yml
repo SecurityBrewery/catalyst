@@ -26,9 +26,9 @@ jobs:
         working-directory: dev
       - name: Install ArangoDB
         run: |
-          curl -OL https://download.arangodb.com/arangodb34/DEBIAN/Release.key
+          curl -OL https://download.arangodb.com/arangodb38/DEBIAN/Release.key
           sudo apt-key add Release.key
-          sudo apt-add-repository 'deb https://download.arangodb.com/arangodb34/DEBIAN/ /'
+          sudo apt-add-repository 'deb https://download.arangodb.com/arangodb38/DEBIAN/ /'
           sudo apt-get update -y && sudo apt-get -y install arangodb3
       - run: go test -coverprofile=cover.out -coverpkg=./... ./...
       - run: go tool cover -func=cover.out
@@ -46,6 +46,7 @@ jobs:
         with: { name: ui, path: ui/dist, retention-days: 1 }
 
   build:
+    if: github.event_name != 'pull_request'
     name: Build
     runs-on: ubuntu-latest
     needs: [ build-npm, test ]

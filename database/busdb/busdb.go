@@ -180,3 +180,7 @@ func (c Collection) ReplaceDocument(ctx context.Context, key string, document in
 func (c Collection) RemoveDocument(ctx context.Context, formatInt string) (driver.DocumentMeta, error) {
 	return c.internal.RemoveDocument(ctx, formatInt)
 }
+
+func (c Collection) Truncate(ctx context.Context) error {
+	return c.internal.Truncate(ctx)
+}
