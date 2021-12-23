@@ -15,6 +15,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/gin-gonic/gin"
@@ -102,7 +103,11 @@ func restoreS3(catalystStorage *storage.Storage, p string) error {
 func restoreBucket(catalystStorage *storage.Storage, entry fs.DirEntry, minioDir fs.FS) error {
 	_, err := catalystStorage.S3().CreateBucket(&s3.CreateBucketInput{Bucket: pointer.String(entry.Name())})
 	if err != nil {
-		return err
+		awsError, ok := err.(awserr.Error)
+		if !ok || (awsError.Code() != s3.ErrCodeBucketAlreadyExists && awsError.Code() != s3.ErrCodeBucketAlreadyOwnedByYou) {
+			return err
+		}
+		return nil
 	}
 
 	uploader := catalystStorage.Uploader()
@@ -127,7 +132,7 @@ func restoreBucket(catalystStorage *storage.Storage, entry fs.DirEntry, minioDir
 }
 
 func unzip(archive *zip.Reader, dir string) error {
-	return fs.WalkDir(archive, "arango", func(p string, d fs.DirEntry, err error) error {
+	return fs.WalkDir(archive, ".", func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}

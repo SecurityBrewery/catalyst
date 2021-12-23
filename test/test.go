@@ -36,7 +36,8 @@ func Context() context.Context {
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
 	config := &catalyst.Config{
-		IndexPath: "index.bleve",
+		InitialAPIKey: "test",
+		IndexPath:     "index.bleve",
 		DB: &database.Config{
 			Host:     "http://localhost:8529",
 			User:     "root",
@@ -147,8 +148,8 @@ func DB(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index
 
 	_, err = db.JobCreate(ctx, "99cd67131b48", &models.JobForm{
 		Automation: "hash.sha1",
-		Payload: "test",
-		Origin: nil,
+		Payload:    "test",
+		Origin:     nil,
 	})
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
@@ -186,6 +187,21 @@ func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.I
 	catalystServer := restapi.New(catalystService, &restapi.Config{Address: "0.0.0.0:8000", InsecureHTTP: true})
 
 	return ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, catalystServer, cleanup, err
+}
+
+func Catalyst(t *testing.T) (context.Context, *catalyst.Config, *catalyst.Server, error) {
+	ctx := Context()
+
+	config, err := Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.DB.Name = cleanName(t)
+
+	c, err := catalyst.New(&hooks.Hooks{
+		DatabaseAfterConnectFuncs: []func(ctx context.Context, client driver.Client, name string){Clear},
+	}, config)
+	return ctx, config, c, err
 }
 
 func cleanName(t *testing.T) string {

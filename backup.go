@@ -59,6 +59,7 @@ func backupS3(catalystStorage *storage.Storage, archive *zip.Writer) error {
 	if err != nil {
 		return err
 	}
+
 	for _, bucket := range buckets.Buckets {
 		objects, err := catalystStorage.S3().ListObjectsV2(&s3.ListObjectsV2Input{
 			Bucket: bucket.Name,
