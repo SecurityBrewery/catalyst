@@ -3,23 +3,23 @@ package busdb
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 const LogCollectionName = "logs"
 
-func (db *BusDatabase) LogCreate(ctx context.Context, id, message string) (*models.LogEntry, error) {
+func (db *BusDatabase) LogCreate(ctx context.Context, reference, message string) (*models.LogEntry, error) {
 	user, ok := UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
 
 	logentry := &models.LogEntry{
-		Reference: id,
+		Reference: reference,
 		Created:   time.Now(),
 		Creator:   user.ID,
 		Message:   message,

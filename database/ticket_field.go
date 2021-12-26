@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
@@ -13,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *models.Artifact) (*models.TicketWithTickets, error) {
@@ -31,9 +31,9 @@ func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *models.
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "artifacts": PUSH(NOT_NULL(d.artifacts, []), @artifact) } IN @@collection
+	UPDATE d WITH { "modified": @now, "artifacts": PUSH(NOT_NULL(d.artifacts, []), @artifact) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"artifact": artifact}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"artifact": artifact, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -71,9 +71,9 @@ func (db *Database) RemoveArtifact(ctx context.Context, id int64, name string) (
 	FOR a IN NOT_NULL(d.artifacts, [])
 	FILTER a.name == @name
 	LET newartifacts = REMOVE_VALUE(d.artifacts, a)
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "artifacts": newartifacts } IN @@collection
+	UPDATE d WITH { "modified": @now, "artifacts": newartifacts } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"name": name}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"name": name, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -122,9 +122,9 @@ func (db *Database) AddComment(ctx context.Context, id int64, comment *models.Co
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "comments": PUSH(NOT_NULL(d.comments, []), @comment) } IN @@collection
+	UPDATE d WITH { "modified": @now, "comments": PUSH(NOT_NULL(d.comments, []), @comment) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"comment": comment}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"comment": comment, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -141,9 +141,9 @@ func (db *Database) RemoveComment(ctx context.Context, id int64, commentID int64
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "comments": REMOVE_NTH(d.comments, @commentID) } IN @@collection
+	UPDATE d WITH { "modified": @now, "comments": REMOVE_NTH(d.comments, @commentID) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"commentID": commentID}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"commentID": commentID, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -160,9 +160,9 @@ func (db *Database) SetReferences(ctx context.Context, id int64, references []*m
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "references": @references } IN @@collection
+	UPDATE d WITH { "modified": @now, "references": @references } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"references": references}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"references": references, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -179,9 +179,9 @@ func (db *Database) LinkFiles(ctx context.Context, id int64, files []*models.Fil
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": DATE_ISO8601(DATE_NOW()), "files": @files } IN @@collection
+	UPDATE d WITH { "modified": @now, "files": @files } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"files": files}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"files": files, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -216,12 +216,13 @@ func (db *Database) AddTicketPlaybook(ctx context.Context, id int64, playbookTem
 	FILTER d._key == @ID
 	LET newplaybook =  ZIP( [@playbookID], [@playbook] )
 	LET newplaybooks = MERGE(NOT_NULL(d.playbooks, {}), newplaybook)
-	LET newticket = MERGE(d, { "modified": DATE_ISO8601(DATE_NOW()), "playbooks": newplaybooks })
+	LET newticket = MERGE(d, { "modified": @now, "playbooks": newplaybooks })
 	REPLACE d WITH newticket IN @@collection
 	RETURN NEW`
 	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
 		"playbook":   pb,
 		"playbookID": findName(parentTicket.Playbooks, playbookID),
+		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{
@@ -277,10 +278,11 @@ func (db *Database) RemoveTicketPlaybook(ctx context.Context, id int64, playbook
 	` + ticketFilterQuery + `
 	FILTER d._key == @ID
 	LET newplaybooks = UNSET(d.playbooks, @playbookID)
-	REPLACE d WITH MERGE(d, { "modified": DATE_ISO8601(DATE_NOW()), "playbooks": newplaybooks }) IN @@collection
+	REPLACE d WITH MERGE(d, { "modified": @now, "playbooks": newplaybooks }) IN @@collection
 	RETURN NEW`
 	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
 		"playbookID": playbookID,
+		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{
 		OperationType: busdb.Update,
 		Ids: []driver.DocumentID{

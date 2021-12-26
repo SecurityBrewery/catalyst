@@ -89,5 +89,7 @@ func parse(s string) *time.Time {
 	if err != nil {
 		panic(err)
 	}
-	return &modified
+
+	utc := modified.UTC()
+	return &utc
 }
