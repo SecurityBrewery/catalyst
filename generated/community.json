@@ -1097,9 +1097,9 @@
                       "name" : "leadreintermediate.io",
                       "status" : "malicious"
                     } ],
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8123,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "live zebra",
                     "owner" : "demo",
                     "playbooks" : {
@@ -1235,9 +1235,9 @@
                     "status" : "closed",
                     "type" : "incident"
                   }, {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8125,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "phishing from selenafadel@von.com detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -1254,9 +1254,9 @@
                     "status" : "closed",
                     "type" : "alert"
                   }, {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -1308,9 +1308,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "1985-04-12T23:20:50.520+0000",
+                  "created" : "2021-12-12T12:12:12.000+0000",
                   "id" : 123,
-                  "modified" : "1985-04-12T23:20:50.520+0000",
+                  "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "Wannacry infection",
                   "owner" : "bob",
                   "schema" : "{}",
@@ -1379,9 +1379,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8125,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "phishing from selenafadel@von.com detected",
                   "owner" : "demo",
                   "references" : [ {
@@ -1397,9 +1397,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -1481,9 +1481,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -1564,7 +1564,7 @@
                     "status" : "unknown",
                     "type" : "ip"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
@@ -1768,7 +1768,7 @@
                     "name" : "http://www.customerviral.io/scalable/vertical/killer",
                     "status" : "clean"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
@@ -2027,9 +2027,9 @@
                     "name" : "leadreintermediate.io",
                     "status" : "clean"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "live zebra",
                   "owner" : "demo",
                   "playbooks" : {
@@ -2253,9 +2253,9 @@
                     "name" : "leadreintermediate.io",
                     "status" : "malicious"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "live zebra",
                   "owner" : "demo",
                   "playbooks" : {
@@ -2501,7 +2501,7 @@
                     "creator" : "bob",
                     "message" : "My first comment"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8125,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "phishing from selenafadel@von.com detected",
@@ -2519,9 +2519,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -2597,7 +2597,7 @@
                     "name" : "leadreintermediate.io",
                     "status" : "malicious"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
@@ -2800,7 +2800,7 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "files" : [ {
                     "key" : "myfile",
                     "name" : "document.doc"
@@ -2822,9 +2822,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -2891,9 +2891,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "1985-04-12T23:20:50.520+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8125,
-                  "modified" : "1985-04-12T23:20:50.520+0000",
+                  "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "phishing from selenafadel@von.com detected",
                   "owner" : "demo",
                   "playbooks" : {
@@ -2961,9 +2961,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -3035,9 +3035,9 @@
                     "name" : "leadreintermediate.io",
                     "status" : "malicious"
                   } ],
-                  "created" : "1985-04-12T23:20:50.520+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
-                  "modified" : "1985-04-12T23:20:50.520+0000",
+                  "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
                   "owner" : "demo",
                   "references" : [ {
@@ -3129,7 +3129,7 @@
                     "name" : "leadreintermediate.io",
                     "status" : "malicious"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
@@ -3360,7 +3360,7 @@
                     "name" : "leadreintermediate.io",
                     "status" : "malicious"
                   } ],
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8123,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "live zebra",
@@ -3612,7 +3612,7 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8125,
                   "modified" : "2021-12-12T12:12:12.000+0000",
                   "name" : "phishing from selenafadel@von.com detected",
@@ -3624,9 +3624,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -3693,9 +3693,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8125,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "phishing from selenafadel@von.com detected",
                   "owner" : "demo",
                   "references" : [ {
@@ -3711,9 +3711,9 @@
                   "schema" : "{}",
                   "status" : "closed",
                   "tickets" : [ {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8126,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "Surfaceintroduce virus detected",
                     "owner" : "demo",
                     "references" : [ {
@@ -3781,9 +3781,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8126,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "Surfaceintroduce virus detected",
                   "owner" : "demo",
                   "references" : [ {
@@ -3847,9 +3847,9 @@
               },
               "test" : {
                 "example" : {
-                  "created" : "2021-12-12T12:12:12.000+0000",
+                  "created" : "2021-10-02T16:04:59.078+0000",
                   "id" : 8126,
-                  "modified" : "2021-12-12T12:12:12.000+0000",
+                  "modified" : "2021-10-02T16:04:59.078+0000",
                   "name" : "Surfaceintroduce virus detected",
                   "owner" : "demo",
                   "references" : [ {
@@ -3875,9 +3875,9 @@
                       "name" : "leadreintermediate.io",
                       "status" : "malicious"
                     } ],
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8123,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "live zebra",
                     "owner" : "demo",
                     "playbooks" : {
@@ -4013,9 +4013,9 @@
                     "status" : "closed",
                     "type" : "incident"
                   }, {
-                    "created" : "2021-12-12T12:12:12.000+0000",
+                    "created" : "2021-10-02T16:04:59.078+0000",
                     "id" : 8125,
-                    "modified" : "2021-12-12T12:12:12.000+0000",
+                    "modified" : "2021-10-02T16:04:59.078+0000",
                     "name" : "phishing from selenafadel@von.com detected",
                     "owner" : "demo",
                     "references" : [ {

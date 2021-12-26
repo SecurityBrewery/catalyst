@@ -637,7 +637,7 @@ func init() {
             "examples": {
               "test": [
                 {
-                  "created": "2021-12-12T12:12:12Z",
+                  "created": "2021-12-12T12:12:12.000000012Z",
                   "creator": "bob",
                   "message": "Fail run account resist lend solve incident centre priority temperature. Cause change distribution examine location technique shape partner milk customer. Rail tea plate soil report cook railway interpretation breath action. Exercise dream accept park conclusion addition shoot assistance may answer. Gold writer link stop combine hear power name commitment operation. Determine lifespan support grow degree henry exclude detail set religion. Direct library policy convention chain retain discover ride walk student. Gather proposal select march aspect play noise avoid encourage employ. Assessment preserve transport combine wish influence income guess run stand. Charge limit crime ignore statement foundation study issue stop claim.",
                   "reference": "tickets/294511"
@@ -1328,9 +1328,9 @@ func init() {
                         "status": "malicious"
                       }
                     ],
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078206Z",
                     "id": 8123,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078206Z",
                     "name": "live zebra",
                     "owner": "demo",
                     "playbooks": {
@@ -1338,13 +1338,13 @@ func init() {
                         "name": "Phishing",
                         "tasks": {
                           "block-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block IOCs",
                             "type": "task"
                           },
                           "block-sender": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block sender",
                             "next": {
@@ -1353,7 +1353,7 @@ func init() {
                             "type": "task"
                           },
                           "board": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Board Involvement?",
                             "next": {
@@ -1377,13 +1377,13 @@ func init() {
                             "type": "input"
                           },
                           "escalate": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Escalate to CISO",
                             "type": "task"
                           },
                           "extract-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Extract IOCs",
                             "next": {
@@ -1405,7 +1405,7 @@ func init() {
                             "type": "input"
                           },
                           "mail-available": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Mail available",
                             "next": {
@@ -1448,7 +1448,7 @@ func init() {
                             "type": "input"
                           },
                           "search-email-gateway": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Search email gateway",
                             "next": {
@@ -1478,9 +1478,9 @@ func init() {
                     "type": "incident"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8125,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "phishing from selenafadel@von.com detected",
                     "owner": "demo",
                     "references": [
@@ -1502,9 +1502,9 @@ func init() {
                     "type": "alert"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -1570,9 +1570,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-12-12T12:12:12.000000012Z",
                 "id": 123,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "Wannacry infection",
                 "owner": "bob",
                 "schema": "{}",
@@ -1661,9 +1661,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -1684,9 +1684,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -1739,8 +1739,8 @@ func init() {
           },
           {
             "x-example": {
-              "created": "2021-12-12T12:12:12Z",
-              "modified": "2021-12-12T12:12:12Z",
+              "created": "2021-12-12T12:12:12.000000012Z",
+              "modified": "2021-12-12T12:12:12.000000012Z",
               "name": "phishing from selenafadel@von.org detected",
               "owner": "demo",
               "references": [
@@ -1778,9 +1778,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-12-12T12:12:12.000000012Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.org detected",
                 "owner": "demo",
                 "references": [
@@ -1801,9 +1801,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -1926,9 +1926,9 @@ func init() {
                     "type": "ip"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -1937,7 +1937,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -1945,7 +1945,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -1956,7 +1956,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -1982,7 +1982,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -1990,7 +1990,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -2014,7 +2014,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -2059,7 +2059,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -2206,9 +2206,9 @@ func init() {
                     "status": "clean"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078206Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -2217,7 +2217,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -2225,7 +2225,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -2236,7 +2236,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -2262,7 +2262,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -2270,7 +2270,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -2294,7 +2294,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -2339,7 +2339,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -2422,9 +2422,9 @@ func init() {
                     "status": "clean"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -2433,7 +2433,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -2441,7 +2441,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -2452,7 +2452,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -2478,7 +2478,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -2486,7 +2486,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -2510,7 +2510,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -2555,7 +2555,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -2656,7 +2656,7 @@ func init() {
                   {
                     "enrichments": {
                       "hash.sha1": {
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "hash": "b7a067a742c20d07a7456646de89bc2d408a1153"
                         },
@@ -2667,9 +2667,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078206Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -2678,7 +2678,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -2686,7 +2686,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -2697,7 +2697,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -2723,7 +2723,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -2731,7 +2731,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -2755,7 +2755,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -2800,7 +2800,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -2928,14 +2928,14 @@ func init() {
               "test": {
                 "comments": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-12-12T12:12:12.000000012Z",
                     "creator": "bob",
                     "message": "My first comment"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -2956,9 +2956,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -3043,9 +3043,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -3054,7 +3054,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -3062,7 +3062,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -3073,7 +3073,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -3099,7 +3099,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -3107,7 +3107,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -3131,7 +3131,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -3176,7 +3176,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -3263,7 +3263,7 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "files": [
                   {
                     "key": "myfile",
@@ -3271,7 +3271,7 @@ func init() {
                   }
                 ],
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -3292,9 +3292,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -3361,9 +3361,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "playbooks": {
@@ -3372,7 +3372,7 @@ func init() {
                     "tasks": {
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to malware team",
                         "order": 2,
@@ -3381,7 +3381,7 @@ func init() {
                       "hash": {
                         "active": false,
                         "automation": "hash.sha1",
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Hash the malware",
                         "next": {
@@ -3395,7 +3395,7 @@ func init() {
                       },
                       "input": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Upload malware if possible",
                         "next": {
@@ -3436,9 +3436,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -3522,9 +3522,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "references": [
@@ -3650,9 +3650,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -3661,7 +3661,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -3669,7 +3669,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -3680,7 +3680,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "boardInvolved": true
                         },
@@ -3709,7 +3709,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -3717,7 +3717,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -3741,7 +3741,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -3786,7 +3786,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -3896,9 +3896,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -3907,7 +3907,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -3915,7 +3915,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -3926,8 +3926,8 @@ func init() {
                       },
                       "board": {
                         "active": false,
-                        "closed": "2021-12-12T12:12:12Z",
-                        "created": "2021-12-12T12:12:12Z",
+                        "closed": "2021-12-12T12:12:12.000000012Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "boardInvolved": true
                         },
@@ -3956,7 +3956,7 @@ func init() {
                       },
                       "escalate": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -3964,7 +3964,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -3988,7 +3988,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -4033,7 +4033,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -4167,9 +4167,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -4182,9 +4182,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -4255,9 +4255,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -4278,9 +4278,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -4353,9 +4353,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8126,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "Surfaceintroduce virus detected",
                 "owner": "demo",
                 "references": [
@@ -4423,9 +4423,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8126,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "Surfaceintroduce virus detected",
                 "owner": "demo",
                 "references": [
@@ -4460,9 +4460,9 @@ func init() {
                         "status": "malicious"
                       }
                     ],
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078206Z",
                     "id": 8123,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078206Z",
                     "name": "live zebra",
                     "owner": "demo",
                     "playbooks": {
@@ -4470,13 +4470,13 @@ func init() {
                         "name": "Phishing",
                         "tasks": {
                           "block-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block IOCs",
                             "type": "task"
                           },
                           "block-sender": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block sender",
                             "next": {
@@ -4485,7 +4485,7 @@ func init() {
                             "type": "task"
                           },
                           "board": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Board Involvement?",
                             "next": {
@@ -4509,13 +4509,13 @@ func init() {
                             "type": "input"
                           },
                           "escalate": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Escalate to CISO",
                             "type": "task"
                           },
                           "extract-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Extract IOCs",
                             "next": {
@@ -4537,7 +4537,7 @@ func init() {
                             "type": "input"
                           },
                           "mail-available": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Mail available",
                             "next": {
@@ -4580,7 +4580,7 @@ func init() {
                             "type": "input"
                           },
                           "search-email-gateway": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Search email gateway",
                             "next": {
@@ -4610,9 +4610,9 @@ func init() {
                     "type": "incident"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8125,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "phishing from selenafadel@von.com detected",
                     "owner": "demo",
                     "references": [
@@ -7665,7 +7665,7 @@ func init() {
             "examples": {
               "test": [
                 {
-                  "created": "2021-12-12T12:12:12Z",
+                  "created": "2021-12-12T12:12:12.000000012Z",
                   "creator": "bob",
                   "message": "Fail run account resist lend solve incident centre priority temperature. Cause change distribution examine location technique shape partner milk customer. Rail tea plate soil report cook railway interpretation breath action. Exercise dream accept park conclusion addition shoot assistance may answer. Gold writer link stop combine hear power name commitment operation. Determine lifespan support grow degree henry exclude detail set religion. Direct library policy convention chain retain discover ride walk student. Gather proposal select march aspect play noise avoid encourage employ. Assessment preserve transport combine wish influence income guess run stand. Charge limit crime ignore statement foundation study issue stop claim.",
                   "reference": "tickets/294511"
@@ -8356,9 +8356,9 @@ func init() {
                         "status": "malicious"
                       }
                     ],
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078206Z",
                     "id": 8123,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078206Z",
                     "name": "live zebra",
                     "owner": "demo",
                     "playbooks": {
@@ -8366,13 +8366,13 @@ func init() {
                         "name": "Phishing",
                         "tasks": {
                           "block-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block IOCs",
                             "type": "task"
                           },
                           "block-sender": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block sender",
                             "next": {
@@ -8381,7 +8381,7 @@ func init() {
                             "type": "task"
                           },
                           "board": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Board Involvement?",
                             "next": {
@@ -8405,13 +8405,13 @@ func init() {
                             "type": "input"
                           },
                           "escalate": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Escalate to CISO",
                             "type": "task"
                           },
                           "extract-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Extract IOCs",
                             "next": {
@@ -8433,7 +8433,7 @@ func init() {
                             "type": "input"
                           },
                           "mail-available": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Mail available",
                             "next": {
@@ -8476,7 +8476,7 @@ func init() {
                             "type": "input"
                           },
                           "search-email-gateway": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Search email gateway",
                             "next": {
@@ -8506,9 +8506,9 @@ func init() {
                     "type": "incident"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8125,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "phishing from selenafadel@von.com detected",
                     "owner": "demo",
                     "references": [
@@ -8530,9 +8530,9 @@ func init() {
                     "type": "alert"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -8598,9 +8598,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-12-12T12:12:12.000000012Z",
                 "id": 123,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "Wannacry infection",
                 "owner": "bob",
                 "schema": "{}",
@@ -8689,9 +8689,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -8712,9 +8712,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -8767,8 +8767,8 @@ func init() {
           },
           {
             "x-example": {
-              "created": "2021-12-12T12:12:12Z",
-              "modified": "2021-12-12T12:12:12Z",
+              "created": "2021-12-12T12:12:12.000000012Z",
+              "modified": "2021-12-12T12:12:12.000000012Z",
               "name": "phishing from selenafadel@von.org detected",
               "owner": "demo",
               "references": [
@@ -8806,9 +8806,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-12-12T12:12:12.000000012Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.org detected",
                 "owner": "demo",
                 "references": [
@@ -8829,9 +8829,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -8954,9 +8954,9 @@ func init() {
                     "type": "ip"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -8965,7 +8965,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -8973,7 +8973,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -8984,7 +8984,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -9010,7 +9010,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -9018,7 +9018,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -9042,7 +9042,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -9087,7 +9087,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -9234,9 +9234,9 @@ func init() {
                     "status": "clean"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078206Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -9245,7 +9245,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -9253,7 +9253,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -9264,7 +9264,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -9290,7 +9290,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -9298,7 +9298,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -9322,7 +9322,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -9367,7 +9367,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -9450,9 +9450,9 @@ func init() {
                     "status": "clean"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -9461,7 +9461,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -9469,7 +9469,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -9480,7 +9480,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -9506,7 +9506,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -9514,7 +9514,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -9538,7 +9538,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -9583,7 +9583,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -9684,7 +9684,7 @@ func init() {
                   {
                     "enrichments": {
                       "hash.sha1": {
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "hash": "b7a067a742c20d07a7456646de89bc2d408a1153"
                         },
@@ -9695,9 +9695,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078206Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -9706,7 +9706,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -9714,7 +9714,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -9725,7 +9725,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -9751,7 +9751,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -9759,7 +9759,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -9783,7 +9783,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -9828,7 +9828,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -9956,14 +9956,14 @@ func init() {
               "test": {
                 "comments": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-12-12T12:12:12.000000012Z",
                     "creator": "bob",
                     "message": "My first comment"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -9984,9 +9984,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -10071,9 +10071,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -10082,7 +10082,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -10090,7 +10090,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -10101,7 +10101,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Board Involvement?",
                         "next": {
@@ -10127,7 +10127,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -10135,7 +10135,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -10159,7 +10159,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -10204,7 +10204,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -10291,7 +10291,7 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "files": [
                   {
                     "key": "myfile",
@@ -10299,7 +10299,7 @@ func init() {
                   }
                 ],
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -10320,9 +10320,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -10389,9 +10389,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "playbooks": {
@@ -10400,7 +10400,7 @@ func init() {
                     "tasks": {
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to malware team",
                         "order": 2,
@@ -10409,7 +10409,7 @@ func init() {
                       "hash": {
                         "active": false,
                         "automation": "hash.sha1",
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Hash the malware",
                         "next": {
@@ -10423,7 +10423,7 @@ func init() {
                       },
                       "input": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Upload malware if possible",
                         "next": {
@@ -10464,9 +10464,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -10550,9 +10550,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "1985-04-12T23:20:50.52Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "1985-04-12T23:20:50.52Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "references": [
@@ -10678,9 +10678,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -10689,7 +10689,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -10697,7 +10697,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -10708,7 +10708,7 @@ func init() {
                       },
                       "board": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "boardInvolved": true
                         },
@@ -10737,7 +10737,7 @@ func init() {
                       },
                       "escalate": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -10745,7 +10745,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -10769,7 +10769,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -10814,7 +10814,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -10924,9 +10924,9 @@ func init() {
                     "status": "malicious"
                   }
                 ],
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078206Z",
                 "id": 8123,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "live zebra",
                 "owner": "demo",
                 "playbooks": {
@@ -10935,7 +10935,7 @@ func init() {
                     "tasks": {
                       "block-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block IOCs",
                         "order": 6,
@@ -10943,7 +10943,7 @@ func init() {
                       },
                       "block-sender": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Block sender",
                         "next": {
@@ -10954,8 +10954,8 @@ func init() {
                       },
                       "board": {
                         "active": false,
-                        "closed": "2021-12-12T12:12:12Z",
-                        "created": "2021-12-12T12:12:12Z",
+                        "closed": "2021-12-12T12:12:12.000000012Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "data": {
                           "boardInvolved": true
                         },
@@ -10984,7 +10984,7 @@ func init() {
                       },
                       "escalate": {
                         "active": true,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Escalate to CISO",
                         "order": 1,
@@ -10992,7 +10992,7 @@ func init() {
                       },
                       "extract-iocs": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Extract IOCs",
                         "next": {
@@ -11016,7 +11016,7 @@ func init() {
                       },
                       "mail-available": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Mail available",
                         "next": {
@@ -11061,7 +11061,7 @@ func init() {
                       },
                       "search-email-gateway": {
                         "active": false,
-                        "created": "2021-12-12T12:12:12Z",
+                        "created": "2021-12-12T12:12:12.000000012Z",
                         "done": false,
                         "name": "Search email gateway",
                         "next": {
@@ -11195,9 +11195,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-12-12T12:12:12.000000012Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -11210,9 +11210,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -11283,9 +11283,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8125,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "phishing from selenafadel@von.com detected",
                 "owner": "demo",
                 "references": [
@@ -11306,9 +11306,9 @@ func init() {
                 "status": "closed",
                 "tickets": [
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8126,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "Surfaceintroduce virus detected",
                     "owner": "demo",
                     "references": [
@@ -11381,9 +11381,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8126,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "Surfaceintroduce virus detected",
                 "owner": "demo",
                 "references": [
@@ -11451,9 +11451,9 @@ func init() {
             },
             "examples": {
               "test": {
-                "created": "2021-12-12T12:12:12Z",
+                "created": "2021-10-02T16:04:59.078186Z",
                 "id": 8126,
-                "modified": "2021-12-12T12:12:12Z",
+                "modified": "2021-10-02T16:04:59.078186Z",
                 "name": "Surfaceintroduce virus detected",
                 "owner": "demo",
                 "references": [
@@ -11488,9 +11488,9 @@ func init() {
                         "status": "malicious"
                       }
                     ],
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078206Z",
                     "id": 8123,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078206Z",
                     "name": "live zebra",
                     "owner": "demo",
                     "playbooks": {
@@ -11498,13 +11498,13 @@ func init() {
                         "name": "Phishing",
                         "tasks": {
                           "block-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block IOCs",
                             "type": "task"
                           },
                           "block-sender": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Block sender",
                             "next": {
@@ -11513,7 +11513,7 @@ func init() {
                             "type": "task"
                           },
                           "board": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Board Involvement?",
                             "next": {
@@ -11537,13 +11537,13 @@ func init() {
                             "type": "input"
                           },
                           "escalate": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Escalate to CISO",
                             "type": "task"
                           },
                           "extract-iocs": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Extract IOCs",
                             "next": {
@@ -11565,7 +11565,7 @@ func init() {
                             "type": "input"
                           },
                           "mail-available": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Mail available",
                             "next": {
@@ -11608,7 +11608,7 @@ func init() {
                             "type": "input"
                           },
                           "search-email-gateway": {
-                            "created": "2021-12-12T12:12:12Z",
+                            "created": "2021-12-12T12:12:12.000000012Z",
                             "done": false,
                             "name": "Search email gateway",
                             "next": {
@@ -11638,9 +11638,9 @@ func init() {
                     "type": "incident"
                   },
                   {
-                    "created": "2021-12-12T12:12:12Z",
+                    "created": "2021-10-02T16:04:59.078186Z",
                     "id": 8125,
-                    "modified": "2021-12-12T12:12:12Z",
+                    "modified": "2021-10-02T16:04:59.078186Z",
                     "name": "phishing from selenafadel@von.com detected",
                     "owner": "demo",
                     "references": [
