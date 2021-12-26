@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 type PlaybookYAML struct {

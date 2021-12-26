@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/xeipuuv/gojsonschema"
@@ -18,6 +17,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/index"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 func toTicket(ticketForm *models.TicketForm) (interface{}, error) {

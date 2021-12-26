@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
@@ -13,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *models.Artifact) (*models.TicketWithTickets, error) {

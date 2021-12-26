@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, taskID string) (*models.TicketWithTickets, *models.PlaybookResponse, *models.TaskWithContext, error) {
