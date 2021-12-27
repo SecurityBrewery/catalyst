@@ -13,6 +13,7 @@ import (
 	"github.com/arangodb/go-driver"
 	"github.com/xeipuuv/gojsonschema"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
@@ -133,7 +134,7 @@ func toTicketSimpleResponse(key string, ticket *models.Ticket) (*models.TicketSi
 	}, nil
 }
 
-func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*models.TicketSimpleResponse) *models.TicketWithTickets {
+func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*models.TicketSimpleResponse, logs []*models.LogEntry) *models.TicketWithTickets {
 	return &models.TicketWithTickets{
 		Artifacts:  ticketResponse.Artifacts,
 		Comments:   ticketResponse.Comments,
@@ -152,6 +153,7 @@ func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*model
 		Type:       ticketResponse.Type,
 		Write:      ticketResponse.Write,
 
+		Logs:    logs,
 		Tickets: tickets,
 	}
 }
@@ -244,9 +246,8 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*models
 	for _, apiTicket := range apiTickets {
 		ids = append(ids, driver.NewDocumentID(TicketCollectionName, fmt.Sprint(apiTicket.ID)))
 	}
-	if err := db.BusDatabase.LogAndNotify(ctx, ids, "Ticket created"); err != nil {
-		return nil, err
-	}
+
+	go db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryUpdated)
 
 	ticketResponses, err := toTicketResponses(apiTickets)
 	if err != nil {
@@ -405,7 +406,12 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 		return nil, err
 	}
 
-	return toTicketWithTickets(ticketResponse, tickets), nil
+	logs, err := db.LogList(ctx, fmt.Sprintf("%s/%d", TicketCollectionName, ticketID))
+	if err != nil {
+		return nil, err
+	}
+
+	return toTicketWithTickets(ticketResponse, tickets, logs), nil
 }
 
 func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *models.Ticket) (*models.TicketWithTickets, error) {
@@ -420,10 +426,9 @@ func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *mo
 	RETURN NEW`
 	ticket.Modified = time.Now().UTC() // TODO make setable?
 	return db.ticketGetQuery(ctx, ticketID, query, mergeMaps(map[string]interface{}{"ticket": ticket}, ticketFilterVars), &busdb.Operation{
-		OperationType: busdb.Update, Ids: []driver.DocumentID{
+		Type: bus.DatabaseEntryUpdated, Ids: []driver.DocumentID{
 			driver.NewDocumentID(TicketCollectionName, strconv.FormatInt(ticketID, 10)),
 		},
-		Msg: "Ticket updated",
 	})
 }
 

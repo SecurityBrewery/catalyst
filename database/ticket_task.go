@@ -9,6 +9,7 @@ import (
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/time"
@@ -74,11 +75,10 @@ func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID strin
 		"closed":     time.Now().UTC(),
 		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.NewDocumentID(TicketCollectionName, fmt.Sprintf("%d", id)),
 		},
-		Msg: fmt.Sprintf("Completed task %s in playbook %s", taskID, playbookID),
 	})
 	if err != nil {
 		return nil, err
@@ -136,11 +136,10 @@ func (db *Database) TaskUpdate(ctx context.Context, id int64, playbookID string,
 		"task":       task,
 		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.NewDocumentID(TicketCollectionName, fmt.Sprintf("%d", id)),
 		},
-		Msg: fmt.Sprintf("Saved task %s in playbook %s", taskID, playbookID),
 	})
 	if err != nil {
 		return nil, err

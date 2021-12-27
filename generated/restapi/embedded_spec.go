@@ -640,7 +640,8 @@ func init() {
                   "created": "2021-12-12T12:12:12.000000012Z",
                   "creator": "bob",
                   "message": "Fail run account resist lend solve incident centre priority temperature. Cause change distribution examine location technique shape partner milk customer. Rail tea plate soil report cook railway interpretation breath action. Exercise dream accept park conclusion addition shoot assistance may answer. Gold writer link stop combine hear power name commitment operation. Determine lifespan support grow degree henry exclude detail set religion. Direct library policy convention chain retain discover ride walk student. Gather proposal select march aspect play noise avoid encourage employ. Assessment preserve transport combine wish influence income guess run stand. Charge limit crime ignore statement foundation study issue stop claim.",
-                  "reference": "tickets/294511"
+                  "reference": "tickets/294511",
+                  "type": "manual"
                 }
               ]
             }
@@ -5680,6 +5681,7 @@ func init() {
     "LogEntry": {
       "type": "object",
       "required": [
+        "type",
         "reference",
         "creator",
         "created",
@@ -5697,6 +5699,9 @@ func init() {
           "type": "string"
         },
         "reference": {
+          "type": "string"
+        },
+        "type": {
           "type": "string"
         }
       }
@@ -6816,6 +6821,12 @@ func init() {
           "format": "int64",
           "example": 123
         },
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogEntry"
+          }
+        },
         "modified": {
           "type": "string",
           "format": "date-time",
@@ -7668,7 +7679,8 @@ func init() {
                   "created": "2021-12-12T12:12:12.000000012Z",
                   "creator": "bob",
                   "message": "Fail run account resist lend solve incident centre priority temperature. Cause change distribution examine location technique shape partner milk customer. Rail tea plate soil report cook railway interpretation breath action. Exercise dream accept park conclusion addition shoot assistance may answer. Gold writer link stop combine hear power name commitment operation. Determine lifespan support grow degree henry exclude detail set religion. Direct library policy convention chain retain discover ride walk student. Gather proposal select march aspect play noise avoid encourage employ. Assessment preserve transport combine wish influence income guess run stand. Charge limit crime ignore statement foundation study issue stop claim.",
-                  "reference": "tickets/294511"
+                  "reference": "tickets/294511",
+                  "type": "manual"
                 }
               ]
             }
@@ -12708,6 +12720,7 @@ func init() {
     "LogEntry": {
       "type": "object",
       "required": [
+        "type",
         "reference",
         "creator",
         "created",
@@ -12725,6 +12738,9 @@ func init() {
           "type": "string"
         },
         "reference": {
+          "type": "string"
+        },
+        "type": {
           "type": "string"
         }
       }
@@ -13843,6 +13859,12 @@ func init() {
           "type": "integer",
           "format": "int64",
           "example": 123
+        },
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogEntry"
+          }
         },
         "modified": {
           "type": "string",

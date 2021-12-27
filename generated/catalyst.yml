@@ -312,7 +312,10 @@ definitions:
         type: string
       reference:
         type: string
+      type:
+        type: string
     required:
+    - type
     - reference
     - creator
     - created
@@ -1152,6 +1155,10 @@ definitions:
         example: 123
         format: int64
         type: integer
+      logs:
+        items:
+          $ref: '#/definitions/LogEntry'
+        type: array
       modified:
         example: 1985-04-12T23:20:50.52Z
         format: date-time
@@ -1945,6 +1952,7 @@ paths:
                 combine wish influence income guess run stand. Charge limit crime
                 ignore statement foundation study issue stop claim.
               reference: tickets/294511
+              type: manual
           schema:
             items:
               $ref: '#/definitions/LogEntry'

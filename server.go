@@ -8,8 +8,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 
-	"github.com/SecurityBrewery/catalyst/automation"
 	"github.com/SecurityBrewery/catalyst/bus"
+	"github.com/SecurityBrewery/catalyst/busservice"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
@@ -72,7 +72,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	err = automation.New(config.Bus.APIUrl, config.InitialAPIKey, catalystBus, catalystDatabase)
+	err = busservice.New(config.Bus.APIUrl, config.InitialAPIKey, catalystBus, catalystDatabase)
 	if err != nil {
 		return nil, err
 	}

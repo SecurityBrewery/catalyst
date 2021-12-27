@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -30,11 +32,22 @@ func (s *Service) Healthy() bool {
 	return true
 }
 
-func response(v interface{}, err error) *api.Response {
+func (s *Service) response(ctx context.Context, function string, ids []driver.DocumentID, v interface{}, err error) *api.Response {
 	if err != nil {
 		log.Println(err)
 		return &api.Response{Code: httpStatus(err), Body: gin.H{"error": err.Error()}}
 	}
+
+	if ids != nil {
+		userID := "unknown"
+		user, ok := busdb.UserFromContext(ctx)
+		if ok {
+			userID = user.ID
+		}
+
+		go s.bus.PublishRequest(userID, function, ids)
+	}
+
 	if v == nil {
 		return &api.Response{Code: http.StatusNoContent, Body: v}
 	}

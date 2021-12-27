@@ -200,8 +200,15 @@
                 </v-btn>
               </template>
             </v-textarea>
-            <div v-for="(comment, id) in ticket.comments" :key="id" class="pb-2">
-              <v-card elevation="0" color="cards">
+            <div v-for="(comment, id) in logs(ticket)" :key="id" class="pb-2">
+              <div v-if="'type' in comment && comment.message !== 'AddComment'" style="text-align: center">
+                <span class="text--disabled" :title="comment.created">
+                  {{ comment.message }} &middot;
+                  <strong> {{ comment.creator }}</strong> &middot;
+                  {{ relDate(comment.created) }}
+                </span>
+              </div>
+              <v-card v-else-if="!('type' in comment)" elevation="0" color="cards">
                 <v-card-subtitle class="pb-0">
                   <strong> {{ comment.creator }}</strong>
                   <span class="text--disabled ml-3" :title="comment.created">
@@ -791,7 +798,7 @@ import {
   Task,
   Type,
   TypeColorEnum,
-  TaskResponse, PlaybookResponse, UserResponse, TaskTypeEnum
+  TaskResponse, PlaybookResponse, UserResponse, TaskTypeEnum, TicketWithTickets,
 } from "../client";
 import {API} from "@/services/api";
 
@@ -1520,6 +1527,9 @@ export default Vue.extend({
             });
       }
       return relDate;
+    },
+    logs: function(ticket: TicketWithTickets) {
+      return this.lodash.reverse(this.lodash.sortBy(this.lodash.union(ticket.comments, ticket.logs), ['created']))
     }
   },
   mounted() {

@@ -612,6 +612,12 @@ export interface LogEntry {
      * @memberof LogEntry
      */
     reference: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LogEntry
+     */
+    type: string;
 }
 /**
  * 
@@ -2026,6 +2032,12 @@ export interface TicketWithTickets {
      * @memberof TicketWithTickets
      */
     id: number;
+    /**
+     * 
+     * @type {Array<LogEntry>}
+     * @memberof TicketWithTickets
+     */
+    logs?: Array<LogEntry>;
     /**
      * 
      * @type {string}
