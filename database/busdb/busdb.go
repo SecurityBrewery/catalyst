@@ -38,22 +38,13 @@ func NewDatabase(ctx context.Context, internal driver.Database, b *bus.Bus) (*Bu
 	}, nil
 }
 
-type OperationType int
-
-const (
-	Create OperationType = iota
-	Read                 = iota
-	Update               = iota
-)
-
 type Operation struct {
-	OperationType OperationType
-	Ids           []driver.DocumentID
-	Msg           string
+	Type bus.DatabaseUpdateType
+	Ids  []driver.DocumentID
 }
 
-var CreateOperation = &Operation{OperationType: Create}
-var ReadOperation = &Operation{OperationType: Read}
+var CreateOperation = &Operation{Type: bus.DatabaseEntryCreated}
+var ReadOperation = &Operation{Type: bus.DatabaseEntryRead}
 
 func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (driver.Cursor, *models.LogEntry, error) {
 	cur, err := db.internal.Query(ctx, query, vars)
@@ -64,26 +55,13 @@ func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]i
 	var logs *models.LogEntry
 
 	switch {
-	case operation.OperationType == Update:
-		if err := db.LogAndNotify(ctx, operation.Ids, operation.Msg); err != nil {
+	case operation.Type == bus.DatabaseEntryCreated, operation.Type == bus.DatabaseEntryUpdated:
+		if err := db.bus.PublishDatabaseUpdate(operation.Ids, operation.Type); err != nil {
 			return nil, nil, err
 		}
 	}
 
 	return cur, logs, err
-}
-
-func (db BusDatabase) LogAndNotify(ctx context.Context, ids []driver.DocumentID, msg string) error {
-	var logEntries []*models.LogEntry
-	for _, i := range ids {
-		logEntries = append(logEntries, &models.LogEntry{Reference: i.String(), Message: msg})
-	}
-
-	if err := db.LogBatchCreate(ctx, logEntries); err != nil {
-		return err
-	}
-
-	return db.bus.PublishUpdate(ids)
 }
 
 func (db BusDatabase) Remove(ctx context.Context) error {
@@ -109,7 +87,7 @@ func (c Collection) CreateDocument(ctx, newctx context.Context, key string, docu
 		return meta, err
 	}
 
-	err = c.db.LogAndNotify(ctx, []driver.DocumentID{meta.ID}, "Document created")
+	err = c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryCreated)
 	if err != nil {
 		return meta, err
 	}
@@ -122,7 +100,7 @@ func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDoc
 		return meta, err
 	}
 
-	err = c.db.LogAndNotify(ctx, []driver.DocumentID{meta.ID}, "Document created")
+	err = c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryCreated)
 	if err != nil {
 		return meta, err
 	}
@@ -143,7 +121,7 @@ func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocumen
 		ids = append(ids, meta.ID)
 	}
 
-	err = c.db.LogAndNotify(ctx, ids, "Document created")
+	err = c.db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
 	if err != nil {
 		return metas, err
 	}
@@ -165,7 +143,7 @@ func (c Collection) UpdateDocument(ctx context.Context, key string, update inter
 		return meta, err
 	}
 
-	return meta, c.db.bus.PublishUpdate([]driver.DocumentID{meta.ID})
+	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
 func (c Collection) ReplaceDocument(ctx context.Context, key string, document interface{}) (driver.DocumentMeta, error) {
@@ -174,7 +152,7 @@ func (c Collection) ReplaceDocument(ctx context.Context, key string, document in
 		return meta, err
 	}
 
-	return meta, c.db.bus.PublishUpdate([]driver.DocumentID{meta.ID})
+	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
 func (c Collection) RemoveDocument(ctx context.Context, formatInt string) (driver.DocumentMeta, error) {

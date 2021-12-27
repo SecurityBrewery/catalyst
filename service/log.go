@@ -10,5 +10,6 @@ import (
 
 func (s *Service) GetLogs(ctx context.Context, params *logs.GetLogsParams) *api.Response {
 	id, _ := url.QueryUnescape(params.Reference)
-	return response(s.database.LogList(ctx, id))
+	i, err := s.database.LogList(ctx, id)
+	return s.response("GetLogs", nil, i, err)
 }

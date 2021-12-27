@@ -8,67 +8,81 @@ import (
 )
 
 func (s *Service) AddArtifact(ctx context.Context, params *tickets.AddArtifactParams) *api.Response {
-	return response(s.database.AddArtifact(ctx, params.ID, params.Artifact))
+	i, err := s.database.AddArtifact(ctx, params.ID, params.Artifact)
+	return s.response("AddArtifact", ticketID(params.ID), i, err)
 }
 
 func (s *Service) RemoveArtifact(ctx context.Context, params *tickets.RemoveArtifactParams) *api.Response {
-	return response(s.database.RemoveArtifact(ctx, params.ID, params.Name))
+	i, err := s.database.RemoveArtifact(ctx, params.ID, params.Name)
+	return s.response("RemoveArtifact", ticketID(params.ID), i, err)
 }
 
 func (s *Service) SetSchema(ctx context.Context, params *tickets.SetSchemaParams) *api.Response {
-	return response(s.database.SetTemplate(ctx, params.ID, params.Schema))
+	i, err := s.database.SetTemplate(ctx, params.ID, params.Schema)
+	return s.response("SetSchema", ticketID(params.ID), i, err)
 }
 
 func (s *Service) AddComment(ctx context.Context, params *tickets.AddCommentParams) *api.Response {
-	return response(s.database.AddComment(ctx, params.ID, params.Comment))
+	i, err := s.database.AddComment(ctx, params.ID, params.Comment)
+	return s.response("AddComment", ticketID(params.ID), i, err)
 }
 
 func (s *Service) RemoveComment(ctx context.Context, params *tickets.RemoveCommentParams) *api.Response {
-	return response(s.database.RemoveComment(ctx, params.ID, params.CommentID))
+	i, err := s.database.RemoveComment(ctx, params.ID, params.CommentID)
+	return s.response("RemoveComment", ticketID(params.ID), i, err)
 }
 
 func (s *Service) LinkTicket(ctx context.Context, params *tickets.LinkTicketParams) *api.Response {
 	err := s.database.RelatedCreate(ctx, params.ID, params.LinkedID)
 	if err != nil {
-		return response(nil, err)
+		return s.response("LinkTicket", ticketID(params.ID), nil, err)
 	}
 
-	return s.GetTicket(ctx, &tickets.GetTicketParams{ID: params.ID})
+	i, err := s.database.TicketGet(ctx, params.ID)
+	return s.response("LinkTicket", ticketID(params.ID), i, err)
 }
 
 func (s *Service) UnlinkTicket(ctx context.Context, params *tickets.UnlinkTicketParams) *api.Response {
 	err := s.database.RelatedRemove(ctx, params.ID, params.LinkedID)
 	if err != nil {
-		return response(nil, err)
+		return s.response("UnlinkTicket", ticketID(params.ID), nil, err)
 	}
 
-	return s.GetTicket(ctx, &tickets.GetTicketParams{ID: params.ID})
+	i, err := s.database.TicketGet(ctx, params.ID)
+	return s.response("UnlinkTicket", ticketID(params.ID), i, err)
 }
 
 func (s Service) SetReferences(ctx context.Context, params *tickets.SetReferencesParams) *api.Response {
-	return response(s.database.SetReferences(ctx, params.ID, params.References))
+	i, err := s.database.SetReferences(ctx, params.ID, params.References)
+	return s.response("SetReferences", ticketID(params.ID), i, err)
 }
 
 func (s Service) LinkFiles(ctx context.Context, params *tickets.LinkFilesParams) *api.Response {
-	return response(s.database.LinkFiles(ctx, params.ID, params.Files))
+	i, err := s.database.LinkFiles(ctx, params.ID, params.Files)
+	return s.response("LinkFiles", ticketID(params.ID), i, err)
 }
 
 func (s Service) AddTicketPlaybook(ctx context.Context, params *tickets.AddTicketPlaybookParams) *api.Response {
-	return response(s.database.AddTicketPlaybook(ctx, params.ID, params.Playbook))
+	i, err := s.database.AddTicketPlaybook(ctx, params.ID, params.Playbook)
+	return s.response("AddTicketPlaybook", ticketID(params.ID), i, err)
 }
 
 func (s Service) RemoveTicketPlaybook(ctx context.Context, params *tickets.RemoveTicketPlaybookParams) *api.Response {
-	return response(s.database.RemoveTicketPlaybook(ctx, params.ID, params.PlaybookID))
+	i, err := s.database.RemoveTicketPlaybook(ctx, params.ID, params.PlaybookID)
+	return s.response("RemoveTicketPlaybook", ticketID(params.ID), i, err)
 }
 
 func (s Service) CompleteTask(ctx context.Context, params *tickets.CompleteTaskParams) *api.Response {
-	return response(s.database.TaskComplete(ctx, params.ID, params.PlaybookID, params.TaskID, params.Data))
+	i, err := s.database.TaskComplete(ctx, params.ID, params.PlaybookID, params.TaskID, params.Data)
+	return s.response("CompleteTask", ticketID(params.ID), i, err)
 }
 
 func (s Service) SetTask(ctx context.Context, params *tickets.SetTaskParams) *api.Response {
-	return response(s.database.TaskUpdate(ctx, params.ID, params.PlaybookID, params.TaskID, params.Task))
+	i, err := s.database.TaskUpdate(ctx, params.ID, params.PlaybookID, params.TaskID, params.Task)
+	return s.response("SetTask", ticketID(params.ID), i, err)
 }
 
 func (s *Service) RunTask(ctx context.Context, params *tickets.RunTaskParams) *api.Response {
-	return response(nil, s.database.TaskRun(ctx, params.ID, params.PlaybookID, params.TaskID))
+	err := s.database.TaskRun(ctx, params.ID, params.PlaybookID, params.TaskID)
+	return s.response("RunTask", ticketID(params.ID), nil, err)
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/arangodb/go-driver"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 )
@@ -60,11 +61,10 @@ func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, a
 		"name":        name,
 		"artifact":    artifact,
 	}, ticketFilterVars), &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
 		},
-		Msg: fmt.Sprintf("Update artifact %s", name),
 	})
 }
 
@@ -92,10 +92,9 @@ func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, e
 		"enrichmentname": enrichment.Name,
 		"enrichment":     enrichment,
 	}, ticketFilterVars), &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
 		},
-		Msg: fmt.Sprintf("Run %s on artifact", enrichment.Name),
 	})
 }

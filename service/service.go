@@ -30,11 +30,17 @@ func (s *Service) Healthy() bool {
 	return true
 }
 
-func response(v interface{}, err error) *api.Response {
+func (s *Service) response(function string, ids []driver.DocumentID, v interface{}, err error) *api.Response {
 	if err != nil {
 		log.Println(err)
 		return &api.Response{Code: httpStatus(err), Body: gin.H{"error": err.Error()}}
 	}
+
+	if ids != nil {
+		// TODO add user
+		go s.bus.PublishRequest(function, ids)
+	}
+
 	if v == nil {
 		return &api.Response{Code: http.StatusNoContent, Body: v}
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/xeipuuv/gojsonschema"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
@@ -144,11 +145,10 @@ func (db *Database) JobLogAppend(ctx context.Context, id string, logLine string)
 		"ID":          id,
 		"logline":     logLine,
 	}, &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%s", JobCollectionName, id)),
 		},
-		Msg: fmt.Sprintf("Append logline"),
 	})
 	if err != nil {
 		return err
@@ -166,11 +166,10 @@ func (db *Database) JobComplete(ctx context.Context, id string, out interface{})
 		"ID":          id,
 		"out":         out,
 	}, &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%s", JobCollectionName, id)),
 		},
-		Msg: fmt.Sprintf("Set output"),
 	})
 	if err != nil {
 		return err

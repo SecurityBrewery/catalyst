@@ -31,7 +31,7 @@ func (db *BusDatabase) LogCreate(ctx context.Context, id, message string) (*mode
 		return nil, err
 	}
 
-	return &doc, db.bus.PublishUpdate([]driver.DocumentID{driver.DocumentID(logentry.Reference)})
+	return &doc, nil
 }
 
 func (db *BusDatabase) LogBatchCreate(ctx context.Context, logEntryForms []*models.LogEntry) error {
@@ -63,7 +63,7 @@ func (db *BusDatabase) LogBatchCreate(ctx context.Context, logEntryForms []*mode
 		return err
 	}
 
-	return db.bus.PublishUpdate(ids)
+	return nil
 }
 
 func (db *BusDatabase) LogList(ctx context.Context, reference string) ([]*models.LogEntry, error) {

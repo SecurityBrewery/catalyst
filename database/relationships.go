@@ -7,6 +7,7 @@ import (
 
 	"github.com/arangodb/go-driver"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 )
 
@@ -37,12 +38,11 @@ func (db *Database) RelatedRemove(ctx context.Context, id, id2 int64) error {
 		"id":          driver.DocumentID(TicketCollectionName + "/" + strconv.Itoa(int(id))),
 		"id2":         driver.DocumentID(TicketCollectionName + "/" + strconv.Itoa(int(id2))),
 	}, &busdb.Operation{
-		OperationType: busdb.Update,
+		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(TicketCollectionName + "/" + strconv.Itoa(int(id))),
 			driver.DocumentID(TicketCollectionName + "/" + strconv.Itoa(int(id2))),
 		},
-		Msg: "Removed ticket/artifact relation",
 	})
 	return err
 }

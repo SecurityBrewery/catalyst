@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/arangodb/go-driver"
 	"github.com/gin-gonic/gin"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
@@ -48,10 +47,10 @@ func handleWebSocket(catalystBus *bus.Bus) func(ctx *gin.Context) {
 	broker := websocketBroker{clients: map[string]chan []byte{}}
 
 	// send all messages from bus to websocket
-	err := catalystBus.SubscribeUpdate(func(ids []driver.DocumentID) {
+	err := catalystBus.SubscribeDatabaseUpdate(func(msg *bus.DatabaseUpdateMsg) {
 		b, err := json.Marshal(map[string]interface{}{
 			"action": "update",
-			"ids":    ids,
+			"ids":    msg.IDs,
 		})
 		if err != nil {
 			return
