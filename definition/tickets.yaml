@@ -23,21 +23,21 @@ paths:
               count: 3
               tickets:
                 - id: 8123
-                  created: "2021-10-02T18:04:59.078206+02:00"
-                  modified: "2021-10-02T18:04:59.078206+02:00"
+                  created: "2021-10-02T16:04:59.078206Z"
+                  modified: "2021-10-02T16:04:59.078206Z"
                   name: "live zebra"
                   owner: "demo"
                   playbooks:
                     phishing:
                       name: "Phishing"
                       tasks:
-                        "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Block IOCs", type: "task" }
-                        "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                        "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                        "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Escalate to CISO", type: "task" }
-                        "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                        "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                        "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                        "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Block IOCs", type: "task" }
+                        "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                        "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                        "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Escalate to CISO", type: "task" }
+                        "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                        "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                        "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
                   references:
                     - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                     - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -49,8 +49,8 @@ paths:
                     - { name: "94d5cab6f5fe3422a447ab15436e7a672bc0c09a", status: "unknown" }
                     - { name: "http://www.customerviral.io/scalable/vertical/killer", status: "clean" }
                     - { name: "leadreintermediate.io", status: "malicious" }
-                - { id: 8125, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00",name: "phishing from selenafadel@von.com detected", owner: "demo", references: [ { href: "https://www.seniorleading-edge.name/users/efficient", name: "recovery" },{ href: "http://www.dynamicseamless.com/clicks-and-mortar", name: "force" },{ href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ],"schema": "{}",  status: "closed", type: "alert" }
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8125, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z",name: "phishing from selenafadel@von.com detected", owner: "demo", references: [ { href: "https://www.seniorleading-edge.name/users/efficient", name: "recovery" },{ href: "http://www.dynamicseamless.com/clicks-and-mortar", name: "force" },{ href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:read" ] } ]
     post:
       tags: [ "tickets" ]
@@ -68,8 +68,8 @@ paths:
               name: "Wannacry infection"
               type: "incident"
               status: "open"
-              created: "1985-04-12T23:20:50.52Z"
-              modified: "1985-04-12T23:20:50.52Z"
+              created: "2021-12-12T12:12:12.000000012Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               owner: "bob"
               schema: "{}"
       security: [ { roles: [ "ticket:write" ] } ]
@@ -99,8 +99,8 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-10-02T16:04:59.078186Z"
               name: "phishing from selenafadel@von.com detected"
               owner: "demo"
               references:
@@ -114,7 +114,7 @@ paths:
               status: "closed"
               type: "alert"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:read" ] } ]
     put:
       tags: [ "tickets" ]
@@ -122,7 +122,7 @@ paths:
       operationId: "updateTicket"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8125 }
-        - { name: "ticket", in: "body", description: "Updated ticket", required: true, schema: { $ref: "#/definitions/Ticket" }, x-example: { "created": "2021-10-02T18:04:59.078186+02:00",modified: "2021-10-02T18:04:59.078186+02:00", name: "phishing from selenafadel@von.org detected", owner: "demo", references: [ { href: "https://www.seniorleading-edge.name/users/efficient", name: "recovery" },{ href: "http://www.dynamicseamless.com/clicks-and-mortar", name: "force" },{ href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ], schema: "{}", status: "closed", type: "alert" } }
+        - { name: "ticket", in: "body", description: "Updated ticket", required: true, schema: { $ref: "#/definitions/Ticket" }, x-example: { "created": "2021-12-12T12:12:12.000000012Z",modified: "2021-12-12T12:12:12.000000012Z", name: "phishing from selenafadel@von.org detected", owner: "demo", references: [ { href: "https://www.seniorleading-edge.name/users/efficient", name: "recovery" },{ href: "http://www.dynamicseamless.com/clicks-and-mortar", name: "force" },{ href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ], schema: "{}", status: "closed", type: "alert" } }
       responses:
         "200":
           description: "successful operation"
@@ -130,8 +130,8 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-12-12T12:12:12.000000012Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "phishing from selenafadel@von.org detected"
               owner: "demo"
               references:
@@ -145,7 +145,7 @@ paths:
               status: "closed"
               type: "alert"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:write" ] } ]
     delete:
       tags: [ "tickets" ]
@@ -172,8 +172,8 @@ paths:
           examples:
             test:
               id: 8126
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-10-02T16:04:59.078186Z"
               name: "Surfaceintroduce virus detected"
               owner: "demo"
               references:
@@ -185,21 +185,21 @@ paths:
               type: "alert"
               tickets:
                 - id: 8123
-                  created: "2021-10-02T18:04:59.078206+02:00"
-                  modified: "2021-10-02T18:04:59.078206+02:00"
+                  created: "2021-10-02T16:04:59.078206Z"
+                  modified: "2021-10-02T16:04:59.078206Z"
                   name: "live zebra"
                   owner: "demo"
                   playbooks:
                     phishing:
                       name: "Phishing"
                       tasks:
-                        "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Block IOCs", type: "task" }
-                        "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                        "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                        "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Escalate to CISO", type: "task" }
-                        "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                        "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                        "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                        "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Block IOCs", type: "task" }
+                        "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                        "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                        "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Escalate to CISO", type: "task" }
+                        "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                        "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                        "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
                   references:
                     - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                     - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -212,8 +212,8 @@ paths:
                     - { name: "http://www.customerviral.io/scalable/vertical/killer", status: "clean" }
                     - { name: "leadreintermediate.io", status: "malicious" }
                 - id: 8125
-                  created: "2021-10-02T18:04:59.078186+02:00"
-                  modified: "2021-10-02T18:04:59.078186+02:00"
+                  created: "2021-10-02T16:04:59.078186Z"
+                  modified: "2021-10-02T16:04:59.078186Z"
                   name: "phishing from selenafadel@von.com detected"
                   owner: "demo"
                   references:
@@ -238,8 +238,8 @@ paths:
           examples:
             test:
               id: 8126
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-10-02T16:04:59.078186Z"
               name: "Surfaceintroduce virus detected"
               owner: "demo"
               references:
@@ -266,12 +266,12 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "phishing from selenafadel@von.com detected"
               owner: "demo"
               comments:
-                - created: "2021-10-02T18:04:59.078186+02:00"
+                - created: "2021-12-12T12:12:12.000000012Z"
                   creator: "bob"
                   message: "My first comment"
               references:
@@ -282,7 +282,7 @@ paths:
               status: "closed"
               type: "alert"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}/comments/{commentID}:
@@ -301,21 +301,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -344,8 +344,8 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "phishing from selenafadel@von.com detected"
               owner: "demo"
               references: [ { href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ]
@@ -353,7 +353,7 @@ paths:
               status: "closed"
               type: "alert"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}/schema:
@@ -371,8 +371,8 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-10-02T16:04:59.078186Z"
               name: "phishing from selenafadel@von.com detected"
               owner: "demo"
               references:
@@ -383,7 +383,7 @@ paths:
               status: "closed"
               type: "alert"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}/files:
@@ -402,8 +402,8 @@ paths:
           examples:
             test:
               id: 8125
-              created: "2021-10-02T18:04:59.078186+02:00"
-              modified: "2021-10-02T18:04:59.078186+02:00"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "phishing from selenafadel@von.com detected"
               owner: "demo"
               references:
@@ -415,7 +415,7 @@ paths:
               type: "alert"
               files: [ { key: myfile, name: "document.doc" } ]
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
 
       security: [ { roles: [ "ticket:write" ] } ]
 
@@ -438,11 +438,11 @@ paths:
               owner: demo
               type: "alert"
               status: "closed"
-              created: "1985-04-12T23:20:50.52Z"
-              modified: "1985-04-12T23:20:50.52Z"
+              created: "2021-10-02T16:04:59.078186Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               schema: "{}"
               tickets:
-                - { id: 8126, created: "2021-10-02T18:04:59.078186+02:00", modified: "2021-10-02T18:04:59.078186+02:00", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
+                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
               references:
                 - { href: "https://www.seniorleading-edge.name/users/efficient", name: recovery }
                 - { href: "http://www.dynamicseamless.com/clicks-and-mortar", name: force }
@@ -454,7 +454,7 @@ paths:
                     input:
                       active: true
                       done: false
-                      created: "2021-10-02T18:04:59.078186+02:00"
+                      created: "2021-12-12T12:12:12.000000012Z"
                       order: 0
                       name: Upload malware if possible
                       type: input
@@ -472,7 +472,7 @@ paths:
                     hash:
                       active: false
                       done: false
-                      created: "2021-10-02T18:04:59.078186+02:00"
+                      created: "2021-12-12T12:12:12.000000012Z"
                       order: 1
                       name: Hash the malware
                       type: automation
@@ -485,7 +485,7 @@ paths:
                     escalate:
                       active: false
                       done: false
-                      created: "2021-10-02T18:04:59.078186+02:00"
+                      created: "2021-12-12T12:12:12.000000012Z"
                       order: 2
                       name: Escalate to malware team
                       type: task
@@ -508,8 +508,8 @@ paths:
               name: "live zebra"
               type: "incident"
               status: "closed"
-              created: "1985-04-12T23:20:50.52Z"
-              modified: "1985-04-12T23:20:50.52Z"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               owner: "demo"
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: performance }
@@ -629,21 +629,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -674,21 +674,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", closed: "2021-10-02T18:04:59.078186+02:00", done: true, "active": false, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", closed: "2021-12-12T12:12:12.000000012Z", done: true, "active": false, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -730,21 +730,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -789,21 +789,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-10-02T16:04:59.078206Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -830,21 +830,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -886,21 +886,21 @@ paths:
           examples:
             test:
               id: 8123
-              created: "2021-10-02T18:04:59.078206+02:00"
-              modified: "2021-10-02T18:04:59.078206+02:00"
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-10-02T16:04:59.078206Z"
               name: "live zebra"
               owner: "demo"
               playbooks:
                 phishing:
                   name: "Phishing"
                   tasks:
-                    "block-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
-                    "block-sender": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
-                    "escalate": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
-                    "extract-iocs": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
-                    "mail-available": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
-                    "search-email-gateway": { created: "2021-10-02T18:04:59.078186+02:00", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input" }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
               references:
                 - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
                 - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
@@ -911,7 +911,7 @@ paths:
               artifacts:
                 - { name: "94d5cab6f5fe3422a447ab15436e7a672bc0c09a", status: "unknown" }
                 - { name: "http://www.customerviral.io/scalable/vertical/killer", status: "clean" }
-                - { name: "leadreintermediate.io", status: "malicious", enrichments: { hash.sha1: { name: "hash.sha1", created: "2021-10-03T18:44:06.488923+02:00", data: { "hash": "b7a067a742c20d07a7456646de89bc2d408a1153" } } } }
+                - { name: "leadreintermediate.io", status: "malicious", enrichments: { hash.sha1: { name: "hash.sha1", created: "2021-12-12T12:12:12.000000012Z", data: { "hash": "b7a067a742c20d07a7456646de89bc2d408a1153" } } } }
       security: [ { roles: [ "ticket:write" ] } ]
 
 definitions:

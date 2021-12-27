@@ -9,11 +9,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/generated/models"
 )
 
-type Hook interface {
-	PublishAction(action string, context, msg map[string]interface{}) error
-	PublishUpdate(col, id string) error
-}
-
 // BusDatabase
 //  1. Save entry to log
 //  2. Send update ticket to bus

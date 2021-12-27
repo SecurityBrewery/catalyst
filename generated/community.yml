@@ -1660,7 +1660,7 @@ paths:
           description: successful operation
           examples:
             test:
-            - created: 2021-10-02T18:05:00.333535+02:00
+            - created: 2021-12-12T12:12:12.000000012Z
               creator: bob
               message: Fail run account resist lend solve incident centre priority
                 temperature. Cause change distribution examine location technique
@@ -2969,9 +2969,9 @@ paths:
                   status: clean
                 - name: leadreintermediate.io
                   status: malicious
-                created: 2021-10-02T18:04:59.078206+02:00
+                created: 2021-10-02T16:04:59.078206Z
                 id: 8123
-                modified: 2021-10-02T18:04:59.078206+02:00
+                modified: 2021-10-02T16:04:59.078206Z
                 name: live zebra
                 owner: demo
                 playbooks:
@@ -2979,19 +2979,19 @@ paths:
                     name: Phishing
                     tasks:
                       block-iocs:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Block IOCs
                         type: task
                       block-sender:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Block sender
                         next:
                           extract-iocs: ""
                         type: task
                       board:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Board Involvement?
                         next:
@@ -3009,12 +3009,12 @@ paths:
                           type: object
                         type: input
                       escalate:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Escalate to CISO
                         type: task
                       extract-iocs:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Extract IOCs
                         next:
@@ -3030,7 +3030,7 @@ paths:
                           type: object
                         type: input
                       mail-available:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Mail available
                         next:
@@ -3059,7 +3059,7 @@ paths:
                           type: object
                         type: input
                       search-email-gateway:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Search email gateway
                         next:
@@ -3165,9 +3165,9 @@ paths:
                   }
                 status: closed
                 type: incident
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8125
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: phishing from selenafadel@von.com detected
                 owner: demo
                 references:
@@ -3180,9 +3180,9 @@ paths:
                 schema: '{}'
                 status: closed
                 type: alert
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -3223,9 +3223,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 1985-04-12T23:20:50.52Z
+              created: 2021-12-12T12:12:12.000000012Z
               id: 123
-              modified: 1985-04-12T23:20:50.52Z
+              modified: 2021-12-12T12:12:12.000000012Z
               name: Wannacry infection
               owner: bob
               schema: '{}'
@@ -3274,9 +3274,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-10-02T16:04:59.078186Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               references:
@@ -3289,9 +3289,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -3330,8 +3330,8 @@ paths:
         schema:
           $ref: '#/definitions/Ticket'
         x-example:
-          created: 2021-10-02T18:04:59.078186+02:00
-          modified: 2021-10-02T18:04:59.078186+02:00
+          created: 2021-12-12T12:12:12.000000012Z
+          modified: 2021-12-12T12:12:12.000000012Z
           name: phishing from selenafadel@von.org detected
           owner: demo
           references:
@@ -3349,9 +3349,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-12-12T12:12:12.000000012Z
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: phishing from selenafadel@von.org detected
               owner: demo
               references:
@@ -3364,9 +3364,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -3422,9 +3422,9 @@ paths:
               - name: 2.2.2.2
                 status: unknown
                 type: ip
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               playbooks:
@@ -3433,14 +3433,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -3449,7 +3449,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Board Involvement?
                       next:
@@ -3469,14 +3469,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -3494,7 +3494,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -3525,7 +3525,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -3666,9 +3666,9 @@ paths:
                 status: unknown
               - name: http://www.customerviral.io/scalable/vertical/killer
                 status: clean
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               playbooks:
@@ -3677,14 +3677,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -3693,7 +3693,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Board Involvement?
                       next:
@@ -3713,14 +3713,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -3738,7 +3738,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -3769,7 +3769,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -3949,9 +3949,9 @@ paths:
                 status: clean
               - name: leadreintermediate.io
                 status: clean
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-10-02T16:04:59.078206Z
               name: live zebra
               owner: demo
               playbooks:
@@ -3960,14 +3960,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -3976,7 +3976,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Board Involvement?
                       next:
@@ -3996,14 +3996,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -4021,7 +4021,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -4052,7 +4052,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -4204,15 +4204,15 @@ paths:
                 status: clean
               - enrichments:
                   hash.sha1:
-                    created: 2021-10-03T18:44:06.488923+02:00
+                    created: 2021-12-12T12:12:12.000000012Z
                     data:
                       hash: b7a067a742c20d07a7456646de89bc2d408a1153
                     name: hash.sha1
                 name: leadreintermediate.io
                 status: malicious
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-10-02T16:04:59.078206Z
               name: live zebra
               owner: demo
               playbooks:
@@ -4221,14 +4221,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -4237,7 +4237,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Board Involvement?
                       next:
@@ -4257,14 +4257,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -4282,7 +4282,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -4313,7 +4313,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -4483,12 +4483,12 @@ paths:
           examples:
             test:
               comments:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-12-12T12:12:12.000000012Z
                 creator: bob
                 message: My first comment
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               references:
@@ -4501,9 +4501,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -4555,9 +4555,9 @@ paths:
                 status: clean
               - name: leadreintermediate.io
                 status: malicious
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               playbooks:
@@ -4566,14 +4566,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -4582,7 +4582,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Board Involvement?
                       next:
@@ -4602,14 +4602,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -4627,7 +4627,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -4658,7 +4658,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -4802,12 +4802,12 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               files:
               - key: myfile
                 name: document.doc
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               references:
@@ -4820,9 +4820,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -4896,9 +4896,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 1985-04-12T23:20:50.52Z
+              created: 2021-10-02T16:04:59.078186Z
               id: 8125
-              modified: 1985-04-12T23:20:50.52Z
+              modified: 2021-12-12T12:12:12.000000012Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               playbooks:
@@ -4907,7 +4907,7 @@ paths:
                   tasks:
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to malware team
                       order: 2
@@ -4915,7 +4915,7 @@ paths:
                     hash:
                       active: false
                       automation: hash.sha1
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Hash the malware
                       next:
@@ -4926,7 +4926,7 @@ paths:
                       type: automation
                     input:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Upload malware if possible
                       next:
@@ -4951,9 +4951,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -5001,9 +5001,9 @@ paths:
                 status: clean
               - name: leadreintermediate.io
                 status: malicious
-              created: 1985-04-12T23:20:50.52Z
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 1985-04-12T23:20:50.52Z
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               references:
@@ -5176,9 +5176,9 @@ paths:
                 status: clean
               - name: leadreintermediate.io
                 status: malicious
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               playbooks:
@@ -5187,14 +5187,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -5203,7 +5203,7 @@ paths:
                       type: task
                     board:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       data:
                         boardInvolved: true
                       done: false
@@ -5225,14 +5225,14 @@ paths:
                       type: input
                     escalate:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -5250,7 +5250,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -5281,7 +5281,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -5439,9 +5439,9 @@ paths:
                 status: clean
               - name: leadreintermediate.io
                 status: malicious
-              created: 2021-10-02T18:04:59.078206+02:00
+              created: 2021-10-02T16:04:59.078206Z
               id: 8123
-              modified: 2021-10-02T18:04:59.078206+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: live zebra
               owner: demo
               playbooks:
@@ -5450,14 +5450,14 @@ paths:
                   tasks:
                     block-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block IOCs
                       order: 6
                       type: task
                     block-sender:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Block sender
                       next:
@@ -5466,8 +5466,8 @@ paths:
                       type: task
                     board:
                       active: false
-                      closed: 2021-10-02T18:04:59.078186+02:00
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      closed: 2021-12-12T12:12:12.000000012Z
+                      created: 2021-12-12T12:12:12.000000012Z
                       data:
                         boardInvolved: true
                       done: true
@@ -5489,14 +5489,14 @@ paths:
                       type: input
                     escalate:
                       active: true
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Escalate to CISO
                       order: 1
                       type: task
                     extract-iocs:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Extract IOCs
                       next:
@@ -5514,7 +5514,7 @@ paths:
                       type: input
                     mail-available:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Mail available
                       next:
@@ -5545,7 +5545,7 @@ paths:
                       type: input
                     search-email-gateway:
                       active: false
-                      created: 2021-10-02T18:04:59.078186+02:00
+                      created: 2021-12-12T12:12:12.000000012Z
                       done: false
                       name: Search email gateway
                       next:
@@ -5719,9 +5719,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-12-12T12:12:12.000000012Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               references:
@@ -5730,9 +5730,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -5776,9 +5776,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8125
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-10-02T16:04:59.078186Z
               name: phishing from selenafadel@von.com detected
               owner: demo
               references:
@@ -5791,9 +5791,9 @@ paths:
               schema: '{}'
               status: closed
               tickets:
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8126
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: Surfaceintroduce virus detected
                 owner: demo
                 references:
@@ -5839,9 +5839,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8126
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-10-02T16:04:59.078186Z
               name: Surfaceintroduce virus detected
               owner: demo
               references:
@@ -5885,9 +5885,9 @@ paths:
           description: successful operation
           examples:
             test:
-              created: 2021-10-02T18:04:59.078186+02:00
+              created: 2021-10-02T16:04:59.078186Z
               id: 8126
-              modified: 2021-10-02T18:04:59.078186+02:00
+              modified: 2021-10-02T16:04:59.078186Z
               name: Surfaceintroduce virus detected
               owner: demo
               references:
@@ -5907,9 +5907,9 @@ paths:
                   status: clean
                 - name: leadreintermediate.io
                   status: malicious
-                created: 2021-10-02T18:04:59.078206+02:00
+                created: 2021-10-02T16:04:59.078206Z
                 id: 8123
-                modified: 2021-10-02T18:04:59.078206+02:00
+                modified: 2021-10-02T16:04:59.078206Z
                 name: live zebra
                 owner: demo
                 playbooks:
@@ -5917,19 +5917,19 @@ paths:
                     name: Phishing
                     tasks:
                       block-iocs:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Block IOCs
                         type: task
                       block-sender:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Block sender
                         next:
                           extract-iocs: ""
                         type: task
                       board:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Board Involvement?
                         next:
@@ -5947,12 +5947,12 @@ paths:
                           type: object
                         type: input
                       escalate:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Escalate to CISO
                         type: task
                       extract-iocs:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Extract IOCs
                         next:
@@ -5968,7 +5968,7 @@ paths:
                           type: object
                         type: input
                       mail-available:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Mail available
                         next:
@@ -5997,7 +5997,7 @@ paths:
                           type: object
                         type: input
                       search-email-gateway:
-                        created: 2021-10-02T18:04:59.078186+02:00
+                        created: 2021-12-12T12:12:12.000000012Z
                         done: false
                         name: Search email gateway
                         next:
@@ -6103,9 +6103,9 @@ paths:
                   }
                 status: closed
                 type: incident
-              - created: 2021-10-02T18:04:59.078186+02:00
+              - created: 2021-10-02T16:04:59.078186Z
                 id: 8125
-                modified: 2021-10-02T18:04:59.078186+02:00
+                modified: 2021-10-02T16:04:59.078186Z
                 name: phishing from selenafadel@von.com detected
                 owner: demo
                 references:
