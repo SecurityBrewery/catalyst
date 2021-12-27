@@ -3,6 +3,8 @@ package busdb
 import (
 	"context"
 	"errors"
+	"github.com/SecurityBrewery/catalyst/bus"
+	"strings"
 
 	"github.com/arangodb/go-driver"
 
@@ -12,15 +14,16 @@ import (
 
 const LogCollectionName = "logs"
 
-func (db *BusDatabase) LogCreate(ctx context.Context, reference, message string) (*models.LogEntry, error) {
+func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, message string) (*models.LogEntry, error) {
 	user, ok := UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
 
 	logentry := &models.LogEntry{
+		Type:      logType,
 		Reference: reference,
-		Created:   time.Now(),
+		Created:   time.Now().UTC(),
 		Creator:   user.ID,
 		Message:   message,
 	}
@@ -34,24 +37,15 @@ func (db *BusDatabase) LogCreate(ctx context.Context, reference, message string)
 	return &doc, nil
 }
 
-func (db *BusDatabase) LogBatchCreate(ctx context.Context, logEntryForms []*models.LogEntry) error {
-	user, ok := UserFromContext(ctx)
-	if !ok {
-		return errors.New("no user in context")
-	}
-
+func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*models.LogEntry) error {
 	var ids []driver.DocumentID
-	var logentries []*models.LogEntry
-	for _, logEntryForm := range logEntryForms {
-		logentry := &models.LogEntry{
-			Reference: logEntryForm.Reference,
-			Created:   time.Now(),
-			Creator:   user.ID,
-			Message:   logEntryForm.Message,
+	for _, entry := range logentries {
+		if strings.HasPrefix(entry.Reference, "tickets/") {
+			ids = append(ids, driver.DocumentID(entry.Reference))
 		}
-
-		logentries = append(logentries, logentry)
-		ids = append(ids, driver.DocumentID(logentry.Reference))
+	}
+	if ids != nil {
+		go db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
 	}
 
 	_, errs, err := db.logCollection.CreateDocuments(ctx, logentries)

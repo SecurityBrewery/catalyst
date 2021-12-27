@@ -8,5 +8,5 @@ import (
 
 func (s *Service) ListTasks(ctx context.Context) *api.Response {
 	i, err := s.database.TaskList(ctx)
-	return s.response("ListTasks", nil, i, err)
+	return s.response(ctx, "ListTasks", nil, i, err)
 }

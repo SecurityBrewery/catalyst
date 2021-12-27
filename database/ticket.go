@@ -134,7 +134,7 @@ func toTicketSimpleResponse(key string, ticket *models.Ticket) (*models.TicketSi
 	}, nil
 }
 
-func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*models.TicketSimpleResponse) *models.TicketWithTickets {
+func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*models.TicketSimpleResponse, logs []*models.LogEntry) *models.TicketWithTickets {
 	return &models.TicketWithTickets{
 		Artifacts:  ticketResponse.Artifacts,
 		Comments:   ticketResponse.Comments,
@@ -153,6 +153,7 @@ func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*model
 		Type:       ticketResponse.Type,
 		Write:      ticketResponse.Write,
 
+		Logs:    logs,
 		Tickets: tickets,
 	}
 }
@@ -405,7 +406,12 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 		return nil, err
 	}
 
-	return toTicketWithTickets(ticketResponse, tickets), nil
+	logs, err := db.LogList(ctx, fmt.Sprintf("%s/%d", TicketCollectionName, ticketID))
+	if err != nil {
+		return nil, err
+	}
+
+	return toTicketWithTickets(ticketResponse, tickets, logs), nil
 }
 
 func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *models.Ticket) (*models.TicketWithTickets, error) {

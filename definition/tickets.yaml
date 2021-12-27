@@ -1037,6 +1037,8 @@ definitions:
       comments: { type: array, items: { $ref: '#/definitions/Comment' } }
       artifacts: { type: array, items: { $ref: "#/definitions/Artifact" } }
 
+      logs: { type: array, items: { $ref: '#/definitions/LogEntry' } }
+
       created: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
       modified: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
 

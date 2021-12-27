@@ -17,25 +17,25 @@ func ticketTypeID(id string) []driver.DocumentID {
 
 func (s *Service) CreateTicketType(ctx context.Context, params *tickettypes.CreateTicketTypeParams) *api.Response {
 	ticketType, err := s.database.TicketTypeCreate(ctx, params.Tickettype)
-	return s.response("CreateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
+	return s.response(ctx, "CreateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
 }
 
 func (s *Service) GetTicketType(ctx context.Context, params *tickettypes.GetTicketTypeParams) *api.Response {
 	ticketType, err := s.database.TicketTypeGet(ctx, params.ID)
-	return s.response("GetTicketType", nil, ticketType, err)
+	return s.response(ctx, "GetTicketType", nil, ticketType, err)
 }
 
 func (s *Service) UpdateTicketType(ctx context.Context, params *tickettypes.UpdateTicketTypeParams) *api.Response {
 	ticketType, err := s.database.TicketTypeUpdate(ctx, params.ID, params.Tickettype)
-	return s.response("UpdateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
+	return s.response(ctx, "UpdateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
 }
 
 func (s *Service) DeleteTicketType(ctx context.Context, params *tickettypes.DeleteTicketTypeParams) *api.Response {
 	err := s.database.TicketTypeDelete(ctx, params.ID)
-	return s.response("DeleteTicketType", ticketTypeID(params.ID), nil, err)
+	return s.response(ctx, "DeleteTicketType", ticketTypeID(params.ID), nil, err)
 }
 
 func (s *Service) ListTicketTypes(ctx context.Context) *api.Response {
 	ticketTypes, err := s.database.TicketTypeList(ctx)
-	return s.response("ListTicketTypes", nil, ticketTypes, err)
+	return s.response(ctx, "ListTicketTypes", nil, ticketTypes, err)
 }

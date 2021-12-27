@@ -14,24 +14,24 @@ import (
 func (s *Service) GetSettings(ctx context.Context) *api.Response {
 	user, ok := busdb.UserFromContext(ctx)
 	if !ok {
-		return s.response("GetSettings", nil, nil, errors.New("no user in context"))
+		return s.response(ctx, "GetSettings", nil, nil, errors.New("no user in context"))
 	}
 
 	setting, err := s.database.UserDataGet(ctx, user.ID)
 	if err != nil {
-		return s.response("GetSettings", nil, nil, err)
+		return s.response(ctx, "GetSettings", nil, nil, err)
 	}
 
 	settings := mergeSettings(s.settings, setting)
 
 	ticketTypeList, err := s.database.TicketTypeList(ctx)
 	if err != nil {
-		return s.response("GetSettings", nil, nil, err)
+		return s.response(ctx, "GetSettings", nil, nil, err)
 	}
 
 	settings.TicketTypes = ticketTypeList
 
-	return s.response("GetSettings", nil, settings, nil)
+	return s.response(ctx, "GetSettings", nil, settings, nil)
 }
 
 func mergeSettings(globalSettings *models.Settings, user *models.UserDataResponse) *models.Settings {

@@ -9,6 +9,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/models"
 	"github.com/SecurityBrewery/catalyst/role"
+	"github.com/SecurityBrewery/catalyst/time"
 )
 
 type busService struct {
@@ -44,7 +45,13 @@ func busContext() context.Context {
 func (h *busService) logRequest(msg *bus.RequestMsg) {
 	var logEntries []*models.LogEntry
 	for _, i := range msg.IDs {
-		logEntries = append(logEntries, &models.LogEntry{Reference: i.String()})
+		logEntries = append(logEntries, &models.LogEntry{
+			Type:      bus.ChannelRequest,
+			Reference: i.String(),
+			Creator:   msg.User,
+			Message:   msg.Function,
+			Created:   time.Now().UTC(),
+		})
 	}
 
 	if err := h.db.LogBatchCreate(busContext(), logEntries); err != nil {

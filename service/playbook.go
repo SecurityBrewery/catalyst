@@ -20,31 +20,31 @@ func playbookID(id string) []driver.DocumentID {
 
 func (s *Service) CreatePlaybook(ctx context.Context, params *playbooks.CreatePlaybookParams) *api.Response {
 	i, err := s.database.PlaybookCreate(ctx, params.Playbook)
-	return s.response("CreatePlaybook", playbookID(i.ID), i, err)
+	return s.response(ctx, "CreatePlaybook", playbookID(i.ID), i, err)
 }
 
 func (s *Service) GetPlaybook(ctx context.Context, params *playbooks.GetPlaybookParams) *api.Response {
 	i, err := s.database.PlaybookGet(ctx, params.ID)
-	return s.response("GetPlaybook", nil, i, err)
+	return s.response(ctx, "GetPlaybook", nil, i, err)
 }
 
 func (s *Service) UpdatePlaybook(ctx context.Context, params *playbooks.UpdatePlaybookParams) *api.Response {
 	if err := validate(params.Playbook, models.PlaybookTemplateFormSchema); err != nil {
-		return s.response("UpdatePlaybook", nil, nil, err)
+		return s.response(ctx, "UpdatePlaybook", nil, nil, err)
 	}
 
 	i, err := s.database.PlaybookUpdate(ctx, params.ID, params.Playbook)
-	return s.response("UpdatePlaybook", playbookID(i.ID), i, err)
+	return s.response(ctx, "UpdatePlaybook", playbookID(i.ID), i, err)
 }
 
 func (s *Service) DeletePlaybook(ctx context.Context, params *playbooks.DeletePlaybookParams) *api.Response {
 	err := s.database.PlaybookDelete(ctx, params.ID)
-	return s.response("DeletePlaybook", playbookID(params.ID), nil, err)
+	return s.response(ctx, "DeletePlaybook", playbookID(params.ID), nil, err)
 }
 
 func (s *Service) ListPlaybooks(ctx context.Context) *api.Response {
 	i, err := s.database.PlaybookList(ctx)
-	return s.response("ListPlaybooks", nil, i, err)
+	return s.response(ctx, "ListPlaybooks", nil, i, err)
 }
 
 func validate(e interface{}, schema *gojsonschema.Schema) error {

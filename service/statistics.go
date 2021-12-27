@@ -8,5 +8,5 @@ import (
 
 func (s *Service) GetStatistics(ctx context.Context) *api.Response {
 	i, err := s.database.Statistics(ctx)
-	return s.response("GetStatistics", nil, i, err)
+	return s.response(ctx, "GetStatistics", nil, i, err)
 }

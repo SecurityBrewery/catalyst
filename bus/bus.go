@@ -42,7 +42,7 @@ func New(c *Config) (*Bus, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.requestKey, err = client.GenerateKey(c.Key, channelRequest+"/", "rwls", 0)
+	c.requestKey, err = client.GenerateKey(c.Key, ChannelRequest+"/", "rwls", 0)
 	if err != nil {
 		return nil, err
 	}
