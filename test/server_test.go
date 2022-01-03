@@ -22,7 +22,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 )
 
@@ -59,7 +59,7 @@ func TestService(t *testing.T) {
 			}
 			server.Use(setUser)
 
-			server.ConfigureRoutes()
+			// server.ConfigureRoutes()
 			w := httptest.NewRecorder()
 
 			// setup request
@@ -246,7 +246,7 @@ func createFile(ctx context.Context, server *catalyst.Server) {
 		log.Fatal(err)
 	}
 
-	if _, err := server.DB.LinkFiles(ctx, 8125, []*models.File{{Key: "test.txt", Name: "test.txt"}}); err != nil {
+	if _, err := server.DB.LinkFiles(ctx, 8125, []*model.File{{Key: "test.txt", Name: "test.txt"}}); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -269,7 +269,7 @@ func assertTicketExists(t *testing.T, server *catalyst.Server) {
 	}
 	assert.NoError(t, backupResult.Body.Close())
 
-	var ticket models.Ticket
+	var ticket model.Ticket
 	assert.NoError(t, json.Unmarshal(zipBuf.Bytes(), &ticket))
 
 	assert.Equal(t, "phishing from selenafadel@von.com detected", ticket.Name)

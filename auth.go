@@ -18,7 +18,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/role"
 )
@@ -210,7 +210,7 @@ func setContextClaims(ctx *gin.Context, db *database.Database, claims map[string
 	}
 
 	if _, ok := busdb.UserFromContext(ctx); !ok {
-		busdb.SetContext(ctx, &models.UserResponse{ID: "auth", Roles: []string{role.Admin}, Apikey: false, Blocked: false})
+		busdb.SetContext(ctx, &model.UserResponse{ID: "auth", Roles: []string{role.Admin}, Apikey: false, Blocked: false})
 	}
 
 	user, err := db.UserGetOrCreate(ctx, newUser)
@@ -227,7 +227,7 @@ func setContextClaims(ctx *gin.Context, db *database.Database, claims map[string
 	return nil
 }
 
-func setContextUser(ctx *gin.Context, user *models.UserResponse, hooks *hooks.Hooks) {
+func setContextUser(ctx *gin.Context, user *model.UserResponse, hooks *hooks.Hooks) {
 	groups, err := hooks.GetGroups(ctx, user.ID)
 	if err == nil {
 		busdb.SetGroupContext(ctx, groups)
@@ -236,10 +236,10 @@ func setContextUser(ctx *gin.Context, user *models.UserResponse, hooks *hooks.Ho
 	busdb.SetContext(ctx, user)
 }
 
-func mapUserAndSettings(claims map[string]interface{}, config *AuthConfig) (*models.UserForm, *models.UserData, error) {
+func mapUserAndSettings(claims map[string]interface{}, config *AuthConfig) (*model.UserForm, *model.UserData, error) {
 	// handle Bearer tokens
 	// if typ, ok := claims["typ"]; ok && typ == "Bearer" {
-	// 	return &models.User{
+	// 	return &model.User{
 	// 		Username: "bot",
 	// 		Blocked:  false,
 	// 		Email:    pointer.String("bot@example.org"),
@@ -262,11 +262,11 @@ func mapUserAndSettings(claims map[string]interface{}, config *AuthConfig) (*mod
 		name = ""
 	}
 
-	return &models.UserForm{
+	return &model.UserForm{
 			ID:      username,
 			Blocked: config.AuthBlockNew,
 			Roles:   role.Strings(config.AuthDefaultRoles),
-		}, &models.UserData{
+		}, &model.UserData{
 			Email: &email,
 			Name:  &name,
 		}, nil

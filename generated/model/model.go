@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"fmt"
@@ -78,7 +78,7 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","required":["automation"],"x-embed":"","properties":{"automation":{"type":"string"},"origin":{"$ref":"#/definitions/Origin"},"payload":{}},"$id":"#/definitions/JobForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","required":["id","automation","status"],"x-embed":"","properties":{"automation":{"type":"string"},"container":{"type":"string"},"id":{"type":"string"},"log":{"type":"string"},"origin":{"$ref":"#/definitions/Origin"},"output":{"type":"object"},"payload":{},"status":{"type":"string"}},"$id":"#/definitions/JobResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","required":["type","reference","creator","created","message"],"x-embed":"","properties":{"created":{"format":"date-time","type":"string"},"creator":{"type":"string"},"message":{"type":"string"},"reference":{"type":"string"},"type":{"type":"string"}},"$id":"#/definitions/LogEntry"}`),
-		gojsonschema.NewStringLoader(`{"type":"object","x-embed":"","properties":{"context":{"$ref":"#/definitions/Context"},"payload":{"type":"object"},"secrets":{"type":"object","additionalProperties":{"type":"string"}}},"$id":"#/definitions/Message"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","x-embed":"","properties":{"context":{"$ref":"#/definitions/Context"},"payload":{},"secrets":{"type":"object","additionalProperties":{"type":"string"}}},"$id":"#/definitions/Message"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","required":["id","blocked","roles"],"x-embed":"","properties":{"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"},"secret":{"type":"string"}},"$id":"#/definitions/NewUserResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","x-embed":"","properties":{"artifact_origin":{"$ref":"#/definitions/ArtifactOrigin"},"task_origin":{"$ref":"#/definitions/TaskOrigin"}},"$id":"#/definitions/Origin"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","required":["name","tasks"],"x-embed":"","properties":{"name":{"type":"string"},"tasks":{"type":"object","additionalProperties":{"$ref":"#/definitions/Task"}}},"$id":"#/definitions/Playbook"}`),
@@ -223,14 +223,14 @@ type Context struct {
 }
 
 type Enrichment struct {
-	Created time.Time   `json:"created"`
-	Data    interface{} `json:"data"`
-	Name    string      `json:"name"`
+	Created time.Time              `json:"created"`
+	Data    map[string]interface{} `json:"data"`
+	Name    string                 `json:"name"`
 }
 
 type EnrichmentForm struct {
-	Data interface{} `json:"data"`
-	Name string      `json:"name"`
+	Data map[string]interface{} `json:"data"`
+	Name string                 `json:"name"`
 }
 
 type File struct {
@@ -239,14 +239,14 @@ type File struct {
 }
 
 type Job struct {
-	Automation string      `json:"automation"`
-	Container  *string     `json:"container,omitempty"`
-	Log        *string     `json:"log,omitempty"`
-	Origin     *Origin     `json:"origin,omitempty"`
-	Output     interface{} `json:"output,omitempty"`
-	Payload    interface{} `json:"payload,omitempty"`
-	Running    bool        `json:"running"`
-	Status     string      `json:"status"`
+	Automation string                 `json:"automation"`
+	Container  *string                `json:"container,omitempty"`
+	Log        *string                `json:"log,omitempty"`
+	Origin     *Origin                `json:"origin,omitempty"`
+	Output     map[string]interface{} `json:"output,omitempty"`
+	Payload    interface{}            `json:"payload,omitempty"`
+	Running    bool                   `json:"running"`
+	Status     string                 `json:"status"`
 }
 
 type JobForm struct {
@@ -256,14 +256,14 @@ type JobForm struct {
 }
 
 type JobResponse struct {
-	Automation string      `json:"automation"`
-	Container  *string     `json:"container,omitempty"`
-	ID         string      `json:"id"`
-	Log        *string     `json:"log,omitempty"`
-	Origin     *Origin     `json:"origin,omitempty"`
-	Output     interface{} `json:"output,omitempty"`
-	Payload    interface{} `json:"payload,omitempty"`
-	Status     string      `json:"status"`
+	Automation string                 `json:"automation"`
+	Container  *string                `json:"container,omitempty"`
+	ID         string                 `json:"id"`
+	Log        *string                `json:"log,omitempty"`
+	Origin     *Origin                `json:"origin,omitempty"`
+	Output     map[string]interface{} `json:"output,omitempty"`
+	Payload    interface{}            `json:"payload,omitempty"`
+	Status     string                 `json:"status"`
 }
 
 type LogEntry struct {
@@ -340,33 +340,33 @@ type Statistics struct {
 }
 
 type Task struct {
-	Automation *string           `json:"automation,omitempty"`
-	Closed     *time.Time        `json:"closed,omitempty"`
-	Created    time.Time         `json:"created"`
-	Data       interface{}       `json:"data,omitempty"`
-	Done       bool              `json:"done"`
-	Join       *bool             `json:"join,omitempty"`
-	Name       string            `json:"name"`
-	Next       map[string]string `json:"next,omitempty"`
-	Owner      *string           `json:"owner,omitempty"`
-	Payload    map[string]string `json:"payload,omitempty"`
-	Schema     interface{}       `json:"schema,omitempty"`
-	Type       string            `json:"type"`
+	Automation *string                `json:"automation,omitempty"`
+	Closed     *time.Time             `json:"closed,omitempty"`
+	Created    time.Time              `json:"created"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+	Done       bool                   `json:"done"`
+	Join       *bool                  `json:"join,omitempty"`
+	Name       string                 `json:"name"`
+	Next       map[string]string      `json:"next,omitempty"`
+	Owner      *string                `json:"owner,omitempty"`
+	Payload    map[string]string      `json:"payload,omitempty"`
+	Schema     map[string]interface{} `json:"schema,omitempty"`
+	Type       string                 `json:"type"`
 }
 
 type TaskForm struct {
-	Automation *string           `json:"automation,omitempty"`
-	Closed     *time.Time        `json:"closed,omitempty"`
-	Created    *time.Time        `json:"created,omitempty"`
-	Data       interface{}       `json:"data,omitempty"`
-	Done       *bool             `json:"done,omitempty"`
-	Join       *bool             `json:"join,omitempty"`
-	Name       string            `json:"name"`
-	Next       map[string]string `json:"next,omitempty"`
-	Owner      *string           `json:"owner,omitempty"`
-	Payload    map[string]string `json:"payload,omitempty"`
-	Schema     interface{}       `json:"schema,omitempty"`
-	Type       string            `json:"type"`
+	Automation *string                `json:"automation,omitempty"`
+	Closed     *time.Time             `json:"closed,omitempty"`
+	Created    *time.Time             `json:"created,omitempty"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+	Done       *bool                  `json:"done,omitempty"`
+	Join       *bool                  `json:"join,omitempty"`
+	Name       string                 `json:"name"`
+	Next       map[string]string      `json:"next,omitempty"`
+	Owner      *string                `json:"owner,omitempty"`
+	Payload    map[string]string      `json:"payload,omitempty"`
+	Schema     map[string]interface{} `json:"schema,omitempty"`
+	Type       string                 `json:"type"`
 }
 
 type TaskOrigin struct {
@@ -376,54 +376,54 @@ type TaskOrigin struct {
 }
 
 type TaskResponse struct {
-	Active     bool              `json:"active"`
-	Automation *string           `json:"automation,omitempty"`
-	Closed     *time.Time        `json:"closed,omitempty"`
-	Created    time.Time         `json:"created"`
-	Data       interface{}       `json:"data,omitempty"`
-	Done       bool              `json:"done"`
-	Join       *bool             `json:"join,omitempty"`
-	Name       string            `json:"name"`
-	Next       map[string]string `json:"next,omitempty"`
-	Order      int64             `json:"order"`
-	Owner      *string           `json:"owner,omitempty"`
-	Payload    map[string]string `json:"payload,omitempty"`
-	Schema     interface{}       `json:"schema,omitempty"`
-	Type       string            `json:"type"`
+	Active     bool                   `json:"active"`
+	Automation *string                `json:"automation,omitempty"`
+	Closed     *time.Time             `json:"closed,omitempty"`
+	Created    time.Time              `json:"created"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+	Done       bool                   `json:"done"`
+	Join       *bool                  `json:"join,omitempty"`
+	Name       string                 `json:"name"`
+	Next       map[string]string      `json:"next,omitempty"`
+	Order      int64                  `json:"order"`
+	Owner      *string                `json:"owner,omitempty"`
+	Payload    map[string]string      `json:"payload,omitempty"`
+	Schema     map[string]interface{} `json:"schema,omitempty"`
+	Type       string                 `json:"type"`
 }
 
 type TaskWithContext struct {
-	PlaybookId   string       `json:"playbook_id"`
-	PlaybookName string       `json:"playbook_name"`
-	Task         TaskResponse `json:"task"`
-	TaskId       string       `json:"task_id"`
-	TicketId     int64        `json:"ticket_id"`
-	TicketName   string       `json:"ticket_name"`
+	PlaybookId   string        `json:"playbook_id"`
+	PlaybookName string        `json:"playbook_name"`
+	Task         *TaskResponse `json:"task"`
+	TaskId       string        `json:"task_id"`
+	TicketId     int64         `json:"ticket_id"`
+	TicketName   string        `json:"ticket_name"`
 }
 
 type Ticket struct {
-	Artifacts  []*Artifact          `json:"artifacts,omitempty"`
-	Comments   []*Comment           `json:"comments,omitempty"`
-	Created    time.Time            `json:"created"`
-	Details    interface{}          `json:"details,omitempty"`
-	Files      []*File              `json:"files,omitempty"`
-	Modified   time.Time            `json:"modified"`
-	Name       string               `json:"name"`
-	Owner      *string              `json:"owner,omitempty"`
-	Playbooks  map[string]*Playbook `json:"playbooks,omitempty"`
-	Read       []string             `json:"read,omitempty"`
-	References []*Reference         `json:"references,omitempty"`
-	Schema     string               `json:"schema"`
-	Status     string               `json:"status"`
-	Type       string               `json:"type"`
-	Write      []string             `json:"write,omitempty"`
+	Artifacts  []*Artifact            `json:"artifacts,omitempty"`
+	Comments   []*Comment             `json:"comments,omitempty"`
+	Created    time.Time              `json:"created"`
+	Details    map[string]interface{} `json:"details,omitempty"`
+	Files      []*File                `json:"files,omitempty"`
+	Modified   time.Time              `json:"modified"`
+	Name       string                 `json:"name"`
+	Owner      *string                `json:"owner,omitempty"`
+	Playbooks  map[string]*Playbook   `json:"playbooks,omitempty"`
+	Read       []string               `json:"read,omitempty"`
+	References []*Reference           `json:"references,omitempty"`
+	Schema     string                 `json:"schema"`
+	Status     string                 `json:"status"`
+	Type       string                 `json:"type"`
+	Write      []string               `json:"write,omitempty"`
 }
 
 type TicketForm struct {
 	Artifacts  []*Artifact             `json:"artifacts,omitempty"`
 	Comments   []*Comment              `json:"comments,omitempty"`
 	Created    *time.Time              `json:"created,omitempty"`
-	Details    interface{}             `json:"details,omitempty"`
+	Details    map[string]interface{}  `json:"details,omitempty"`
 	Files      []*File                 `json:"files,omitempty"`
 	ID         *int64                  `json:"id,omitempty"`
 	Modified   *time.Time              `json:"modified,omitempty"`
@@ -447,7 +447,7 @@ type TicketResponse struct {
 	Artifacts  []*Artifact                  `json:"artifacts,omitempty"`
 	Comments   []*Comment                   `json:"comments,omitempty"`
 	Created    time.Time                    `json:"created"`
-	Details    interface{}                  `json:"details,omitempty"`
+	Details    map[string]interface{}       `json:"details,omitempty"`
 	Files      []*File                      `json:"files,omitempty"`
 	ID         int64                        `json:"id"`
 	Modified   time.Time                    `json:"modified"`
@@ -463,22 +463,22 @@ type TicketResponse struct {
 }
 
 type TicketSimpleResponse struct {
-	Artifacts  []*Artifact          `json:"artifacts,omitempty"`
-	Comments   []*Comment           `json:"comments,omitempty"`
-	Created    time.Time            `json:"created"`
-	Details    interface{}          `json:"details,omitempty"`
-	Files      []*File              `json:"files,omitempty"`
-	ID         int64                `json:"id"`
-	Modified   time.Time            `json:"modified"`
-	Name       string               `json:"name"`
-	Owner      *string              `json:"owner,omitempty"`
-	Playbooks  map[string]*Playbook `json:"playbooks,omitempty"`
-	Read       []string             `json:"read,omitempty"`
-	References []*Reference         `json:"references,omitempty"`
-	Schema     string               `json:"schema"`
-	Status     string               `json:"status"`
-	Type       string               `json:"type"`
-	Write      []string             `json:"write,omitempty"`
+	Artifacts  []*Artifact            `json:"artifacts,omitempty"`
+	Comments   []*Comment             `json:"comments,omitempty"`
+	Created    time.Time              `json:"created"`
+	Details    map[string]interface{} `json:"details,omitempty"`
+	Files      []*File                `json:"files,omitempty"`
+	ID         int64                  `json:"id"`
+	Modified   time.Time              `json:"modified"`
+	Name       string                 `json:"name"`
+	Owner      *string                `json:"owner,omitempty"`
+	Playbooks  map[string]*Playbook   `json:"playbooks,omitempty"`
+	Read       []string               `json:"read,omitempty"`
+	References []*Reference           `json:"references,omitempty"`
+	Schema     string                 `json:"schema"`
+	Status     string                 `json:"status"`
+	Type       string                 `json:"type"`
+	Write      []string               `json:"write,omitempty"`
 }
 
 type TicketTemplate struct {
@@ -528,7 +528,7 @@ type TicketWithTickets struct {
 	Artifacts  []*Artifact                  `json:"artifacts,omitempty"`
 	Comments   []*Comment                   `json:"comments,omitempty"`
 	Created    time.Time                    `json:"created"`
-	Details    interface{}                  `json:"details,omitempty"`
+	Details    map[string]interface{}       `json:"details,omitempty"`
 	Files      []*File                      `json:"files,omitempty"`
 	ID         int64                        `json:"id"`
 	Logs       []*LogEntry                  `json:"logs,omitempty"`

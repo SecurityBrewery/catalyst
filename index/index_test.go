@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/test"
 )
 
@@ -29,7 +29,7 @@ func TestIndex(t *testing.T) {
 			}
 			defer cleanup()
 
-			i.Index([]*models.TicketSimpleResponse{
+			i.Index([]*model.TicketSimpleResponse{
 				{ID: 0, Name: "bar"},
 				{ID: 1, Name: "foo"},
 			})
@@ -61,7 +61,7 @@ func TestIndex_Truncate(t *testing.T) {
 			}
 			defer cleanup()
 
-			i.Index([]*models.TicketSimpleResponse{
+			i.Index([]*model.TicketSimpleResponse{
 				{ID: 0, Name: "bar"},
 				{ID: 1, Name: "foo"},
 			})

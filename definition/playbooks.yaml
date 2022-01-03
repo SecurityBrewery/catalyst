@@ -32,7 +32,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { type: array, items: { $ref: "#/definitions/PlaybookTemplateResponse" } }
+          schema: { $ref: "#/definitions/PlaybookTemplateResponse" }
           examples:
             test:
               id: simple-2

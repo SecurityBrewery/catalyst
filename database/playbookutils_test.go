@@ -5,12 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-var playbook2 = &models.Playbook{
+var playbook2 = &model.Playbook{
 	Name: "Phishing",
-	Tasks: map[string]*models.Task{
+	Tasks: map[string]*model.Task{
 		"board": {Next: map[string]string{
 			"escalate":    "boardInvolved == true",
 			"aquire-mail": "boardInvolved == false",
@@ -30,9 +30,9 @@ var playbook2 = &models.Playbook{
 	},
 }
 
-var playbook3 = &models.Playbook{
+var playbook3 = &model.Playbook{
 	Name: "Phishing",
-	Tasks: map[string]*models.Task{
+	Tasks: map[string]*model.Task{
 		"board": {Next: map[string]string{
 			"escalate":    "boardInvolved == true",
 			"aquire-mail": "boardInvolved == false",
@@ -52,9 +52,9 @@ var playbook3 = &models.Playbook{
 	},
 }
 
-var playbook4 = &models.Playbook{
+var playbook4 = &model.Playbook{
 	Name: "Malware",
-	Tasks: map[string]*models.Task{
+	Tasks: map[string]*model.Task{
 		"file-or-hash": {Next: map[string]string{
 			"enter-hash": "file == 'Hash'",
 			"upload":     "file == 'File'",
@@ -72,7 +72,7 @@ var playbook4 = &models.Playbook{
 
 func Test_canBeCompleted(t *testing.T) {
 	type args struct {
-		playbook *models.Playbook
+		playbook *model.Playbook
 		taskID   string
 	}
 	tests := []struct {
@@ -106,7 +106,7 @@ func Test_canBeCompleted(t *testing.T) {
 
 func Test_playbookOrder(t *testing.T) {
 	type args struct {
-		playbook *models.Playbook
+		playbook *model.Playbook
 	}
 	tests := []struct {
 		name    string

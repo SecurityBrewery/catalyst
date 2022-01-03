@@ -4,16 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/go-chi/chi"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
-	"github.com/SecurityBrewery/catalyst/generated/restapi"
+	"github.com/SecurityBrewery/catalyst/generated/api"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/index"
 	"github.com/SecurityBrewery/catalyst/role"
@@ -27,7 +25,7 @@ type Config struct {
 	Storage   *storage.Config
 	Bus       *bus.Config
 
-	UISettings      *models.Settings
+	UISettings      *model.Settings
 	Secret          []byte
 	Auth            *AuthConfig
 	ExternalAddress string
@@ -39,7 +37,7 @@ type Server struct {
 	DB      *database.Database
 	Index   *index.Index
 	Storage *storage.Storage
-	Server  *restapi.Server
+	Server  chi.Router
 }
 
 func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
@@ -85,7 +83,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	if config.InitialAPIKey != "" {
 		_ = catalystDatabase.UserDelete(ctx, "setup")
 
-		ctx = busdb.UserContext(ctx, &models.UserResponse{
+		ctx = busdb.UserContext(ctx, &model.UserResponse{
 			ID:      "setup",
 			Roles:   role.Strings(role.Explode(role.Admin)),
 			Apikey:  false,
@@ -111,33 +109,33 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	}, nil
 }
 
-func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (*restapi.Server, error) {
+func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
 	// session
-	store := cookie.NewStore(config.Secret)
-	setSession := sessions.Sessions(SessionName, store)
+	// store := cookie.NewStore(config.Secret)
+	// setSession := sessions.Sessions(SessionName, store)
 
-	authenticate := Authenticate(catalystDatabase, config.Auth)
+	// authenticate := Authenticate(catalystDatabase, config.Auth)
 
 	// create server
-	apiServer := restapi.New(catalystService, &restapi.Config{Address: "0.0.0.0:8000", InsecureHTTP: true})
-	apiServer.UseRawPath = true
+	apiServer := api.NewServer(catalystService)
+	// apiServer.UseRawPath = true
 
-	apiServer.ApiGroup.Use(setSession, authenticate, AuthorizeBlockedUser)
-	apiServer.RoleAuth = AuthorizeRole
+	// apiServer.ApiGroup.Use(setSession, authenticate, AuthorizeBlockedUser)
+	// apiServer.RoleAuth = AuthorizeRole
 
-	apiServer.ConfigureRoutes()
-	apiServer.ApiGroup.HEAD("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.ApiGroup.PATCH("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.ApiGroup.POST("/files/:ticketID/upload", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.ApiGroup.GET("/files/:ticketID/download/:key", AuthorizeRole([]role.Role{role.FileReadWrite}), download(catalystStorage.Downloader()))
+	// apiServer.ConfigureRoutes()
+	// apiServer.ApiGroup.HEAD("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
+	// apiServer.ApiGroup.PATCH("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
+	// apiServer.ApiGroup.POST("/files/:ticketID/upload", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
+	// apiServer.ApiGroup.GET("/files/:ticketID/download/:key", AuthorizeRole([]role.Role{role.FileReadWrite}), download(catalystStorage.Downloader()))
 
-	apiServer.ApiGroup.GET("/backup/create", AuthorizeRole([]role.Role{role.BackupRead}), BackupHandler(catalystStorage, dbConfig))
-	apiServer.ApiGroup.POST("/backup/restore", AuthorizeRole([]role.Role{role.BackupRestore}), RestoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	// apiServer.ApiGroup.GET("/backup/create", AuthorizeRole([]role.Role{role.BackupRead}), BackupHandler(catalystStorage, dbConfig))
+	// apiServer.ApiGroup.POST("/backup/restore", AuthorizeRole([]role.Role{role.BackupRestore}), RestoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
-	apiServer.GET("/callback", setSession, callback(config.Auth))
-	apiServer.Any("/wss", setSession, authenticate, AuthorizeBlockedUser, handleWebSocket(bus))
-	apiServer.NoRoute(setSession, authenticate, AuthorizeBlockedUser, static)
+	// apiServer.GET("/callback", setSession, callback(config.Auth))
+	// apiServer.Any("/wss", setSession, authenticate, AuthorizeBlockedUser, handleWebSocket(bus))
+	// apiServer.NoRoute(setSession, authenticate, AuthorizeBlockedUser, static)
 
-	apiServer.Use(cors.Default())
+	// apiServer.Use(cors.Default())
 	return apiServer, nil
 }

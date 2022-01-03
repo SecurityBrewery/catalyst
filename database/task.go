@@ -6,18 +6,18 @@ import (
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 type playbookResponse struct {
-	PlaybookId   string          `json:"playbook_id"`
-	PlaybookName string          `json:"playbook_name"`
-	Playbook     models.Playbook `json:"playbook"`
-	TicketId     int64           `json:"ticket_id"`
-	TicketName   string          `json:"ticket_name"`
+	PlaybookId   string         `json:"playbook_id"`
+	PlaybookName string         `json:"playbook_name"`
+	Playbook     model.Playbook `json:"playbook"`
+	TicketId     int64          `json:"ticket_id"`
+	TicketName   string         `json:"ticket_name"`
 }
 
-func (db *Database) TaskList(ctx context.Context) ([]*models.TaskWithContext, error) {
+func (db *Database) TaskList(ctx context.Context) ([]*model.TaskWithContext, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (db *Database) TaskList(ctx context.Context) ([]*models.TaskWithContext, er
 		return nil, err
 	}
 	defer cursor.Close()
-	docs := []*models.TaskWithContext{}
+	docs := []*model.TaskWithContext{}
 	for {
 		var doc playbookResponse
 		_, err := cursor.ReadDocument(ctx, &doc)
@@ -45,7 +45,6 @@ func (db *Database) TaskList(ctx context.Context) ([]*models.TaskWithContext, er
 			return nil, err
 		}
 
-
 		playbook, err := toPlaybookResponse(&doc.Playbook)
 		if err != nil {
 			return nil, err
@@ -53,7 +52,7 @@ func (db *Database) TaskList(ctx context.Context) ([]*models.TaskWithContext, er
 
 		for _, task := range playbook.Tasks {
 			if task.Active {
-				docs = append(docs, &models.TaskWithContext{
+				docs = append(docs, &model.TaskWithContext{
 					PlaybookId:   doc.PlaybookId,
 					PlaybookName: doc.PlaybookName,
 					Task:         *task,

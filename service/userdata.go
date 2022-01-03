@@ -9,44 +9,48 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/operations/userdata"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func userdataID(id string) []driver.DocumentID {
+func userDataResponseID(userData *model.UserDataResponse) []driver.DocumentID {
+	if userData == nil {
+		return nil
+	}
+	return userDataID(userData.ID)
+}
+
+func userDataID(id string) []driver.DocumentID {
 	return []driver.DocumentID{driver.DocumentID(fmt.Sprintf("%s/%s", database.UserDataCollectionName, id))}
 }
 
-func (s *Service) GetUserData(ctx context.Context, params *userdata.GetUserDataParams) *api.Response {
-	userData, err := s.database.UserDataGet(ctx, params.ID)
-	return s.response(ctx, "GetUserData", nil, userData, err)
+func (s *Service) ListUserData(ctx context.Context) (doc []*model.UserDataResponse, err error) {
+	return s.database.UserDataList(ctx)
 }
 
-func (s *Service) ListUserData(ctx context.Context) *api.Response {
-	userData, err := s.database.UserDataList(ctx)
-	return s.response(ctx, "ListUserData", nil, userData, err)
+func (s *Service) GetUserData(ctx context.Context, id string) (*model.UserDataResponse, error) {
+	return s.database.UserDataGet(ctx, id)
 }
 
-func (s *Service) UpdateUserData(ctx context.Context, params *userdata.UpdateUserDataParams) *api.Response {
-	userData, err := s.database.UserDataUpdate(ctx, params.ID, params.Userdata)
-	return s.response(ctx, "UpdateUserData", userdataID(userData.ID), userData, err)
+func (s *Service) UpdateUserData(ctx context.Context, id string, data *model.UserData) (doc *model.UserDataResponse, err error) {
+	defer s.publishRequest(ctx, err, "CreateUser", userDataResponseID(doc))
+	return s.database.UserDataUpdate(ctx, id, data)
 }
 
-func (s *Service) CurrentUserData(ctx context.Context) *api.Response {
+func (s *Service) CurrentUserData(ctx context.Context) (doc *model.UserDataResponse, err error) {
 	user, ok := busdb.UserFromContext(ctx)
 	if !ok {
-		return s.response(ctx, "CurrentUserData", userdataID(user.ID), nil, errors.New("no user in context"))
+		return nil, errors.New("no user in context")
 	}
-	userData, err := s.database.UserDataGet(ctx, user.ID)
-	return s.response(ctx, "GetUserData", nil, userData, err)
+
+	return s.database.UserDataGet(ctx, user.ID)
 }
 
-func (s *Service) UpdateCurrentUserData(ctx context.Context, params *userdata.UpdateCurrentUserDataParams) *api.Response {
+func (s *Service) UpdateCurrentUserData(ctx context.Context, data *model.UserData) (doc *model.UserDataResponse, err error) {
 	user, ok := busdb.UserFromContext(ctx)
 	if !ok {
-		return s.response(ctx, "UpdateCurrentUserData", userdataID(user.ID), nil, errors.New("no user in context"))
+		return nil, errors.New("no user in context")
 	}
 
-	userData, err := s.database.UserDataUpdate(ctx, user.ID, params.Userdata)
-	return s.response(ctx, "UpdateCurrentUserData", userdataID(user.ID), userData, err)
+	defer s.publishRequest(ctx, err, "UpdateCurrentUserData", userDataResponseID(doc))
+	return s.database.UserDataUpdate(ctx, user.ID, data)
 }

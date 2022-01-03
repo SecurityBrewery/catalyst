@@ -3,24 +3,24 @@ package busdb
 import (
 	"context"
 	"errors"
-	"github.com/SecurityBrewery/catalyst/bus"
 	"strings"
 
 	"github.com/arangodb/go-driver"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/bus"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
 const LogCollectionName = "logs"
 
-func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, message string) (*models.LogEntry, error) {
+func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, message string) (*model.LogEntry, error) {
 	user, ok := UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
 
-	logentry := &models.LogEntry{
+	logentry := &model.LogEntry{
 		Type:      logType,
 		Reference: reference,
 		Created:   time.Now().UTC(),
@@ -28,7 +28,7 @@ func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, messag
 		Message:   message,
 	}
 
-	doc := models.LogEntry{}
+	doc := model.LogEntry{}
 	_, err := db.logCollection.CreateDocument(driver.WithReturnNew(ctx, &doc), logentry)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, messag
 	return &doc, nil
 }
 
-func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*models.LogEntry) error {
+func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*model.LogEntry) error {
 	var ids []driver.DocumentID
 	for _, entry := range logentries {
 		if strings.HasPrefix(entry.Reference, "tickets/") {
@@ -60,7 +60,7 @@ func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*models.
 	return nil
 }
 
-func (db *BusDatabase) LogList(ctx context.Context, reference string) ([]*models.LogEntry, error) {
+func (db *BusDatabase) LogList(ctx context.Context, reference string) ([]*model.LogEntry, error) {
 	query := "FOR d IN @@collection FILTER d.reference == @reference SORT d.created DESC RETURN d"
 	cursor, err := db.internal.Query(ctx, query, map[string]interface{}{
 		"@collection": LogCollectionName,
@@ -70,9 +70,9 @@ func (db *BusDatabase) LogList(ctx context.Context, reference string) ([]*models
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.LogEntry
+	var docs []*model.LogEntry
 	for {
-		var doc models.LogEntry
+		var doc model.LogEntry
 		_, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break

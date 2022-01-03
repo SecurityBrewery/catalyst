@@ -6,7 +6,7 @@ import (
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/bus"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 // BusDatabase
@@ -41,13 +41,13 @@ type Operation struct {
 var CreateOperation = &Operation{Type: bus.DatabaseEntryCreated}
 var ReadOperation = &Operation{Type: bus.DatabaseEntryRead}
 
-func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (driver.Cursor, *models.LogEntry, error) {
+func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (driver.Cursor, *model.LogEntry, error) {
 	cur, err := db.internal.Query(ctx, query, vars)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var logs *models.LogEntry
+	var logs *model.LogEntry
 
 	switch {
 	case operation.Type == bus.DatabaseEntryCreated, operation.Type == bus.DatabaseEntryUpdated:

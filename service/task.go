@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func (s *Service) ListTasks(ctx context.Context) *api.Response {
-	i, err := s.database.TaskList(ctx)
-	return s.response(ctx, "ListTasks", nil, i, err)
+func (s *Service) ListTasks(ctx context.Context) ([]*model.TaskWithContext, error) {
+	return s.database.TaskList(ctx)
 }

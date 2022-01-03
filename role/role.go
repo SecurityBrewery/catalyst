@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 type Role string
@@ -52,7 +52,7 @@ func (p Role) String() string {
 	return string(p)
 }
 
-func UserHasRoles(user *models.UserResponse, roles []Role) bool {
+func UserHasRoles(user *model.UserResponse, roles []Role) bool {
 	hasRoles := true
 	for _, role := range roles {
 		if !UserHasRole(user, role) {
@@ -63,7 +63,7 @@ func UserHasRoles(user *models.UserResponse, roles []Role) bool {
 	return hasRoles
 }
 
-func UserHasRole(user *models.UserResponse, role Role) bool {
+func UserHasRole(user *model.UserResponse, role Role) bool {
 	return ContainsRole(FromStrings(user.Roles), role)
 }
 

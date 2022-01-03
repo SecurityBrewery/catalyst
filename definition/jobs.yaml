@@ -62,7 +62,7 @@ definitions:
   Message:
     type: object
     properties:
-      payload: { type: object }
+      payload: { }
       secrets: { type: object, additionalProperties: { type: string } }
       context: { $ref: "#/definitions/Context" }
 

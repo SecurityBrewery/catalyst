@@ -6,22 +6,22 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/SecurityBrewery/catalyst/database/migrations"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/test"
 )
 
-var template1 = &models.TicketTemplateForm{
+var template1 = &model.TicketTemplateForm{
 	Schema: migrations.DefaultTemplateSchema,
 	Name:   "Template 1",
 }
-var default1 = &models.TicketTemplateForm{
+var default1 = &model.TicketTemplateForm{
 	Schema: migrations.DefaultTemplateSchema,
 	Name:   "Default",
 }
 
 func TestDatabase_TemplateCreate(t *testing.T) {
 	type args struct {
-		template *models.TicketTemplateForm
+		template *model.TicketTemplateForm
 	}
 	tests := []struct {
 		name    string
@@ -31,8 +31,8 @@ func TestDatabase_TemplateCreate(t *testing.T) {
 		{name: "Normal", args: args{template: template1}},
 		{name: "Duplicate", args: args{template: default1}, wantErr: true},
 		{name: "Nil template", args: args{}, wantErr: true},
-		{name: "Template without fields", args: args{template: &models.TicketTemplateForm{}}, wantErr: true},
-		{name: "Only name", args: args{template: &models.TicketTemplateForm{Name: "name"}}, wantErr: false},
+		{name: "Template without fields", args: args{template: &model.TicketTemplateForm{}}, wantErr: true},
+		{name: "Only name", args: args{template: &model.TicketTemplateForm{Name: "name"}}, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -87,10 +87,10 @@ func TestDatabase_TemplateGet(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *models.TicketTemplateResponse
+		want    *model.TicketTemplateResponse
 		wantErr bool
 	}{
-		{name: "Normal", args: args{id: "default"}, want: &models.TicketTemplateResponse{ID: "default", Name: "Default", Schema: migrations.DefaultTemplateSchema}},
+		{name: "Normal", args: args{id: "default"}, want: &model.TicketTemplateResponse{ID: "default", Name: "Default", Schema: migrations.DefaultTemplateSchema}},
 		{name: "Not existing", args: args{id: "foobar"}, wantErr: true},
 	}
 	for _, tt := range tests {
@@ -122,10 +122,10 @@ func TestDatabase_TemplateGet(t *testing.T) {
 func TestDatabase_TemplateList(t *testing.T) {
 	tests := []struct {
 		name    string
-		want    []*models.TicketTemplateResponse
+		want    []*model.TicketTemplateResponse
 		wantErr bool
 	}{
-		{name: "Normal", want: []*models.TicketTemplateResponse{{ID: "default", Name: "Default", Schema: migrations.DefaultTemplateSchema}, {ID: "template-1", Name: template1.Name, Schema: template1.Schema}}},
+		{name: "Normal", want: []*model.TicketTemplateResponse{{ID: "default", Name: "Default", Schema: migrations.DefaultTemplateSchema}, {ID: "template-1", Name: template1.Name, Schema: template1.Schema}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -152,7 +152,7 @@ func TestDatabase_TemplateList(t *testing.T) {
 func TestDatabase_TemplateUpdate(t *testing.T) {
 	type args struct {
 		id       string
-		template *models.TicketTemplateForm
+		template *model.TicketTemplateForm
 	}
 	tests := []struct {
 		name    string

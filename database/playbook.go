@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
@@ -29,8 +29,8 @@ type TaskYAML struct {
 	Join       bool              `yaml:"join"`
 }
 
-func toPlaybooks(docs []*models.PlaybookTemplateForm) (map[string]*models.Playbook, error) {
-	playbooks := map[string]*models.Playbook{}
+func toPlaybooks(docs []*model.PlaybookTemplateForm) (map[string]*model.Playbook, error) {
+	playbooks := map[string]*model.Playbook{}
 	for _, doc := range docs {
 		playbook, err := toPlaybook(doc)
 		if err != nil {
@@ -45,8 +45,8 @@ func toPlaybooks(docs []*models.PlaybookTemplateForm) (map[string]*models.Playbo
 	return playbooks, nil
 }
 
-func toPlaybook(doc *models.PlaybookTemplateForm) (*models.Playbook, error) {
-	ticketPlaybook := &models.Playbook{}
+func toPlaybook(doc *model.PlaybookTemplateForm) (*model.Playbook, error) {
+	ticketPlaybook := &model.Playbook{}
 	err := yaml.Unmarshal([]byte(doc.Yaml), ticketPlaybook)
 	if err != nil {
 		return nil, err
@@ -61,11 +61,11 @@ func toPlaybook(doc *models.PlaybookTemplateForm) (*models.Playbook, error) {
 	return ticketPlaybook, nil
 }
 
-func toPlaybookTemplateResponse(key string, doc *models.PlaybookTemplate) *models.PlaybookTemplateResponse {
-	return &models.PlaybookTemplateResponse{ID: key, Name: doc.Name, Yaml: doc.Yaml}
+func toPlaybookTemplateResponse(key string, doc *model.PlaybookTemplate) *model.PlaybookTemplateResponse {
+	return &model.PlaybookTemplateResponse{ID: key, Name: doc.Name, Yaml: doc.Yaml}
 }
 
-func (db *Database) PlaybookCreate(ctx context.Context, playbook *models.PlaybookTemplateForm) (*models.PlaybookTemplateResponse, error) {
+func (db *Database) PlaybookCreate(ctx context.Context, playbook *model.PlaybookTemplateForm) (*model.PlaybookTemplateResponse, error) {
 	if playbook == nil {
 		return nil, errors.New("requires playbook")
 	}
@@ -79,9 +79,9 @@ func (db *Database) PlaybookCreate(ctx context.Context, playbook *models.Playboo
 	if playbookYAML.Name == "" {
 		return nil, errors.New("requires template name")
 	}
-	p := models.PlaybookTemplate{Name: playbookYAML.Name, Yaml: playbook.Yaml}
+	p := model.PlaybookTemplate{Name: playbookYAML.Name, Yaml: playbook.Yaml}
 
-	var doc models.PlaybookTemplate
+	var doc model.PlaybookTemplate
 	newctx := driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.playbookCollection.CreateDocument(ctx, newctx, strcase.ToKebab(playbookYAML.Name), p)
@@ -92,8 +92,8 @@ func (db *Database) PlaybookCreate(ctx context.Context, playbook *models.Playboo
 	return toPlaybookTemplateResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) PlaybookGet(ctx context.Context, id string) (*models.PlaybookTemplateResponse, error) {
-	doc := models.PlaybookTemplate{}
+func (db *Database) PlaybookGet(ctx context.Context, id string) (*model.PlaybookTemplateResponse, error) {
+	doc := model.PlaybookTemplate{}
 	meta, err := db.playbookCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (db *Database) PlaybookDelete(ctx context.Context, id string) error {
 	return err
 }
 
-func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *models.PlaybookTemplateForm) (*models.PlaybookTemplateResponse, error) {
+func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *model.PlaybookTemplateForm) (*model.PlaybookTemplateResponse, error) {
 	var pb PlaybookYAML
 	err := yaml.Unmarshal([]byte(playbook.Yaml), &pb)
 	if err != nil {
@@ -118,10 +118,10 @@ func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *mod
 		return nil, errors.New("requires template name")
 	}
 
-	var doc models.PlaybookTemplate
+	var doc model.PlaybookTemplate
 	ctx = driver.WithReturnNew(ctx, &doc)
 
-	meta, err := db.playbookCollection.ReplaceDocument(ctx, id, models.PlaybookTemplate{Name: pb.Name, Yaml: playbook.Yaml})
+	meta, err := db.playbookCollection.ReplaceDocument(ctx, id, model.PlaybookTemplate{Name: pb.Name, Yaml: playbook.Yaml})
 	if err != nil {
 		return nil, err
 	}
@@ -129,16 +129,16 @@ func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *mod
 	return toPlaybookTemplateResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) PlaybookList(ctx context.Context) ([]*models.PlaybookTemplateResponse, error) {
+func (db *Database) PlaybookList(ctx context.Context) ([]*model.PlaybookTemplateResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": PlaybookCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.PlaybookTemplateResponse
+	var docs []*model.PlaybookTemplateResponse
 	for {
-		var doc models.PlaybookTemplate
+		var doc model.PlaybookTemplate
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break

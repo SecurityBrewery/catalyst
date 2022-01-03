@@ -14,11 +14,11 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func toJob(doc *models.JobForm) *models.Job {
-	return &models.Job{
+func toJob(doc *model.JobForm) *model.Job {
+	return &model.Job{
 		Automation: doc.Automation,
 		Payload:    doc.Payload,
 		Origin:     doc.Origin,
@@ -27,7 +27,7 @@ func toJob(doc *models.JobForm) *models.Job {
 	}
 }
 
-func (db *Database) toJobResponse(ctx context.Context, key string, doc *models.Job, update bool) (*models.JobResponse, error) {
+func (db *Database) toJobResponse(ctx context.Context, key string, doc *model.Job, update bool) (*model.JobResponse, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *models.J
 		}
 	}
 
-	return &models.JobResponse{
+	return &model.JobResponse{
 		Automation: doc.Automation,
 		ID:         key,
 		Log:        doc.Log,
@@ -64,19 +64,19 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *models.J
 	}, nil
 }
 
-func (db *Database) JobCreate(ctx context.Context, id string, job *models.JobForm) (*models.JobResponse, error) {
+func (db *Database) JobCreate(ctx context.Context, id string, job *model.JobForm) (*model.JobResponse, error) {
 	if job == nil {
 		return nil, errors.New("requires job")
 	}
 
-	var doc models.Job
+	var doc model.Job
 	newctx := driver.WithReturnNew(ctx, &doc)
 
 	/* Start validation */
 	j := toJob(job)
 	b, _ := json.Marshal(j)
 
-	r, err := models.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
+	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +98,8 @@ func (db *Database) JobCreate(ctx context.Context, id string, job *models.JobFor
 	return db.toJobResponse(ctx, meta.Key, &doc, true)
 }
 
-func (db *Database) JobGet(ctx context.Context, id string) (*models.JobResponse, error) {
-	var doc models.Job
+func (db *Database) JobGet(ctx context.Context, id string) (*model.JobResponse, error) {
+	var doc model.Job
 	meta, err := db.jobCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -108,14 +108,14 @@ func (db *Database) JobGet(ctx context.Context, id string) (*models.JobResponse,
 	return db.toJobResponse(ctx, meta.Key, &doc, true)
 }
 
-func (db *Database) JobUpdate(ctx context.Context, id string, job *models.Job) (*models.JobResponse, error) {
-	var doc models.Job
+func (db *Database) JobUpdate(ctx context.Context, id string, job *model.Job) (*model.JobResponse, error) {
+	var doc model.Job
 	ctx = driver.WithReturnNew(ctx, &doc)
 
 	/* Start validation */
 	b, _ := json.Marshal(job)
 
-	r, err := models.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
+	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
 	if err != nil {
 		return nil, err
 	}
@@ -184,16 +184,16 @@ func (db *Database) JobDelete(ctx context.Context, id string) error {
 	return err
 }
 
-func (db *Database) JobList(ctx context.Context) ([]*models.JobResponse, error) {
+func (db *Database) JobList(ctx context.Context) ([]*model.JobResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": JobCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.JobResponse
+	var docs []*model.JobResponse
 	for {
-		var doc models.Job
+		var doc model.Job
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
@@ -212,7 +212,7 @@ func (db *Database) JobList(ctx context.Context) ([]*models.JobResponse, error) 
 	return docs, err
 }
 
-func publishJobMapping(id, automation string, contextStructs *models.Context, origin *models.Origin, payloadMapping map[string]string, db *Database) error {
+func publishJobMapping(id, automation string, contextStructs *model.Context, origin *model.Origin, payloadMapping map[string]string, db *Database) error {
 	msg, err := generatePayload(payloadMapping, contextStructs)
 	if err != nil {
 		return fmt.Errorf("message generation failed: %w", err)
@@ -221,11 +221,11 @@ func publishJobMapping(id, automation string, contextStructs *models.Context, or
 	return publishJob(id, automation, contextStructs, origin, msg, db)
 }
 
-func publishJob(id, automation string, contextStructs *models.Context, origin *models.Origin, payload map[string]interface{}, db *Database) error {
+func publishJob(id, automation string, contextStructs *model.Context, origin *model.Origin, payload map[string]interface{}, db *Database) error {
 	return db.bus.PublishJob(id, automation, payload, contextStructs, origin)
 }
 
-func generatePayload(msgMapping map[string]string, contextStructs *models.Context) (map[string]interface{}, error) {
+func generatePayload(msgMapping map[string]string, contextStructs *model.Context) (map[string]interface{}, error) {
 	contextJson, err := json.Marshal(contextStructs)
 	if err != nil {
 		return nil, err

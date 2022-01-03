@@ -3798,7 +3798,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlaybook(playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PlaybookTemplateResponse>>> {
+        async createPlaybook(playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaybook(playbook, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3863,7 +3863,7 @@ export const PlaybooksApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlaybook(playbook: PlaybookTemplateForm, options?: any): AxiosPromise<Array<PlaybookTemplateResponse>> {
+        createPlaybook(playbook: PlaybookTemplateForm, options?: any): AxiosPromise<PlaybookTemplateResponse> {
             return localVarFp.createPlaybook(playbook, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4603,7 +4603,7 @@ export const TasksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTasks(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskResponse>>> {
+        async listTasks(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskWithContext>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTasks(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4623,7 +4623,7 @@ export const TasksApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTasks(options?: any): AxiosPromise<Array<TaskResponse>> {
+        listTasks(options?: any): AxiosPromise<Array<TaskWithContext>> {
             return localVarFp.listTasks(options).then((request) => request(axios, basePath));
         },
     };
@@ -5848,13 +5848,15 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary Set ticket schema
          * @param {number} id Ticket ID
-         * @param {string} [schema] New ticket schema
+         * @param {string} schema New ticket schema
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setSchema: async (id: number, schema?: string, options: any = {}): Promise<RequestArgs> => {
+        setSchema: async (id: number, schema: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('setSchema', 'id', id)
+            // verify required parameter 'schema' is not null or undefined
+            assertParamExists('setSchema', 'schema', schema)
             const localVarPath = `/tickets/{id}/schema`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -6028,7 +6030,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addArtifact(id: number, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async addArtifact(id: number, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addArtifact(id, artifact, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6040,7 +6042,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addComment(id: number, comment: CommentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async addComment(id: number, comment: CommentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addComment(id, comment, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6052,7 +6054,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addTicketPlaybook(id, playbook, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6066,7 +6068,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.completeTask(id, playbookID, taskID, data, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6112,7 +6114,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Artifact>> {
+        async enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.enrichArtifact(id, name, data, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6135,7 +6137,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTicket(id: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async getTicket(id: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTicket(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6147,7 +6149,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkFiles(id: number, files: Array<any>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async linkFiles(id: number, files: Array<any>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.linkFiles(id, files, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6159,7 +6161,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async linkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.linkTicket(id, linkedID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6187,7 +6189,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeArtifact(id: number, name: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async removeArtifact(id: number, name: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeArtifact(id, name, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6199,7 +6201,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeComment(id: number, commentID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async removeComment(id: number, commentID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeComment(id, commentID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6211,7 +6213,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeTicketPlaybook(id: number, playbookID: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async removeTicketPlaybook(id: number, playbookID: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeTicketPlaybook(id, playbookID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6250,7 +6252,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setArtifact(id: number, name: string, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async setArtifact(id: number, name: string, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setArtifact(id, name, artifact, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6262,7 +6264,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setReferences(id: number, references: Array<Reference>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async setReferences(id: number, references: Array<Reference>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setReferences(id, references, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6270,11 +6272,11 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * 
          * @summary Set ticket schema
          * @param {number} id Ticket ID
-         * @param {string} [schema] New ticket schema
+         * @param {string} schema New ticket schema
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setSchema(id: number, schema?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async setSchema(id: number, schema: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setSchema(id, schema, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6288,7 +6290,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setTask(id, playbookID, taskID, task, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6300,7 +6302,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async unlinkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async unlinkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkTicket(id, linkedID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6312,7 +6314,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTicket(id: number, ticket: Ticket, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async updateTicket(id: number, ticket: Ticket, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateTicket(id, ticket, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6334,7 +6336,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addArtifact(id: number, artifact: Artifact, options?: any): AxiosPromise<TicketResponse> {
+        addArtifact(id: number, artifact: Artifact, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.addArtifact(id, artifact, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6345,7 +6347,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addComment(id: number, comment: CommentForm, options?: any): AxiosPromise<TicketResponse> {
+        addComment(id: number, comment: CommentForm, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.addComment(id, comment, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6356,7 +6358,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any): AxiosPromise<TicketResponse> {
+        addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.addTicketPlaybook(id, playbook, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6369,7 +6371,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any): AxiosPromise<TicketResponse> {
+        completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.completeTask(id, playbookID, taskID, data, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6411,7 +6413,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any): AxiosPromise<Artifact> {
+        enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.enrichArtifact(id, name, data, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6432,7 +6434,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTicket(id: number, options?: any): AxiosPromise<TicketResponse> {
+        getTicket(id: number, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.getTicket(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6443,7 +6445,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkFiles(id: number, files: Array<any>, options?: any): AxiosPromise<TicketResponse> {
+        linkFiles(id: number, files: Array<any>, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.linkFiles(id, files, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6454,7 +6456,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkTicket(id: number, linkedID: number, options?: any): AxiosPromise<TicketResponse> {
+        linkTicket(id: number, linkedID: number, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.linkTicket(id, linkedID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6480,7 +6482,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeArtifact(id: number, name: string, options?: any): AxiosPromise<TicketResponse> {
+        removeArtifact(id: number, name: string, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.removeArtifact(id, name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6491,7 +6493,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeComment(id: number, commentID: number, options?: any): AxiosPromise<TicketResponse> {
+        removeComment(id: number, commentID: number, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.removeComment(id, commentID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6502,7 +6504,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeTicketPlaybook(id: number, playbookID: string, options?: any): AxiosPromise<TicketResponse> {
+        removeTicketPlaybook(id: number, playbookID: string, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.removeTicketPlaybook(id, playbookID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6538,7 +6540,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setArtifact(id: number, name: string, artifact: Artifact, options?: any): AxiosPromise<TicketResponse> {
+        setArtifact(id: number, name: string, artifact: Artifact, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.setArtifact(id, name, artifact, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6549,18 +6551,18 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setReferences(id: number, references: Array<Reference>, options?: any): AxiosPromise<TicketResponse> {
+        setReferences(id: number, references: Array<Reference>, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.setReferences(id, references, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Set ticket schema
          * @param {number} id Ticket ID
-         * @param {string} [schema] New ticket schema
+         * @param {string} schema New ticket schema
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setSchema(id: number, schema?: string, options?: any): AxiosPromise<TicketResponse> {
+        setSchema(id: number, schema: string, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.setSchema(id, schema, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6573,7 +6575,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): AxiosPromise<TicketResponse> {
+        setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.setTask(id, playbookID, taskID, task, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6584,7 +6586,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkTicket(id: number, linkedID: number, options?: any): AxiosPromise<TicketResponse> {
+        unlinkTicket(id: number, linkedID: number, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.unlinkTicket(id, linkedID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6595,7 +6597,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTicket(id: number, ticket: Ticket, options?: any): AxiosPromise<TicketResponse> {
+        updateTicket(id: number, ticket: Ticket, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.updateTicket(id, ticket, options).then((request) => request(axios, basePath));
         },
     };
@@ -6878,12 +6880,12 @@ export class TicketsApi extends BaseAPI {
      * 
      * @summary Set ticket schema
      * @param {number} id Ticket ID
-     * @param {string} [schema] New ticket schema
+     * @param {string} schema New ticket schema
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setSchema(id: number, schema?: string, options?: any) {
+    public setSchema(id: number, schema: string, options?: any) {
         return TicketsApiFp(this.configuration).setSchema(id, schema, options).then((request) => request(this.axios, this.basePath));
     }
 

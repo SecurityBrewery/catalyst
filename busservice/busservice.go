@@ -7,7 +7,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/time"
 )
@@ -19,9 +19,9 @@ type busService struct {
 	catalystBus *bus.Bus
 }
 
-func New(apiurl, apikey string, catalystBus *bus.Bus, db *database.Database) error {
+func New(apiURL, apikey string, catalystBus *bus.Bus, db *database.Database) error {
 
-	h := &busService{db: db, apiURL: apiurl, apiKey: apikey, catalystBus: catalystBus}
+	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, catalystBus: catalystBus}
 
 	if err := catalystBus.SubscribeRequest(h.logRequest); err != nil {
 		return err
@@ -38,14 +38,14 @@ func New(apiurl, apikey string, catalystBus *bus.Bus, db *database.Database) err
 
 func busContext() context.Context {
 	// TODO: change roles?
-	bot := &models.UserResponse{ID: "bot", Roles: []string{role.Admin}}
+	bot := &model.UserResponse{ID: "bot", Roles: []string{role.Admin}}
 	return busdb.UserContext(context.Background(), bot)
 }
 
 func (h *busService) logRequest(msg *bus.RequestMsg) {
-	var logEntries []*models.LogEntry
+	var logEntries []*model.LogEntry
 	for _, i := range msg.IDs {
-		logEntries = append(logEntries, &models.LogEntry{
+		logEntries = append(logEntries, &model.LogEntry{
 			Type:      bus.ChannelRequest,
 			Reference: i.String(),
 			Creator:   msg.User,

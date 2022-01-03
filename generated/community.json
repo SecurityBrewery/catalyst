@@ -563,10 +563,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "items" : {
-                    "$ref" : "#/components/schemas/PlaybookTemplateResponse"
-                  },
-                  "type" : "array"
+                  "$ref" : "#/components/schemas/PlaybookTemplateResponse"
                 }
               },
               "test" : {
@@ -815,7 +812,7 @@
               "application/json" : {
                 "schema" : {
                   "items" : {
-                    "$ref" : "#/components/schemas/TaskResponse"
+                    "$ref" : "#/components/schemas/TaskWithContext"
                   },
                   "type" : "array"
                 }
@@ -1375,7 +1372,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -1459,7 +1456,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -1546,7 +1543,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -1757,7 +1754,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2013,7 +2010,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2230,7 +2227,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Artifact"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2492,7 +2489,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2583,7 +2580,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2796,7 +2793,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -2887,7 +2884,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3021,7 +3018,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3115,7 +3112,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3346,7 +3343,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3608,7 +3605,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3682,14 +3679,14 @@
             }
           },
           "description" : "New ticket schema",
-          "required" : false
+          "required" : true
         },
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3777,7 +3774,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -3843,7 +3840,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TicketResponse"
+                  "$ref" : "#/components/schemas/TicketWithTickets"
                 }
               },
               "test" : {
@@ -4920,7 +4917,6 @@
             "$ref" : "#/components/schemas/Context"
           },
           "payload" : {
-            "properties" : { },
             "type" : "object"
           },
           "secrets" : {

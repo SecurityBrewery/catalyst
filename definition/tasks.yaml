@@ -10,7 +10,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { type: array, items: { $ref: "#/definitions/TaskResponse" } }
+          schema: { type: array, items: { $ref: "#/definitions/TaskWithContext" } }
           examples:
             test: [ ]
       security: [ { roles: [ "ticket:read" ] } ]

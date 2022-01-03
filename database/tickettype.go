@@ -8,11 +8,11 @@ import (
 	"github.com/iancoleman/strcase"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func toTicketType(doc *models.TicketTypeForm) *models.TicketType {
-	return &models.TicketType{
+func toTicketType(doc *model.TicketTypeForm) *model.TicketType {
+	return &model.TicketType{
 		Name:             doc.Name,
 		Icon:             doc.Icon,
 		DefaultPlaybooks: doc.DefaultPlaybooks,
@@ -21,8 +21,8 @@ func toTicketType(doc *models.TicketTypeForm) *models.TicketType {
 	}
 }
 
-func toTicketTypeResponse(key string, doc *models.TicketType) *models.TicketTypeResponse {
-	return &models.TicketTypeResponse{
+func toTicketTypeResponse(key string, doc *model.TicketType) *model.TicketTypeResponse {
+	return &model.TicketTypeResponse{
 		ID:               key,
 		Name:             doc.Name,
 		Icon:             doc.Icon,
@@ -32,7 +32,7 @@ func toTicketTypeResponse(key string, doc *models.TicketType) *models.TicketType
 	}
 }
 
-func (db *Database) TicketTypeCreate(ctx context.Context, tickettype *models.TicketTypeForm) (*models.TicketTypeResponse, error) {
+func (db *Database) TicketTypeCreate(ctx context.Context, tickettype *model.TicketTypeForm) (*model.TicketTypeResponse, error) {
 	if tickettype == nil {
 		return nil, errors.New("requires ticket type")
 	}
@@ -40,7 +40,7 @@ func (db *Database) TicketTypeCreate(ctx context.Context, tickettype *models.Tic
 		return nil, errors.New("requires ticket type name")
 	}
 
-	var doc models.TicketType
+	var doc model.TicketType
 	newctx := driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.tickettypeCollection.CreateDocument(ctx, newctx, strcase.ToKebab(tickettype.Name), toTicketType(tickettype))
@@ -51,8 +51,8 @@ func (db *Database) TicketTypeCreate(ctx context.Context, tickettype *models.Tic
 	return toTicketTypeResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) TicketTypeGet(ctx context.Context, id string) (*models.TicketTypeResponse, error) {
-	var doc models.TicketType
+func (db *Database) TicketTypeGet(ctx context.Context, id string) (*model.TicketTypeResponse, error) {
+	var doc model.TicketType
 	meta, err := db.tickettypeCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (db *Database) TicketTypeGet(ctx context.Context, id string) (*models.Ticke
 	return toTicketTypeResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) TicketTypeUpdate(ctx context.Context, id string, tickettype *models.TicketTypeForm) (*models.TicketTypeResponse, error) {
-	var doc models.TicketType
+func (db *Database) TicketTypeUpdate(ctx context.Context, id string, tickettype *model.TicketTypeForm) (*model.TicketTypeResponse, error) {
+	var doc model.TicketType
 	ctx = driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.tickettypeCollection.ReplaceDocument(ctx, id, toTicketType(tickettype))
@@ -78,16 +78,16 @@ func (db *Database) TicketTypeDelete(ctx context.Context, id string) error {
 	return err
 }
 
-func (db *Database) TicketTypeList(ctx context.Context) ([]*models.TicketTypeResponse, error) {
+func (db *Database) TicketTypeList(ctx context.Context) ([]*model.TicketTypeResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": TicketTypeCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.TicketTypeResponse
+	var docs []*model.TicketTypeResponse
 	for {
-		var doc models.TicketType
+		var doc model.TicketType
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
