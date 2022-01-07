@@ -16,18 +16,18 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/index"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
-func toTicket(ticketForm *models.TicketForm) (interface{}, error) {
+func toTicket(ticketForm *model.TicketForm) (interface{}, error) {
 	playbooks, err := toPlaybooks(ticketForm.Playbooks)
 	if err != nil {
 		return nil, err
 	}
 
-	ticket := &models.Ticket{
+	ticket := &model.Ticket{
 		Artifacts:  ticketForm.Artifacts,
 		Comments:   ticketForm.Comments,
 		Details:    ticketForm.Details,
@@ -70,8 +70,8 @@ func toTicket(ticketForm *models.TicketForm) (interface{}, error) {
 	return ticket, nil
 }
 
-func toTicketResponses(tickets []*models.TicketSimpleResponse) ([]*models.TicketResponse, error) {
-	var extendedTickets []*models.TicketResponse
+func toTicketResponses(tickets []*model.TicketSimpleResponse) ([]*model.TicketResponse, error) {
+	var extendedTickets []*model.TicketResponse
 	for _, simple := range tickets {
 		tr, err := toTicketResponse(simple)
 		if err != nil {
@@ -82,13 +82,13 @@ func toTicketResponses(tickets []*models.TicketSimpleResponse) ([]*models.Ticket
 	return extendedTickets, nil
 }
 
-func toTicketResponse(ticket *models.TicketSimpleResponse) (*models.TicketResponse, error) {
+func toTicketResponse(ticket *model.TicketSimpleResponse) (*model.TicketResponse, error) {
 	playbooks, err := toPlaybookResponses(ticket.Playbooks)
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.TicketResponse{
+	return &model.TicketResponse{
 		ID:         ticket.ID,
 		Artifacts:  ticket.Artifacts,
 		Comments:   ticket.Comments,
@@ -108,13 +108,13 @@ func toTicketResponse(ticket *models.TicketSimpleResponse) (*models.TicketRespon
 	}, nil
 }
 
-func toTicketSimpleResponse(key string, ticket *models.Ticket) (*models.TicketSimpleResponse, error) {
+func toTicketSimpleResponse(key string, ticket *model.Ticket) (*model.TicketSimpleResponse, error) {
 	id, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.TicketSimpleResponse{
+	return &model.TicketSimpleResponse{
 		Artifacts:  ticket.Artifacts,
 		Comments:   ticket.Comments,
 		Created:    ticket.Created,
@@ -134,8 +134,8 @@ func toTicketSimpleResponse(key string, ticket *models.Ticket) (*models.TicketSi
 	}, nil
 }
 
-func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*models.TicketSimpleResponse, logs []*models.LogEntry) *models.TicketWithTickets {
-	return &models.TicketWithTickets{
+func toTicketWithTickets(ticketResponse *model.TicketResponse, tickets []*model.TicketSimpleResponse, logs []*model.LogEntry) *model.TicketWithTickets {
+	return &model.TicketWithTickets{
 		Artifacts:  ticketResponse.Artifacts,
 		Comments:   ticketResponse.Comments,
 		Created:    ticketResponse.Created,
@@ -158,8 +158,8 @@ func toTicketWithTickets(ticketResponse *models.TicketResponse, tickets []*model
 	}
 }
 
-func toPlaybookResponses(playbooks map[string]*models.Playbook) (map[string]*models.PlaybookResponse, error) {
-	pr := map[string]*models.PlaybookResponse{}
+func toPlaybookResponses(playbooks map[string]*model.Playbook) (map[string]*model.PlaybookResponse, error) {
+	pr := map[string]*model.PlaybookResponse{}
 	var err error
 	for k, v := range playbooks {
 		pr[k], err = toPlaybookResponse(v)
@@ -170,15 +170,15 @@ func toPlaybookResponses(playbooks map[string]*models.Playbook) (map[string]*mod
 	return pr, nil
 }
 
-func toPlaybookResponse(playbook *models.Playbook) (*models.PlaybookResponse, error) {
+func toPlaybookResponse(playbook *model.Playbook) (*model.PlaybookResponse, error) {
 	graph, err := playbookGraph(playbook)
 	if err != nil {
 		return nil, err
 	}
 
-	re := &models.PlaybookResponse{
+	re := &model.PlaybookResponse{
 		Name:  playbook.Name,
-		Tasks: map[string]*models.TaskResponse{},
+		Tasks: map[string]*model.TaskResponse{},
 	}
 
 	results, err := graph.Toposort()
@@ -198,7 +198,7 @@ func toPlaybookResponse(playbook *models.Playbook) (*models.PlaybookResponse, er
 	return re, nil
 }
 
-func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*models.TicketForm) ([]*models.TicketResponse, error) {
+func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*model.TicketForm) ([]*model.TicketResponse, error) {
 	update, err := db.Hooks.IngestionFilter(ctx, db.Index)
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*models
 			return nil, err
 		}
 
-		if err := validate(ticket, models.TicketSchema); err != nil {
+		if err := validate(ticket, model.TicketSchema); err != nil {
 			return nil, err
 		}
 
@@ -278,26 +278,26 @@ func (db *Database) IndexRebuild(ctx context.Context) error {
 	return batchIndex(db.Index, tickets)
 }
 
-func batchIndex(index *index.Index, tickets []*models.TicketSimpleResponse) error {
+func batchIndex(index *index.Index, tickets []*model.TicketSimpleResponse) error {
 	var wg sync.WaitGroup
-	var batch []*models.TicketSimpleResponse
+	var batch []*model.TicketSimpleResponse
 	for _, ticket := range tickets {
 		batch = append(batch, ticket)
 
 		if len(batch) > 100 {
 			wg.Add(1)
-			go func(docs []*models.TicketSimpleResponse) {
+			go func(docs []*model.TicketSimpleResponse) {
 				index.Index(docs)
 				wg.Done()
 			}(batch)
-			batch = []*models.TicketSimpleResponse{}
+			batch = []*model.TicketSimpleResponse{}
 		}
 	}
 	wg.Wait()
 	return nil
 }
 
-func (db *Database) TicketGet(ctx context.Context, ticketID int64) (*models.TicketWithTickets, error) {
+func (db *Database) TicketGet(ctx context.Context, ticketID int64) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketReadFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -306,7 +306,7 @@ func (db *Database) TicketGet(ctx context.Context, ticketID int64) (*models.Tick
 	return db.ticketGetQuery(ctx, ticketID, `LET d = DOCUMENT(@@collection, @ID) `+ticketFilterQuery+` RETURN d`, ticketFilterVars, busdb.ReadOperation)
 }
 
-func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query string, bindVars map[string]interface{}, operation *busdb.Operation) (*models.TicketWithTickets, error) {
+func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query string, bindVars map[string]interface{}, operation *busdb.Operation) (*model.TicketWithTickets, error) {
 	if bindVars == nil {
 		bindVars = map[string]interface{}{}
 	}
@@ -321,7 +321,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	}
 	defer cur.Close()
 
-	ticket := models.Ticket{}
+	ticket := model.Ticket{}
 	meta, err := cur.ReadDocument(ctx, &ticket)
 	if err != nil {
 		return nil, err
@@ -333,7 +333,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	}
 
 	// index
-	go db.Index.Index([]*models.TicketSimpleResponse{ticketSimpleResponse})
+	go db.Index.Index([]*model.TicketSimpleResponse{ticketSimpleResponse})
 
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketReadFilter(ctx)
 	if err != nil {
@@ -414,7 +414,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	return toTicketWithTickets(ticketResponse, tickets, logs), nil
 }
 
-func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *models.Ticket) (*models.TicketWithTickets, error) {
+func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *model.Ticket) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -446,7 +446,7 @@ func (db *Database) TicketDelete(ctx context.Context, ticketID int64) error {
 	return nil
 }
 
-func (db *Database) TicketList(ctx context.Context, ticketType string, query string, sorts []string, desc []bool, offset, count int64) (*models.TicketList, error) {
+func (db *Database) TicketList(ctx context.Context, ticketType string, query string, sorts []string, desc []bool, offset, count int64) (*model.TicketList, error) {
 	binVars := map[string]interface{}{}
 
 	parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
@@ -494,14 +494,14 @@ func (db *Database) TicketList(ctx context.Context, ticketType string, query str
 		RETURN d`
 	// RETURN KEEP(d, "_key", "id", "name", "type", "created")`
 	ticketList, _, err := db.ticketListQuery(ctx, q, mergeMaps(binVars, ticketFilterVars), busdb.ReadOperation)
-	return &models.TicketList{
+	return &model.TicketList{
 		Count:   documentCount,
 		Tickets: ticketList,
 	}, err
 	// return map[string]interface{}{"tickets": ticketList, "count": documentCount}, err
 }
 
-func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars map[string]interface{}, operation *busdb.Operation) ([]*models.TicketSimpleResponse, *models.LogEntry, error) {
+func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars map[string]interface{}, operation *busdb.Operation) ([]*model.TicketSimpleResponse, *model.LogEntry, error) {
 	if bindVars == nil {
 		bindVars = map[string]interface{}{}
 	}
@@ -513,9 +513,9 @@ func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars 
 	}
 	defer cursor.Close()
 
-	var docs []*models.TicketSimpleResponse
+	var docs []*model.TicketSimpleResponse
 	for {
-		doc := models.Ticket{}
+		doc := model.Ticket{}
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break

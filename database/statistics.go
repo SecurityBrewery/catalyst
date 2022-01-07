@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func (db *Database) Statistics(ctx context.Context) (*models.Statistics, error) {
+func (db *Database) Statistics(ctx context.Context) (*model.Statistics, error) {
 	query := `RETURN { 
 	tickets_per_type: MERGE(FOR d in tickets
 		COLLECT type = d.type WITH COUNT INTO typecount
@@ -34,7 +34,7 @@ func (db *Database) Statistics(ctx context.Context) (*models.Statistics, error) 
 	}
 	defer cur.Close()
 
-	statistics := models.Statistics{}
+	statistics := model.Statistics{}
 	if _, err := cur.ReadDocument(ctx, &statistics); err != nil {
 		return nil, err
 	}

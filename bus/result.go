@@ -6,7 +6,7 @@ import (
 
 	emitter "github.com/emitter-io/go/v2"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 const channelResult = "result"
@@ -14,10 +14,10 @@ const channelResult = "result"
 type ResultMsg struct {
 	Automation string                 `json:"automation"`
 	Data       map[string]interface{} `json:"data,omitempty"`
-	Target     *models.Origin         `json:"target"`
+	Target     *model.Origin          `json:"target"`
 }
 
-func (b *Bus) PublishResult(automation string, data map[string]interface{}, target *models.Origin) error {
+func (b *Bus) PublishResult(automation string, data map[string]interface{}, target *model.Origin) error {
 	return b.jsonPublish(&ResultMsg{Automation: automation, Data: data, Target: target}, channelResult, b.config.resultBusKey)
 }
 

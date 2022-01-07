@@ -8,7 +8,7 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 type Index struct {
@@ -31,7 +31,7 @@ func New(name string) (*Index, error) {
 	return &Index{name: name, internal: bleveIndex}, nil
 }
 
-func (i *Index) Index(incidents []*models.TicketSimpleResponse) {
+func (i *Index) Index(incidents []*model.TicketSimpleResponse) {
 	b := i.internal.NewBatch()
 	for _, incident := range incidents {
 		if incident.ID == 0 {

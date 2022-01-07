@@ -95,7 +95,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -126,7 +126,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -168,7 +168,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8126
@@ -234,7 +234,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8126
@@ -262,7 +262,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -297,7 +297,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -340,7 +340,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -363,11 +363,11 @@ paths:
       operationId: "setSchema"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8125 }
-        - { name: "schema", in: "body", description: "New ticket schema", schema: { type: string }, x-example: "{}" }
+        - { name: "schema", in: "body", description: "New ticket schema", required: true, schema: { type: string }, x-example: "{}" }
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -398,7 +398,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -430,7 +430,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8125
@@ -489,6 +489,7 @@ paths:
                       order: 2
                       name: Escalate to malware team
                       type: task
+      security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}/playbooks/{playbookID}:
     delete:
@@ -501,7 +502,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -625,7 +626,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -670,7 +671,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -726,7 +727,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -785,7 +786,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -826,7 +827,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/TicketResponse" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123
@@ -882,7 +883,7 @@ paths:
       responses:
         "200":
           description: "successful operation"
-          schema: { $ref: "#/definitions/Artifact" }
+          schema: { $ref: "#/definitions/TicketWithTickets" }
           examples:
             test:
               id: 8123

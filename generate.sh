@@ -22,7 +22,8 @@ mv generated/openapi.json generated/catalyst.json
 # openapi-generator generate -i generated/community.yml -o generated/python -g python --package-name catalystpy --ignore-file-override .openapi-generator-ignore
 
 echo generate server and tests
-go run ./generator/. ./generator
+# go run ./generator/. ./generator
+swachigo generated/community.yml generated
 
 echo generate typescript client
 openapi-generator generate -i generated/catalyst.yml -o ui/src/client -g typescript-axios --artifact-version 1.0.0-SNAPSHOT

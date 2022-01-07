@@ -5,14 +5,13 @@ import (
 	"errors"
 
 	"github.com/arangodb/go-driver"
-	"github.com/gin-gonic/gin"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func toUserDataResponse(key string, doc *models.UserData) *models.UserDataResponse {
-	return &models.UserDataResponse{
+func toUserDataResponse(key string, doc *model.UserData) *model.UserDataResponse {
+	return &model.UserDataResponse{
 		Email:      doc.Email,
 		ID:         key,
 		Image:      doc.Image,
@@ -21,7 +20,7 @@ func toUserDataResponse(key string, doc *models.UserData) *models.UserDataRespon
 	}
 }
 
-func (db *Database) UserDataCreate(ctx context.Context, id string, userdata *models.UserData) error {
+func (db *Database) UserDataCreate(ctx context.Context, id string, userdata *model.UserData) error {
 	if userdata == nil {
 		return errors.New("requires setting")
 	}
@@ -33,7 +32,7 @@ func (db *Database) UserDataCreate(ctx context.Context, id string, userdata *mod
 	return err
 }
 
-func (db *Database) UserDataGetOrCreate(ctx *gin.Context, id string, newUserData *models.UserData) (*models.UserDataResponse, error) {
+func (db *Database) UserDataGetOrCreate(ctx context.Context, id string, newUserData *model.UserData) (*model.UserDataResponse, error) {
 	setting, err := db.UserDataGet(ctx, id)
 	if err != nil {
 		return toUserDataResponse(id, newUserData), db.UserDataCreate(ctx, id, newUserData)
@@ -41,8 +40,8 @@ func (db *Database) UserDataGetOrCreate(ctx *gin.Context, id string, newUserData
 	return setting, nil
 }
 
-func (db *Database) UserDataGet(ctx context.Context, id string) (*models.UserDataResponse, error) {
-	var doc models.UserData
+func (db *Database) UserDataGet(ctx context.Context, id string) (*model.UserDataResponse, error) {
+	var doc model.UserData
 	meta, err := db.userdataCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -51,16 +50,16 @@ func (db *Database) UserDataGet(ctx context.Context, id string) (*models.UserDat
 	return toUserDataResponse(meta.Key, &doc), err
 }
 
-func (db *Database) UserDataList(ctx context.Context) ([]*models.UserDataResponse, error) {
+func (db *Database) UserDataList(ctx context.Context) ([]*model.UserDataResponse, error) {
 	query := "FOR d IN @@collection SORT d.username ASC RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": UserDataCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.UserDataResponse
+	var docs []*model.UserDataResponse
 	for {
-		var doc models.UserData
+		var doc model.UserData
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
@@ -73,8 +72,8 @@ func (db *Database) UserDataList(ctx context.Context) ([]*models.UserDataRespons
 	return docs, err
 }
 
-func (db *Database) UserDataUpdate(ctx context.Context, id string, userdata *models.UserData) (*models.UserDataResponse, error) {
-	var doc models.UserData
+func (db *Database) UserDataUpdate(ctx context.Context, id string, userdata *model.UserData) (*model.UserDataResponse, error) {
+	var doc model.UserData
 	ctx = driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.userdataCollection.ReplaceDocument(ctx, id, userdata)

@@ -7,35 +7,39 @@ import (
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/operations/tickettypes"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
+func ticketTypeResponseID(ticketType *model.TicketTypeResponse) []driver.DocumentID {
+	if ticketType == nil {
+		return nil
+	}
+	return userDataID(ticketType.ID)
+}
+
 func ticketTypeID(id string) []driver.DocumentID {
-	return []driver.DocumentID{driver.DocumentID(fmt.Sprintf("%s/%s", database.TicketTypeCollectionName, id))}
+	return []driver.DocumentID{driver.DocumentID(fmt.Sprintf("%s/%s", database.UserDataCollectionName, id))}
 }
 
-func (s *Service) CreateTicketType(ctx context.Context, params *tickettypes.CreateTicketTypeParams) *api.Response {
-	ticketType, err := s.database.TicketTypeCreate(ctx, params.Tickettype)
-	return s.response(ctx, "CreateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
+func (s *Service) ListTicketTypes(ctx context.Context) ([]*model.TicketTypeResponse, error) {
+	return s.database.TicketTypeList(ctx)
 }
 
-func (s *Service) GetTicketType(ctx context.Context, params *tickettypes.GetTicketTypeParams) *api.Response {
-	ticketType, err := s.database.TicketTypeGet(ctx, params.ID)
-	return s.response(ctx, "GetTicketType", nil, ticketType, err)
+func (s *Service) CreateTicketType(ctx context.Context, form *model.TicketTypeForm) (doc *model.TicketTypeResponse, err error) {
+	defer s.publishRequest(ctx, err, "CreateTicketType", ticketTypeResponseID(doc))
+	return s.database.TicketTypeCreate(ctx, form)
 }
 
-func (s *Service) UpdateTicketType(ctx context.Context, params *tickettypes.UpdateTicketTypeParams) *api.Response {
-	ticketType, err := s.database.TicketTypeUpdate(ctx, params.ID, params.Tickettype)
-	return s.response(ctx, "UpdateTicketType", ticketTypeID(ticketType.ID), ticketType, err)
+func (s *Service) GetTicketType(ctx context.Context, id string) (*model.TicketTypeResponse, error) {
+	return s.database.TicketTypeGet(ctx, id)
 }
 
-func (s *Service) DeleteTicketType(ctx context.Context, params *tickettypes.DeleteTicketTypeParams) *api.Response {
-	err := s.database.TicketTypeDelete(ctx, params.ID)
-	return s.response(ctx, "DeleteTicketType", ticketTypeID(params.ID), nil, err)
+func (s *Service) UpdateTicketType(ctx context.Context, id string, form *model.TicketTypeForm) (doc *model.TicketTypeResponse, err error) {
+	defer s.publishRequest(ctx, err, "UpdateTicketType", ticketTypeResponseID(doc))
+	return s.database.TicketTypeUpdate(ctx, id, form)
 }
 
-func (s *Service) ListTicketTypes(ctx context.Context) *api.Response {
-	ticketTypes, err := s.database.TicketTypeList(ctx)
-	return s.response(ctx, "ListTicketTypes", nil, ticketTypes, err)
+func (s *Service) DeleteTicketType(ctx context.Context, id string) (err error) {
+	defer s.publishRequest(ctx, err, "DeleteTicketType", ticketTypeID(id))
+	return s.database.TicketTypeDelete(ctx, id)
 }

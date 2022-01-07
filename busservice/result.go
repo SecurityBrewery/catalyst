@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/SecurityBrewery/catalyst/bus"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 func (h *busService) handleResult(resultMsg *bus.ResultMsg) {
@@ -22,7 +22,7 @@ func (h *busService) handleResult(resultMsg *bus.ResultMsg) {
 				log.Println(err)
 			}
 		case resultMsg.Target.ArtifactOrigin != nil:
-			enrichment := &models.EnrichmentForm{
+			enrichment := &model.EnrichmentForm{
 				Data: resultMsg.Data,
 				Name: resultMsg.Automation,
 			}

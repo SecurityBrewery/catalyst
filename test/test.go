@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 	"log"
-	"net/http/httptest"
+	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -11,15 +11,15 @@ import (
 
 	"github.com/arangodb/go-driver"
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
-	"github.com/SecurityBrewery/catalyst/generated/restapi"
+	"github.com/SecurityBrewery/catalyst/generated/api"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/index"
 	"github.com/SecurityBrewery/catalyst/pointer"
@@ -28,10 +28,7 @@ import (
 )
 
 func Context() context.Context {
-	w := httptest.NewRecorder()
-	gctx, _ := gin.CreateTestContext(w)
-	busdb.SetContext(gctx, Bob)
-	return gctx
+	return busdb.UserContext(context.Background(), Bob)
 }
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
@@ -53,20 +50,20 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			Key:    "A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-",
 			APIUrl: "http://localhost:8002/api",
 		},
-		UISettings: &models.Settings{
-			ArtifactStates: []*models.Type{
-				{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(models.TypeColorInfo)},
-				{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(models.TypeColorError)},
-				{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(models.TypeColorSuccess)},
+		UISettings: &model.Settings{
+			ArtifactStates: []*model.Type{
+				{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)},
+				{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)},
+				{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)},
 			},
-			TicketTypes: []*models.TicketTypeResponse{
+			TicketTypes: []*model.TicketTypeResponse{
 				{ID: "alert", Icon: "mdi-alert", Name: "Alerts"},
 				{ID: "incident", Icon: "mdi-radioactive", Name: "Incidents"},
 				{ID: "investigation", Icon: "mdi-fingerprint", Name: "Forensic Investigations"},
 				{ID: "hunt", Icon: "mdi-target", Name: "Threat Hunting"},
 			},
 			Version:    "0.0.0-test",
-			Tier:       models.SettingsTierCommunity,
+			Tier:       model.SettingsTierCommunity,
 			Timeformat: "YYYY-MM-DDThh:mm:ss",
 		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
@@ -146,7 +143,7 @@ func DB(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	_, err = db.JobCreate(ctx, "99cd67131b48", &models.JobForm{
+	_, err = db.JobCreate(ctx, "99cd67131b48", &model.JobForm{
 		Automation: "hash.sha1",
 		Payload:    "test",
 		Origin:     nil,
@@ -178,13 +175,19 @@ func Service(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.
 	return ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, cleanup, err
 }
 
-func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index, *storage.Storage, *database.Database, *service.Service, *restapi.Server, func(), error) {
+func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index, *storage.Storage, *database.Database, *service.Service, chi.Router, func(), error) {
 	ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, cleanup, err := Service(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	catalystServer := restapi.New(catalystService, &restapi.Config{Address: "0.0.0.0:8000", InsecureHTTP: true})
+	catalystServer := api.NewServer(catalystService, func(s []string) func(http.Handler) http.Handler {
+		return func(handler http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				handler.ServeHTTP(w, busdb.SetContext(r, Bob))
+			})
+		}
+	})
 
 	return ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, catalystServer, cleanup, err
 }

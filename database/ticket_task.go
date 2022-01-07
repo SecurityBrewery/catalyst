@@ -11,11 +11,11 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
-func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, taskID string) (*models.TicketWithTickets, *models.PlaybookResponse, *models.TaskWithContext, error) {
+func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, taskID string) (*model.TicketWithTickets, *model.PlaybookResponse, *model.TaskWithContext, error) {
 	inc, err := db.TicketGet(ctx, id)
 	if err != nil {
 		return nil, nil, nil, err
@@ -31,17 +31,17 @@ func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, ta
 		return nil, nil, nil, errors.New("task does not exist")
 	}
 
-	return inc, playbook, &models.TaskWithContext{
+	return inc, playbook, &model.TaskWithContext{
 		PlaybookId:   playbookID,
 		PlaybookName: playbook.Name,
 		TaskId:       taskID,
-		Task:         *task,
+		Task:         task,
 		TicketId:     id,
 		TicketName:   inc.Name,
 	}, nil
 }
 
-func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID string, taskID string, data interface{}) (*models.TicketWithTickets, error) {
+func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID string, taskID string, data interface{}) (*model.TicketWithTickets, error) {
 	inc, err := db.TicketGet(ctx, id)
 	if err != nil {
 		return nil, err
@@ -92,8 +92,8 @@ func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID strin
 	return ticket, nil
 }
 
-func extractTicketResponse(ticket *models.TicketWithTickets) *models.TicketResponse {
-	return &models.TicketResponse{
+func extractTicketResponse(ticket *model.TicketWithTickets) *model.TicketResponse {
+	return &model.TicketResponse{
 		Artifacts:  ticket.Artifacts,
 		Comments:   ticket.Comments,
 		Created:    ticket.Created,
@@ -113,7 +113,7 @@ func extractTicketResponse(ticket *models.TicketWithTickets) *models.TicketRespo
 	}
 }
 
-func (db *Database) TaskUpdate(ctx context.Context, id int64, playbookID string, taskID string, task *models.Task) (*models.TicketWithTickets, error) {
+func (db *Database) TaskUpdate(ctx context.Context, id int64, playbookID string, taskID string, task *model.Task) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -154,8 +154,8 @@ func (db *Database) TaskRun(ctx context.Context, id int64, playbookID string, ta
 		return err
 	}
 
-	if task.Task.Type == models.TaskTypeAutomation {
-		if err := runTask(id, playbookID, taskID, &task.Task, extractTicketResponse(ticket), db); err != nil {
+	if task.Task.Type == model.TaskTypeAutomation {
+		if err := runTask(id, playbookID, taskID, task.Task, extractTicketResponse(ticket), db); err != nil {
 			return err
 		}
 	}
@@ -163,10 +163,10 @@ func (db *Database) TaskRun(ctx context.Context, id int64, playbookID string, ta
 	return nil
 }
 
-func runNextTasks(id int64, playbookID string, next map[string]string, data interface{}, ticket *models.TicketResponse, db *Database) {
+func runNextTasks(id int64, playbookID string, next map[string]string, data interface{}, ticket *model.TicketResponse, db *Database) {
 	for nextTaskID, requirement := range next {
 		nextTask := ticket.Playbooks[playbookID].Tasks[nextTaskID]
-		if nextTask.Type == models.TaskTypeAutomation {
+		if nextTask.Type == model.TaskTypeAutomation {
 			b, err := evalRequirement(requirement, data)
 			if err != nil {
 				continue
@@ -180,10 +180,10 @@ func runNextTasks(id int64, playbookID string, next map[string]string, data inte
 	}
 }
 
-func runTask(ticketID int64, playbookID string, taskID string, task *models.TaskResponse, ticket *models.TicketResponse, db *Database) error {
+func runTask(ticketID int64, playbookID string, taskID string, task *model.TaskResponse, ticket *model.TicketResponse, db *Database) error {
 	playbook := ticket.Playbooks[playbookID]
-	msgContext := &models.Context{Playbook: playbook, Task: task, Ticket: ticket}
-	origin := &models.Origin{TaskOrigin: &models.TaskOrigin{TaskId: taskID, PlaybookId: playbookID, TicketId: ticketID}}
+	msgContext := &model.Context{Playbook: playbook, Task: task, Ticket: ticket}
+	origin := &model.Origin{TaskOrigin: &model.TaskOrigin{TaskId: taskID, PlaybookId: playbookID, TicketId: ticketID}}
 	jobID := uuid.NewString()
 	return publishJobMapping(jobID, *task.Automation, msgContext, origin, task.Payload, db)
 }

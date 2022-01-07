@@ -18,11 +18,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {TaskResponse, TaskWithContext} from "@/client";
+import {TaskWithContext} from "@/client";
 import {API} from "@/services/api";
 
 interface State {
-  tasks: Array<TaskResponse>;
+  tasks: Array<TaskWithContext>;
   loading: boolean;
 }
 

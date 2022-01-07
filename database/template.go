@@ -8,18 +8,18 @@ import (
 	"github.com/iancoleman/strcase"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func toTicketTemplate(doc *models.TicketTemplateForm) *models.TicketTemplate {
-	return &models.TicketTemplate{Name: doc.Name, Schema: doc.Schema}
+func toTicketTemplate(doc *model.TicketTemplateForm) *model.TicketTemplate {
+	return &model.TicketTemplate{Name: doc.Name, Schema: doc.Schema}
 }
 
-func toTicketTemplateResponse(key string, doc *models.TicketTemplate) *models.TicketTemplateResponse {
-	return &models.TicketTemplateResponse{ID: key, Name: doc.Name, Schema: doc.Schema}
+func toTicketTemplateResponse(key string, doc *model.TicketTemplate) *model.TicketTemplateResponse {
+	return &model.TicketTemplateResponse{ID: key, Name: doc.Name, Schema: doc.Schema}
 }
 
-func (db *Database) TemplateCreate(ctx context.Context, template *models.TicketTemplateForm) (*models.TicketTemplateResponse, error) {
+func (db *Database) TemplateCreate(ctx context.Context, template *model.TicketTemplateForm) (*model.TicketTemplateResponse, error) {
 	if template == nil {
 		return nil, errors.New("requires template")
 	}
@@ -27,7 +27,7 @@ func (db *Database) TemplateCreate(ctx context.Context, template *models.TicketT
 		return nil, errors.New("requires template name")
 	}
 
-	var doc models.TicketTemplate
+	var doc model.TicketTemplate
 	newctx := driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.templateCollection.CreateDocument(ctx, newctx, strcase.ToKebab(template.Name), toTicketTemplate(template))
@@ -38,8 +38,8 @@ func (db *Database) TemplateCreate(ctx context.Context, template *models.TicketT
 	return toTicketTemplateResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) TemplateGet(ctx context.Context, id string) (*models.TicketTemplateResponse, error) {
-	var doc models.TicketTemplate
+func (db *Database) TemplateGet(ctx context.Context, id string) (*model.TicketTemplateResponse, error) {
+	var doc model.TicketTemplate
 	meta, err := db.templateCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -48,8 +48,8 @@ func (db *Database) TemplateGet(ctx context.Context, id string) (*models.TicketT
 	return toTicketTemplateResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) TemplateUpdate(ctx context.Context, id string, template *models.TicketTemplateForm) (*models.TicketTemplateResponse, error) {
-	var doc models.TicketTemplate
+func (db *Database) TemplateUpdate(ctx context.Context, id string, template *model.TicketTemplateForm) (*model.TicketTemplateResponse, error) {
+	var doc model.TicketTemplate
 	ctx = driver.WithReturnNew(ctx, &doc)
 
 	meta, err := db.templateCollection.ReplaceDocument(ctx, id, toTicketTemplate(template))
@@ -65,16 +65,16 @@ func (db *Database) TemplateDelete(ctx context.Context, id string) error {
 	return err
 }
 
-func (db *Database) TemplateList(ctx context.Context) ([]*models.TicketTemplateResponse, error) {
+func (db *Database) TemplateList(ctx context.Context) ([]*model.TicketTemplateResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": TemplateCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.TicketTemplateResponse
+	var docs []*model.TicketTemplateResponse
 	for {
-		var doc models.TicketTemplate
+		var doc model.TicketTemplate
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break

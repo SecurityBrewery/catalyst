@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func (s *Service) GetStatistics(ctx context.Context) *api.Response {
-	i, err := s.database.Statistics(ctx)
-	return s.response(ctx, "GetStatistics", nil, i, err)
+func (s *Service) GetStatistics(ctx context.Context) (*model.Statistics, error) {
+	return s.database.Statistics(ctx)
 }

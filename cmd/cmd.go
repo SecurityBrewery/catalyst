@@ -11,7 +11,7 @@ import (
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -72,10 +72,10 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 	}
 
 	if len(artifactStates) == 0 {
-		artifactStates = []*models.Type{
-			{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(models.TypeColorInfo)},
-			{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(models.TypeColorError)},
-			{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(models.TypeColorSuccess)},
+		artifactStates = []*model.Type{
+			{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)},
+			{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)},
+			{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)},
 		}
 	}
 
@@ -96,21 +96,21 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			AuthDefaultRoles:  roles,
 		},
 		Bus: &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
-		UISettings: &models.Settings{
+		UISettings: &model.Settings{
 			ArtifactStates: artifactStates,
 			Timeformat:     cli.Timeformat,
 			Version:        catalyst.GetVersion(),
-			Tier:           models.SettingsTierCommunity,
+			Tier:           model.SettingsTierCommunity,
 		},
 		InitialAPIKey: cli.InitialAPIKey,
 	}
 	return config, nil
 }
 
-func toTypes(params []map[string]string) ([]*models.Type, error) {
-	var types []*models.Type
+func toTypes(params []map[string]string) ([]*model.Type, error) {
+	var types []*model.Type
 	for _, param := range params {
-		t := &models.Type{}
+		t := &model.Type{}
 
 		icon, iconOK := param["icon"]
 		if iconOK {

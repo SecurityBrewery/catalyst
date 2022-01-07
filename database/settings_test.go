@@ -3,24 +3,19 @@ package database_test
 import (
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/test"
 )
 
-func init() {
-	gin.SetMode(gin.TestMode)
-}
-
-var bob = &models.UserData{
+var bob = &model.UserData{
 	Email: pointer.String("bob@example.org"),
 	Name:  pointer.String("Bob"),
 }
 
-var bobResponse = &models.UserDataResponse{
+var bobResponse = &model.UserDataResponse{
 	ID:    "bob",
 	Email: pointer.String("bob@example.org"),
 	Name:  pointer.String("Bob"),
@@ -29,7 +24,7 @@ var bobResponse = &models.UserDataResponse{
 func TestDatabase_UserDataCreate(t *testing.T) {
 	type args struct {
 		id      string
-		setting *models.UserData
+		setting *model.UserData
 	}
 	tests := []struct {
 		name    string
@@ -63,7 +58,7 @@ func TestDatabase_UserDataGet(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *models.UserDataResponse
+		want    *model.UserDataResponse
 		wantErr bool
 	}{
 		{name: "Normal get", args: args{id: "bob"}, want: bobResponse},
@@ -98,10 +93,10 @@ func TestDatabase_UserDataGet(t *testing.T) {
 func TestDatabase_UserDataList(t *testing.T) {
 	tests := []struct {
 		name    string
-		want    []*models.UserDataResponse
+		want    []*model.UserDataResponse
 		wantErr bool
 	}{
-		{name: "Normal list", want: []*models.UserDataResponse{bobResponse}},
+		{name: "Normal list", want: []*model.UserDataResponse{bobResponse}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -129,7 +124,7 @@ func TestDatabase_UserDataList(t *testing.T) {
 func TestDatabase_UserDataUpdate(t *testing.T) {
 	type args struct {
 		id      string
-		setting *models.UserData
+		setting *model.UserData
 	}
 	tests := []struct {
 		name    string

@@ -4,29 +4,29 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	tusd "github.com/tus/tusd/pkg/handler"
 	"github.com/tus/tusd/pkg/s3store"
 
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func upload(client *s3.S3, external string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ticketID, exists := ctx.Params.Get("ticketID")
-		if !exists {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "ticketID not given"})
+func upload(client *s3.S3, external string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ticketID := chi.URLParam(r, "ticketID")
+		if ticketID == "" {
+			api.JSONErrorStatus(w, http.StatusBadRequest, errors.New("ticketID not given"))
 			return
 		}
 
 		if err := storage.CreateBucket(client, ticketID); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("could not create bucket: %w", err)})
+			api.JSONErrorStatus(w, http.StatusBadRequest, fmt.Errorf("could not create bucket: %w", err))
 			return
 		}
 
@@ -40,39 +40,38 @@ func upload(client *s3.S3, external string) gin.HandlerFunc {
 			StoreComposer: composer,
 		})
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("could not create tusd handler: %w", err)})
+			api.JSONErrorStatus(w, http.StatusBadRequest, fmt.Errorf("could not create tusd handler: %w", err))
 			return
 		}
 
-		switch ctx.Request.Method {
+		switch r.Method {
 		case http.MethodHead:
-			gin.WrapF(handler.HeadFile)(ctx)
+			handler.HeadFile(w, r)
 		case http.MethodPost:
-			gin.WrapF(handler.PostFile)(ctx)
+			handler.PostFile(w, r)
 		case http.MethodPatch:
-			gin.WrapF(handler.PatchFile)(ctx)
+			handler.PatchFile(w, r)
 		default:
-			log.Println(errors.New("unknown method"))
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "unknown method"})
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("unknown method"))
 		}
 	}
 }
 
-func download(downloader *s3manager.Downloader) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ticketID, exists := ctx.Params.Get("ticketID")
-		if !exists {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "ticketID not given"})
+func download(downloader *s3manager.Downloader) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ticketID := chi.URLParam(r, "ticketID")
+		if ticketID == "" {
+			api.JSONErrorStatus(w, http.StatusBadRequest, errors.New("ticketID not given"))
 			return
 		}
 
-		key, exists := ctx.Params.Get("key")
-		if !exists {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "key not given"})
+		key := chi.URLParam(r, "key")
+		if key == "" {
+			api.JSONErrorStatus(w, http.StatusBadRequest, errors.New("key not given"))
 			return
 		}
 
-		buf := sequentialWriter{ctx.Writer}
+		buf := sequentialWriter{w}
 
 		downloader.Concurrency = 1
 		_, err := downloader.Download(buf, &s3.GetObjectInput{
@@ -80,8 +79,7 @@ func download(downloader *s3manager.Downloader) gin.HandlerFunc {
 			Key:    aws.String(key),
 		})
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			api.JSONErrorStatus(w, http.StatusInternalServerError, err)
 		}
 	}
 }

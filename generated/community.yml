@@ -260,8 +260,7 @@ definitions:
     properties:
       context:
         $ref: '#/definitions/Context'
-      payload:
-        type: object
+      payload: {}
       secrets:
         additionalProperties:
           type: string
@@ -1980,9 +1979,7 @@ paths:
                     name: Escalate to malware team
                     type: task
           schema:
-            items:
-              $ref: '#/definitions/PlaybookTemplateResponse'
-            type: array
+            $ref: '#/definitions/PlaybookTemplateResponse'
       security:
       - roles:
         - playbook:write
@@ -2275,7 +2272,7 @@ paths:
             test: []
           schema:
             items:
-              $ref: '#/definitions/TaskResponse'
+              $ref: '#/definitions/TaskWithContext'
             type: array
       security:
       - roles:
@@ -3314,7 +3311,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:read
@@ -3389,7 +3386,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -3641,7 +3638,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -3885,7 +3882,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4168,7 +4165,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4429,7 +4426,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/Artifact'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4526,7 +4523,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4774,7 +4771,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4845,7 +4842,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -4976,7 +4973,10 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
+      security:
+      - roles:
+        - ticket:write
       summary: Add a new ticket playbook
       tags:
       - tickets
@@ -5115,7 +5115,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -5397,7 +5397,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -5661,7 +5661,7 @@ paths:
               status: closed
               type: incident
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -5755,7 +5755,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -5776,6 +5776,7 @@ paths:
       - description: New ticket schema
         in: body
         name: schema
+        required: true
         schema:
           type: string
         x-example: '{}'
@@ -5816,7 +5817,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -5863,7 +5864,7 @@ paths:
               status: closed
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write
@@ -6128,7 +6129,7 @@ paths:
                 type: alert
               type: alert
           schema:
-            $ref: '#/definitions/TicketResponse'
+            $ref: '#/definitions/TicketWithTickets'
       security:
       - roles:
         - ticket:write

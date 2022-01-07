@@ -6,24 +6,24 @@ import (
 
 	emitter "github.com/emitter-io/go/v2"
 
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 const channelJob = "job"
 
 type JobMsg struct {
-	ID         string          `json:"id"`
-	Automation string          `json:"automation"`
-	Origin     *models.Origin  `json:"origin"`
-	Message    *models.Message `json:"message"`
+	ID         string         `json:"id"`
+	Automation string         `json:"automation"`
+	Origin     *model.Origin  `json:"origin"`
+	Message    *model.Message `json:"message"`
 }
 
-func (b *Bus) PublishJob(id, automation string, payload interface{}, context *models.Context, origin *models.Origin) error {
+func (b *Bus) PublishJob(id, automation string, payload interface{}, context *model.Context, origin *model.Origin) error {
 	return b.jsonPublish(&JobMsg{
 		ID:         id,
 		Automation: automation,
 		Origin:     origin,
-		Message: &models.Message{
+		Message: &model.Message{
 			Context: context,
 			Payload: payload,
 		},

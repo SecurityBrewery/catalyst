@@ -8,11 +8,11 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
-func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*models.Artifact, error) {
+func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*model.Artifact, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*mo
 	}
 	defer cursor.Close()
 
-	var doc models.Artifact
+	var doc model.Artifact
 	_, err = cursor.ReadDocument(ctx, &doc)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*mo
 	return &doc, nil
 }
 
-func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, artifact *models.Artifact) (*models.TicketWithTickets, error) {
+func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, artifact *model.Artifact) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -68,8 +68,8 @@ func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, a
 	})
 }
 
-func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, enrichmentForm *models.EnrichmentForm) (*models.TicketWithTickets, error) {
-	enrichment := models.Enrichment{time.Now().UTC(), enrichmentForm.Data, enrichmentForm.Name}
+func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, enrichmentForm *model.EnrichmentForm) (*model.TicketWithTickets, error) {
+	enrichment := model.Enrichment{time.Now().UTC(), enrichmentForm.Data, enrichmentForm.Name}
 
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {

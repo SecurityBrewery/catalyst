@@ -8,10 +8,10 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/dag"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func playbookGraph(playbook *models.Playbook) (*dag.Graph, error) {
+func playbookGraph(playbook *model.Playbook) (*dag.Graph, error) {
 	d := dag.NewGraph()
 
 	var taskIDs []string
@@ -36,13 +36,13 @@ func playbookGraph(playbook *models.Playbook) (*dag.Graph, error) {
 	return d, nil
 }
 
-func toTaskResponse(playbook *models.Playbook, taskID string, order int, graph *dag.Graph) (*models.TaskResponse, error) {
+func toTaskResponse(playbook *model.Playbook, taskID string, order int, graph *dag.Graph) (*model.TaskResponse, error) {
 	task, ok := playbook.Tasks[taskID]
 	if !ok {
 		return nil, fmt.Errorf("task %s not found", taskID)
 	}
 
-	tr := &models.TaskResponse{
+	tr := &model.TaskResponse{
 		Automation: task.Automation,
 		Closed:     task.Closed,
 		Created:    task.Created,
@@ -67,7 +67,7 @@ func toTaskResponse(playbook *models.Playbook, taskID string, order int, graph *
 	return tr, nil
 }
 
-func activePlaybook(playbook *models.Playbook, taskID string) (bool, error) {
+func activePlaybook(playbook *model.Playbook, taskID string) (bool, error) {
 	task, ok := playbook.Tasks[taskID]
 	if !ok {
 		return false, fmt.Errorf("playbook does not contain tasks %s", taskID)
@@ -81,7 +81,7 @@ func activePlaybook(playbook *models.Playbook, taskID string) (bool, error) {
 	return active(playbook, taskID, d, task)
 }
 
-func active(playbook *models.Playbook, taskID string, d *dag.Graph, task *models.Task) (bool, error) {
+func active(playbook *model.Playbook, taskID string, d *dag.Graph, task *model.Task) (bool, error) {
 	if task.Done {
 		return false, nil
 	}
@@ -165,7 +165,7 @@ func evalRequirement(aql string, data interface{}) (bool, error) {
 
 /*
 // "github.com/qri-io/jsonschema"
-func valid(task *models.Task) (bool, error) {
+func valid(task *model.Task) (bool, error) {
 	schema, err := json.Marshal(task.Schema)
 	if err != nil {
 		return false, err

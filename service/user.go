@@ -9,43 +9,55 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/operations/users"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
+
+func newUserResponseID(user *model.NewUserResponse) []driver.DocumentID {
+	if user == nil {
+		return nil
+	}
+	return userID(user.ID)
+}
+
+func userResponseID(user *model.UserResponse) []driver.DocumentID {
+	if user == nil {
+		return nil
+	}
+	return userID(user.ID)
+}
 
 func userID(id string) []driver.DocumentID {
 	return []driver.DocumentID{driver.DocumentID(fmt.Sprintf("%s/%s", database.UserCollectionName, id))}
 }
 
-func (s *Service) GetUser(ctx context.Context, params *users.GetUserParams) *api.Response {
-	i, err := s.database.UserGet(ctx, params.ID)
-	return s.response(ctx, "GetUser", nil, i, err)
+func (s *Service) ListUsers(ctx context.Context) ([]*model.UserResponse, error) {
+	return s.database.UserList(ctx)
 }
 
-func (s *Service) ListUsers(ctx context.Context) *api.Response {
-	i, err := s.database.UserList(ctx)
-	return s.response(ctx, "ListUsers", nil, i, err)
+func (s *Service) CreateUser(ctx context.Context, form *model.UserForm) (doc *model.NewUserResponse, err error) {
+	defer s.publishRequest(ctx, err, "CreateUser", newUserResponseID(doc))
+	return s.database.UserCreate(ctx, form)
 }
 
-func (s *Service) CreateUser(ctx context.Context, params *users.CreateUserParams) *api.Response {
-	i, err := s.database.UserCreate(ctx, params.User)
-	return s.response(ctx, "CreateUser", userID(i.ID), i, err)
+func (s *Service) GetUser(ctx context.Context, s2 string) (*model.UserResponse, error) {
+	return s.database.UserGet(ctx, s2)
 }
 
-func (s *Service) DeleteUser(ctx context.Context, params *users.DeleteUserParams) *api.Response {
-	err := s.database.UserDelete(ctx, params.ID)
-	return s.response(ctx, "DeleteUser", userID(params.ID), nil, err)
+func (s *Service) UpdateUser(ctx context.Context, s2 string, form *model.UserForm) (doc *model.UserResponse, err error) {
+	defer s.publishRequest(ctx, err, "UpdateUser", userID(s2))
+	return s.database.UserUpdate(ctx, s2, form)
 }
 
-func (s *Service) CurrentUser(ctx context.Context) *api.Response {
+func (s *Service) DeleteUser(ctx context.Context, s2 string) (err error) {
+	defer s.publishRequest(ctx, err, "DeleteUser", userID(s2))
+	return s.database.UserDelete(ctx, s2)
+}
+
+func (s *Service) CurrentUser(ctx context.Context) (*model.UserResponse, error) {
 	user, ok := busdb.UserFromContext(ctx)
 	if !ok {
-		return s.response(ctx, "CurrentUser", nil, nil, errors.New("no user in context"))
+		return nil, errors.New("no user in context")
 	}
-	return s.response(ctx, "CurrentUser", nil, user, nil)
-}
-
-func (s *Service) UpdateUser(ctx context.Context, params *users.UpdateUserParams) *api.Response {
-	i, err := s.database.UserUpdate(ctx, params.ID, params.User)
-	return s.response(ctx, "UpdateUser", userID(i.ID), i, err)
+	s.publishRequest(ctx, nil, "CurrentUser", userResponseID(user))
+	return user, nil
 }

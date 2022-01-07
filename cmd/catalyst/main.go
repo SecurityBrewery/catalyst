@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/cmd"
@@ -21,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = theCatalyst.Server.RunWithSigHandler(); err != nil {
+	if err := http.ListenAndServe(":8000", theCatalyst.Server); err != nil {
 		log.Fatal(err)
 	}
 }

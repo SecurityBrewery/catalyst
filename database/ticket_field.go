@@ -11,12 +11,12 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/time"
 )
 
-func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *models.Artifact) (*models.TicketWithTickets, error) {
+func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *model.Artifact) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func inferType(name string) string {
 	return "unknown"
 }
 
-func (db *Database) RemoveArtifact(ctx context.Context, id int64, name string) (*models.TicketWithTickets, error) {
+func (db *Database) RemoveArtifact(ctx context.Context, id int64, name string) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (db *Database) RemoveArtifact(ctx context.Context, id int64, name string) (
 	})
 }
 
-func (db *Database) SetTemplate(ctx context.Context, id int64, schema string) (*models.TicketWithTickets, error) {
+func (db *Database) SetTemplate(ctx context.Context, id int64, schema string) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (db *Database) SetTemplate(ctx context.Context, id int64, schema string) (*
 	})
 }
 
-func (db *Database) AddComment(ctx context.Context, id int64, comment *models.CommentForm) (*models.TicketWithTickets, error) {
+func (db *Database) AddComment(ctx context.Context, id int64, comment *model.CommentForm) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -130,7 +130,7 @@ func (db *Database) AddComment(ctx context.Context, id int64, comment *models.Co
 	})
 }
 
-func (db *Database) RemoveComment(ctx context.Context, id int64, commentID int64) (*models.TicketWithTickets, error) {
+func (db *Database) RemoveComment(ctx context.Context, id int64, commentID int64) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func (db *Database) RemoveComment(ctx context.Context, id int64, commentID int64
 	})
 }
 
-func (db *Database) SetReferences(ctx context.Context, id int64, references []*models.Reference) (*models.TicketWithTickets, error) {
+func (db *Database) SetReferences(ctx context.Context, id int64, references []*model.Reference) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func (db *Database) SetReferences(ctx context.Context, id int64, references []*m
 	})
 }
 
-func (db *Database) LinkFiles(ctx context.Context, id int64, files []*models.File) (*models.TicketWithTickets, error) {
+func (db *Database) LinkFiles(ctx context.Context, id int64, files []*model.File) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func (db *Database) LinkFiles(ctx context.Context, id int64, files []*models.Fil
 	})
 }
 
-func (db *Database) AddTicketPlaybook(ctx context.Context, id int64, playbookTemplate *models.PlaybookTemplateForm) (*models.TicketWithTickets, error) {
+func (db *Database) AddTicketPlaybook(ctx context.Context, id int64, playbookTemplate *model.PlaybookTemplateForm) (*model.TicketWithTickets, error) {
 	pb, err := toPlaybook(playbookTemplate)
 	if err != nil {
 		return nil, err
@@ -234,7 +234,7 @@ func (db *Database) AddTicketPlaybook(ctx context.Context, id int64, playbookTem
 	return ticket, nil
 }
 
-func findName(playbooks map[string]*models.PlaybookResponse, name string) string {
+func findName(playbooks map[string]*model.PlaybookResponse, name string) string {
 	if _, ok := playbooks[name]; !ok {
 		return name
 	}
@@ -247,10 +247,10 @@ func findName(playbooks map[string]*models.PlaybookResponse, name string) string
 	}
 }
 
-func runRootTask(ticket *models.TicketResponse, playbookID string, db *Database) error {
+func runRootTask(ticket *model.TicketResponse, playbookID string, db *Database) error {
 	playbook := ticket.Playbooks[playbookID]
 
-	var root *models.TaskResponse
+	var root *model.TaskResponse
 	for _, task := range playbook.Tasks {
 		if task.Order == 0 {
 			root = task
@@ -261,7 +261,7 @@ func runRootTask(ticket *models.TicketResponse, playbookID string, db *Database)
 	return nil
 }
 
-func (db *Database) RemoveTicketPlaybook(ctx context.Context, id int64, playbookID string) (*models.TicketWithTickets, error) {
+func (db *Database) RemoveTicketPlaybook(ctx context.Context, id int64, playbookID string) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err

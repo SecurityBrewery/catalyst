@@ -6,13 +6,13 @@ import (
 	"log"
 
 	"github.com/SecurityBrewery/catalyst/bus"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
 func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 	ctx := busContext()
 
-	job, err := h.db.JobCreate(ctx, automationMsg.ID, &models.JobForm{
+	job, err := h.db.JobCreate(ctx, automationMsg.ID, &model.JobForm{
 		Automation: automationMsg.Automation,
 		Payload:    automationMsg.Message.Payload,
 		Origin:     automationMsg.Origin,
@@ -47,7 +47,7 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 		return
 	}
 
-	if _, err := h.db.JobUpdate(ctx, automationMsg.ID, &models.Job{
+	if _, err := h.db.JobUpdate(ctx, automationMsg.ID, &model.Job{
 		Automation: job.Automation,
 		Container:  &containerID,
 		Origin:     job.Origin,
@@ -85,7 +85,7 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 }
 
 /*
-func getAutomation(automationID string, config *Config) (*models.AutomationResponse, error) {
+func getAutomation(automationID string, config *Config) (*model.AutomationResponse, error) {
 	req, err := http.NewRequest(http.MethodGet, config.CatalystAPIUrl+"/automations/"+automationID, nil)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func getAutomation(automationID string, config *Config) (*models.AutomationRespo
 		return nil, err
 	}
 
-	var automation models.AutomationResponse
+	var automation model.AutomationResponse
 	if err := json.Unmarshal(b, &automation); err != nil {
 		return nil, err
 	}

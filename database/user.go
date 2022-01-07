@@ -8,11 +8,10 @@ import (
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
-	"github.com/gin-gonic/gin"
 	"github.com/iancoleman/strcase"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/models"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/time"
@@ -32,10 +31,10 @@ func generateKey() string {
 	return string(b)
 }
 
-func toUser(user *models.UserForm, sha256 *string) *models.User {
+func toUser(user *model.UserForm, sha256 *string) *model.User {
 	roles := []string{}
 	roles = append(roles, role.Strings(role.Explodes(user.Roles))...)
-	u := &models.User{
+	u := &model.User{
 		Blocked: user.Blocked,
 		Roles:   roles,
 		Sha256:  sha256,
@@ -45,7 +44,7 @@ func toUser(user *models.UserForm, sha256 *string) *models.User {
 	// log.Println(u)
 	// b, _ := json.Marshal(u)
 	// loader := gojsonschema.NewBytesLoader(b)
-	// res, err := models.UserSchema.Validate(loader)
+	// res, err := model.UserSchema.Validate(loader)
 	// if err != nil {
 	// 	log.Println(err)
 	// }
@@ -54,8 +53,8 @@ func toUser(user *models.UserForm, sha256 *string) *models.User {
 	return u
 }
 
-func toUserResponse(key string, user *models.User) *models.UserResponse {
-	return &models.UserResponse{
+func toUserResponse(key string, user *model.User) *model.UserResponse {
+	return &model.UserResponse{
 		ID:      key,
 		Roles:   user.Roles,
 		Blocked: user.Blocked,
@@ -63,8 +62,8 @@ func toUserResponse(key string, user *models.User) *models.UserResponse {
 	}
 }
 
-func toNewUserResponse(key string, user *models.User, secret *string) *models.NewUserResponse {
-	return &models.NewUserResponse{
+func toNewUserResponse(key string, user *model.User, secret *string) *model.NewUserResponse {
+	return &model.NewUserResponse{
 		ID:      key,
 		Roles:   user.Roles,
 		Secret:  secret,
@@ -72,19 +71,19 @@ func toNewUserResponse(key string, user *models.User, secret *string) *models.Ne
 	}
 }
 
-func (db *Database) UserGetOrCreate(ctx *gin.Context, newUser *models.UserForm) (*models.UserResponse, error) {
+func (db *Database) UserGetOrCreate(ctx context.Context, newUser *model.UserForm) (*model.UserResponse, error) {
 	user, err := db.UserGet(ctx, newUser.ID)
 	if err != nil {
 		newUser, err := db.UserCreate(ctx, newUser)
 		if err != nil {
 			return nil, err
 		}
-		return &models.UserResponse{ID: newUser.ID, Roles: newUser.Roles, Blocked: newUser.Blocked}, nil
+		return &model.UserResponse{ID: newUser.ID, Roles: newUser.Roles, Blocked: newUser.Blocked}, nil
 	}
 	return user, nil
 }
 
-func (db *Database) UserCreate(ctx context.Context, newUser *models.UserForm) (*models.NewUserResponse, error) {
+func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*model.NewUserResponse, error) {
 	var key string
 	var hash *string
 	if newUser.Apikey {
@@ -92,7 +91,7 @@ func (db *Database) UserCreate(ctx context.Context, newUser *models.UserForm) (*
 		hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
 	}
 
-	var doc models.User
+	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
 	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, hash))
 	if err != nil {
@@ -102,8 +101,8 @@ func (db *Database) UserCreate(ctx context.Context, newUser *models.UserForm) (*
 	return toNewUserResponse(meta.Key, &doc, pointer.String(key)), nil
 }
 
-func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*models.UserResponse, error) {
-	newUser := &models.UserForm{
+func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*model.UserResponse, error) {
+	newUser := &model.UserForm{
 		ID:      "setup",
 		Roles:   []string{role.Admin},
 		Apikey:  true,
@@ -111,7 +110,7 @@ func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*mod
 	}
 	hash := pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
 
-	var doc models.User
+	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
 	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, hash))
 	if err != nil {
@@ -121,8 +120,8 @@ func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*mod
 	return toUserResponse(meta.Key, &doc), nil
 }
 
-func (db *Database) UserGet(ctx context.Context, id string) (*models.UserResponse, error) {
-	var doc models.User
+func (db *Database) UserGet(ctx context.Context, id string) (*model.UserResponse, error) {
+	var doc model.User
 	meta, err := db.userCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err
@@ -136,16 +135,16 @@ func (db *Database) UserDelete(ctx context.Context, id string) error {
 	return err
 }
 
-func (db *Database) UserList(ctx context.Context) ([]*models.UserResponse, error) {
+func (db *Database) UserList(ctx context.Context) ([]*model.UserResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
 	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": UserCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close()
-	var docs []*models.UserResponse
+	var docs []*model.UserResponse
 	for {
-		var doc models.User
+		var doc model.User
 		meta, err := cursor.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
@@ -159,7 +158,7 @@ func (db *Database) UserList(ctx context.Context) ([]*models.UserResponse, error
 	return docs, err
 }
 
-func (db *Database) UserByHash(ctx context.Context, sha256 string) (*models.UserResponse, error) {
+func (db *Database) UserByHash(ctx context.Context, sha256 string) (*model.UserResponse, error) {
 	query := `FOR d in @@collection
 	FILTER d.sha256 == @sha256
 	RETURN d`
@@ -170,7 +169,7 @@ func (db *Database) UserByHash(ctx context.Context, sha256 string) (*models.User
 	}
 	defer cursor.Close()
 
-	var doc models.User
+	var doc model.User
 	meta, err := cursor.ReadDocument(ctx, &doc)
 	if err != nil {
 		return nil, err
@@ -179,8 +178,8 @@ func (db *Database) UserByHash(ctx context.Context, sha256 string) (*models.User
 	return toUserResponse(meta.Key, &doc), err
 }
 
-func (db *Database) UserUpdate(ctx context.Context, id string, user *models.UserForm) (*models.UserResponse, error) {
-	var doc models.User
+func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserForm) (*model.UserResponse, error) {
+	var doc model.User
 	_, err := db.userCollection.ReadDocument(ctx, id, &doc)
 	if err != nil {
 		return nil, err

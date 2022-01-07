@@ -7,35 +7,39 @@ import (
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/api"
-	"github.com/SecurityBrewery/catalyst/generated/restapi/operations/automations"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
+
+func automationResponseID(automation *model.AutomationResponse) []driver.DocumentID {
+	if automation == nil {
+		return nil
+	}
+	return automationID(automation.ID)
+}
 
 func automationID(id string) []driver.DocumentID {
 	return []driver.DocumentID{driver.DocumentID(fmt.Sprintf("%s/%s", database.AutomationCollectionName, id))}
 }
 
-func (s *Service) CreateAutomation(ctx context.Context, params *automations.CreateAutomationParams) *api.Response {
-	i, err := s.database.AutomationCreate(ctx, params.Automation)
-	return s.response(ctx, "CreateAutomation", automationID(i.ID), i, err)
+func (s *Service) ListAutomations(ctx context.Context) ([]*model.AutomationResponse, error) {
+	return s.database.AutomationList(ctx)
 }
 
-func (s *Service) GetAutomation(ctx context.Context, params *automations.GetAutomationParams) *api.Response {
-	i, err := s.database.AutomationGet(ctx, params.ID)
-	return s.response(ctx, "GetAutomation", nil, i, err)
+func (s *Service) CreateAutomation(ctx context.Context, form *model.AutomationForm) (doc *model.AutomationResponse, err error) {
+	defer s.publishRequest(ctx, err, "CreateAutomation", automationResponseID(doc))
+	return s.database.AutomationCreate(ctx, form)
 }
 
-func (s *Service) UpdateAutomation(ctx context.Context, params *automations.UpdateAutomationParams) *api.Response {
-	i, err := s.database.AutomationUpdate(ctx, params.ID, params.Automation)
-	return s.response(ctx, "UpdateAutomation", automationID(i.ID), i, err)
+func (s *Service) GetAutomation(ctx context.Context, id string) (*model.AutomationResponse, error) {
+	return s.database.AutomationGet(ctx, id)
 }
 
-func (s *Service) DeleteAutomation(ctx context.Context, params *automations.DeleteAutomationParams) *api.Response {
-	err := s.database.AutomationDelete(ctx, params.ID)
-	return s.response(ctx, "DeleteAutomation", automationID(params.ID), nil, err)
+func (s *Service) UpdateAutomation(ctx context.Context, id string, form *model.AutomationForm) (doc *model.AutomationResponse, err error) {
+	defer s.publishRequest(ctx, err, "UpdateAutomation", automationResponseID(doc))
+	return s.database.AutomationUpdate(ctx, id, form)
 }
 
-func (s *Service) ListAutomations(ctx context.Context) *api.Response {
-	i, err := s.database.AutomationList(ctx)
-	return s.response(ctx, "ListAutomations", nil, i, err)
+func (s *Service) DeleteAutomation(ctx context.Context, id string) (err error) {
+	defer s.publishRequest(ctx, err, "DeleteAutomation", automationID(id))
+	return s.database.AutomationDelete(ctx, id)
 }
