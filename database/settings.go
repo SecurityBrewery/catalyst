@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/arangodb/go-driver"
-	"github.com/gin-gonic/gin"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
@@ -33,7 +32,7 @@ func (db *Database) UserDataCreate(ctx context.Context, id string, userdata *mod
 	return err
 }
 
-func (db *Database) UserDataGetOrCreate(ctx *gin.Context, id string, newUserData *model.UserData) (*model.UserDataResponse, error) {
+func (db *Database) UserDataGetOrCreate(ctx context.Context, id string, newUserData *model.UserData) (*model.UserDataResponse, error) {
 	setting, err := db.UserDataGet(ctx, id)
 	if err != nil {
 		return toUserDataResponse(id, newUserData), db.UserDataCreate(ctx, id, newUserData)

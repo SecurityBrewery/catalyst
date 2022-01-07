@@ -4,20 +4,19 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/role"
@@ -59,33 +58,31 @@ func (c *AuthConfig) Load(ctx context.Context) error {
 }
 
 const (
-	SessionName  = "catalyst-session"
-	stateSession = "state"
-	userSession  = "user"
+	stateSessionCookie = "state"
+	userSessionCookie  = "user"
 )
 
-func Authenticate(db *database.Database, config *AuthConfig) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		iss := config.OIDCIssuer
+func Authenticate(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			keyHeader := r.Header.Get("PRIVATE-TOKEN")
+			authHeader := r.Header.Get("User")
 
-		keyHeader := ctx.Request.Header.Get("PRIVATE-TOKEN")
-		if keyHeader != "" {
-			keyAuth(db, keyHeader)(ctx)
-			return
-		}
-
-		authHeader := ctx.Request.Header.Get("User")
-
-		if authHeader != "" {
-			bearerAuth(db, authHeader, iss, config)(ctx)
-			return
-		}
-		sessionAuth(db, config)(ctx)
+			switch {
+			case keyHeader != "":
+				keyAuth(db, keyHeader)(next).ServeHTTP(w, r)
+			case authHeader != "":
+				iss := config.OIDCIssuer
+				bearerAuth(db, authHeader, iss, config)(next).ServeHTTP(w, r)
+			default:
+				sessionAuth(db, config)(next).ServeHTTP(w, r)
+			}
+		})
 	}
 }
 
-func oidcCtx(ctx *gin.Context) (context.Context, context.CancelFunc) {
-	/*
+/*
+func oidcCtx(w http.ResponseWriter, r *http.Request) (context.Context, context.CancelFunc) {
 		if config.TLSCertFile != "" && config.TLSKeyFile != "" {
 			cert, err := tls.LoadX509KeyPair(config.TLSCertFile, config.TLSKeyFile)
 			if err != nil {
@@ -109,131 +106,139 @@ func oidcCtx(ctx *gin.Context) (context.Context, context.CancelFunc) {
 				},
 			}), nil
 		}
-	*/
 	cctx, cancel := context.WithTimeout(ctx, time.Minute)
 	return cctx, cancel
 }
+*/
 
-func bearerAuth(db *database.Database, authHeader string, iss string, config *AuthConfig) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		if !strings.HasPrefix(authHeader, "Bearer ") {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "no bearer token"})
-			return
-		}
+func bearerAuth(db *database.Database, authHeader string, iss string, config *AuthConfig) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("no bearer token"))
+				return
+			}
 
-		oidcCtx, cancel := oidcCtx(ctx)
-		defer cancel()
+			// oidcCtx, cancel := oidcCtx(ctx)
+			// defer cancel()
 
-		verifier, err := config.Verifier(oidcCtx)
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "could not verify: " + err.Error()})
-			return
-		}
-		authToken, err := verifier.Verify(oidcCtx, authHeader[7:])
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("could not verify bearer token: %v", err)})
-			return
-		}
+			verifier, err := config.Verifier(r.Context())
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusUnauthorized, fmt.Errorf("could not verify: %w", err))
+				return
+			}
+			authToken, err := verifier.Verify(r.Context(), authHeader[7:])
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not verify bearer token: %w", err))
+				return
+			}
 
-		var claims map[string]interface{}
-		if err := authToken.Claims(&claims); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to parse claims: %v", err)})
-			return
-		}
+			var claims map[string]interface{}
+			if err := authToken.Claims(&claims); err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("failed to parse claims: %w", err))
+				return
+			}
 
-		// if claims.Iss != iss {
-		// 	ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "wrong issuer"})
-		// 	return
-		// }
+			// if claims.Iss != iss {
+			// 	return &api.HTTPError{Status: http.StatusInternalServerError, Internal: "wrong issuer"})
+			// 	return
+			// }
 
-		session := sessions.Default(ctx)
-		session.Set(userSession, claims)
-		if err = session.Save(); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, fmt.Sprintf("could not set session: %v", err))
-			return
-		}
+			b, _ := json.Marshal(claims)
+			http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: base64.StdEncoding.EncodeToString(b)})
 
-		if err = setContextClaims(ctx, db, claims, config); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("could not load user: %s", err)})
-			return
-		}
-		ctx.Next()
+			r, err = setContextClaims(r, db, claims, config)
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not load user: %w", err))
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 
-func keyAuth(db *database.Database, keyHeader string) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		h := fmt.Sprintf("%x", sha256.Sum256([]byte(keyHeader)))
+func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h := fmt.Sprintf("%x", sha256.Sum256([]byte(keyHeader)))
 
-		key, err := db.UserByHash(ctx, h)
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("could not verify private token: %v", err)})
-			return
-		}
+			key, err := db.UserByHash(r.Context(), h)
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not verify private token: %w", err))
+				return
+			}
 
-		setContextUser(ctx, key, db.Hooks)
+			r = setContextUser(r, key, db.Hooks)
 
-		ctx.Next()
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 
-func sessionAuth(db *database.Database, config *AuthConfig) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		session := sessions.Default(ctx)
+func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userCookie, err := r.Cookie(userSessionCookie)
+			if err != nil {
+				redirectToLogin(w, r, config.OAuth2)
 
-		user := session.Get(userSession)
-		if user == nil {
-			redirectToLogin(ctx, session, config.OAuth2)
+				return
+			}
 
-			return
-		}
+			b, err := base64.StdEncoding.DecodeString(userCookie.Value)
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not decode cookie: %w", err))
+				return
+			}
 
-		claims, ok := user.(map[string]interface{})
-		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "claims not in session"})
-			return
-		}
+			var claims map[string]interface{}
+			if err := json.Unmarshal(b, &claims); err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("claims not in session"))
+				return
+			}
 
-		if err := setContextClaims(ctx, db, claims, config); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("could not load user: %s", err)})
-			return
-		}
+			r, err = setContextClaims(r, db, claims, config)
+			if err != nil {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not load user: %w", err))
+				return
+			}
 
-		ctx.Next()
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 
-func setContextClaims(ctx *gin.Context, db *database.Database, claims map[string]interface{}, config *AuthConfig) error {
+func setContextClaims(r *http.Request, db *database.Database, claims map[string]interface{}, config *AuthConfig) (*http.Request, error) {
 	newUser, newSetting, err := mapUserAndSettings(claims, config)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if _, ok := busdb.UserFromContext(ctx); !ok {
-		busdb.SetContext(ctx, &model.UserResponse{ID: "auth", Roles: []string{role.Admin}, Apikey: false, Blocked: false})
+	if _, ok := busdb.UserFromContext(r.Context()); !ok {
+		r = busdb.SetContext(r, &model.UserResponse{ID: "auth", Roles: []string{role.Admin}, Apikey: false, Blocked: false})
 	}
 
-	user, err := db.UserGetOrCreate(ctx, newUser)
+	user, err := db.UserGetOrCreate(r.Context(), newUser)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = db.UserDataGetOrCreate(ctx, newUser.ID, newSetting)
+	_, err = db.UserDataGetOrCreate(r.Context(), newUser.ID, newSetting)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	setContextUser(ctx, user, db.Hooks)
-	return nil
+	return setContextUser(r, user, db.Hooks), nil
 }
 
-func setContextUser(ctx *gin.Context, user *model.UserResponse, hooks *hooks.Hooks) {
-	groups, err := hooks.GetGroups(ctx, user.ID)
+func setContextUser(r *http.Request, user *model.UserResponse, hooks *hooks.Hooks) *http.Request {
+	groups, err := hooks.GetGroups(r.Context(), user.ID)
 	if err == nil {
-		busdb.SetGroupContext(ctx, groups)
+		r = busdb.SetGroupContext(r, groups)
 	}
 
-	busdb.SetContext(ctx, user)
+	return busdb.SetContext(r, user)
 }
 
 func mapUserAndSettings(claims map[string]interface{}, config *AuthConfig) (*model.UserForm, *model.UserData, error) {
@@ -283,114 +288,110 @@ func getString(m map[string]interface{}, key string) (string, error) {
 	return "", fmt.Errorf("mapping of %s failed, missing value", key)
 }
 
-func redirectToLogin(ctx *gin.Context, session sessions.Session, oauth2Config *oauth2.Config) {
+func redirectToLogin(w http.ResponseWriter, r *http.Request, oauth2Config *oauth2.Config) {
 	state, err := state()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "generating state failed"})
-		return
-	}
-	session.Set(stateSession, state)
-	err = session.Save()
-	if err != nil {
-		log.Println(err)
-	}
-
-	ctx.Redirect(http.StatusFound, oauth2Config.AuthCodeURL(state))
-	log.Println("abort", ctx.Request.URL.String())
-	ctx.Abort()
-}
-
-func AuthorizeBlockedUser(ctx *gin.Context) {
-	user, ok := busdb.UserFromContext(ctx)
-	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "no user in context"})
+		api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
 		return
 	}
 
-	if user.Blocked {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "user is blocked"})
-		return
-	}
+	http.SetCookie(w, &http.Cookie{Name: stateSessionCookie, Value: state})
 
-	ctx.Next()
+	http.Redirect(w, r, oauth2Config.AuthCodeURL(state), http.StatusFound)
+	return
 }
 
-func AuthorizeRole(roles []role.Role) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user, ok := busdb.UserFromContext(ctx)
-		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "no user in context"})
-			return
-		}
+func AuthorizeBlockedUser() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			user, ok := busdb.UserFromContext(r.Context())
+			if !ok {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("no user in context"))
+				return
+			}
 
-		if !role.UserHasRoles(user, roles) {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("missing role %s has %s", roles, user.Roles)})
-			return
-		}
+			if user.Blocked {
+				api.JSONErrorStatus(w, http.StatusForbidden, errors.New("user is blocked"))
+				return
+			}
 
-		ctx.Next()
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 
-func callback(config *AuthConfig) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		session := sessions.Default(ctx)
+func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			user, ok := busdb.UserFromContext(r.Context())
+			if !ok {
+				api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("no user in context"))
+				return
+			}
 
-		state := session.Get(stateSession)
-		if state == "" {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "state missing"})
+			if !role.UserHasRoles(user, role.FromStrings(roles)) {
+				api.JSONErrorStatus(w, http.StatusForbidden, fmt.Errorf("missing role %s has %s", roles, user.Roles))
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func callback(config *AuthConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		stateCookie, err := r.Cookie(stateSessionCookie)
+		if err != nil || stateCookie.Value == "" {
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state missing"))
 			return
 		}
 
-		if state != ctx.Query("state") {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "state mismatch"})
+		if stateCookie.Value != r.URL.Query().Get("state") {
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state mismatch"))
 			return
 		}
 
-		oauth2Token, err := config.OAuth2.Exchange(ctx, ctx.Query("code"))
+		oauth2Token, err := config.OAuth2.Exchange(r.Context(), r.URL.Query().Get("code"))
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": gin.H{"error": fmt.Sprintf("oauth2 exchange failed: %s", err)}})
+			api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("oauth2 exchange failed: %w", err))
 			return
 		}
 
 		// Extract the ID Token from OAuth2 token.
 		rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "missing id token"})
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("missing id token"))
 			return
 		}
 
-		oidcCtx, cancel := oidcCtx(ctx)
-		defer cancel()
+		// oidcCtx, cancel := oidcCtx(ctx)
+		// defer cancel()
 
-		verifier, err := config.Verifier(oidcCtx)
+		verifier, err := config.Verifier(r.Context())
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "could not verify: " + err.Error()})
+			api.JSONErrorStatus(w, http.StatusUnauthorized, fmt.Errorf("could not verify: %w", err))
 			return
 		}
 
 		// Parse and verify ID Token payload.
-		idToken, err := verifier.Verify(oidcCtx, rawIDToken)
+		idToken, err := verifier.Verify(r.Context(), rawIDToken)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "token verification failed: " + err.Error()})
+			api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("token verification failed: %w", err))
 			return
 		}
 
 		// Extract custom claims
 		var claims map[string]interface{}
 		if err := idToken.Claims(&claims); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "claim extraction failed"})
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("claim extraction failed"))
 			return
 		}
 
-		session.Set(userSession, claims)
-		err = session.Save()
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("could not save session %s", err)})
-			return
-		}
+		b, _ := json.Marshal(claims)
+		http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: base64.StdEncoding.EncodeToString(b)})
 
-		ctx.Redirect(http.StatusFound, "/")
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
 

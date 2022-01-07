@@ -489,6 +489,7 @@ paths:
                       order: 2
                       name: Escalate to malware team
                       type: task
+      security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}/playbooks/{playbookID}:
     delete:

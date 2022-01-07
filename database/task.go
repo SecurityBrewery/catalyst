@@ -35,7 +35,7 @@ func (db *Database) TaskList(ctx context.Context) ([]*model.TaskWithContext, err
 		return nil, err
 	}
 	defer cursor.Close()
-	docs := []*model.TaskWithContext{}
+	var docs []*model.TaskWithContext
 	for {
 		var doc playbookResponse
 		_, err := cursor.ReadDocument(ctx, &doc)
@@ -55,7 +55,7 @@ func (db *Database) TaskList(ctx context.Context) ([]*model.TaskWithContext, err
 				docs = append(docs, &model.TaskWithContext{
 					PlaybookId:   doc.PlaybookId,
 					PlaybookName: doc.PlaybookName,
-					Task:         *task,
+					Task:         task,
 					TicketId:     doc.TicketId,
 					TicketName:   doc.TicketName,
 				})

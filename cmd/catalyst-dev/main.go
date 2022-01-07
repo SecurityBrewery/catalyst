@@ -7,6 +7,8 @@ import (
 	"net/http/httputil"
 	"net/url"
 
+	"github.com/arangodb/go-driver"
+
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/cmd"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
@@ -14,7 +16,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/test"
-	"github.com/arangodb/go-driver"
 )
 
 func main() {
@@ -40,13 +41,7 @@ func main() {
 	}
 
 	// proxy static requests
-	theCatalyst.Server.NotFound(proxy)
-	// theCatalyst.Server.NoRoute(
-	// 	sessions.Sessions(catalyst.SessionName, cookie.NewStore(config.Secret)),
-	// 	catalyst.Authenticate(theCatalyst.DB, config.Auth),
-	// 	catalyst.AuthorizeBlockedUser,
-	// 	proxy,
-	// )
+	theCatalyst.Server.With(catalyst.Authenticate(theCatalyst.DB, config.Auth), catalyst.AuthorizeBlockedUser()).NotFound(proxy)
 
 	if err := http.ListenAndServe(":8000", theCatalyst.Server); err != nil {
 		log.Fatal(err)

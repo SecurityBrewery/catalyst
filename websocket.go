@@ -2,16 +2,17 @@ package catalyst
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"sync"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/google/uuid"
 
 	"github.com/SecurityBrewery/catalyst/bus"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 )
 
 type websocketBroker struct {
@@ -43,7 +44,7 @@ func (wb *websocketBroker) NewWebsocket() (string, chan []byte) {
 	return id, channel
 }
 
-func handleWebSocket(catalystBus *bus.Bus) func(ctx *gin.Context) {
+func handleWebSocket(catalystBus *bus.Bus) http.HandlerFunc {
 	broker := websocketBroker{clients: map[string]chan []byte{}}
 
 	// send all messages from bus to websocket
@@ -62,10 +63,10 @@ func handleWebSocket(catalystBus *bus.Bus) func(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	return func(ctx *gin.Context) {
-		conn, _, _, err := ws.UpgradeHTTP(ctx.Request, ctx.Writer)
+	return func(w http.ResponseWriter, r *http.Request) {
+		conn, _, _, err := ws.UpgradeHTTP(r, w)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "upgrade failed"})
+			api.JSONError(w, errors.New("upgrade failed"))
 			return
 		}
 

@@ -3,17 +3,12 @@ package database_test
 import (
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/test"
 )
-
-func init() {
-	gin.SetMode(gin.TestMode)
-}
 
 var bob = &model.UserData{
 	Email: pointer.String("bob@example.org"),

@@ -2985,6 +2985,9 @@
             "description" : "successful operation"
           }
         },
+        "security" : [ {
+          "roles" : [ "ticket:write" ]
+        } ],
         "summary" : "Add a new ticket playbook",
         "tags" : [ "tickets" ],
         "x-codegen-request-body-name" : "playbook"

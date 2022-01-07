@@ -35,7 +35,7 @@ func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, ta
 		PlaybookId:   playbookID,
 		PlaybookName: playbook.Name,
 		TaskId:       taskID,
-		Task:         *task,
+		Task:         task,
 		TicketId:     id,
 		TicketName:   inc.Name,
 	}, nil
@@ -155,7 +155,7 @@ func (db *Database) TaskRun(ctx context.Context, id int64, playbookID string, ta
 	}
 
 	if task.Task.Type == model.TaskTypeAutomation {
-		if err := runTask(id, playbookID, taskID, &task.Task, extractTicketResponse(ticket), db); err != nil {
+		if err := runTask(id, playbookID, taskID, task.Task, extractTicketResponse(ticket), db); err != nil {
 			return err
 		}
 	}

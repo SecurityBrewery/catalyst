@@ -2,10 +2,12 @@ package busdb
 
 import (
 	"context"
+	"errors"
 
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/bus"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -41,13 +43,13 @@ type Operation struct {
 var CreateOperation = &Operation{Type: bus.DatabaseEntryCreated}
 var ReadOperation = &Operation{Type: bus.DatabaseEntryRead}
 
-func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (driver.Cursor, *model.LogEntry, error) {
-	cur, err := db.internal.Query(ctx, query, vars)
+func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (cur driver.Cursor, logs *model.LogEntry, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	cur, err = db.internal.Query(ctx, query, vars)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	var logs *model.LogEntry
 
 	switch {
 	case operation.Type == bus.DatabaseEntryCreated, operation.Type == bus.DatabaseEntryUpdated:
@@ -59,11 +61,15 @@ func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]i
 	return cur, logs, err
 }
 
-func (db BusDatabase) Remove(ctx context.Context) error {
+func (db BusDatabase) Remove(ctx context.Context) (err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	return db.internal.Remove(ctx)
 }
 
-func (db BusDatabase) Collection(ctx context.Context, name string) (driver.Collection, error) {
+func (db BusDatabase) Collection(ctx context.Context, name string) (col driver.Collection, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	return db.internal.Collection(ctx, name)
 }
 
@@ -76,8 +82,10 @@ func NewCollection(internal driver.Collection, db *BusDatabase) *Collection {
 	return &Collection{internal: internal, db: db}
 }
 
-func (c Collection) CreateDocument(ctx, newctx context.Context, key string, document interface{}) (driver.DocumentMeta, error) {
-	meta, err := c.internal.CreateDocument(newctx, &Keyed{Key: key, Doc: document})
+func (c Collection) CreateDocument(ctx, newctx context.Context, key string, document interface{}) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	meta, err = c.internal.CreateDocument(newctx, &Keyed{Key: key, Doc: document})
 	if err != nil {
 		return meta, err
 	}
@@ -89,8 +97,10 @@ func (c Collection) CreateDocument(ctx, newctx context.Context, key string, docu
 	return meta, nil
 }
 
-func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDocument) (driver.DocumentMeta, error) {
-	meta, err := c.internal.CreateDocument(newctx, edge)
+func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDocument) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	meta, err = c.internal.CreateDocument(newctx, edge)
 	if err != nil {
 		return meta, err
 	}
@@ -102,7 +112,9 @@ func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDoc
 	return meta, nil
 }
 
-func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocument) (driver.DocumentMetaSlice, error) {
+func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocument) (meta driver.DocumentMetaSlice, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	metas, errs, err := c.internal.CreateDocuments(ctx, edges)
 	if err != nil {
 		return nil, err
@@ -124,16 +136,24 @@ func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocumen
 	return metas, nil
 }
 
-func (c Collection) DocumentExists(ctx context.Context, id string) (bool, error) {
+func (c Collection) DocumentExists(ctx context.Context, id string) (exists bool, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	return c.internal.DocumentExists(ctx, id)
 }
 
-func (c Collection) ReadDocument(ctx context.Context, key string, result interface{}) (driver.DocumentMeta, error) {
-	return c.internal.ReadDocument(ctx, key, result)
+func (c Collection) ReadDocument(ctx context.Context, key string, result interface{}) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	meta, err = c.internal.ReadDocument(ctx, key, result)
+
+	return
 }
 
-func (c Collection) UpdateDocument(ctx context.Context, key string, update interface{}) (driver.DocumentMeta, error) {
-	meta, err := c.internal.UpdateDocument(ctx, key, update)
+func (c Collection) UpdateDocument(ctx context.Context, key string, update interface{}) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	meta, err = c.internal.UpdateDocument(ctx, key, update)
 	if err != nil {
 		return meta, err
 	}
@@ -141,8 +161,10 @@ func (c Collection) UpdateDocument(ctx context.Context, key string, update inter
 	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
-func (c Collection) ReplaceDocument(ctx context.Context, key string, document interface{}) (driver.DocumentMeta, error) {
-	meta, err := c.internal.ReplaceDocument(ctx, key, document)
+func (c Collection) ReplaceDocument(ctx context.Context, key string, document interface{}) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
+	meta, err = c.internal.ReplaceDocument(ctx, key, document)
 	if err != nil {
 		return meta, err
 	}
@@ -150,10 +172,24 @@ func (c Collection) ReplaceDocument(ctx context.Context, key string, document in
 	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
-func (c Collection) RemoveDocument(ctx context.Context, formatInt string) (driver.DocumentMeta, error) {
+func (c Collection) RemoveDocument(ctx context.Context, formatInt string) (meta driver.DocumentMeta, err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	return c.internal.RemoveDocument(ctx, formatInt)
 }
 
-func (c Collection) Truncate(ctx context.Context) error {
+func (c Collection) Truncate(ctx context.Context) (err error) {
+	defer func() { err = toHTTPErr(err) }()
+
 	return c.internal.Truncate(ctx)
+}
+
+func toHTTPErr(err error) error {
+	if err != nil {
+		ae := driver.ArangoError{}
+		if errors.As(err, &ae) {
+			return &api.HTTPError{Status: ae.Code, Internal: err}
+		}
+	}
+	return nil
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/arangodb/go-driver"
-	"github.com/gin-gonic/gin"
 
 	"github.com/SecurityBrewery/catalyst/index"
 )
@@ -44,7 +43,7 @@ func (h *Hooks) TicketWriteFilter(ctx context.Context) (string, map[string]inter
 	return "", nil, nil
 }
 
-func (h *Hooks) GetGroups(ctx *gin.Context, username string) ([]string, error) {
+func (h *Hooks) GetGroups(ctx context.Context, username string) ([]string, error) {
 	if h.GetGroupsFunc != nil {
 		return h.GetGroupsFunc(ctx, username)
 	}

@@ -8,7 +8,6 @@ import (
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
-	"github.com/gin-gonic/gin"
 	"github.com/iancoleman/strcase"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
@@ -72,7 +71,7 @@ func toNewUserResponse(key string, user *model.User, secret *string) *model.NewU
 	}
 }
 
-func (db *Database) UserGetOrCreate(ctx *gin.Context, newUser *model.UserForm) (*model.UserResponse, error) {
+func (db *Database) UserGetOrCreate(ctx context.Context, newUser *model.UserForm) (*model.UserResponse, error) {
 	user, err := db.UserGet(ctx, newUser.ID)
 	if err != nil {
 		newUser, err := db.UserCreate(ctx, newUser)

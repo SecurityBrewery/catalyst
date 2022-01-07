@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -18,31 +17,24 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/gin-gonic/gin"
 
 	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/pointer"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func RestoreHandler(catalystStorage *storage.Storage, db *database.Database, c *database.Config) gin.HandlerFunc {
-	return func(context *gin.Context) {
-		uf, err := context.FormFile("backup")
+func RestoreHandler(catalystStorage *storage.Storage, db *database.Database, c *database.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		uf, header, err := r.FormFile("backup")
 		if err != nil {
-			log.Println(err)
-			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			api.JSONError(w, err)
+			return
 		}
 
-		f, err := uf.Open()
-		if err != nil {
-			log.Println(err)
-			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		defer f.Close()
-
-		if err = Restore(context, catalystStorage, db, c, f, uf.Size); err != nil {
-			log.Println(err)
-			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err = Restore(r.Context(), catalystStorage, db, c, uf, header.Size); err != nil {
+			api.JSONError(w, err)
+			return
 		}
 	}
 }
@@ -165,6 +157,7 @@ func arangorestore(dir string, config *database.Config) error {
 		name = database.Name
 	}
 	args := []string{
+		"--batch-size", "524288",
 		"--input-directory", dir, "--server.endpoint", host,
 		"--server.username", config.User, "--server.password", config.Password,
 		"--server.database", name,

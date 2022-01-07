@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"io"
 	"io/fs"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -13,20 +12,19 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/gin-gonic/gin"
 
 	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func BackupHandler(catalystStorage *storage.Storage, c *database.Config) gin.HandlerFunc {
-	return func(context *gin.Context) {
-		context.Header("Content-Disposition", "attachment; filename=backup.zip")
-		context.Header("Content-Type", "application/zip")
-		err := Backup(catalystStorage, c, context.Writer)
+func BackupHandler(catalystStorage *storage.Storage, c *database.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Disposition", "attachment; filename=backup.zip")
+		w.Header().Set("Content-Type", "application/zip")
+		err := Backup(catalystStorage, c, w)
 		if err != nil {
-			log.Println(err)
-			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			api.JSONError(w, err)
 		}
 	}
 }

@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 	"log"
-	"net/http/httptest"
+	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -11,7 +11,6 @@ import (
 
 	"github.com/arangodb/go-driver"
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/gin-gonic/gin"
 	"github.com/go-chi/chi"
 	"golang.org/x/oauth2"
 
@@ -29,10 +28,7 @@ import (
 )
 
 func Context() context.Context {
-	w := httptest.NewRecorder()
-	gctx, _ := gin.CreateTestContext(w)
-	busdb.SetContext(gctx, Bob)
-	return gctx
+	return busdb.UserContext(context.Background(), Bob)
 }
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
@@ -185,7 +181,13 @@ func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.I
 		t.Fatal(err)
 	}
 
-	catalystServer := api.NewServer(catalystService)
+	catalystServer := api.NewServer(catalystService, func(s []string) func(http.Handler) http.Handler {
+		return func(handler http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				handler.ServeHTTP(w, busdb.SetContext(r, Bob))
+			})
+		}
+	})
 
 	return ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, catalystServer, cleanup, err
 }

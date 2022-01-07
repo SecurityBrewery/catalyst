@@ -5386,6 +5386,9 @@ paths:
               type: alert
           schema:
             $ref: '#/definitions/TicketWithTickets'
+      security:
+      - roles:
+        - ticket:write
       summary: Add a new ticket playbook
       tags:
       - tickets

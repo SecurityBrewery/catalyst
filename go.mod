@@ -19,26 +19,24 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.3.5 // indirect
 	github.com/emitter-io/go/v2 v2.0.9
-	github.com/gin-contrib/sessions v0.0.4
-	github.com/gin-gonic/gin v1.7.4
 	github.com/go-chi/chi v1.5.4
-	github.com/go-playground/validator/v10 v10.9.0 // indirect
+	github.com/go-chi/cors v1.2.0
 	github.com/gobwas/ws v1.1.0
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
 	github.com/imdario/mergo v0.3.12
-	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/stretchr/testify v1.7.0
+	github.com/tidwall/gjson v1.12.1
+	github.com/tidwall/sjson v1.2.4
 	github.com/tus/tusd v1.8.0
-	github.com/ugorji/go v1.2.6 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.etcd.io/bbolt v1.3.6 // indirect

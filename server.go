@@ -2,9 +2,13 @@ package catalyst
 
 import (
 	"context"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
@@ -110,32 +114,33 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 }
 
 func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
-	// session
-	// store := cookie.NewStore(config.Secret)
-	// setSession := sessions.Sessions(SessionName, store)
-
-	// authenticate := Authenticate(catalystDatabase, config.Auth)
-
 	// create server
-	apiServer := api.NewServer(catalystService)
-	// apiServer.UseRawPath = true
+	allowAll := cors.AllowAll().Handler
+	apiServer := api.NewServer(
+		catalystService,
+		AuthorizeRole,
+		allowAll, Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser(),
+	)
 
-	// apiServer.ApiGroup.Use(setSession, authenticate, AuthorizeBlockedUser)
-	// apiServer.RoleAuth = AuthorizeRole
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Head("/files/:ticketID/upload/:id", upload(catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Patch("/files/:ticketID/upload/:id", upload(catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/:ticketID/upload", upload(catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Get("/files/:ticketID/download/:key", download(catalystStorage.Downloader()))
 
-	// apiServer.ConfigureRoutes()
-	// apiServer.ApiGroup.HEAD("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	// apiServer.ApiGroup.PATCH("/files/:ticketID/upload/:id", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	// apiServer.ApiGroup.POST("/files/:ticketID/upload", AuthorizeRole([]role.Role{role.FileReadWrite}), upload(catalystStorage.S3(), config.ExternalAddress))
-	// apiServer.ApiGroup.GET("/files/:ticketID/download/:key", AuthorizeRole([]role.Role{role.FileReadWrite}), download(catalystStorage.Downloader()))
+	apiServer.With(AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", BackupHandler(catalystStorage, dbConfig))
+	apiServer.With(AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", RestoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
-	// apiServer.ApiGroup.GET("/backup/create", AuthorizeRole([]role.Role{role.BackupRead}), BackupHandler(catalystStorage, dbConfig))
-	// apiServer.ApiGroup.POST("/backup/restore", AuthorizeRole([]role.Role{role.BackupRestore}), RestoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	server := chi.NewRouter()
+	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, allowAll)
+	server.Mount("/api", apiServer)
 
-	// apiServer.GET("/callback", setSession, callback(config.Auth))
-	// apiServer.Any("/wss", setSession, authenticate, AuthorizeBlockedUser, handleWebSocket(bus))
-	// apiServer.NoRoute(setSession, authenticate, AuthorizeBlockedUser, static)
+	server.Get("/callback", callback(config.Auth))
+	server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).Handle("/wss", handleWebSocket(bus))
+	// server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).NotFound(static)
+	server.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("not found")
+		Authenticate(catalystDatabase, config.Auth)(AuthorizeBlockedUser()(http.HandlerFunc(static))).ServeHTTP(w, r)
+	})
 
-	// apiServer.Use(cors.Default())
-	return apiServer, nil
+	return server, nil
 }

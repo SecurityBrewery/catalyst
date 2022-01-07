@@ -10,25 +10,81 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"regexp"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 
 	"github.com/SecurityBrewery/catalyst"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/pointer"
+	ctime "github.com/SecurityBrewery/catalyst/time"
 )
 
-func TestService(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+type testClock struct{}
 
+func (testClock) Now() time.Time {
+	return time.Date(2021, 12, 12, 12, 12, 12, 12, time.UTC)
+}
+
+func TestServer(t *testing.T) {
+	ctime.DefaultClock = testClock{}
+
+	for _, tt := range api.Tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			ctx, _, _, _, _, db, _, server, cleanup, err := Server(t)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer cleanup()
+
+			if err := SetupTestData(ctx, db); err != nil {
+				t.Fatal(err)
+			}
+
+			w := httptest.NewRecorder()
+
+			// setup request
+			var req *http.Request
+			if tt.Args.Data != nil {
+				b, err := json.Marshal(tt.Args.Data)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				req = httptest.NewRequest(strings.ToUpper(tt.Args.Method), tt.Args.URL, bytes.NewBuffer(b))
+				req.Header.Set("Content-Type", "application/json")
+			} else {
+				req = httptest.NewRequest(strings.ToUpper(tt.Args.Method), tt.Args.URL, nil)
+			}
+
+			// run request
+			server.ServeHTTP(w, req)
+
+			result := w.Result()
+
+			// assert results
+			if result.StatusCode != tt.Want.Status {
+				msg, _ := io.ReadAll(result.Body)
+
+				t.Fatalf("Status got = %v, want %v: %s", result.Status, tt.Want.Status, msg)
+			}
+			if tt.Want.Status != http.StatusNoContent {
+				jsonEqual(t, result.Body, tt.Want.Body)
+			}
+		})
+	}
+}
+
+func TestService(t *testing.T) {
 	type args struct {
 		method string
 		url    string
@@ -43,8 +99,8 @@ func TestService(t *testing.T) {
 		args args
 		want want
 	}{
-		{name: "GetUser not existing", args: args{method: http.MethodGet, url: "/api/users/123"}, want: want{status: http.StatusNotFound, body: gin.H{"error": "document not found"}}},
-		{name: "ListUsers", args: args{method: http.MethodGet, url: "/api/users"}, want: want{status: http.StatusOK}},
+		{name: "GetUser not existing", args: args{method: http.MethodGet, url: "/users/123"}, want: want{status: http.StatusNotFound, body: map[string]string{"error": "document not found"}}},
+		{name: "ListUsers", args: args{method: http.MethodGet, url: "/users"}, want: want{status: http.StatusOK}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -53,11 +109,6 @@ func TestService(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer cleanup()
-
-			setUser := func(context *gin.Context) {
-				busdb.SetContext(context, Bob)
-			}
-			server.Use(setUser)
 
 			// server.ConfigureRoutes()
 			w := httptest.NewRecorder()
@@ -93,21 +144,13 @@ func TestService(t *testing.T) {
 }
 
 func TestBackupAndRestore(t *testing.T) {
-	gin.SetMode(gin.TestMode)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	type args struct {
-		method string
-		url    string
-		data   interface{}
-	}
 	type want struct {
 		status int
-		// body   interface{}
 	}
 	tests := []struct {
 		name string
-		// args args
 		want want
 	}{
 		{name: "Backup", want: want{status: http.StatusOK}},
@@ -124,10 +167,6 @@ func TestBackupAndRestore(t *testing.T) {
 			}
 
 			createFile(ctx, server)
-
-			server.Server.Use(func(context *gin.Context) {
-				busdb.SetContext(context, Bob)
-			})
 
 			zipB := assertBackup(t, server)
 
@@ -233,6 +272,8 @@ func assertRestore(t *testing.T, zipB []byte, server *catalyst.Server) {
 	restoreResult := restoreRequestRecorder.Result()
 
 	if !assert.Equal(t, http.StatusOK, restoreResult.StatusCode) {
+		b, _ := io.ReadAll(restoreResult.Body)
+		log.Println(string(b))
 		t.FailNow()
 	}
 }
@@ -314,24 +355,37 @@ func readZipFile(t *testing.T, b []byte) *zip.Reader {
 }
 
 func jsonEqual(t *testing.T, got io.Reader, want interface{}) {
-	var j, j2 interface{}
-	c, err := io.ReadAll(got)
+	var gotObject, wantObject interface{}
+
+	// load bytes
+	wantBytes, err := json.Marshal(want)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := json.Unmarshal(c, &j); err != nil {
-		t.Fatal(string(c), err)
-	}
-
-	b, err := json.Marshal(want)
+	gotBytes, err := io.ReadAll(got)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = json.Unmarshal(b, &j2); err != nil {
-		t.Fatal(err)
+
+	fields := []string{"secret"}
+	for _, field := range fields {
+		gField := gjson.GetBytes(wantBytes, field)
+		if gField.Exists() && gjson.GetBytes(gotBytes, field).Exists() {
+			gotBytes, err = sjson.SetBytes(gotBytes, field, gField.Value())
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 
-	if !reflect.DeepEqual(j2, j) {
-		t.Errorf("Body got = %T:%v, want %T:%v", j, j, j2, j2)
+	// normalize bytes
+	if err = json.Unmarshal(wantBytes, &wantObject); err != nil {
+		t.Fatal(err)
 	}
+	if err := json.Unmarshal(gotBytes, &gotObject); err != nil {
+		t.Fatal(string(gotBytes), err)
+	}
+
+	// compare
+	assert.Equal(t, wantObject, gotObject)
 }

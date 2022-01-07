@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -22,6 +21,10 @@ type HTTPError struct {
 
 func (e *HTTPError) Error() string {
 	return fmt.Sprintf("HTTPError(%d): %s", e.Status, e.Internal)
+}
+
+func (e *HTTPError) Unwrap() error {
+	return e.Internal
 }
 
 type Service interface {
@@ -90,75 +93,75 @@ type Service interface {
 	DeleteUser(context.Context, string) error
 }
 
-func NewServer(service Service, middlewares ...func(http.Handler) http.Handler) chi.Router {
+func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.Handler, middlewares ...func(http.Handler) http.Handler) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middlewares...)
 
 	s := &server{service}
 
-	r.Get("/automations", s.listAutomationsHandler)
-	r.Put("/automations", s.createAutomationHandler)
-	r.Get("/automations/{id}", s.getAutomationHandler)
-	r.Put("/automations/{id}", s.updateAutomationHandler)
-	r.Delete("/automations/{id}", s.deleteAutomationHandler)
-	r.Get("/currentuser", s.currentUserHandler)
-	r.Get("/currentuserdata", s.currentUserDataHandler)
-	r.Put("/currentuserdata", s.updateCurrentUserDataHandler)
-	r.Get("/jobs", s.listJobsHandler)
-	r.Put("/jobs", s.runJobHandler)
-	r.Get("/jobs/{id}", s.getJobHandler)
-	r.Put("/jobs/{id}", s.updateJobHandler)
-	r.Get("/logs/{reference}", s.getLogsHandler)
-	r.Get("/playbooks", s.listPlaybooksHandler)
-	r.Put("/playbooks", s.createPlaybookHandler)
-	r.Get("/playbooks/{id}", s.getPlaybookHandler)
-	r.Put("/playbooks/{id}", s.updatePlaybookHandler)
-	r.Delete("/playbooks/{id}", s.deletePlaybookHandler)
-	r.Get("/settings", s.getSettingsHandler)
-	r.Get("/statistics", s.getStatisticsHandler)
-	r.Get("/tasks", s.listTasksHandler)
-	r.Get("/templates", s.listTemplatesHandler)
-	r.Put("/templates", s.createTemplateHandler)
-	r.Get("/templates/{id}", s.getTemplateHandler)
-	r.Put("/templates/{id}", s.updateTemplateHandler)
-	r.Delete("/templates/{id}", s.deleteTemplateHandler)
-	r.Get("/tickets", s.listTicketsHandler)
-	r.Put("/tickets", s.createTicketHandler)
-	r.Put("/tickets/batch", s.createTicketBatchHandler)
-	r.Get("/tickets/{id}", s.getTicketHandler)
-	r.Put("/tickets/{id}", s.updateTicketHandler)
-	r.Delete("/tickets/{id}", s.deleteTicketHandler)
-	r.Put("/tickets/{id}/artifacts", s.addArtifactHandler)
-	r.Get("/tickets/{id}/artifacts/{name}", s.getArtifactHandler)
-	r.Put("/tickets/{id}/artifacts/{name}", s.setArtifactHandler)
-	r.Delete("/tickets/{id}/artifacts/{name}", s.removeArtifactHandler)
-	r.Put("/tickets/{id}/artifacts/{name}/enrich", s.enrichArtifactHandler)
-	r.Put("/tickets/{id}/artifacts/{name}/run/{automation}", s.runArtifactHandler)
-	r.Put("/tickets/{id}/comments", s.addCommentHandler)
-	r.Delete("/tickets/{id}/comments/{commentID}", s.removeCommentHandler)
-	r.Put("/tickets/{id}/files", s.linkFilesHandler)
-	r.Put("/tickets/{id}/playbooks", s.addTicketPlaybookHandler)
-	r.Delete("/tickets/{id}/playbooks/{playbookID}", s.removeTicketPlaybookHandler)
-	r.Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskHandler)
-	r.Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/complete", s.completeTaskHandler)
-	r.Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/run", s.runTaskHandler)
-	r.Put("/tickets/{id}/references", s.setReferencesHandler)
-	r.Put("/tickets/{id}/schema", s.setSchemaHandler)
-	r.Patch("/tickets/{id}/tickets", s.linkTicketHandler)
-	r.Delete("/tickets/{id}/tickets", s.unlinkTicketHandler)
-	r.Get("/tickettypes", s.listTicketTypesHandler)
-	r.Put("/tickettypes", s.createTicketTypeHandler)
-	r.Get("/tickettypes/{id}", s.getTicketTypeHandler)
-	r.Put("/tickettypes/{id}", s.updateTicketTypeHandler)
-	r.Delete("/tickettypes/{id}", s.deleteTicketTypeHandler)
-	r.Get("/userdata", s.listUserDataHandler)
-	r.Get("/userdata/{id}", s.getUserDataHandler)
-	r.Put("/userdata/{id}", s.updateUserDataHandler)
-	r.Get("/users", s.listUsersHandler)
-	r.Put("/users", s.createUserHandler)
-	r.Get("/users/{id}", s.getUserHandler)
-	r.Put("/users/{id}", s.updateUserHandler)
-	r.Delete("/users/{id}", s.deleteUserHandler)
+	r.With(roleAuth([]string{"automation:read"})).Get("/automations", s.listAutomationsHandler)
+	r.With(roleAuth([]string{"automation:write"})).Post("/automations", s.createAutomationHandler)
+	r.With(roleAuth([]string{"automation:read"})).Get("/automations/{id}", s.getAutomationHandler)
+	r.With(roleAuth([]string{"automation:write"})).Put("/automations/{id}", s.updateAutomationHandler)
+	r.With(roleAuth([]string{"automation:write"})).Delete("/automations/{id}", s.deleteAutomationHandler)
+	r.With(roleAuth([]string{"currentuser:read"})).Get("/currentuser", s.currentUserHandler)
+	r.With(roleAuth([]string{"currentuserdata:read"})).Get("/currentuserdata", s.currentUserDataHandler)
+	r.With(roleAuth([]string{"currentuserdata:write"})).Put("/currentuserdata", s.updateCurrentUserDataHandler)
+	r.With(roleAuth([]string{"job:read"})).Get("/jobs", s.listJobsHandler)
+	r.With(roleAuth([]string{"job:write"})).Post("/jobs", s.runJobHandler)
+	r.With(roleAuth([]string{"job:read"})).Get("/jobs/{id}", s.getJobHandler)
+	r.With(roleAuth([]string{"job:write"})).Put("/jobs/{id}", s.updateJobHandler)
+	r.With(roleAuth([]string{"log:read"})).Get("/logs/{reference}", s.getLogsHandler)
+	r.With(roleAuth([]string{"playbook:read"})).Get("/playbooks", s.listPlaybooksHandler)
+	r.With(roleAuth([]string{"playbook:write"})).Post("/playbooks", s.createPlaybookHandler)
+	r.With(roleAuth([]string{"playbook:read"})).Get("/playbooks/{id}", s.getPlaybookHandler)
+	r.With(roleAuth([]string{"playbook:write"})).Put("/playbooks/{id}", s.updatePlaybookHandler)
+	r.With(roleAuth([]string{"playbook:write"})).Delete("/playbooks/{id}", s.deletePlaybookHandler)
+	r.With(roleAuth([]string{"settings:read"})).Get("/settings", s.getSettingsHandler)
+	r.With(roleAuth([]string{"ticket:read"})).Get("/statistics", s.getStatisticsHandler)
+	r.With(roleAuth([]string{"ticket:read"})).Get("/tasks", s.listTasksHandler)
+	r.With(roleAuth([]string{"template:read"})).Get("/templates", s.listTemplatesHandler)
+	r.With(roleAuth([]string{"template:write"})).Post("/templates", s.createTemplateHandler)
+	r.With(roleAuth([]string{"template:read"})).Get("/templates/{id}", s.getTemplateHandler)
+	r.With(roleAuth([]string{"template:write"})).Put("/templates/{id}", s.updateTemplateHandler)
+	r.With(roleAuth([]string{"template:write"})).Delete("/templates/{id}", s.deleteTemplateHandler)
+	r.With(roleAuth([]string{"ticket:read"})).Get("/tickets", s.listTicketsHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets", s.createTicketHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/batch", s.createTicketBatchHandler)
+	r.With(roleAuth([]string{"ticket:read"})).Get("/tickets/{id}", s.getTicketHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}", s.updateTicketHandler)
+	r.With(roleAuth([]string{"ticket:delete"})).Delete("/tickets/{id}", s.deleteTicketHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/artifacts", s.addArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Get("/tickets/{id}/artifacts/{name}", s.getArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/artifacts/{name}", s.setArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/artifacts/{name}", s.removeArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/artifacts/{name}/enrich", s.enrichArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/artifacts/{name}/run/{automation}", s.runArtifactHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/comments", s.addCommentHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/comments/{commentID}", s.removeCommentHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/files", s.linkFilesHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks", s.addTicketPlaybookHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/playbooks/{playbookID}", s.removeTicketPlaybookHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/complete", s.completeTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/run", s.runTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/references", s.setReferencesHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/schema", s.setSchemaHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Patch("/tickets/{id}/tickets", s.linkTicketHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/tickets", s.unlinkTicketHandler)
+	r.With(roleAuth([]string{"tickettype:read"})).Get("/tickettypes", s.listTicketTypesHandler)
+	r.With(roleAuth([]string{"tickettype:write"})).Post("/tickettypes", s.createTicketTypeHandler)
+	r.With(roleAuth([]string{"tickettype:read"})).Get("/tickettypes/{id}", s.getTicketTypeHandler)
+	r.With(roleAuth([]string{"tickettype:write"})).Put("/tickettypes/{id}", s.updateTicketTypeHandler)
+	r.With(roleAuth([]string{"tickettype:write"})).Delete("/tickettypes/{id}", s.deleteTicketTypeHandler)
+	r.With(roleAuth([]string{"userdata:read"})).Get("/userdata", s.listUserDataHandler)
+	r.With(roleAuth([]string{"userdata:read"})).Get("/userdata/{id}", s.getUserDataHandler)
+	r.With(roleAuth([]string{"userdata:write"})).Put("/userdata/{id}", s.updateUserDataHandler)
+	r.With(roleAuth([]string{"user:read"})).Get("/users", s.listUsersHandler)
+	r.With(roleAuth([]string{"user:write"})).Post("/users", s.createUserHandler)
+	r.With(roleAuth([]string{"user:read"})).Get("/users/{id}", s.getUserHandler)
+	r.With(roleAuth([]string{"user:write"})).Put("/users/{id}", s.updateUserHandler)
+	r.With(roleAuth([]string{"user:write"})).Delete("/users/{id}", s.deleteUserHandler)
 	return r
 }
 
@@ -995,7 +998,19 @@ func parseQueryStringArray(r *http.Request, key string) ([]string, error) {
 	if !ok {
 		return nil, nil
 	}
-	return stringArray, nil
+	return removeEmpty(stringArray), nil
+}
+
+func removeEmpty(l []string) []string {
+	var stringArray []string
+	for _, s := range l {
+		if s == "" {
+			continue
+		}
+		stringArray = append(stringArray, s)
+	}
+
+	return stringArray
 }
 
 func parseQueryBoolArray(r *http.Request, key string) ([]bool, error) {
@@ -1005,6 +1020,9 @@ func parseQueryBoolArray(r *http.Request, key string) ([]bool, error) {
 	}
 	var boolArray []bool
 	for _, s := range stringArray {
+		if s == "" {
+			continue
+		}
 		b, err := strconv.ParseBool(s)
 		if err != nil {
 			return nil, fmt.Errorf("%w", &HTTPError{http.StatusUnprocessableEntity, err})
@@ -1060,8 +1078,8 @@ func response(w http.ResponseWriter, v interface{}, err error) {
 		var httpError *HTTPError
 		if errors.As(err, &httpError) {
 			JSONErrorStatus(w, httpError.Status, httpError.Internal)
+			return
 		}
-		log.Println(err)
 		JSONError(w, err)
 		return
 	}

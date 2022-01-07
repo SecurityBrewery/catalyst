@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/role"
 )
@@ -15,15 +13,14 @@ const (
 	groupContextKey = "groups"
 )
 
-func SetContext(r *http.Request, ctx context.Context, user *model.UserResponse) {
+func SetContext(r *http.Request, user *model.UserResponse) *http.Request {
 	user.Roles = role.Strings(role.Explodes(user.Roles))
-	ctx.Set(userContextKey, user)
 
-	r.WithContext()
+	return r.WithContext(context.WithValue(r.Context(), userContextKey, user))
 }
 
-func SetGroupContext(ctx *gin.Context, groups []string) {
-	ctx.Set(groupContextKey, groups)
+func SetGroupContext(r *http.Request, groups []string) *http.Request {
+	return r.WithContext(context.WithValue(r.Context(), groupContextKey, groups))
 }
 
 func UserContext(ctx context.Context, user *model.UserResponse) context.Context {

@@ -53,7 +53,7 @@ func toPlaybook(doc *model.PlaybookTemplateForm) (*model.Playbook, error) {
 	}
 	for idx, task := range ticketPlaybook.Tasks {
 		if task.Schema != nil {
-			task.Schema = dyno.ConvertMapI2MapS(task.Schema.(map[string]interface{}))
+			task.Schema = dyno.ConvertMapI2MapS(task.Schema).(map[string]interface{})
 		}
 		task.Created = time.Now().UTC()
 		ticketPlaybook.Tasks[idx] = task
