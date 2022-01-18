@@ -81,6 +81,12 @@
                 v-model="editoruserdata.email"
             ></v-text-field>
 
+            <v-text-field
+                prepend-icon="mdi-timetable"
+                label="Timeformat"
+                v-model="editoruserdata.timeformat"
+            ></v-text-field>
+
             <v-btn
                 color="success"
                 outlined
