@@ -29,10 +29,16 @@ func createContainer(ctx context.Context, image, script, data string) (string, s
 	}
 
 	config := &container.Config{
-		Image: image, Cmd: []string{"/script", data}, WorkingDir: "/home",
-		AttachStderr: true, AttachStdout: true,
+		Image:        image,
+		Cmd:          []string{"/script", data},
+		WorkingDir:   "/home",
+		AttachStderr: true,
+		AttachStdout: true,
 	}
-	resp, err := cli.ContainerCreate(ctx, config, nil, nil, "")
+	hostConfig := &container.HostConfig{
+		NetworkMode: "catalyst",
+	}
+	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
 	if err != nil {
 		return "", logs, err
 	}
