@@ -109,6 +109,19 @@
         <v-icon color="primary">mdi-menu</v-icon>
       </v-btn>
 
+      <v-breadcrumbs :items="crumbs">
+        <template v-slot:item="{ item }">
+          <v-breadcrumbs-item
+              :to="item.to"
+              class="text-subtitle-2 crumb-item"
+              :disabled="item.disabled"
+              exact
+          >
+            {{ item.text }}
+          </v-breadcrumbs-item>
+        </template>
+      </v-breadcrumbs>
+
       <v-spacer></v-spacer>
 
       <v-btn :to="{ name: 'Profile' }" icon>
@@ -172,6 +185,29 @@ export default Vue.extend({
     },
     showAlert: function (): boolean {
       return this.$store.state.showAlert
+    },
+    crumbs: function() {
+      let pathArray = this.$route.path.split("/")
+      pathArray.shift()
+      return pathArray.reduce((breadcrumbs, path, idx) => {
+        let breadcrumbArray = breadcrumbs as Array<any>;
+        let toPath = breadcrumbArray[idx - 1] ? "/" + breadcrumbArray[idx - 1].xpath + "/" + path : "/" + path;
+        let resolved = this.$router.resolve(toPath);
+        let to = {};
+        let text = path;
+        if (resolved) {
+          to = { name: resolved.resolved.name, params: resolved.resolved.params };
+          text = resolved.resolved.meta && resolved.resolved.meta.title ? resolved.resolved.meta.title : text;
+        }
+        console.log(toPath, resolved, to);
+
+        breadcrumbArray.push({
+          xpath: path,
+          to: to,
+          text: text,
+        });
+        return breadcrumbArray;
+      }, []);
     }
   },
 

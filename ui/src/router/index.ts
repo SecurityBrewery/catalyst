@@ -62,16 +62,25 @@ const routes: Array<RouteConfig> = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
+    meta: { title: "Dashboard" },
   },
 
   {
     path: "/profile",
     name: "Profile",
     component: Profile,
+    meta: { title: "Profile" },
   },
 
   {
-    path: "/tickets/:type?",
+    path: "/tickets",
+    name: "TicketListAll",
+    component: TicketList,
+    meta: { title: "Tickets" },
+    props: true,
+  },
+  {
+    path: "/tickets/:type",
     name: "TicketList",
     component: TicketList,
     props: true,
@@ -84,17 +93,20 @@ const routes: Array<RouteConfig> = [
   {
     path: "/tickets/:type/new",
     name: "TicketNew",
+    meta: { title: "New Ticket" },
     component: TicketNew,
   },
   {
     path: "/tickets/:type?/:id/artifact/:artifact",
     name: "ArtifactPopup",
+    meta: { title: "Artifact" },
     component: ArtifactPopup,
   },
 
   {
     path: "/tasks",
     name: "TaskList",
+    meta: { title: "Tasks" },
     component: TaskList,
   },
 
@@ -102,6 +114,7 @@ const routes: Array<RouteConfig> = [
     path: "/templates",
     name: "TemplateList",
     component: TemplateList,
+    meta: { title: "Templates" },
     children: [
       {
         path: ":id",
@@ -115,6 +128,7 @@ const routes: Array<RouteConfig> = [
     path: "/tickettype",
     name: "TicketTypeList",
     component: TicketTypeList,
+    meta: { title: "Ticket Types" },
     children: [
       {
         path: ":id",
@@ -128,6 +142,7 @@ const routes: Array<RouteConfig> = [
     path: "/playbooks",
     name: "PlaybookList",
     component: PlaybookList,
+    meta: { title: "Playbooks" },
     children: [
       {
         path: ":id",
@@ -141,6 +156,7 @@ const routes: Array<RouteConfig> = [
     path: "/userdata",
     name: "UserDataList",
     component: UserDataList,
+    meta: { title: "User Data" },
     children: [
       {
         path: ":id",
@@ -154,6 +170,7 @@ const routes: Array<RouteConfig> = [
     path: "/jobs",
     name: "JobList",
     component: JobList,
+    meta: { title: "Jobs" },
     children: [
       {
         path: ":id",
@@ -167,6 +184,7 @@ const routes: Array<RouteConfig> = [
     path: "/automations",
     name: "AutomationList",
     component: AutomationList,
+    meta: { title: "Automations" },
     children: [
       {
         path: ":id",
@@ -180,6 +198,7 @@ const routes: Array<RouteConfig> = [
     path: "/rules",
     name: "RuleList",
     component: RuleList,
+    meta: { title: "Rules" },
     children: [
       {
         path: ":id",
@@ -193,6 +212,7 @@ const routes: Array<RouteConfig> = [
     path: "/users",
     name: "UserList",
     component: UserList,
+    meta: { title: "Users" },
     children: [
       {
         path: ":id",
@@ -206,6 +226,7 @@ const routes: Array<RouteConfig> = [
     path: "/groups",
     name: "GroupList",
     component: GroupList,
+    meta: { title: "Groups" },
     children: [
       {
         path: ":id",
@@ -219,12 +240,14 @@ const routes: Array<RouteConfig> = [
     path: "/apidocs",
     name: "API",
     component: API,
+    meta: { title: "API" },
   },
 
   {
     path: "/graph/:col/:id",
     name: "Graph",
     component: Graph,
+    meta: { title: "Graph" },
   },
 ];
 
