@@ -29,7 +29,7 @@ Tickets are the core of Catalyst. They represent alerts, incidents, forensics
 investigations, threat hunts or any other event you want to handle in your
 organisation.
 
-## Ticket Templates
+### Ticket Templates
 
 <center>
   <img width="400" alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/details.png" />
@@ -40,7 +40,7 @@ tickets like title, creation date or closing status is kept quite minimal and ot
 information like criticality, description or MITRE ATT&CK information can be
 added individually.
 
-## Conditional Custom Fields
+### Conditional Custom Fields
 
 <center>
   <img width="400" alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/conditional_custom_field_a.png" />
@@ -52,7 +52,7 @@ Custom Fields can be dependent on each other. So if you, for example choose
 ransomware, worm, etc. which a "phishing" incident would ask for the number
 of received mails in that campaign.
 
-## Playbooks
+### Playbooks
 
 <center>
   <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/phishing_playbook.png" />
@@ -62,7 +62,7 @@ Playbooks represent processes that can be attached to tickets. Playbooks can
 contain manual and automated tasks. Complex workflows with different workflow
 branches, parallel tasks and task dependencies can be modeled.
 
-## Automations
+### Automations
 
 <center>
   <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/script.png" />
@@ -72,7 +72,7 @@ Automations are scripts that automate tasks or enrich artifacts. Automations are
 run in their own Docker containers. This enables them to be created in different
 scripting languages and run securely in their own environment.
 
-## Users
+### Users
 
 <center>
   <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/roles.png" />
@@ -82,3 +82,16 @@ Catalyst has two different types of users, normal users accessing the platform
 via OIDC authentication and API keys for external script. A
 fine-grained access model is available for both types and allows to define
 possible actions for each user.
+
+## License
+
+Copyright (c) 2021-present Jonas Plum
+
+Portions of this software are licensed as follows:
+
+* All third party components incorporated into Catalyst are licensed under the
+  original license provided by the owner of the applicable component. Those
+  files contain a license notice on top of the file and are listed in the
+  [NOTICE](NOTICE) file.
+* Content outside the above-mentioned files above is
+  available under the [GNU Affero General Public License v3.0](LICENSE).
