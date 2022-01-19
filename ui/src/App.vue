@@ -190,22 +190,18 @@ export default Vue.extend({
       let pathArray = this.$route.path.split("/")
       pathArray.shift()
       return pathArray.reduce((breadcrumbs, path, idx) => {
+        let to = {};
+        let text = path;
+
         let breadcrumbArray = breadcrumbs as Array<any>;
         let toPath = breadcrumbArray[idx - 1] ? "/" + breadcrumbArray[idx - 1].xpath + "/" + path : "/" + path;
         let resolved = this.$router.resolve(toPath);
-        let to = {};
-        let text = path;
         if (resolved) {
           to = { name: resolved.resolved.name, params: resolved.resolved.params };
           text = resolved.resolved.meta && resolved.resolved.meta.title ? resolved.resolved.meta.title : text;
         }
-        console.log(toPath, resolved, to);
 
-        breadcrumbArray.push({
-          xpath: path,
-          to: to,
-          text: text,
-        });
+        breadcrumbArray.push({ xpath: path, to: to, text: text });
         return breadcrumbArray;
       }, []);
     }
