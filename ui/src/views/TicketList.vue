@@ -7,7 +7,7 @@
       <pane v-if="this.$route.params.id" class="pa-3" :size="100 - paneSize">
         <v-row>
           <v-spacer></v-spacer>
-          <v-btn @click="close" outlined rounded class="mt-3 mr-3">
+          <v-btn @click="close" outlined rounded class="mt-2 mr-2" small>
             <v-icon>mdi-close</v-icon>
             Close
           </v-btn>
