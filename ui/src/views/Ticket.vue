@@ -1,6 +1,9 @@
 <template>
-  <v-main>
-    <div v-if="ticket === undefined" class="text-sm-center py-16">
+  <div>
+    <div v-if="$route.params.id === 'new'">
+      <TicketNew></TicketNew>
+    </div>
+    <div v-else-if="ticket === undefined" class="text-sm-center py-16">
       <v-progress-circular
         indeterminate
         color="primary"
@@ -10,7 +13,7 @@
       >
       </v-progress-circular>
     </div>
-    <v-container v-else>
+    <div v-else>
       <!--v-row-- class="mt-5">
         <v-col>
           <div style="display: flex; justify-content: flex-end" class="pb-1">
@@ -26,7 +29,7 @@
         </v-col>
       </v-row-->
       <v-row class="mt-2">
-        <v-col cols="8">
+        <v-col cols="12" lg="8">
           <h1 class="d-flex">
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
@@ -222,7 +225,7 @@
             </div>
           </div>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" lg="4" >
           <v-btn
             v-if="$store.state.settings.tier === 'enterprise'"
             :to="{ name: 'Graph', params: { col: 'tickets', id: ticket.id } }"
@@ -775,8 +778,8 @@
           </v-dialog>
         </v-col>
       </v-row>
-    </v-container>
-  </v-main>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -799,7 +802,7 @@ import {
   Type,
   TypeColorEnum,
   TaskResponse, PlaybookResponse, UserResponse, TaskTypeEnum, TicketWithTickets,
-} from "../client";
+} from "@/client";
 import {API} from "@/services/api";
 
 import {Dashboard} from "@uppy/vue";
@@ -813,6 +816,7 @@ import {AxiosError, AxiosResponse} from "axios";
 import {DateTime} from "luxon";
 import VueMarkdown from "vue-markdown";
 import JSONHTML from "../components/JSONHTML.vue";
+import TicketNew from "@/views/TicketNew.vue";
 
 interface State {
   valid: boolean;
@@ -879,6 +883,7 @@ interface TaskWithID {
 export default Vue.extend({
   name: "Ticket",
   components: {
+    TicketNew,
     Dashboard,
     ArtifactSnippet,
     TicketSnippet,
@@ -1533,6 +1538,10 @@ export default Vue.extend({
     }
   },
   mounted() {
+    if (this.$route.params.id === 'new') {
+      return
+    }
+
     this.loadTicket();
     API.listUsers().then(response => {
       this.users = response.data;

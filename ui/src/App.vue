@@ -148,6 +148,7 @@
 <script lang="ts">
 import Vue from "vue";
 import AppLink from "./components/AppLink.vue";
+import router from "vue-router";
 
 export default Vue.extend({
   name: "App",
@@ -164,7 +165,7 @@ export default Vue.extend({
       { icon: "mdi-cogs", name: "User Data", to: "UserDataList", role: "admin:userdata:write" },
       { icon: "mdi-format-list-checks", name: "Jobs", to: "JobList", role: "admin:job:write" },
     ],
-    mini: false,
+    mini: true,
     goto: "",
 
     snackbar: false,
@@ -214,11 +215,12 @@ export default Vue.extend({
       }
       this.$router.push({
         name: "Ticket",
-        params: { id: this.goto.toString(), type: "-" }
+        params: { id: this.goto.toString() }
       });
     },
     openTicketList: function (type: string) {
-      this.$router.push({ name: "TicketList", params: { type: type } })
+      this.$router.history.current = router.START_LOCATION;
+      this.$router.push({ name: "TicketList", params: { type: type } });
     },
     hasRole: function (s: string) {
       if (this.$store.state.user.roles) {

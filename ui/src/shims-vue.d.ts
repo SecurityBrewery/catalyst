@@ -20,3 +20,4 @@ declare module 'graphlib';
 declare module 'ant-design-vue/es/_util/antInputDirective';
 declare module 'flat';
 declare module 'crypto';
+declare module 'splitpanes';
