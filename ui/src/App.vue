@@ -219,7 +219,7 @@ export default Vue.extend({
       });
     },
     openTicketList: function (type: string) {
-      this.$router.history.current = router.START_LOCATION;
+      (this.$router as any).history.current = router.START_LOCATION;
       this.$router.push({ name: "TicketList", params: { type: type } });
     },
     hasRole: function (s: string) {

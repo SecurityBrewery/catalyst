@@ -238,7 +238,7 @@ export default Vue.extend({
     },
     selectedtype: function () {
       // this.type = this.selectedtype;
-      this.$router.history.current = router.START_LOCATION;
+      (this.$router as any).history.current = router.START_LOCATION;
       this.$router.push({ name: "TicketList", params: { type: this.selectedtype } });
     },
     $route: function () {
