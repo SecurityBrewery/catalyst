@@ -219,7 +219,7 @@
                 </span>
                 </v-card-subtitle>
                 <v-card-text class="mb-0 mt-2">
-                  <vue-markdown>{{ comment.message }}</vue-markdown>
+                  <vue-markdown>{{ replacelinks(comment.message) }}</vue-markdown>
                 </v-card-text>
               </v-card>
             </div>
@@ -1535,6 +1535,11 @@ export default Vue.extend({
     },
     logs: function(ticket: TicketWithTickets) {
       return this.lodash.reverse(this.lodash.sortBy(this.lodash.union(ticket.comments, ticket.logs), ['created']))
+    },
+    replacelinks: function (text: string): string {
+      return text.replace(/#(\d+)\b/, (match, p1) => {
+        return "[" + match + "](/tickets/" + p1 + ")";
+      })
     }
   },
   mounted() {
