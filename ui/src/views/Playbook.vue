@@ -1,6 +1,6 @@
 <template>
   <div v-if="playbook !== undefined" class="fill-height d-flex flex-column pa-8">
-    <v-row>
+    <v-row class="flex-grow-0 flex-shrink-0">
       <v-spacer></v-spacer>
       <v-btn href="https://catalyst-soar.com/docs/catalyst/engineer/playbook" target="_blank" outlined rounded small>
         <v-icon>mdi-book-open</v-icon> Handbook
