@@ -1,5 +1,12 @@
 <template>
   <div v-if="playbook !== undefined" class="fill-height d-flex flex-column pa-8">
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-btn href="https://catalyst-soar.com/docs/catalyst/engineer/playbook" target="_blank" outlined rounded small>
+        <v-icon>mdi-book-open</v-icon> Handbook
+      </v-btn>
+    </v-row>
+
     <v-alert v-if="readonly" type="info">You do not have write access to playbooks.</v-alert>
     <h2 v-if="this.$route.params.id === 'new'">New Playbook</h2>
     <h2 v-else>Edit Playbook: {{ playbook.name }}</h2>

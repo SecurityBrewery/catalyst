@@ -1,5 +1,12 @@
 <template>
   <div v-if="automation !== undefined" class="flex-grow-1 flex-column d-flex fill-height pa-8">
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-btn href="https://catalyst-soar.com/docs/catalyst/engineer/automations" target="_blank" outlined rounded small>
+        <v-icon>mdi-book-open</v-icon> Handbook
+      </v-btn>
+    </v-row>
+
     <v-alert v-if="readonly" type="info">You do not have write access to automations.</v-alert>
     <h2 v-if="readonly">Automation: {{ automation.id }}</h2>
     <h2 v-else-if="this.$route.params.id === 'new'">New Automation: {{ automation.id }}</h2>

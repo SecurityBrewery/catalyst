@@ -1,5 +1,12 @@
 <template>
   <div>
+    <v-row class="mt-4">
+      <v-spacer></v-spacer>
+      <v-btn href="https://catalyst-soar.com/docs/catalyst/analyst/tickets" target="_blank" outlined rounded small class="mr-2">
+        <v-icon>mdi-book-open</v-icon> Handbook
+      </v-btn>
+    </v-row>
+
     <div v-if="$route.params.id === 'new'">
       <TicketNew></TicketNew>
     </div>
