@@ -1,13 +1,28 @@
 <template>
-  <v-container>
-    <v-row v-if="type">
-      <v-col cols="12">
-        <v-btn elevation="0" rounded class="float-right" :to="{ name: 'TicketNew', params: { type: type } }">
+  <div>
+    <v-row v-if="type" class="mx-0 my-2" dense>
+      <v-col :cols="this.$route.params.id ? 4 : 2">
+        <v-select
+            v-model="selectedtype"
+            :items="tickettypes"
+            item-text="name"
+            item-value="id"
+            solo
+            rounded
+            label="Type"
+            dense
+            flat
+            hide-details
+            height="48px"></v-select>
+      </v-col>
+      <v-col :cols="this.$route.params.id ? 8 : 10">
+        <v-btn elevation="0" rounded class="float-right mb-2" @click="opennew({ name: 'Ticket', params: { type: type, id: 'new' } })">
           <v-icon class="mr-1">mdi-plus</v-icon>
           New {{ type | capitalize }}
         </v-btn>
       </v-col>
     </v-row>
+
     <v-toolbar
         rounded
         filled
@@ -76,22 +91,26 @@
     >
       <template v-slot:item="{ item }">
         <tr @click="open(item)">
-          <td colspan="5">
-            <ticketSnippet :ticket="item" class="pa-0"></ticketSnippet>
+          <td colspan="5" class="pa-0">
+            <!--ticketSnippet :ticket="item" class="pa-0"></ticketSnippet-->
+            <v-list-item :to="{ name: 'Ticket', params: { type: item.type, id: item.id } }" class="pa-0" style="background: none">
+              <ticketSnippet :ticket="item"></ticketSnippet>
+            </v-list-item>
           </td>
         </tr>
       </template>
     </v-data-table>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Ticket } from "@/client";
+import { Ticket, TicketType } from "@/client";
 import { API } from "@/services/api";
 import TicketSnippet from "../components/snippets/TicketSnippet.vue";
 import {validateCAQL} from "@/suggestions/suggestions";
 import {DateTime} from "luxon";
+import router from "vue-router";
 
 interface State {
   term: string;
@@ -111,6 +130,9 @@ interface State {
   focus: boolean;
   caql: boolean;
   defaultcaql?: number;
+
+  tickettypes: Array<TicketType>;
+  selectedtype: string;
 }
 
 interface QuerySuggestion {
@@ -135,6 +157,9 @@ export default Vue.extend({
     focus: false,
     caql: true,
     defaultcaql: 0,
+    tickettypes: [],
+
+    selectedtype: "",
   }),
   computed: {
     fields(): Array<string> {
@@ -211,7 +236,13 @@ export default Vue.extend({
       },
       deep: true,
     },
+    selectedtype: function () {
+      // this.type = this.selectedtype;
+      (this.$router as any).history.current = router.START_LOCATION;
+      this.$router.push({ name: "TicketList", params: { type: this.selectedtype } });
+    },
     $route: function () {
+      this.selectedtype = this.type;
       this.loadTickets();
     },
   },
@@ -228,6 +259,11 @@ export default Vue.extend({
     open: function (ticket: Ticket) {
       this.$emit("click", ticket);
     },
+    opennew: function (to) {
+      this.$router.push(to).then(() => {
+        this.$emit("new");
+      })
+    },
     select: function (e: string) {
       this.loadTerm(e);
     },
@@ -237,6 +273,11 @@ export default Vue.extend({
         term = "";
       }
       this.loadTerm(term);
+    },
+    loadTicketTypes() {
+      API.listTicketTypes().then((reponse) => {
+        this.tickettypes = reponse.data;
+      })
     },
     loadTerm(term: string) {
       this.loading = true;
@@ -257,16 +298,16 @@ export default Vue.extend({
         sortDesc = this.options.sortDesc;
       }
 
-      let t = this.type;
-      if (!t) {
-        t = "";
+      let ticketType = this.type;
+      if (!ticketType) {
+        ticketType = "";
       }
 
-      if (!this.caql && this.term.length > 0) {
+      if (!this.caql && term.length > 0) {
         term = "'" + this.lodash.join(this.lodash.split(term, " "), "'&&'") + "'"
       }
 
-      API.listTickets(t, offset, count, sortBy, sortDesc, term)
+      API.listTickets(ticketType, offset, count, sortBy, sortDesc, term)
           .then((response) => {
             if (response.data.tickets) {
               this.tickets = response.data.tickets;
@@ -303,6 +344,8 @@ export default Vue.extend({
       this.term = this.query;
     }
 
+    this.selectedtype = this.type;
+    this.loadTicketTypes();
     this.loadTickets();
   },
 });

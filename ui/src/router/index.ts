@@ -2,7 +2,6 @@ import Vue from "vue";
 import VueRouter, { RouteConfig, RawLocation, Route } from "vue-router";
 import ArtifactPopup from "../views/ArtifactPopup.vue";
 import Ticket from "../views/Ticket.vue";
-import TicketNew from "../views/TicketNew.vue";
 import TicketList from "../views/TicketList.vue";
 import Graph from "../views/Graph.vue";
 import Playbook from "../views/Playbook.vue";
@@ -74,28 +73,19 @@ const routes: Array<RouteConfig> = [
 
   {
     path: "/tickets",
-    name: "TicketListAll",
+    name: "TicketList",
     component: TicketList,
     meta: { title: "Tickets" },
     props: true,
+    children: [
+        {
+          path: ":id",
+          name: "Ticket",
+          component: Ticket,
+        }
+    ]
   },
-  {
-    path: "/tickets/:type",
-    name: "TicketList",
-    component: TicketList,
-    props: true,
-  },
-  {
-    path: "/tickets/:type?/:id",
-    name: "Ticket",
-    component: Ticket,
-  },
-  {
-    path: "/tickets/:type/new",
-    name: "TicketNew",
-    meta: { title: "New Ticket" },
-    component: TicketNew,
-  },
+
   {
     path: "/tickets/:type?/:id/artifact/:artifact",
     name: "ArtifactPopup",

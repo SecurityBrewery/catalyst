@@ -1,48 +1,42 @@
 <template>
-  <v-main>
-    <v-container>
-      <v-card color="cards">
-        <v-card-title>New {{ $route.params.type | capitalize }}</v-card-title>
-        <v-card-text>
-          <v-form class="create clearfix">
-            <v-text-field label="Title" v-model="name"></v-text-field>
+  <div class="mt-8">
+    <h2>New {{ $route.params.type | capitalize }}</h2>
+    <v-form class="create clearfix">
+      <v-text-field label="Title" v-model="name"></v-text-field>
 
-            <v-select
-                label="Playbooks"
-                :items="playbooks"
-                item-text="name"
-                return-object
-                multiple
-                v-model="selectedPlaybooks"
-            ></v-select>
+      <v-select
+          label="Playbooks"
+          :items="playbooks"
+          item-text="name"
+          return-object
+          multiple
+          v-model="selectedPlaybooks"
+      ></v-select>
 
-            <v-select
-              label="Template"
-              :items="templates"
-              item-text="name"
-              return-object
-              v-model="selectedTemplate"
-            ></v-select>
+      <v-select
+        label="Template"
+        :items="templates"
+        item-text="name"
+        return-object
+        v-model="selectedTemplate"
+      ></v-select>
 
-            <v-subheader class="pl-0 mt-4" style="height: 20px">Details</v-subheader>
-            <div v-if="selectedTemplate !== undefined" class="details">
-              <v-lazy>
-                <v-jsf
-                  v-model="details"
-                  :options="{ fieldProps: { 'hide-details': true } }"
-                  :schema="selectedSchema"
-                />
-              </v-lazy>
-            </div>
+      <v-subheader class="pl-0 mt-4" style="height: 20px">Details</v-subheader>
+      <div v-if="selectedTemplate !== undefined" class="details">
+        <v-lazy>
+          <v-jsf
+            v-model="details"
+            :options="{ fieldProps: { 'hide-details': true } }"
+            :schema="selectedSchema"
+          />
+        </v-lazy>
+      </div>
 
-            <v-btn color="green" @click="createTicket" outlined>
-              Create
-            </v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-container>
-  </v-main>
+      <v-btn color="green" @click="createTicket" outlined>
+        Create
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <script lang="ts">
@@ -54,7 +48,7 @@ import {
   TicketForm,
   TicketTemplateResponse,
   TicketType
-} from "../client";
+} from "@/client";
 import { API } from "@/services/api";
 
 interface State {
