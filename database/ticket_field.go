@@ -166,7 +166,7 @@ func (db *Database) SetReferences(ctx context.Context, id int64, references []*m
 	})
 }
 
-func (db *Database) LinkFiles(ctx context.Context, id int64, files []*model.File) (*model.TicketWithTickets, error) {
+func (db *Database) AddFile(ctx context.Context, id int64, file *model.File) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -174,9 +174,9 @@ func (db *Database) LinkFiles(ctx context.Context, id int64, files []*model.File
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	UPDATE d WITH { "modified": @now, "files": @files } IN @@collection
+	UPDATE d WITH { "modified": @now, "files": APPEND(NOT_NULL(d.files, []), [@file]) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"files": files, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"file": file, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),

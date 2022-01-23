@@ -386,39 +386,6 @@ paths:
                 - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
       security: [ { roles: [ "ticket:write" ] } ]
 
-  /tickets/{id}/files:
-    put:
-      tags: [ "tickets" ]
-      summary: "Link files to an ticket"
-      description: "Link files to an ticket. The files themself will be stored in object storage."
-      operationId: "linkFiles"
-      parameters:
-        - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8125 }
-        - { name: "files", in: "body", description: "Added files", required: true, schema: { type: array, items: { $ref: "#/definitions/File" } }, x-example: [ { key: myfile, name: "document.doc" } ] }
-      responses:
-        "200":
-          description: "successful operation"
-          schema: { $ref: "#/definitions/TicketWithTickets" }
-          examples:
-            test:
-              id: 8125
-              created: "2021-10-02T16:04:59.078186Z"
-              modified: "2021-12-12T12:12:12.000000012Z"
-              name: "phishing from selenafadel@von.com detected"
-              owner: "demo"
-              references:
-                - { href: "https://www.seniorleading-edge.name/users/efficient", name: "recovery" }
-                - { href: "http://www.dynamicseamless.com/clicks-and-mortar", name: "force" }
-                - { href: "http://www.leadscalable.biz/envisioneer", name: "fund" }
-              "schema": "{}"
-              status: "closed"
-              type: "alert"
-              files: [ { key: myfile, name: "document.doc" } ]
-              tickets:
-                - { id: 8126, created: "2021-10-02T16:04:59.078186Z", modified: "2021-10-02T16:04:59.078186Z", name: "Surfaceintroduce virus detected", owner: "demo", references: [ { href: "http://www.centralworld-class.io/synthesize", name: "university" },{ href: "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", name: "goal" },{ href: "http://www.chiefsyndicate.io/action-items", name: "unemployment" } ],"schema": "{}",  status: "closed", type: "alert" }
-
-      security: [ { roles: [ "ticket:write" ] } ]
-
   /tickets/{id}/playbooks:
     post:
       tags: [ "tickets" ]

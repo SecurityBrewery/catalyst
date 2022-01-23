@@ -122,13 +122,14 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 		allowAll, Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser(),
 	)
 
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Head("/files/:ticketID/upload/:id", upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Patch("/files/:ticketID/upload/:id", upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/:ticketID/upload", upload(catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Get("/files/:ticketID/download/:key", download(catalystStorage.Downloader()))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Head("/files/{ticketID}/tusd/{id}", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Patch("/files/{ticketID}/tusd/{id}", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/{ticketID}/tusd", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
+	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
 
-	apiServer.With(AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", BackupHandler(catalystStorage, dbConfig))
-	apiServer.With(AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", RestoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	apiServer.With(AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
+	apiServer.With(AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, allowAll)
@@ -138,7 +139,7 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 	server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).Handle("/wss", handleWebSocket(bus))
 	// server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).NotFound(static)
 	server.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("not found")
+		log.Println("not found", r.URL.RawPath)
 		Authenticate(catalystDatabase, config.Auth)(AuthorizeBlockedUser()(http.HandlerFunc(static))).ServeHTTP(w, r)
 	})
 

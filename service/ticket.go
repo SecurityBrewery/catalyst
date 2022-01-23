@@ -130,11 +130,6 @@ func (s *Service) RemoveComment(ctx context.Context, i int64, i2 int) (doc *mode
 	return s.database.RemoveComment(ctx, i, int64(i2))
 }
 
-func (s *Service) LinkFiles(ctx context.Context, i int64, files []*model.File) (doc *model.TicketWithTickets, err error) {
-	defer s.publishRequest(ctx, err, "LinkFiles", ticketWithTicketsID(doc))
-	return s.database.LinkFiles(ctx, i, files)
-}
-
 func (s *Service) AddTicketPlaybook(ctx context.Context, i int64, form *model.PlaybookTemplateForm) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "AddTicketPlaybook", ticketWithTicketsID(doc))
 	return s.database.AddTicketPlaybook(ctx, i, form)

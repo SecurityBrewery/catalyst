@@ -1425,34 +1425,7 @@ export default Vue.extend({
     setupUppy: function(id: number) {
       let uppy = new Uppy();
       uppy.use(Tus, {
-        endpoint: location.protocol + '//' + location.hostname + ':'+ location.port + "/api/files/" + id.toString() + "/upload"
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      uppy.on("upload-success", (file: UppyFile, response: any) => {
-        if (this.ticket !== undefined) {
-          let files: Array<ModelFile> = [];
-          if (this.ticket.files) {
-            files = this.ticket.files;
-          }
-
-          let regex = /\/([^/]*)\+[^/]*$/;
-          let matches = response.uploadURL.match(regex);
-          if (matches.length != 2) {
-            return;
-          }
-
-          console.log(matches[1]);
-          files.push({ name: file.name, key: matches[1] });
-          API.linkFiles(id, files)
-            .then(response => {
-              this.$store.dispatch("alertSuccess", { name: "File added" });
-              this.setTicket(response.data);
-            })
-            .catch(error => {
-              this.$store.dispatch("alertError", { name: "File not added", detail: error });
-            });
-        }
+        endpoint: location.protocol + '//' + location.hostname + ':'+ location.port + "/api/files/" + id.toString() + "/tusd"
       });
       return uppy;
     },
