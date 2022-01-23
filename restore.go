@@ -24,7 +24,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func RestoreHandler(catalystStorage *storage.Storage, db *database.Database, c *database.Config) http.HandlerFunc {
+func restoreHandler(catalystStorage *storage.Storage, db *database.Database, c *database.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uf, header, err := r.FormFile("backup")
 		if err != nil {

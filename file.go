@@ -1,11 +1,15 @@
 package catalyst
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/arangodb/go-driver"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -13,11 +17,15 @@ import (
 	tusd "github.com/tus/tusd/pkg/handler"
 	"github.com/tus/tusd/pkg/s3store"
 
+	"github.com/SecurityBrewery/catalyst/bus"
+	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func upload(client *s3.S3, external string) http.HandlerFunc {
+func tusdUpload(db *database.Database, bus *bus.Bus, client *s3.S3, external string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ticketID := chi.URLParam(r, "ticketID")
 		if ticketID == "" {
@@ -36,13 +44,43 @@ func upload(client *s3.S3, external string) http.HandlerFunc {
 		store.UseIn(composer)
 
 		handler, err := tusd.NewUnroutedHandler(tusd.Config{
-			BasePath:      external + "/api/files/" + ticketID + "/upload/",
-			StoreComposer: composer,
+			BasePath:              external + "/api/files/" + ticketID + "/tusd/",
+			StoreComposer:         composer,
+			NotifyCompleteUploads: true,
 		})
 		if err != nil {
 			api.JSONErrorStatus(w, http.StatusBadRequest, fmt.Errorf("could not create tusd handler: %w", err))
 			return
 		}
+
+		userID := "unknown"
+		user, ok := busdb.UserFromContext(r.Context())
+		if ok {
+			userID = user.ID
+		}
+
+		go func() {
+			event := <-handler.CompleteUploads
+
+			id, err := strconv.ParseInt(ticketID, 10, 64)
+			if err != nil {
+				return
+			}
+
+			file := &model.File{Key: event.Upload.Storage["Key"], Name: event.Upload.MetaData["filename"]}
+
+			ctx := context.Background()
+			doc, err := db.AddFile(ctx, id, file)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			err = bus.PublishRequest(userID, "LinkFiles", []driver.DocumentID{driver.DocumentID(fmt.Sprintf("tickets/%d", doc.ID))})
+			if err != nil {
+				log.Println(err)
+			}
+		}()
 
 		switch r.Method {
 		case http.MethodHead:
@@ -53,6 +91,54 @@ func upload(client *s3.S3, external string) http.HandlerFunc {
 			handler.PatchFile(w, r)
 		default:
 			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("unknown method"))
+		}
+
+	}
+}
+
+func upload(db *database.Database, client *s3.S3, uploader *s3manager.Uploader) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ticketID := chi.URLParam(r, "ticketID")
+		if ticketID == "" {
+			api.JSONErrorStatus(w, http.StatusBadRequest, errors.New("ticketID not given"))
+			return
+		}
+
+		file, header, err := r.FormFile("file")
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusBadRequest, err)
+			return
+		}
+		defer file.Close()
+
+		if err := storage.CreateBucket(client, ticketID); err != nil {
+			api.JSONErrorStatus(w, http.StatusBadRequest, fmt.Errorf("could not create bucket: %w", err))
+			return
+		}
+
+		_, err = uploader.Upload(&s3manager.UploadInput{
+			Bucket: aws.String("catalyst-" + ticketID),
+			Key:    aws.String(header.Filename),
+			Body:   file,
+		})
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusBadRequest, err)
+			return
+		}
+
+		id, err := strconv.ParseInt(ticketID, 10, 64)
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusBadRequest, err)
+			return
+		}
+
+		_, err = db.AddFile(r.Context(), id, &model.File{
+			Key:  header.Filename,
+			Name: header.Filename,
+		})
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusBadRequest, err)
+			return
 		}
 	}
 }

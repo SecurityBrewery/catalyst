@@ -5423,46 +5423,6 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Link files to an ticket. The files themself will be stored in object storage.
-         * @summary Link files to an ticket
-         * @param {number} id Ticket ID
-         * @param {Array<any>} files Added files
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        linkFiles: async (id: number, files: Array<any>, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('linkFiles', 'id', id)
-            // verify required parameter 'files' is not null or undefined
-            assertParamExists('linkFiles', 'files', files)
-            const localVarPath = `/tickets/{id}/files`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(files, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * 
          * @summary Link an ticket to an ticket
          * @param {number} id Ticket ID
@@ -6142,18 +6102,6 @@ export const TicketsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Link files to an ticket. The files themself will be stored in object storage.
-         * @summary Link files to an ticket
-         * @param {number} id Ticket ID
-         * @param {Array<any>} files Added files
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async linkFiles(id: number, files: Array<any>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.linkFiles(id, files, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * 
          * @summary Link an ticket to an ticket
          * @param {number} id Ticket ID
@@ -6436,17 +6384,6 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
          */
         getTicket(id: number, options?: any): AxiosPromise<TicketWithTickets> {
             return localVarFp.getTicket(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Link files to an ticket. The files themself will be stored in object storage.
-         * @summary Link files to an ticket
-         * @param {number} id Ticket ID
-         * @param {Array<any>} files Added files
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        linkFiles(id: number, files: Array<any>, options?: any): AxiosPromise<TicketWithTickets> {
-            return localVarFp.linkFiles(id, files, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6737,19 +6674,6 @@ export class TicketsApi extends BaseAPI {
      */
     public getTicket(id: number, options?: any) {
         return TicketsApiFp(this.configuration).getTicket(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Link files to an ticket. The files themself will be stored in object storage.
-     * @summary Link files to an ticket
-     * @param {number} id Ticket ID
-     * @param {Array<any>} files Added files
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof TicketsApi
-     */
-    public linkFiles(id: number, files: Array<any>, options?: any) {
-        return TicketsApiFp(this.configuration).linkFiles(id, files, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

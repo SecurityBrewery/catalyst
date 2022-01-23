@@ -68,7 +68,6 @@ type Service interface {
 	RunArtifact(context.Context, int64, string, string) error
 	AddComment(context.Context, int64, *model.CommentForm) (*model.TicketWithTickets, error)
 	RemoveComment(context.Context, int64, int) (*model.TicketWithTickets, error)
-	LinkFiles(context.Context, int64, []*model.File) (*model.TicketWithTickets, error)
 	AddTicketPlaybook(context.Context, int64, *model.PlaybookTemplateForm) (*model.TicketWithTickets, error)
 	RemoveTicketPlaybook(context.Context, int64, string) (*model.TicketWithTickets, error)
 	SetTask(context.Context, int64, string, string, *model.Task) (*model.TicketWithTickets, error)
@@ -139,7 +138,6 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/artifacts/{name}/run/{automation}", s.runArtifactHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/comments", s.addCommentHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/comments/{commentID}", s.removeCommentHandler)
-	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/files", s.linkFilesHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks", s.addTicketPlaybookHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/playbooks/{playbookID}", s.removeTicketPlaybookHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskHandler)
@@ -639,26 +637,6 @@ func (s *server) removeCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := s.service.RemoveComment(r.Context(), idP, commentIDP)
-	response(w, result, err)
-}
-
-func (s *server) linkFilesHandler(w http.ResponseWriter, r *http.Request) {
-	idP, err := parseURLInt64(r, "id")
-	if err != nil {
-		JSONError(w, err)
-		return
-	}
-
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// []*model.FileSchema.Validate(jl)
-
-	var filesP []*model.File
-	if err := parseBody(r, &filesP); err != nil {
-		JSONError(w, err)
-		return
-	}
-
-	result, err := s.service.LinkFiles(r.Context(), idP, filesP)
 	response(w, result, err)
 }
 

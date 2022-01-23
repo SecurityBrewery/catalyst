@@ -190,6 +190,7 @@ func toHTTPErr(err error) error {
 		if errors.As(err, &ae) {
 			return &api.HTTPError{Status: ae.Code, Internal: err}
 		}
+		return err
 	}
 	return nil
 }

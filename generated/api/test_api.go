@@ -379,15 +379,6 @@ var Tests = []struct {
 	},
 
 	{
-		Name: "LinkFiles",
-		Args: Args{Method: "Put", URL: "/tickets/8125/files", Data: []interface{}{map[string]interface{}{"key": "myfile", "name": "document.doc"}}},
-		Want: Want{
-			Status: 200,
-			Body:   map[string]interface{}{"created": time.Date(2021, time.October, 2, 16, 4, 59, 78186000, time.UTC), "files": []interface{}{map[string]interface{}{"key": "myfile", "name": "document.doc"}}, "id": 8125, "modified": time.Date(2021, time.December, 12, 12, 12, 12, 12, time.UTC), "name": "phishing from selenafadel@von.com detected", "owner": "demo", "references": []interface{}{map[string]interface{}{"href": "https://www.seniorleading-edge.name/users/efficient", "name": "recovery"}, map[string]interface{}{"href": "http://www.dynamicseamless.com/clicks-and-mortar", "name": "force"}, map[string]interface{}{"href": "http://www.leadscalable.biz/envisioneer", "name": "fund"}}, "schema": "{}", "status": "closed", "tickets": []interface{}{map[string]interface{}{"created": time.Date(2021, time.October, 2, 16, 4, 59, 78186000, time.UTC), "id": 8126, "modified": time.Date(2021, time.October, 2, 16, 4, 59, 78186000, time.UTC), "name": "Surfaceintroduce virus detected", "owner": "demo", "references": []interface{}{map[string]interface{}{"href": "http://www.centralworld-class.io/synthesize", "name": "university"}, map[string]interface{}{"href": "https://www.futurevirtual.org/supply-chains/markets/sticky/iterate", "name": "goal"}, map[string]interface{}{"href": "http://www.chiefsyndicate.io/action-items", "name": "unemployment"}}, "schema": "{}", "status": "closed", "type": "alert"}}, "type": "alert"},
-		},
-	},
-
-	{
 		Name: "AddTicketPlaybook",
 		Args: Args{Method: "Post", URL: "/tickets/8125/playbooks", Data: map[string]interface{}{"yaml": "name: Simple\ntasks:\n  input:\n    name: Upload malware if possible\n    type: input\n    schema:\n      title: Malware\n      type: object\n      properties:\n        malware:\n          type: string\n          title: Select malware\n          default: \"\"\n    next:\n      hash: \"malware != ''\"\n\n  hash:\n    name: Hash the malware\n    type: automation\n    automation: hash.sha1\n    payload:\n      default: \"playbook.tasks['input'].data['malware']\"\n    next:\n      escalate:\n\n  escalate:\n    name: Escalate to malware team\n    type: task\n"}},
 		Want: Want{

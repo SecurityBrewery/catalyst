@@ -18,7 +18,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func BackupHandler(catalystStorage *storage.Storage, c *database.Config) http.HandlerFunc {
+func backupHandler(catalystStorage *storage.Storage, c *database.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Disposition", "attachment; filename=backup.zip")
 		w.Header().Set("Content-Type", "application/zip")
