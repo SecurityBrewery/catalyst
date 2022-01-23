@@ -287,7 +287,7 @@ func createFile(ctx context.Context, server *catalyst.Server) {
 		log.Fatal(err)
 	}
 
-	if _, err := server.DB.LinkFiles(ctx, 8125, []*model.File{{Key: "test.txt", Name: "test.txt"}}); err != nil {
+	if _, err := server.DB.AddFile(ctx, 8125, &model.File{Key: "test.txt", Name: "test.txt"}); err != nil {
 		log.Fatal(err)
 	}
 }
