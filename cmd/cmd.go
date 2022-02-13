@@ -21,6 +21,7 @@ type CLI struct {
 	Secret          string `env:"SECRET"           required:""  help:"A random secret value (can be created with 'openssl rand -hex 32')"`
 	ExternalAddress string `env:"EXTERNAL_ADDRESS" required:""`
 	CatalystAddress string `env:"CATALYST_ADDRESS" default:"http://catalyst:8000"`
+	Network         string `env:"CATALYST_NETWORK" default:"catalyst"`
 
 	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
 	OIDCClientID      string   `env:"OIDC_CLIENT_ID"      default:"catalyst"`
@@ -82,6 +83,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 	scopes := unique(append([]string{oidc.ScopeOpenID, "profile", "email"}, cli.OIDCScopes...))
 	config := &catalyst.Config{
 		IndexPath:       cli.IndexPath,
+		Network:         cli.Network,
 		DB:              &database.Config{Host: cli.ArangoDBHost, User: cli.ArangoDBUser, Password: cli.ArangoDBPassword},
 		Storage:         &storage.Config{Host: cli.S3Host, User: cli.S3User, Password: cli.S3Password},
 		Secret:          []byte(cli.Secret),

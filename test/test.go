@@ -35,6 +35,7 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 	config := &catalyst.Config{
 		InitialAPIKey: "test",
 		IndexPath:     "index.bleve",
+		Network:       "catalyst",
 		DB: &database.Config{
 			Host:     "http://localhost:8529",
 			User:     "root",
