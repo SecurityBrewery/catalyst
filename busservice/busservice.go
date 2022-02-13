@@ -22,7 +22,7 @@ type busService struct {
 
 func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Database) error {
 
-	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, catalystBus: catalystBus}
+	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, network: network, catalystBus: catalystBus}
 
 	if err := catalystBus.SubscribeRequest(h.logRequest); err != nil {
 		return err
