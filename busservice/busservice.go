@@ -17,9 +17,10 @@ type busService struct {
 	apiURL      string
 	apiKey      string
 	catalystBus *bus.Bus
+	network     string
 }
 
-func New(apiURL, apikey string, catalystBus *bus.Bus, db *database.Database) error {
+func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Database) error {
 
 	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, catalystBus: catalystBus}
 

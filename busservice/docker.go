@@ -17,7 +17,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database"
 )
 
-func createContainer(ctx context.Context, image, script, data string) (string, string, error) {
+func createContainer(ctx context.Context, image, script, data, network string) (string, string, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return "", "", err
@@ -36,7 +36,7 @@ func createContainer(ctx context.Context, image, script, data string) (string, s
 		AttachStdout: true,
 	}
 	hostConfig := &container.HostConfig{
-		NetworkMode: "catalyst",
+		NetworkMode: container.NetworkMode(network),
 	}
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
 	if err != nil {

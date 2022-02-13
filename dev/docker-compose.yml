@@ -5,20 +5,20 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports: [ "80:80", "8529:8529", "9000:9000", "9001:9001", "9002:9002", "9003:9003" ]
-    networks: [catalyst]
+    networks: [ catalyst ]
 
   arangodb:
     image: arangodb/arangodb:3.8.1
     environment:
       ARANGO_ROOT_PASSWORD: foobar
-    networks: [catalyst]
+    networks: [ catalyst ]
 
   emitter:
     image: emitter/server
     environment:
       - EMITTER_LICENSE=PfA8ID8izeSlDUlNZgNXo77DQV9QzlNtxTk64WreCXKfDZsREAVXUXwh20UKOZdkALbLTmOytO_iC6mc_twKAQ:3
       # A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-
-    networks: [catalyst]
+    networks: [ catalyst ]
 
   minio:
     image: minio/minio:RELEASE.2021-12-10T23-03-39Z
@@ -26,7 +26,7 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     command: server /data -console-address ":9003"
-    networks: [catalyst]
+    networks: [ catalyst ]
 
   postgres:
     image: postgres:13
@@ -34,7 +34,7 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
-    networks: [catalyst]
+    networks: [ catalyst ]
 
   keycloak:
     image: quay.io/keycloak/keycloak:14.0.0
@@ -52,7 +52,8 @@ services:
     volumes:
       - ./keycloak/realm.json:/tmp/realm.json
     depends_on: [ postgres ]
-    networks: [catalyst]
+    networks: [ catalyst ]
 
 networks:
   catalyst:
+    name: catalyst

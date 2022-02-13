@@ -34,6 +34,7 @@ type Config struct {
 	Auth            *AuthConfig
 	ExternalAddress string
 	InitialAPIKey   string
+	Network         string
 }
 
 type Server struct {
@@ -74,7 +75,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	err = busservice.New(config.Bus.APIUrl, config.InitialAPIKey, catalystBus, catalystDatabase)
+	err = busservice.New(config.Bus.APIUrl, config.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 	if err != nil {
 		return nil, err
 	}

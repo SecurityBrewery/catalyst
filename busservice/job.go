@@ -41,7 +41,7 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 
 	scriptMessage, _ := json.Marshal(automationMsg.Message)
 
-	containerID, logs, err := createContainer(ctx, automation.Image, automation.Script, string(scriptMessage))
+	containerID, logs, err := createContainer(ctx, automation.Image, automation.Script, string(scriptMessage), h.network)
 	if err != nil {
 		log.Println(err)
 		return
