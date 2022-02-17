@@ -27,7 +27,7 @@
         <span class="mr-1">{{ ticket.references ? ticket.references.length : 0 }}</span>
       </v-list-item-subtitle>
     </v-list-item-content>
-    <v-list-item-action v-if="action !== ''">
+    <v-list-item-action v-if="action">
       <v-btn icon small>
         <v-icon small @click="actionClick">{{ action }}</v-icon>
       </v-btn>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="type" class="mx-0 my-2" dense>
+    <v-row v-if="selectedtype" class="mx-0 my-2" dense>
       <v-col :cols="this.$route.params.id ? 4 : 2">
         <v-select
             v-model="selectedtype"
@@ -16,9 +16,9 @@
             height="48px"></v-select>
       </v-col>
       <v-col :cols="this.$route.params.id ? 8 : 10">
-        <v-btn elevation="0" rounded class="float-right mb-2" @click="opennew({ name: 'Ticket', params: { type: type, id: 'new' } })">
+        <v-btn elevation="0" rounded class="float-right mb-2" @click="opennew({ name: 'Ticket', params: { type: selectedtype, id: 'new' } })">
           <v-icon class="mr-1">mdi-plus</v-icon>
-          New {{ type | capitalize }}
+          New {{ selectedtype | capitalize }}
         </v-btn>
       </v-col>
     </v-row>
@@ -92,7 +92,6 @@
       <template v-slot:item="{ item }">
         <tr @click="open(item)">
           <td colspan="5" class="pa-0">
-            <!--ticketSnippet :ticket="item" class="pa-0"></ticketSnippet-->
             <v-list-item :to="{ name: 'Ticket', params: { type: item.type, id: item.id } }" class="pa-0" style="background: none">
               <ticketSnippet :ticket="item"></ticketSnippet>
             </v-list-item>
@@ -110,7 +109,6 @@ import { API } from "@/services/api";
 import TicketSnippet from "../components/snippets/TicketSnippet.vue";
 import {validateCAQL} from "@/suggestions/suggestions";
 import {DateTime} from "luxon";
-import router from "vue-router";
 
 interface State {
   term: string;
@@ -237,13 +235,10 @@ export default Vue.extend({
       deep: true,
     },
     selectedtype: function () {
-      // this.type = this.selectedtype;
-      (this.$router as any).history.current = router.START_LOCATION;
-      this.$router.push({ name: "TicketList", params: { type: this.selectedtype } });
+      this.loadTickets();
     },
     $route: function () {
       this.selectedtype = this.type;
-      this.loadTickets();
     },
   },
   methods: {
@@ -298,7 +293,7 @@ export default Vue.extend({
         sortDesc = this.options.sortDesc;
       }
 
-      let ticketType = this.type;
+      let ticketType = this.selectedtype;
       if (!ticketType) {
         ticketType = "";
       }
