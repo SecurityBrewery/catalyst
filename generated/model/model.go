@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -594,22 +592,6 @@ func mustCompile(uri string) *gojsonschema.Schema {
 		panic(err)
 	}
 	return s
-}
-
-func validate(s *gojsonschema.Schema, b []byte) error {
-	res, err := s.Validate(gojsonschema.NewStringLoader(string(b)))
-	if err != nil {
-		return err
-	}
-
-	if len(res.Errors()) > 0 {
-		var l []string
-		for _, e := range res.Errors() {
-			l = append(l, e.String())
-		}
-		return fmt.Errorf("validation failed: %v", strings.Join(l, ", "))
-	}
-	return nil
 }
 
 const (
