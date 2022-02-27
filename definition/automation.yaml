@@ -22,11 +22,6 @@ paths:
                 script: ""
                 type: [ global, artifact, playbook ]
                 schema: "{\"title\":\"Input\",\"type\":\"object\",\"properties\":{\"default\":{\"type\":\"string\",\"title\":\"Value\"}},\"required\":[\"default\"]}"
-              - id: thehive
-                image: "docker.io/python:3"
-                script: ""
-                type: [ global ]
-                schema: "{\"title\":\"TheHive credentials\",\"type\":\"object\",\"properties\":{\"thehiveurl\":{\"type\":\"string\",\"title\":\"TheHive URL (e.g. 'https://thehive.example.org')\"},\"thehivekey\":{\"type\":\"string\",\"title\":\"TheHive API Key\"},\"skip_files\":{\"type\":\"boolean\", \"default\": true, \"title\":\"Skip Files (much faster)\"},\"keep_ids\":{\"type\":\"boolean\", \"default\": true, \"title\":\"Keep IDs and overwrite existing IDs\"}},\"required\":[\"thehiveurl\", \"thehivekey\", \"skip_files\", \"keep_ids\"]}"
               - id: vt.hash
                 image: "docker.io/python:3"
                 script: ""
