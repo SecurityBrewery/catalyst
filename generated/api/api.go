@@ -39,7 +39,7 @@ type Service interface {
 	CurrentUserData(context.Context) (*model.UserDataResponse, error)
 	UpdateCurrentUserData(context.Context, *model.UserData) (*model.UserDataResponse, error)
 	ListJobs(context.Context) ([]*model.JobResponse, error)
-	RunJob(context.Context, *model.JobForm) error
+	RunJob(context.Context, *model.JobForm) (*model.JobResponse, error)
 	GetJob(context.Context, string) (*model.JobResponse, error)
 	UpdateJob(context.Context, string, *model.JobUpdate) (*model.JobResponse, error)
 	GetLogs(context.Context, string) ([]*model.LogEntry, error)
@@ -346,7 +346,8 @@ func (s *server) runJobHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response(w, nil, s.service.RunJob(r.Context(), jobP))
+	result, err := s.service.RunJob(r.Context(), jobP)
+	response(w, result, err)
 }
 
 func (s *server) getJobHandler(w http.ResponseWriter, r *http.Request) {

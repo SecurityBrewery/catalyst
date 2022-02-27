@@ -1791,7 +1791,7 @@ paths:
           examples:
             test:
             - automation: hash.sha1
-              id: 99cd67131b48
+              id: b81c2366-ea37-43d2-b61b-03afdc21d985
               payload: test
               status: created
           schema:
@@ -1815,11 +1815,18 @@ paths:
           $ref: '#/definitions/JobForm'
         x-example:
           automation: hash.sha1
-          message:
-            payload: test
+          payload: test
       responses:
-        "204":
+        "200":
           description: successful operation
+          examples:
+            test:
+              automation: hash.sha1
+              id: 87390749-2125-4a87-91c5-da7e3f9bebf1
+              payload: test
+              status: created
+          schema:
+            $ref: '#/definitions/JobResponse'
       security:
       - roles:
         - job:write
@@ -1835,14 +1842,14 @@ paths:
         name: id
         required: true
         type: string
-        x-example: 99cd67131b48
+        x-example: b81c2366-ea37-43d2-b61b-03afdc21d985
       responses:
         "200":
           description: successful operation
           examples:
             test:
               automation: hash.sha1
-              id: 99cd67131b48
+              id: b81c2366-ea37-43d2-b61b-03afdc21d985
               payload: test
               status: created
           schema:
@@ -1861,7 +1868,7 @@ paths:
         name: id
         required: true
         type: string
-        x-example: 99cd67131b48
+        x-example: b81c2366-ea37-43d2-b61b-03afdc21d985
       - description: Job object that needs to be added
         in: body
         name: job
@@ -1877,7 +1884,7 @@ paths:
           examples:
             test:
               automation: hash.sha1
-              id: 99cd67131b48
+              id: b81c2366-ea37-43d2-b61b-03afdc21d985
               payload: test
               status: failed
           schema:

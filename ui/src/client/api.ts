@@ -3303,7 +3303,7 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async runJob(job: JobForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async runJob(job: JobForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.runJob(job, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3355,7 +3355,7 @@ export const JobsApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runJob(job: JobForm, options?: any): AxiosPromise<void> {
+        runJob(job: JobForm, options?: any): AxiosPromise<JobResponse> {
             return localVarFp.runJob(job, options).then((request) => request(axios, basePath));
         },
         /**

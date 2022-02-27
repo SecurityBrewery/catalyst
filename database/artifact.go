@@ -78,7 +78,7 @@ func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, e
 
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
-	FOR a IN d.artifacts
+	FOR a IN NOT_NULL(d.artifacts, [])
 	FILTER a.name == @name
 	LET enrichments = NOT_NULL(a.enrichments, {})
 	LET newenrichments = MERGE(enrichments, ZIP( [@enrichmentname], [@enrichment]) )

@@ -67,13 +67,13 @@ func TestServer(t *testing.T) {
 				t.Fatalf("Status got = %v (%s), want %v", result.Status, msg, tt.Want.Status)
 			}
 			if tt.Want.Status != http.StatusNoContent {
-				jsonEqual(t, result.Body, tt.Want.Body)
+				jsonEqual(t, tt.Name, result.Body, tt.Want.Body)
 			}
 		})
 	}
 }
 
-func jsonEqual(t *testing.T, got io.Reader, want interface{}) {
+func jsonEqual(t *testing.T, name string, got io.Reader, want interface{}) {
 	var gotObject, wantObject interface{}
 
 	// load bytes
@@ -86,7 +86,15 @@ func jsonEqual(t *testing.T, got io.Reader, want interface{}) {
 		t.Fatal(err)
 	}
 
-	fields := []string{"secret"}
+	var fields []string
+
+	if name == "CreateUser" {
+		fields = append(fields, "secret")
+	}
+	if name == "RunJob" {
+		fields = append(fields, "id", "status")
+	}
+
 	for _, field := range fields {
 		gField := gjson.GetBytes(wantBytes, field)
 		if gField.Exists() && gjson.GetBytes(gotBytes, field).Exists() {

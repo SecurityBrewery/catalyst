@@ -61,7 +61,7 @@ func TestUser(t *testing.T) {
 				t.Fatalf("Status got = %v, want %v", result.Status, tt.want.status)
 			}
 			if tt.want.status != http.StatusNoContent {
-				jsonEqual(t, result.Body, tt.want.body)
+				jsonEqual(t, tt.name, result.Body, tt.want.body)
 			}
 		})
 	}
