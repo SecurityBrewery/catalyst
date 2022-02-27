@@ -16,31 +16,6 @@ paths:
       security: [ { roles: [ "ticket:read" ] } ]
 
 definitions:
-  TaskForm:
-    type: object
-    required: [ name, type ]
-    properties:
-      name: { type: string, example: "Inform user" }
-      type: { type: string, enum: [ task, input, automation ], example: "task" }
-      done: { type: boolean }
-
-      owner: { type: string }
-      data: { type: object }
-
-      # automation
-      automation: { type: string }
-      payload: { type: object, additionalProperties: { type: string } }
-
-      # input
-      schema: { type: object }
-
-      # workflow
-      join: { type: boolean, example: false }
-      next: { type: object, additionalProperties: { type: string } }
-
-      created: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
-      closed: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
-
   Task:
     type: object
     required: [ name, type, done, created ]

@@ -1,4 +1,4 @@
-// Code generated from CAQLParser.g4 by ANTLR 4.9.2. DO NOT EDIT.
+// Code generated from CAQLParser.g4 by ANTLR 4.9.3. DO NOT EDIT.
 
 package parser // CAQLParser
 
@@ -332,6 +332,9 @@ func (s *ParseContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Parse() (localctx IParseContext) {
+	this := p
+	_ = this
+
 	localctx = NewParseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 0, CAQLParserRULE_parse)
 
@@ -587,6 +590,9 @@ func (p *CAQLParser) Expression() (localctx IExpressionContext) {
 }
 
 func (p *CAQLParser) expression(_p int) (localctx IExpressionContext) {
+	this := p
+	_ = this
+
 	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
 	_parentState := p.GetState()
 	localctx = NewExpressionContext(p, p.GetParserRuleContext(), _parentState)
@@ -1076,6 +1082,9 @@ func (s *Operator_unaryContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Operator_unary() (localctx IOperator_unaryContext) {
+	this := p
+	_ = this
+
 	localctx = NewOperator_unaryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 4, CAQLParserRULE_operator_unary)
 
@@ -1264,6 +1273,9 @@ func (p *CAQLParser) Reference() (localctx IReferenceContext) {
 }
 
 func (p *CAQLParser) reference(_p int) (localctx IReferenceContext) {
+	this := p
+	_ = this
+
 	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
 	_parentState := p.GetState()
 	localctx = NewReferenceContext(p, p.GetParserRuleContext(), _parentState)
@@ -1469,6 +1481,9 @@ func (s *Compound_valueContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Compound_value() (localctx ICompound_valueContext) {
+	this := p
+	_ = this
+
 	localctx = NewCompound_valueContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 8, CAQLParserRULE_compound_value)
 
@@ -1614,6 +1629,9 @@ func (s *Function_callContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Function_call() (localctx IFunction_callContext) {
+	this := p
+	_ = this
+
 	localctx = NewFunction_callContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 10, CAQLParserRULE_function_call)
 	var _la int
@@ -1778,6 +1796,9 @@ func (s *Value_literalContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Value_literal() (localctx IValue_literalContext) {
+	this := p
+	_ = this
+
 	localctx = NewValue_literalContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, CAQLParserRULE_value_literal)
 	var _la int
@@ -1912,6 +1933,9 @@ func (s *ArrayContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Array() (localctx IArrayContext) {
+	this := p
+	_ = this
+
 	localctx = NewArrayContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 14, CAQLParserRULE_array)
 	var _la int
@@ -2087,6 +2111,9 @@ func (s *ObjectContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Object() (localctx IObjectContext) {
+	this := p
+	_ = this
+
 	localctx = NewObjectContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 16, CAQLParserRULE_object)
 	var _la int
@@ -2272,6 +2299,9 @@ func (s *Object_elementContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *CAQLParser) Object_element() (localctx IObject_elementContext) {
+	this := p
+	_ = this
+
 	localctx = NewObject_elementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 18, CAQLParserRULE_object_element)
 
@@ -2409,6 +2439,9 @@ func (s *Object_element_nameContext) ExitRule(listener antlr.ParseTreeListener) 
 }
 
 func (p *CAQLParser) Object_element_name() (localctx IObject_element_nameContext) {
+	this := p
+	_ = this
+
 	localctx = NewObject_element_nameContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 20, CAQLParserRULE_object_element_name)
 	var _la int
@@ -2467,6 +2500,9 @@ func (p *CAQLParser) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex in
 }
 
 func (p *CAQLParser) Expression_Sempred(localctx antlr.RuleContext, predIndex int) bool {
+	this := p
+	_ = this
+
 	switch predIndex {
 	case 0:
 		return p.Precpred(p.GetParserRuleContext(), 13)
@@ -2513,6 +2549,9 @@ func (p *CAQLParser) Expression_Sempred(localctx antlr.RuleContext, predIndex in
 }
 
 func (p *CAQLParser) Reference_Sempred(localctx antlr.RuleContext, predIndex int) bool {
+	this := p
+	_ = this
+
 	switch predIndex {
 	case 13:
 		return p.Precpred(p.GetParserRuleContext(), 2)

@@ -49,7 +49,7 @@
 <script lang="ts">
 import Vue from "vue";
 
-import { NewUserResponse, UserResponse } from "../client";
+import { NewUserResponse, UserResponse } from "@/client";
 import {API} from "@/services/api";
 
 interface State {

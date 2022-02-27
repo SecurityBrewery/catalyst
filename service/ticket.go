@@ -2,12 +2,15 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
 	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -63,8 +66,11 @@ func (s *Service) CreateTicket(ctx context.Context, form *model.TicketForm) (doc
 	return nil, err
 }
 
-func (s *Service) CreateTicketBatch(ctx context.Context, forms []*model.TicketForm) error {
-	createdTickets, err := s.database.TicketBatchCreate(ctx, forms)
+func (s *Service) CreateTicketBatch(ctx context.Context, ticketFormArray *model.TicketFormArray) error {
+	if ticketFormArray == nil {
+		return &api.HTTPError{Status: http.StatusUnprocessableEntity, Internal: errors.New("no tickets given")}
+	}
+	createdTickets, err := s.database.TicketBatchCreate(ctx, *ticketFormArray)
 	defer s.publishRequest(ctx, err, "CreateTicket", ticketIDs(createdTickets))
 	return err
 }
@@ -140,9 +146,14 @@ func (s *Service) RemoveTicketPlaybook(ctx context.Context, i int64, s2 string) 
 	return s.database.RemoveTicketPlaybook(ctx, i, s2)
 }
 
-func (s *Service) SetTask(ctx context.Context, i int64, s3 string, s2 string, task *model.Task) (doc *model.TicketWithTickets, err error) {
+func (s *Service) SetTaskData(ctx context.Context, i int64, s3 string, s2 string, data map[string]interface{}) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
-	return s.database.TaskUpdate(ctx, i, s3, s2, task)
+	return s.database.TaskUpdateData(ctx, i, s3, s2, data)
+}
+
+func (s *Service) SetTaskOwner(ctx context.Context, i int64, s3 string, s2 string, owner string) (doc *model.TicketWithTickets, err error) {
+	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
+	return s.database.TaskUpdateOwner(ctx, i, s3, s2, owner)
 }
 
 func (s *Service) CompleteTask(ctx context.Context, i int64, s3 string, s2 string, m map[string]interface{}) (doc *model.TicketWithTickets, err error) {
@@ -155,9 +166,12 @@ func (s *Service) RunTask(ctx context.Context, i int64, s3 string, s2 string) (e
 	return s.database.TaskRun(ctx, i, s3, s2)
 }
 
-func (s *Service) SetReferences(ctx context.Context, i int64, references []*model.Reference) (doc *model.TicketWithTickets, err error) {
+func (s *Service) SetReferences(ctx context.Context, i int64, references *model.ReferenceArray) (doc *model.TicketWithTickets, err error) {
+	if references == nil {
+		return nil, &api.HTTPError{Status: http.StatusUnprocessableEntity, Internal: errors.New("no references given")}
+	}
 	defer s.publishRequest(ctx, err, "SetReferences", ticketID(i))
-	return s.database.SetReferences(ctx, i, references)
+	return s.database.SetReferences(ctx, i, *references)
 }
 
 func (s *Service) SetSchema(ctx context.Context, i int64, s2 string) (doc *model.TicketWithTickets, err error) {

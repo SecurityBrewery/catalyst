@@ -80,7 +80,7 @@ paths:
       summary: "Create a new tickets in batch"
       operationId: "createTicketBatch"
       parameters:
-        - { name: "ticket", in: "body", description: "New ticket", required: true, schema: { type: array, items: { $ref: "#/definitions/TicketForm" } }, x-example: [ { id: 123, owner: bob, name: "Wannacry infection", status: "open", type: "incident" } ] }
+        - { name: "ticket", in: "body", description: "New ticket", required: true, schema: { $ref: "#/definitions/TicketFormArray" }, x-example: [ { id: 123, owner: bob, name: "Wannacry infection", status: "open", type: "incident" } ] }
       responses:
         "204": { description: "successful operation" }
       security: [ { roles: [ "ticket:write" ] } ]
@@ -336,7 +336,7 @@ paths:
       operationId: "setReferences"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8125 }
-        - { name: "references", in: "body", description: "All ticket references", required: true, schema: { type: array, items: { $ref: "#/definitions/Reference" } }, x-example: [ { href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ] }
+        - { name: "references", in: "body", description: "All ticket references", required: true, schema: { $ref: "#/definitions/ReferenceArray" }, x-example: [ { href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ] }
       responses:
         "200":
           description: "successful operation"
@@ -583,13 +583,13 @@ paths:
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}:
     put:
       tags: [ "tickets" ]
-      summary: "Set a ticket playbook task"
-      operationId: "setTask"
+      summary: "Set a ticket playbook task data"
+      operationId: "setTaskData"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8123 }
         - { name: "playbookID", in: "path", description: "Playbook ID", required: true, type: string, x-example: "phishing" }
         - { name: "taskID", in: "path", description: "Task ID", required: true, type: string, x-example: "board" }
-        - { name: "task", in: "body", description: "Task", required: true, schema: { $ref: "#/definitions/Task" }, x-example: { done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } } }
+        - { name: "data", in: "body", description: "Task data", required: true, schema: { type: object }, x-example: { boardInvolved: true } }
       responses:
         "200":
           description: "successful operation"
@@ -608,6 +608,51 @@ paths:
                     "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
                     "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
                     "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true } }
+                    "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
+                    "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
+                    "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
+                    "search-email-gateway": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 4, name: "Search email gateway","next": { "extract-iocs": "" }, type: "task" }
+              references:
+                - { href: "https://www.leadmaximize.net/e-services/back-end", name: "performance" }
+                - { href: "http://www.corporateinteractive.name/rich", name: "autumn" }
+                - { href: "https://www.corporateintuitive.org/intuitive/platforms/integrate", name: "suggest" }
+              "schema": "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"nx-enum\": [\n        \"Low\",\n        \"Medium\",\n        \"High\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"nx-enum\": [\n        \"White\",\n        \"Green\",\n        \"Amber\",\n        \"Red\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+              status: "closed"
+              type: "incident"
+              artifacts:
+                - { name: "94d5cab6f5fe3422a447ab15436e7a672bc0c09a", status: "unknown" }
+                - { name: "http://www.customerviral.io/scalable/vertical/killer", status: "clean" }
+                - { name: "leadreintermediate.io", status: "malicious" }
+      security: [ { roles: [ "ticket:write" ] } ]
+
+  /tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner:
+    put:
+      tags: [ "tickets" ]
+      summary: "Set a ticket playbook task owner"
+      operationId: "setTaskOwner"
+      parameters:
+        - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8123 }
+        - { name: "playbookID", in: "path", description: "Playbook ID", required: true, type: string, x-example: "phishing" }
+        - { name: "taskID", in: "path", description: "Task ID", required: true, type: string, x-example: "board" }
+        - { name: "owner", in: "body", description: "Task owner", required: true, schema: { type: string }, x-example: "eve" }
+      responses:
+        "200":
+          description: "successful operation"
+          schema: { $ref: "#/definitions/TicketWithTickets" }
+          examples:
+            test:
+              id: 8123
+              created: "2021-10-02T16:04:59.078206Z"
+              modified: "2021-12-12T12:12:12.000000012Z"
+              name: "live zebra"
+              owner: "demo"
+              playbooks:
+                phishing:
+                  name: "Phishing"
+                  tasks:
+                    "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
+                    "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", owner: "eve" }
                     "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
                     "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
                     "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
@@ -883,6 +928,9 @@ paths:
       security: [ { roles: [ "ticket:write" ] } ]
 
 definitions:
+  TicketFormArray:
+    type: array
+    items: { $ref: "#/definitions/TicketForm" }
 
   TicketForm:
     type: object
@@ -1034,6 +1082,10 @@ definitions:
       creator: { type: string }
       created: { type: string, format: "date-time" }
       message: { type: string }
+
+  ReferenceArray:
+    type: array
+    items: { $ref: '#/definitions/Reference' }
 
   Reference:
     type: object

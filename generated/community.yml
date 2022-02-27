@@ -236,6 +236,22 @@ definitions:
     - automation
     - status
     type: object
+  JobUpdate:
+    properties:
+      container:
+        type: string
+      log:
+        type: string
+      output:
+        type: object
+      running:
+        type: boolean
+      status:
+        type: string
+    required:
+    - running
+    - status
+    type: object
   LogEntry:
     properties:
       created:
@@ -360,6 +376,10 @@ definitions:
     - name
     - href
     type: object
+  ReferenceArray:
+    items:
+      $ref: '#/definitions/Reference'
+    type: array
   Settings:
     properties:
       artifactStates:
@@ -464,51 +484,6 @@ definitions:
     - type
     - done
     - created
-    type: object
-  TaskForm:
-    properties:
-      automation:
-        type: string
-      closed:
-        example: 1985-04-12T23:20:50.52Z
-        format: date-time
-        type: string
-      created:
-        example: 1985-04-12T23:20:50.52Z
-        format: date-time
-        type: string
-      data:
-        type: object
-      done:
-        type: boolean
-      join:
-        example: false
-        type: boolean
-      name:
-        example: Inform user
-        type: string
-      next:
-        additionalProperties:
-          type: string
-        type: object
-      owner:
-        type: string
-      payload:
-        additionalProperties:
-          type: string
-        type: object
-      schema:
-        type: object
-      type:
-        enum:
-        - task
-        - input
-        - automation
-        example: task
-        type: string
-    required:
-    - name
-    - type
     type: object
   TaskOrigin:
     properties:
@@ -742,6 +717,10 @@ definitions:
     - type
     - status
     type: object
+  TicketFormArray:
+    items:
+      $ref: '#/definitions/TicketForm'
+    type: array
   TicketList:
     properties:
       count:
@@ -1628,11 +1607,9 @@ paths:
         name: job
         required: true
         schema:
-          $ref: '#/definitions/Job'
+          $ref: '#/definitions/JobUpdate'
         x-example:
-          automation: hash.sha1
-          id: 99cd67131b48
-          payload: test
+          running: false
           status: failed
       responses:
         "200":
@@ -5053,7 +5030,7 @@ paths:
       - tickets
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}:
     put:
-      operationId: setTask
+      operationId: setTaskData
       parameters:
       - description: Ticket ID
         format: int64
@@ -5074,33 +5051,14 @@ paths:
         required: true
         type: string
         x-example: board
-      - description: Task
+      - description: Task data
         in: body
-        name: task
+        name: data
         required: true
         schema:
-          $ref: '#/definitions/Task'
+          type: object
         x-example:
-          active: true
-          data:
-            boardInvolved: true
-          done: false
-          name: Board Involvement?
-          next:
-            escalate: boardInvolved == true
-            mail-available: boardInvolved == false
-          order: 0
-          schema:
-            properties:
-              boardInvolved:
-                default: false
-                title: A board member is involved.
-                type: boolean
-            required:
-            - boardInvolved
-            title: Board Involvement?
-            type: object
-          type: input
+          boardInvolved: true
       responses:
         "200":
           description: successful operation
@@ -5330,7 +5288,7 @@ paths:
       security:
       - roles:
         - ticket:write
-      summary: Set a ticket playbook task
+      summary: Set a ticket playbook task data
       tags:
       - tickets
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}/complete:
@@ -5597,6 +5555,267 @@ paths:
       summary: Complete ticket playbook task
       tags:
       - tickets
+  /tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner:
+    put:
+      operationId: setTaskOwner
+      parameters:
+      - description: Ticket ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-example: 8123
+      - description: Playbook ID
+        in: path
+        name: playbookID
+        required: true
+        type: string
+        x-example: phishing
+      - description: Task ID
+        in: path
+        name: taskID
+        required: true
+        type: string
+        x-example: board
+      - description: Task owner
+        in: body
+        name: owner
+        required: true
+        schema:
+          type: string
+        x-example: eve
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              artifacts:
+              - name: 94d5cab6f5fe3422a447ab15436e7a672bc0c09a
+                status: unknown
+              - name: http://www.customerviral.io/scalable/vertical/killer
+                status: clean
+              - name: leadreintermediate.io
+                status: malicious
+              created: 2021-10-02T16:04:59.078206Z
+              id: 8123
+              modified: 2021-12-12T12:12:12.000000012Z
+              name: live zebra
+              owner: demo
+              playbooks:
+                phishing:
+                  name: Phishing
+                  tasks:
+                    block-iocs:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Block IOCs
+                      order: 6
+                      type: task
+                    block-sender:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Block sender
+                      next:
+                        extract-iocs: ""
+                      order: 3
+                      type: task
+                    board:
+                      active: true
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Board Involvement?
+                      next:
+                        escalate: boardInvolved == true
+                        mail-available: boardInvolved == false
+                      order: 0
+                      owner: eve
+                      schema:
+                        properties:
+                          boardInvolved:
+                            default: false
+                            title: A board member is involved.
+                            type: boolean
+                        required:
+                        - boardInvolved
+                        title: Board Involvement?
+                        type: object
+                      type: input
+                    escalate:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Escalate to CISO
+                      order: 1
+                      type: task
+                    extract-iocs:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Extract IOCs
+                      next:
+                        block-iocs: ""
+                      order: 5
+                      schema:
+                        properties:
+                          iocs:
+                            items:
+                              type: string
+                            title: IOCs
+                            type: array
+                        title: Extract IOCs
+                        type: object
+                      type: input
+                    mail-available:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Mail available
+                      next:
+                        block-sender: schemaKey == 'yes'
+                        extract-iocs: schemaKey == 'yes'
+                        search-email-gateway: schemaKey == 'no'
+                      order: 2
+                      schema:
+                        oneOf:
+                        - properties:
+                            mail:
+                              title: Mail
+                              type: string
+                              x-display: textarea
+                            schemaKey:
+                              const: "yes"
+                              type: string
+                          required:
+                          - mail
+                          title: "Yes"
+                        - properties:
+                            schemaKey:
+                              const: "no"
+                              type: string
+                          title: "No"
+                        title: Mail available
+                        type: object
+                      type: input
+                    search-email-gateway:
+                      active: false
+                      created: 2021-12-12T12:12:12.000000012Z
+                      done: false
+                      name: Search email gateway
+                      next:
+                        extract-iocs: ""
+                      order: 4
+                      type: task
+              references:
+              - href: https://www.leadmaximize.net/e-services/back-end
+                name: performance
+              - href: http://www.corporateinteractive.name/rich
+                name: autumn
+              - href: https://www.corporateintuitive.org/intuitive/platforms/integrate
+                name: suggest
+              schema: |
+                {
+                  "definitions": {},
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "$id": "https://example.com/object1618746510.json",
+                  "title": "Event",
+                  "type": "object",
+                  "required": [
+                    "severity",
+                    "description",
+                    "tlp"
+                  ],
+                  "properties": {
+                    "severity": {
+                      "$id": "#root/severity",
+                      "title": "Severity",
+                      "type": "string",
+                      "default": "Medium",
+                      "nx-enum": [
+                        "Low",
+                        "Medium",
+                        "High"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "Low",
+                          "title": "Low",
+                          "icon": "mdi-chevron-up"
+                        },
+                        {
+                          "const": "Medium",
+                          "title": "Medium",
+                          "icon": "mdi-chevron-double-up"
+                        },
+                        {
+                          "const": "High",
+                          "title": "High",
+                          "icon": "mdi-chevron-triple-up"
+                        }
+                      ]
+                    },
+                    "tlp": {
+                      "$id": "#root/tlp",
+                      "title": "TLP",
+                      "type": "string",
+                      "nx-enum": [
+                        "White",
+                        "Green",
+                        "Amber",
+                        "Red"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "White",
+                          "title": "White",
+                          "icon": "mdi-alpha-w"
+                        },
+                        {
+                          "const": "Green",
+                          "title": "Green",
+                          "icon": "mdi-alpha-g"
+                        },
+                        {
+                          "const": "Amber",
+                          "title": "Amber",
+                          "icon": "mdi-alpha-a"
+                        },
+                        {
+                          "const": "Red",
+                          "title": "Red",
+                          "icon": "mdi-alpha-r"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "$id": "#root/description",
+                      "title": "Description",
+                      "type": "string",
+                      "x-display": "textarea",
+                      "x-class": "pr-2"
+                    }
+                  }
+                }
+              status: closed
+              type: incident
+          schema:
+            $ref: '#/definitions/TicketWithTickets'
+      security:
+      - roles:
+        - ticket:write
+      summary: Set a ticket playbook task owner
+      tags:
+      - tickets
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}/run:
     post:
       operationId: runTask
@@ -5645,9 +5864,7 @@ paths:
         name: references
         required: true
         schema:
-          items:
-            $ref: '#/definitions/Reference'
-          type: array
+          $ref: '#/definitions/ReferenceArray'
         x-example:
         - href: http://www.leadscalable.biz/envisioneer
           name: fund
@@ -6074,9 +6291,7 @@ paths:
         name: ticket
         required: true
         schema:
-          items:
-            $ref: '#/definitions/TicketForm'
-          type: array
+          $ref: '#/definitions/TicketFormArray'
         x-example:
         - id: 123
           name: Wannacry infection
@@ -6413,6 +6628,8 @@ paths:
         schema:
           $ref: '#/definitions/UserForm'
         x-example:
+          apikey: true
+          blocked: false
           id: syncscript
           roles:
           - analyst
@@ -6527,6 +6744,9 @@ paths:
         schema:
           $ref: '#/definitions/UserForm'
         x-example:
+          apikey: false
+          blocked: false
+          id: syncscript
           roles:
           - analyst
           - admin

@@ -1,16 +1,18 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/xeipuuv/gojsonschema"
 
-	// "github.com/xeipuuv/gojsonschema"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -39,7 +41,7 @@ type Service interface {
 	ListJobs(context.Context) ([]*model.JobResponse, error)
 	RunJob(context.Context, *model.JobForm) error
 	GetJob(context.Context, string) (*model.JobResponse, error)
-	UpdateJob(context.Context, string, *model.Job) (*model.JobResponse, error)
+	UpdateJob(context.Context, string, *model.JobUpdate) (*model.JobResponse, error)
 	GetLogs(context.Context, string) ([]*model.LogEntry, error)
 	ListPlaybooks(context.Context) ([]*model.PlaybookTemplateResponse, error)
 	CreatePlaybook(context.Context, *model.PlaybookTemplateForm) (*model.PlaybookTemplateResponse, error)
@@ -56,7 +58,7 @@ type Service interface {
 	DeleteTemplate(context.Context, string) error
 	ListTickets(context.Context, *string, *int, *int, []string, []bool, *string) (*model.TicketList, error)
 	CreateTicket(context.Context, *model.TicketForm) (*model.TicketResponse, error)
-	CreateTicketBatch(context.Context, []*model.TicketForm) error
+	CreateTicketBatch(context.Context, *model.TicketFormArray) error
 	GetTicket(context.Context, int64) (*model.TicketWithTickets, error)
 	UpdateTicket(context.Context, int64, *model.Ticket) (*model.TicketWithTickets, error)
 	DeleteTicket(context.Context, int64) error
@@ -70,10 +72,11 @@ type Service interface {
 	RemoveComment(context.Context, int64, int) (*model.TicketWithTickets, error)
 	AddTicketPlaybook(context.Context, int64, *model.PlaybookTemplateForm) (*model.TicketWithTickets, error)
 	RemoveTicketPlaybook(context.Context, int64, string) (*model.TicketWithTickets, error)
-	SetTask(context.Context, int64, string, string, *model.Task) (*model.TicketWithTickets, error)
+	SetTaskData(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
 	CompleteTask(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
+	SetTaskOwner(context.Context, int64, string, string, string) (*model.TicketWithTickets, error)
 	RunTask(context.Context, int64, string, string) error
-	SetReferences(context.Context, int64, []*model.Reference) (*model.TicketWithTickets, error)
+	SetReferences(context.Context, int64, *model.ReferenceArray) (*model.TicketWithTickets, error)
 	SetSchema(context.Context, int64, string) (*model.TicketWithTickets, error)
 	LinkTicket(context.Context, int64, int64) (*model.TicketWithTickets, error)
 	UnlinkTicket(context.Context, int64, int64) (*model.TicketWithTickets, error)
@@ -140,8 +143,9 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/comments/{commentID}", s.removeCommentHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks", s.addTicketPlaybookHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/playbooks/{playbookID}", s.removeTicketPlaybookHandler)
-	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskDataHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/complete", s.completeTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner", s.setTaskOwnerHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/run", s.runTaskHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/references", s.setReferencesHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/schema", s.setSchemaHandler)
@@ -173,11 +177,33 @@ func (s *server) listAutomationsHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *server) createAutomationHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.AutomationFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.AutomationFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var automationP *model.AutomationForm
-	if err := parseBody(r, &automationP); err != nil {
+	if err := parseBody(body, &automationP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -196,11 +222,33 @@ func (s *server) getAutomationHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateAutomationHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.AutomationFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.AutomationFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var automationP *model.AutomationForm
-	if err := parseBody(r, &automationP); err != nil {
+	if err := parseBody(body, &automationP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -226,11 +274,33 @@ func (s *server) currentUserDataHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *server) updateCurrentUserDataHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.UserDataSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.UserDataSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var userdataP *model.UserData
-	if err := parseBody(r, &userdataP); err != nil {
+	if err := parseBody(body, &userdataP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -245,11 +315,33 @@ func (s *server) listJobsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) runJobHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.JobFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.JobFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var jobP *model.JobForm
-	if err := parseBody(r, &jobP); err != nil {
+	if err := parseBody(body, &jobP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -267,11 +359,33 @@ func (s *server) getJobHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateJobHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.JobSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
-	var jobP *model.Job
-	if err := parseBody(r, &jobP); err != nil {
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.JobUpdateSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
+
+	var jobP *model.JobUpdate
+	if err := parseBody(body, &jobP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -293,11 +407,33 @@ func (s *server) listPlaybooksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) createPlaybookHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.PlaybookTemplateFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.PlaybookTemplateFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var playbookP *model.PlaybookTemplateForm
-	if err := parseBody(r, &playbookP); err != nil {
+	if err := parseBody(body, &playbookP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -316,11 +452,33 @@ func (s *server) getPlaybookHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updatePlaybookHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.PlaybookTemplateFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.PlaybookTemplateFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var playbookP *model.PlaybookTemplateForm
-	if err := parseBody(r, &playbookP); err != nil {
+	if err := parseBody(body, &playbookP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -356,11 +514,33 @@ func (s *server) listTemplatesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) createTemplateHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketTemplateFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketTemplateFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var templateP *model.TicketTemplateForm
-	if err := parseBody(r, &templateP); err != nil {
+	if err := parseBody(body, &templateP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -379,11 +559,33 @@ func (s *server) getTemplateHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateTemplateHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketTemplateFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketTemplateFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var templateP *model.TicketTemplateForm
-	if err := parseBody(r, &templateP); err != nil {
+	if err := parseBody(body, &templateP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -432,11 +634,33 @@ func (s *server) listTicketsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) createTicketHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var ticketP *model.TicketForm
-	if err := parseBody(r, &ticketP); err != nil {
+	if err := parseBody(body, &ticketP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -446,11 +670,33 @@ func (s *server) createTicketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) createTicketBatchHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// []*model.TicketFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
-	var ticketP []*model.TicketForm
-	if err := parseBody(r, &ticketP); err != nil {
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketFormArraySchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
+
+	var ticketP *model.TicketFormArray
+	if err := parseBody(body, &ticketP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -476,11 +722,33 @@ func (s *server) updateTicketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var ticketP *model.Ticket
-	if err := parseBody(r, &ticketP); err != nil {
+	if err := parseBody(body, &ticketP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -506,11 +774,33 @@ func (s *server) addArtifactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.ArtifactSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.ArtifactSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var artifactP *model.Artifact
-	if err := parseBody(r, &artifactP); err != nil {
+	if err := parseBody(body, &artifactP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -541,11 +831,33 @@ func (s *server) setArtifactHandler(w http.ResponseWriter, r *http.Request) {
 
 	nameP := chi.URLParam(r, "name")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.ArtifactSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.ArtifactSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var artifactP *model.Artifact
-	if err := parseBody(r, &artifactP); err != nil {
+	if err := parseBody(body, &artifactP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -576,11 +888,33 @@ func (s *server) enrichArtifactHandler(w http.ResponseWriter, r *http.Request) {
 
 	nameP := chi.URLParam(r, "name")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.EnrichmentFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.EnrichmentFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var dataP *model.EnrichmentForm
-	if err := parseBody(r, &dataP); err != nil {
+	if err := parseBody(body, &dataP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -610,11 +944,33 @@ func (s *server) addCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.CommentFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.CommentFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var commentP *model.CommentForm
-	if err := parseBody(r, &commentP); err != nil {
+	if err := parseBody(body, &commentP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -647,11 +1003,33 @@ func (s *server) addTicketPlaybookHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.PlaybookTemplateFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.PlaybookTemplateFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var playbookP *model.PlaybookTemplateForm
-	if err := parseBody(r, &playbookP); err != nil {
+	if err := parseBody(body, &playbookP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -673,7 +1051,7 @@ func (s *server) removeTicketPlaybookHandler(w http.ResponseWriter, r *http.Requ
 	response(w, result, err)
 }
 
-func (s *server) setTaskHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) setTaskDataHandler(w http.ResponseWriter, r *http.Request) {
 	idP, err := parseURLInt64(r, "id")
 	if err != nil {
 		JSONError(w, err)
@@ -684,16 +1062,19 @@ func (s *server) setTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	taskIDP := chi.URLParam(r, "taskID")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TaskSchema.Validate(jl)
-
-	var taskP *model.Task
-	if err := parseBody(r, &taskP); err != nil {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
 		JSONError(w, err)
 		return
 	}
 
-	result, err := s.service.SetTask(r.Context(), idP, playbookIDP, taskIDP, taskP)
+	var dataP map[string]interface{}
+	if err := parseBody(body, &dataP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.SetTaskData(r.Context(), idP, playbookIDP, taskIDP, dataP)
 	response(w, result, err)
 }
 
@@ -708,16 +1089,46 @@ func (s *server) completeTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	taskIDP := chi.URLParam(r, "taskID")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// map[string]interface{}Schema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
 	var dataP map[string]interface{}
-	if err := parseBody(r, &dataP); err != nil {
+	if err := parseBody(body, &dataP); err != nil {
 		JSONError(w, err)
 		return
 	}
 
 	result, err := s.service.CompleteTask(r.Context(), idP, playbookIDP, taskIDP, dataP)
+	response(w, result, err)
+}
+
+func (s *server) setTaskOwnerHandler(w http.ResponseWriter, r *http.Request) {
+	idP, err := parseURLInt64(r, "id")
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	playbookIDP := chi.URLParam(r, "playbookID")
+
+	taskIDP := chi.URLParam(r, "taskID")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	var ownerP string
+	if err := parseBody(body, &ownerP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.SetTaskOwner(r.Context(), idP, playbookIDP, taskIDP, ownerP)
 	response(w, result, err)
 }
 
@@ -742,11 +1153,33 @@ func (s *server) setReferencesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// []*model.ReferenceSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
-	var referencesP []*model.Reference
-	if err := parseBody(r, &referencesP); err != nil {
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.ReferenceArraySchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
+
+	var referencesP *model.ReferenceArray
+	if err := parseBody(body, &referencesP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -762,11 +1195,14 @@ func (s *server) setSchemaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// stringSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
 	var schemaP string
-	if err := parseBody(r, &schemaP); err != nil {
+	if err := parseBody(body, &schemaP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -782,11 +1218,14 @@ func (s *server) linkTicketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// int64Schema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
 	var linkedIDP int64
-	if err := parseBody(r, &linkedIDP); err != nil {
+	if err := parseBody(body, &linkedIDP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -802,11 +1241,14 @@ func (s *server) unlinkTicketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// int64Schema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
 
 	var linkedIDP int64
-	if err := parseBody(r, &linkedIDP); err != nil {
+	if err := parseBody(body, &linkedIDP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -821,11 +1263,33 @@ func (s *server) listTicketTypesHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *server) createTicketTypeHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketTypeFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketTypeFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var tickettypeP *model.TicketTypeForm
-	if err := parseBody(r, &tickettypeP); err != nil {
+	if err := parseBody(body, &tickettypeP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -844,11 +1308,33 @@ func (s *server) getTicketTypeHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateTicketTypeHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.TicketTypeFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketTypeFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var tickettypeP *model.TicketTypeForm
-	if err := parseBody(r, &tickettypeP); err != nil {
+	if err := parseBody(body, &tickettypeP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -878,11 +1364,33 @@ func (s *server) getUserDataHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateUserDataHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.UserDataSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.UserDataSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var userdataP *model.UserData
-	if err := parseBody(r, &userdataP); err != nil {
+	if err := parseBody(body, &userdataP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -897,11 +1405,33 @@ func (s *server) listUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.UserFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.UserFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var userP *model.UserForm
-	if err := parseBody(r, &userP); err != nil {
+	if err := parseBody(body, &userP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -920,11 +1450,33 @@ func (s *server) getUserHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	idP := chi.URLParam(r, "id")
 
-	// jl, _ := gojsonschema.NewReaderLoader(r.Body)
-	// *model.UserFormSchema.Validate(jl)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.UserFormSchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
 
 	var userP *model.UserForm
-	if err := parseBody(r, &userP); err != nil {
+	if err := parseBody(body, &userP); err != nil {
 		JSONError(w, err)
 		return
 	}
@@ -1032,8 +1584,8 @@ func parseQueryOptionalBoolArray(r *http.Request, key string) ([]bool, error) {
 	return parseQueryBoolArray(r, key)
 }
 
-func parseBody(r *http.Request, i interface{}) error {
-	dec := json.NewDecoder(r.Body)
+func parseBody(b []byte, i interface{}) error {
+	dec := json.NewDecoder(bytes.NewBuffer(b))
 	err := dec.Decode(i)
 	if err != nil {
 		return fmt.Errorf("%w", &HTTPError{http.StatusUnprocessableEntity, err})

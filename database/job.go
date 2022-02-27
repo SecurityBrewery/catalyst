@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/arangodb/go-driver"
 	"github.com/docker/docker/client"
-	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
@@ -39,15 +37,19 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *model.Jo
 	if doc.Running {
 		inspect, err := cli.ContainerInspect(ctx, key)
 		if err != nil || inspect.State == nil {
-			doc.Running = false
 			if update {
-				db.JobUpdate(ctx, key, doc)
+				db.JobUpdate(ctx, key, &model.JobUpdate{
+					Status:  doc.Status,
+					Running: false,
+				})
 			}
 		} else if doc.Status != inspect.State.Status {
 			status = inspect.State.Status
-			doc.Status = inspect.State.Status
 			if update {
-				db.JobUpdate(ctx, key, doc)
+				db.JobUpdate(ctx, key, &model.JobUpdate{
+					Status:  status,
+					Running: doc.Running,
+				})
 			}
 		}
 	}
@@ -72,25 +74,7 @@ func (db *Database) JobCreate(ctx context.Context, id string, job *model.JobForm
 	var doc model.Job
 	newctx := driver.WithReturnNew(ctx, &doc)
 
-	/* Start validation */
-	j := toJob(job)
-	b, _ := json.Marshal(j)
-
-	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	if !r.Valid() {
-		var errs []string
-		for _, e := range r.Errors() {
-			errs = append(errs, e.String())
-		}
-		return nil, errors.New(strings.Join(errs, ", "))
-	}
-	/* End validation */
-
-	meta, err := db.jobCollection.CreateDocument(ctx, newctx, id, j)
+	meta, err := db.jobCollection.CreateDocument(ctx, newctx, id, toJob(job))
 	if err != nil {
 		return nil, err
 	}
@@ -108,28 +92,11 @@ func (db *Database) JobGet(ctx context.Context, id string) (*model.JobResponse, 
 	return db.toJobResponse(ctx, meta.Key, &doc, true)
 }
 
-func (db *Database) JobUpdate(ctx context.Context, id string, job *model.Job) (*model.JobResponse, error) {
+func (db *Database) JobUpdate(ctx context.Context, id string, job *model.JobUpdate) (*model.JobResponse, error) {
 	var doc model.Job
 	ctx = driver.WithReturnNew(ctx, &doc)
 
-	/* Start validation */
-	b, _ := json.Marshal(job)
-
-	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	if !r.Valid() {
-		var errs []string
-		for _, e := range r.Errors() {
-			errs = append(errs, e.String())
-		}
-		return nil, errors.New(strings.Join(errs, ", "))
-	}
-	/* End validation */
-
-	meta, err := db.jobCollection.ReplaceDocument(ctx, id, job)
+	meta, err := db.jobCollection.UpdateDocument(ctx, id, job)
 	if err != nil {
 		return nil, err
 	}

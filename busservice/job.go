@@ -47,14 +47,12 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 		return
 	}
 
-	if _, err := h.db.JobUpdate(ctx, automationMsg.ID, &model.Job{
-		Automation: job.Automation,
-		Container:  &containerID,
-		Origin:     job.Origin,
-		Output:     job.Output,
-		Log:        &logs,
-		Payload:    job.Payload,
-		Status:     job.Status,
+	if _, err := h.db.JobUpdate(ctx, automationMsg.ID, &model.JobUpdate{
+		Container: &containerID,
+		Running:   true,
+		Output:    job.Output,
+		Log:       &logs,
+		Status:    job.Status,
 	}); err != nil {
 		log.Println(err)
 		return
