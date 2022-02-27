@@ -36,25 +36,24 @@ func TestJob(t *testing.T) {
 	id := gjson.GetBytes(result, "id").String()
 
 	start := time.Now()
-	// for {
-	time.Sleep(5 * time.Second)
+	for {
+		time.Sleep(5 * time.Second)
 
-	if time.Since(start) > time.Minute {
-		t.Fatal("job did not complete within a minute")
+		if time.Since(start) > time.Minute {
+			t.Fatal("job did not complete within a minute")
+		}
+
+		job := request(t, server.Server, http.MethodGet, "/api/jobs/"+id, nil)
+
+		status := gjson.GetBytes(job, "status").String()
+		if status != "completed" {
+			continue
+		}
+
+		output := gjson.GetBytes(job, "output.hash").String()
+		assert.Equal(t, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", output)
+		break
 	}
-
-	job := request(t, server.Server, http.MethodGet, "/api/jobs/"+id, nil)
-
-	status := gjson.GetBytes(job, "status").String()
-	if status != "completed" {
-		// continue
-		t.Fatal("job not completed")
-	}
-
-	output := gjson.GetBytes(job, "output.hash").String()
-	assert.Equal(t, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", output)
-	// break
-	// }
 }
 
 func request(t *testing.T, server chi.Router, method, url string, data io.Reader) []byte {

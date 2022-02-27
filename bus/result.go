@@ -23,11 +23,11 @@ func (b *Bus) PublishResult(automation string, data map[string]interface{}, targ
 
 func (b *Bus) SubscribeResult(f func(msg *ResultMsg)) error {
 	return b.safeSubscribe(b.config.resultBusKey, channelResult, func(c *emitter.Client, m emitter.Message) {
-		var msg ResultMsg
-		if err := json.Unmarshal(m.Payload(), &msg); err != nil {
+		msg := &ResultMsg{}
+		if err := json.Unmarshal(m.Payload(), msg); err != nil {
 			log.Println(err)
 			return
 		}
-		go f(&msg)
+		go f(msg)
 	})
 }

@@ -26,11 +26,11 @@ func (b *Bus) PublishRequest(user, f string, ids []driver.DocumentID) error {
 
 func (b *Bus) SubscribeRequest(f func(msg *RequestMsg)) error {
 	return b.safeSubscribe(b.config.requestKey, ChannelRequest, func(c *emitter.Client, m emitter.Message) {
-		var msg RequestMsg
-		if err := json.Unmarshal(m.Payload(), &msg); err != nil {
+		msg := &RequestMsg{}
+		if err := json.Unmarshal(m.Payload(), msg); err != nil {
 			log.Println(err)
 			return
 		}
-		go f(&msg)
+		go f(msg)
 	})
 }
