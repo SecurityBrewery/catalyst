@@ -13,7 +13,7 @@ paths:
           schema: { type: array, items: { $ref: "#/definitions/JobResponse" } }
           examples:
             test:
-              - id: "99cd67131b48"
+              - id: "b81c2366-ea37-43d2-b61b-03afdc21d985"
                 automation: "hash.sha1"
                 payload: "test"
                 status: "created"
@@ -23,13 +23,13 @@ paths:
       summary: "Start a new job"
       operationId: "runJob"
       parameters:
-        - { name: "job", in: "body", description: "New job", required: true, schema: { $ref: "#/definitions/JobForm" }, x-example: { automation: "hash.sha1", message: { payload: "test" } } }
+        - { name: "job", in: "body", description: "New job", required: true, schema: { $ref: "#/definitions/JobForm" }, x-example: { automation: "hash.sha1", payload: "test" } }
       responses:
         "200":
           description: "successful operation"
           schema: { $ref: "#/definitions/JobResponse" }
           examples:
-            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "created" }
+            test: { id: "87390749-2125-4a87-91c5-da7e3f9bebf1", automation: "hash.sha1", payload: "test", status: "created" }
       security: [ { roles: [ "job:write" ] } ]
 
   /jobs/{id}:
@@ -38,27 +38,27 @@ paths:
       summary: "Get a single job"
       operationId: "getJob"
       parameters:
-        - { name: "id", in: "path", description: "Job ID", required: true, type: string, x-example: "99cd67131b48" }
+        - { name: "id", in: "path", description: "Job ID", required: true, type: string, x-example: "b81c2366-ea37-43d2-b61b-03afdc21d985" }
       responses:
         "200":
           description: "successful operation"
           schema: { $ref: "#/definitions/JobResponse" }
           examples:
-            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "created" }
+            test: { id: "b81c2366-ea37-43d2-b61b-03afdc21d985", automation: "hash.sha1", payload: "test", status: "created" }
       security: [ { roles: [ "job:read" ] } ]
     put:
       tags: [ "jobs" ]
       summary: "Update an existing job"
       operationId: "updateJob"
       parameters:
-        - { name: "id", in: "path", description: "Job ID", required: true, type: string, x-example: "99cd67131b48" }
+        - { name: "id", in: "path", description: "Job ID", required: true, type: string, x-example: "b81c2366-ea37-43d2-b61b-03afdc21d985" }
         - { name: "job", in: "body", description: "Job object that needs to be added", required: true, schema: { $ref: "#/definitions/JobUpdate" }, x-example: { status: "failed", running: false } }
       responses:
         "200":
           description: "successful operation"
           schema: { $ref: "#/definitions/JobResponse" }
           examples:
-            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed" }
+            test: { id: "b81c2366-ea37-43d2-b61b-03afdc21d985", automation: "hash.sha1", payload: "test", status: "failed" }
 
       security: [ { roles: [ "job:write" ] } ]
 

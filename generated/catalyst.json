@@ -562,7 +562,7 @@
               "test" : {
                 "example" : [ {
                   "automation" : "hash.sha1",
-                  "id" : "99cd67131b48",
+                  "id" : "b81c2366-ea37-43d2-b61b-03afdc21d985",
                   "payload" : "test",
                   "status" : "created"
                 } ]
@@ -601,7 +601,7 @@
               "test" : {
                 "example" : {
                   "automation" : "hash.sha1",
-                  "id" : "99cd67131b48",
+                  "id" : "87390749-2125-4a87-91c5-da7e3f9bebf1",
                   "payload" : "test",
                   "status" : "created"
                 }
@@ -623,7 +623,7 @@
         "operationId" : "getJob",
         "parameters" : [ {
           "description" : "Job ID",
-          "example" : "99cd67131b48",
+          "example" : "b81c2366-ea37-43d2-b61b-03afdc21d985",
           "in" : "path",
           "name" : "id",
           "required" : true,
@@ -642,7 +642,7 @@
               "test" : {
                 "example" : {
                   "automation" : "hash.sha1",
-                  "id" : "99cd67131b48",
+                  "id" : "b81c2366-ea37-43d2-b61b-03afdc21d985",
                   "payload" : "test",
                   "status" : "created"
                 }
@@ -661,7 +661,7 @@
         "operationId" : "updateJob",
         "parameters" : [ {
           "description" : "Job ID",
-          "example" : "99cd67131b48",
+          "example" : "b81c2366-ea37-43d2-b61b-03afdc21d985",
           "in" : "path",
           "name" : "id",
           "required" : true,
@@ -691,7 +691,7 @@
               "test" : {
                 "example" : {
                   "automation" : "hash.sha1",
-                  "id" : "99cd67131b48",
+                  "id" : "b81c2366-ea37-43d2-b61b-03afdc21d985",
                   "payload" : "test",
                   "status" : "failed"
                 }

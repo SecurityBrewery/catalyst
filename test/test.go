@@ -144,7 +144,7 @@ func DB(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	_, err = db.JobCreate(ctx, "99cd67131b48", &model.JobForm{
+	_, err = db.JobCreate(ctx, "b81c2366-ea37-43d2-b61b-03afdc21d985", &model.JobForm{
 		Automation: "hash.sha1",
 		Payload:    "test",
 		Origin:     nil,

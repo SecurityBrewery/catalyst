@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"runtime"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,6 +26,10 @@ import (
 
 func TestBackupAndRestore(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	if runtime.GOARCH == "arm64" {
+		t.Skip("test does not run on arm")
+	}
 
 	type want struct {
 		status int

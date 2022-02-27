@@ -95,34 +95,34 @@ var Tests = []struct {
 		Args: Args{Method: "Get", URL: "/jobs"},
 		Want: Want{
 			Status: 200,
-			Body:   []interface{}{map[string]interface{}{"automation": "hash.sha1", "id": "99cd67131b48", "payload": "test", "status": "created"}},
+			Body:   []interface{}{map[string]interface{}{"automation": "hash.sha1", "id": "b81c2366-ea37-43d2-b61b-03afdc21d985", "payload": "test", "status": "created"}},
 		},
 	},
 
 	{
 		Name: "RunJob",
-		Args: Args{Method: "Post", URL: "/jobs", Data: map[string]interface{}{"automation": "hash.sha1", "message": map[string]interface{}{"payload": "test"}}},
+		Args: Args{Method: "Post", URL: "/jobs", Data: map[string]interface{}{"automation": "hash.sha1", "payload": "test"}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "99cd67131b48", "payload": "test", "status": "created"},
+			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "87390749-2125-4a87-91c5-da7e3f9bebf1", "payload": "test", "status": "created"},
 		},
 	},
 
 	{
 		Name: "GetJob",
-		Args: Args{Method: "Get", URL: "/jobs/99cd67131b48"},
+		Args: Args{Method: "Get", URL: "/jobs/b81c2366-ea37-43d2-b61b-03afdc21d985"},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "99cd67131b48", "payload": "test", "status": "created"},
+			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "b81c2366-ea37-43d2-b61b-03afdc21d985", "payload": "test", "status": "created"},
 		},
 	},
 
 	{
 		Name: "UpdateJob",
-		Args: Args{Method: "Put", URL: "/jobs/99cd67131b48", Data: map[string]interface{}{"running": false, "status": "failed"}},
+		Args: Args{Method: "Put", URL: "/jobs/b81c2366-ea37-43d2-b61b-03afdc21d985", Data: map[string]interface{}{"running": false, "status": "failed"}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "99cd67131b48", "payload": "test", "status": "failed"},
+			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "b81c2366-ea37-43d2-b61b-03afdc21d985", "payload": "test", "status": "failed"},
 		},
 	},
 
