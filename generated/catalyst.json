@@ -3928,10 +3928,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "items" : {
-                  "$ref" : "#/components/schemas/Reference"
-                },
-                "type" : "array"
+                "$ref" : "#/components/schemas/ReferenceArray"
               }
             }
           },
@@ -4390,10 +4387,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "items" : {
-                  "$ref" : "#/components/schemas/TicketForm"
-                },
-                "type" : "array"
+                "$ref" : "#/components/schemas/TicketFormArray"
               }
             }
           },
@@ -5478,6 +5472,12 @@
         "required" : [ "href", "name" ],
         "type" : "object"
       },
+      "ReferenceArray" : {
+        "items" : {
+          "$ref" : "#/components/schemas/Reference"
+        },
+        "type" : "array"
+      },
       "Rule" : {
         "properties" : {
           "condition" : {
@@ -5991,6 +5991,12 @@
         },
         "required" : [ "name", "status", "type" ],
         "type" : "object"
+      },
+      "TicketFormArray" : {
+        "items" : {
+          "$ref" : "#/components/schemas/TicketForm"
+        },
+        "type" : "array"
       },
       "TicketList" : {
         "properties" : {

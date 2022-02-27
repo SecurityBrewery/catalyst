@@ -63,7 +63,7 @@ func (s *Service) CreateTicket(ctx context.Context, form *model.TicketForm) (doc
 	return nil, err
 }
 
-func (s *Service) CreateTicketBatch(ctx context.Context, forms []*model.TicketForm) error {
+func (s *Service) CreateTicketBatch(ctx context.Context, ticketForms *model.TicketFormArray) error {
 	createdTickets, err := s.database.TicketBatchCreate(ctx, forms)
 	defer s.publishRequest(ctx, err, "CreateTicket", ticketIDs(createdTickets))
 	return err

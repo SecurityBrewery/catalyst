@@ -14,7 +14,7 @@
 
 
 import { Configuration } from './configuration';
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
+import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
@@ -32,25 +32,25 @@ export interface Artifact {
      * @type {{ [key: string]: Enrichment; }}
      * @memberof Artifact
      */
-    enrichments?: { [key: string]: Enrichment; };
+    'enrichments'?: { [key: string]: Enrichment; };
     /**
      * 
      * @type {string}
      * @memberof Artifact
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof Artifact
      */
-    status?: string;
+    'status'?: string;
     /**
      * 
      * @type {string}
      * @memberof Artifact
      */
-    type?: string;
+    'type'?: string;
 }
 /**
  * 
@@ -63,13 +63,13 @@ export interface ArtifactOrigin {
      * @type {string}
      * @memberof ArtifactOrigin
      */
-    artifact: string;
+    'artifact': string;
     /**
      * 
      * @type {number}
      * @memberof ArtifactOrigin
      */
-    ticket_id: number;
+    'ticket_id': number;
 }
 /**
  * 
@@ -82,36 +82,34 @@ export interface Automation {
      * @type {string}
      * @memberof Automation
      */
-    image: string;
+    'image': string;
     /**
      * 
      * @type {string}
      * @memberof Automation
      */
-    schema?: string;
+    'schema'?: string;
     /**
      * 
      * @type {string}
      * @memberof Automation
      */
-    script: string;
+    'script': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof Automation
      */
-    type: Array<AutomationTypeEnum>;
+    'type': Array<AutomationTypeEnum>;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum AutomationTypeEnum {
-    Artifact = 'artifact',
-    Playbook = 'playbook',
-    Global = 'global'
-}
+export const AutomationTypeEnum = {
+    Artifact: 'artifact',
+    Playbook: 'playbook',
+    Global: 'global'
+} as const;
+
+export type AutomationTypeEnum = typeof AutomationTypeEnum[keyof typeof AutomationTypeEnum];
 
 /**
  * 
@@ -124,42 +122,40 @@ export interface AutomationForm {
      * @type {string}
      * @memberof AutomationForm
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof AutomationForm
      */
-    image: string;
+    'image': string;
     /**
      * 
      * @type {string}
      * @memberof AutomationForm
      */
-    schema?: string;
+    'schema'?: string;
     /**
      * 
      * @type {string}
      * @memberof AutomationForm
      */
-    script: string;
+    'script': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof AutomationForm
      */
-    type: Array<AutomationFormTypeEnum>;
+    'type': Array<AutomationFormTypeEnum>;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum AutomationFormTypeEnum {
-    Artifact = 'artifact',
-    Playbook = 'playbook',
-    Global = 'global'
-}
+export const AutomationFormTypeEnum = {
+    Artifact: 'artifact',
+    Playbook: 'playbook',
+    Global: 'global'
+} as const;
+
+export type AutomationFormTypeEnum = typeof AutomationFormTypeEnum[keyof typeof AutomationFormTypeEnum];
 
 /**
  * 
@@ -172,42 +168,40 @@ export interface AutomationResponse {
      * @type {string}
      * @memberof AutomationResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof AutomationResponse
      */
-    image: string;
+    'image': string;
     /**
      * 
      * @type {string}
      * @memberof AutomationResponse
      */
-    schema?: string;
+    'schema'?: string;
     /**
      * 
      * @type {string}
      * @memberof AutomationResponse
      */
-    script: string;
+    'script': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof AutomationResponse
      */
-    type: Array<AutomationResponseTypeEnum>;
+    'type': Array<AutomationResponseTypeEnum>;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum AutomationResponseTypeEnum {
-    Artifact = 'artifact',
-    Playbook = 'playbook',
-    Global = 'global'
-}
+export const AutomationResponseTypeEnum = {
+    Artifact: 'artifact',
+    Playbook: 'playbook',
+    Global: 'global'
+} as const;
+
+export type AutomationResponseTypeEnum = typeof AutomationResponseTypeEnum[keyof typeof AutomationResponseTypeEnum];
 
 /**
  * 
@@ -220,19 +214,19 @@ export interface Comment {
      * @type {string}
      * @memberof Comment
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {string}
      * @memberof Comment
      */
-    creator: string;
+    'creator': string;
     /**
      * 
      * @type {string}
      * @memberof Comment
      */
-    message: string;
+    'message': string;
 }
 /**
  * 
@@ -245,19 +239,19 @@ export interface CommentForm {
      * @type {string}
      * @memberof CommentForm
      */
-    created?: string;
+    'created'?: string;
     /**
      * 
      * @type {string}
      * @memberof CommentForm
      */
-    creator?: string;
+    'creator'?: string;
     /**
      * 
      * @type {string}
      * @memberof CommentForm
      */
-    message: string;
+    'message': string;
 }
 /**
  * 
@@ -270,25 +264,25 @@ export interface Context {
      * @type {Artifact}
      * @memberof Context
      */
-    artifact?: Artifact;
+    'artifact'?: Artifact;
     /**
      * 
      * @type {PlaybookResponse}
      * @memberof Context
      */
-    playbook?: PlaybookResponse;
+    'playbook'?: PlaybookResponse;
     /**
      * 
      * @type {TaskResponse}
      * @memberof Context
      */
-    task?: TaskResponse;
+    'task'?: TaskResponse;
     /**
      * 
      * @type {TicketResponse}
      * @memberof Context
      */
-    ticket?: TicketResponse;
+    'ticket'?: TicketResponse;
 }
 /**
  * 
@@ -301,19 +295,19 @@ export interface Enrichment {
      * @type {string}
      * @memberof Enrichment
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof Enrichment
      */
-    data: object;
+    'data': object;
     /**
      * 
      * @type {string}
      * @memberof Enrichment
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -326,13 +320,13 @@ export interface EnrichmentForm {
      * @type {object}
      * @memberof EnrichmentForm
      */
-    data: object;
+    'data': object;
     /**
      * 
      * @type {string}
      * @memberof EnrichmentForm
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -345,13 +339,13 @@ export interface Graph {
      * @type {Array<Link>}
      * @memberof Graph
      */
-    links?: Array<Link>;
+    'links'?: Array<Link>;
     /**
      * 
      * @type {Array<Node>}
      * @memberof Graph
      */
-    nodes?: Array<Node>;
+    'nodes'?: Array<Node>;
 }
 /**
  * 
@@ -364,13 +358,13 @@ export interface Group {
      * @type {string}
      * @memberof Group
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof Group
      */
-    users: Array<string>;
+    'users': Array<string>;
 }
 /**
  * 
@@ -383,19 +377,19 @@ export interface GroupForm {
      * @type {string}
      * @memberof GroupForm
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof GroupForm
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof GroupForm
      */
-    users: Array<string>;
+    'users': Array<string>;
 }
 /**
  * 
@@ -408,19 +402,19 @@ export interface GroupResponse {
      * @type {string}
      * @memberof GroupResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof GroupResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof GroupResponse
      */
-    users: Array<string>;
+    'users': Array<string>;
 }
 /**
  * 
@@ -433,49 +427,49 @@ export interface Job {
      * @type {string}
      * @memberof Job
      */
-    automation: string;
+    'automation': string;
     /**
      * 
      * @type {string}
      * @memberof Job
      */
-    container?: string;
+    'container'?: string;
     /**
      * 
      * @type {string}
      * @memberof Job
      */
-    log?: string;
+    'log'?: string;
     /**
      * 
      * @type {Origin}
      * @memberof Job
      */
-    origin?: Origin;
+    'origin'?: Origin;
     /**
      * 
      * @type {object}
      * @memberof Job
      */
-    output?: object;
+    'output'?: object;
     /**
      * 
      * @type {object}
      * @memberof Job
      */
-    payload?: object;
+    'payload'?: object;
     /**
      * 
      * @type {boolean}
      * @memberof Job
      */
-    running: boolean;
+    'running': boolean;
     /**
      * 
      * @type {string}
      * @memberof Job
      */
-    status: string;
+    'status': string;
 }
 /**
  * 
@@ -488,19 +482,19 @@ export interface JobForm {
      * @type {string}
      * @memberof JobForm
      */
-    automation: string;
+    'automation': string;
     /**
      * 
      * @type {Origin}
      * @memberof JobForm
      */
-    origin?: Origin;
+    'origin'?: Origin;
     /**
      * 
      * @type {object}
      * @memberof JobForm
      */
-    payload?: object;
+    'payload'?: object;
 }
 /**
  * 
@@ -513,49 +507,49 @@ export interface JobResponse {
      * @type {string}
      * @memberof JobResponse
      */
-    automation: string;
+    'automation': string;
     /**
      * 
      * @type {string}
      * @memberof JobResponse
      */
-    container?: string;
+    'container'?: string;
     /**
      * 
      * @type {string}
      * @memberof JobResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof JobResponse
      */
-    log?: string;
+    'log'?: string;
     /**
      * 
      * @type {Origin}
      * @memberof JobResponse
      */
-    origin?: Origin;
+    'origin'?: Origin;
     /**
      * 
      * @type {object}
      * @memberof JobResponse
      */
-    output?: object;
+    'output'?: object;
     /**
      * 
      * @type {object}
      * @memberof JobResponse
      */
-    payload?: object;
+    'payload'?: object;
     /**
      * 
      * @type {string}
      * @memberof JobResponse
      */
-    status: string;
+    'status': string;
 }
 /**
  * 
@@ -568,19 +562,19 @@ export interface Link {
      * @type {string}
      * @memberof Link
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof Link
      */
-    sid: string;
+    'sid': string;
     /**
      * 
      * @type {string}
      * @memberof Link
      */
-    tid: string;
+    'tid': string;
 }
 /**
  * 
@@ -593,31 +587,31 @@ export interface LogEntry {
      * @type {string}
      * @memberof LogEntry
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {string}
      * @memberof LogEntry
      */
-    creator: string;
+    'creator': string;
     /**
      * 
      * @type {string}
      * @memberof LogEntry
      */
-    message: string;
+    'message': string;
     /**
      * 
      * @type {string}
      * @memberof LogEntry
      */
-    reference: string;
+    'reference': string;
     /**
      * 
      * @type {string}
      * @memberof LogEntry
      */
-    type: string;
+    'type': string;
 }
 /**
  * 
@@ -630,19 +624,19 @@ export interface Message {
      * @type {Context}
      * @memberof Message
      */
-    context?: Context;
+    'context'?: Context;
     /**
      * 
      * @type {object}
      * @memberof Message
      */
-    payload?: object;
+    'payload'?: object;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof Message
      */
-    secrets?: { [key: string]: string; };
+    'secrets'?: { [key: string]: string; };
 }
 /**
  * 
@@ -655,13 +649,13 @@ export interface ModelFile {
      * @type {string}
      * @memberof ModelFile
      */
-    key: string;
+    'key': string;
     /**
      * 
      * @type {string}
      * @memberof ModelFile
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -674,25 +668,25 @@ export interface NewUserResponse {
      * @type {boolean}
      * @memberof NewUserResponse
      */
-    blocked: boolean;
+    'blocked': boolean;
     /**
      * 
      * @type {string}
      * @memberof NewUserResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof NewUserResponse
      */
-    roles: Array<string>;
+    'roles': Array<string>;
     /**
      * 
      * @type {string}
      * @memberof NewUserResponse
      */
-    secret?: string;
+    'secret'?: string;
 }
 /**
  * 
@@ -705,13 +699,13 @@ export interface Node {
      * @type {string}
      * @memberof Node
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof Node
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -724,13 +718,13 @@ export interface Origin {
      * @type {ArtifactOrigin}
      * @memberof Origin
      */
-    artifact_origin?: ArtifactOrigin;
+    'artifact_origin'?: ArtifactOrigin;
     /**
      * 
      * @type {TaskOrigin}
      * @memberof Origin
      */
-    task_origin?: TaskOrigin;
+    'task_origin'?: TaskOrigin;
 }
 /**
  * 
@@ -743,13 +737,13 @@ export interface Playbook {
      * @type {string}
      * @memberof Playbook
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {{ [key: string]: Task; }}
      * @memberof Playbook
      */
-    tasks: { [key: string]: Task; };
+    'tasks': { [key: string]: Task; };
 }
 /**
  * 
@@ -762,13 +756,13 @@ export interface PlaybookResponse {
      * @type {string}
      * @memberof PlaybookResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {{ [key: string]: TaskResponse; }}
      * @memberof PlaybookResponse
      */
-    tasks: { [key: string]: TaskResponse; };
+    'tasks': { [key: string]: TaskResponse; };
 }
 /**
  * 
@@ -781,13 +775,13 @@ export interface PlaybookTemplate {
      * @type {string}
      * @memberof PlaybookTemplate
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof PlaybookTemplate
      */
-    yaml: string;
+    'yaml': string;
 }
 /**
  * 
@@ -800,13 +794,13 @@ export interface PlaybookTemplateForm {
      * @type {string}
      * @memberof PlaybookTemplateForm
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof PlaybookTemplateForm
      */
-    yaml: string;
+    'yaml': string;
 }
 /**
  * 
@@ -819,19 +813,19 @@ export interface PlaybookTemplateResponse {
      * @type {string}
      * @memberof PlaybookTemplateResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof PlaybookTemplateResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof PlaybookTemplateResponse
      */
-    yaml: string;
+    'yaml': string;
 }
 /**
  * 
@@ -844,13 +838,13 @@ export interface Reference {
      * @type {string}
      * @memberof Reference
      */
-    href: string;
+    'href': string;
     /**
      * 
      * @type {string}
      * @memberof Reference
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -863,19 +857,19 @@ export interface Rule {
      * @type {string}
      * @memberof Rule
      */
-    condition: string;
+    'condition': string;
     /**
      * 
      * @type {string}
      * @memberof Rule
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {object}
      * @memberof Rule
      */
-    update: object;
+    'update': object;
 }
 /**
  * 
@@ -888,25 +882,25 @@ export interface RuleForm {
      * @type {string}
      * @memberof RuleForm
      */
-    condition: string;
+    'condition': string;
     /**
      * 
      * @type {string}
      * @memberof RuleForm
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof RuleForm
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {object}
      * @memberof RuleForm
      */
-    update: object;
+    'update': object;
 }
 /**
  * 
@@ -919,25 +913,25 @@ export interface RuleResponse {
      * @type {string}
      * @memberof RuleResponse
      */
-    condition: string;
+    'condition': string;
     /**
      * 
      * @type {string}
      * @memberof RuleResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof RuleResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {object}
      * @memberof RuleResponse
      */
-    update: object;
+    'update': object;
 }
 /**
  * 
@@ -950,47 +944,45 @@ export interface Settings {
      * @type {Array<Type>}
      * @memberof Settings
      */
-    artifactStates: Array<Type>;
+    'artifactStates': Array<Type>;
     /**
      * 
      * @type {Array<string>}
      * @memberof Settings
      */
-    roles?: Array<string>;
+    'roles'?: Array<string>;
     /**
      * 
      * @type {Array<TicketTypeResponse>}
      * @memberof Settings
      */
-    ticketTypes: Array<TicketTypeResponse>;
+    'ticketTypes': Array<TicketTypeResponse>;
     /**
      * 
      * @type {string}
      * @memberof Settings
      */
-    tier: SettingsTierEnum;
+    'tier': SettingsTierEnum;
     /**
      * 
      * @type {string}
      * @memberof Settings
      */
-    timeformat: string;
+    'timeformat': string;
     /**
      * 
      * @type {string}
      * @memberof Settings
      */
-    version: string;
+    'version': string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum SettingsTierEnum {
-    Community = 'community',
-    Enterprise = 'enterprise'
-}
+export const SettingsTierEnum = {
+    Community: 'community',
+    Enterprise: 'enterprise'
+} as const;
+
+export type SettingsTierEnum = typeof SettingsTierEnum[keyof typeof SettingsTierEnum];
 
 /**
  * 
@@ -1003,25 +995,25 @@ export interface Statistics {
      * @type {{ [key: string]: number; }}
      * @memberof Statistics
      */
-    open_tickets_per_user: { [key: string]: number; };
+    'open_tickets_per_user': { [key: string]: number; };
     /**
      * 
      * @type {{ [key: string]: number; }}
      * @memberof Statistics
      */
-    tickets_per_type: { [key: string]: number; };
+    'tickets_per_type': { [key: string]: number; };
     /**
      * 
      * @type {{ [key: string]: number; }}
      * @memberof Statistics
      */
-    tickets_per_week: { [key: string]: number; };
+    'tickets_per_week': { [key: string]: number; };
     /**
      * 
      * @type {number}
      * @memberof Statistics
      */
-    unassigned: number;
+    'unassigned': number;
 }
 /**
  * 
@@ -1034,84 +1026,82 @@ export interface Task {
      * @type {string}
      * @memberof Task
      */
-    automation?: string;
+    'automation'?: string;
     /**
      * 
      * @type {string}
      * @memberof Task
      */
-    closed?: string;
+    'closed'?: string;
     /**
      * 
      * @type {string}
      * @memberof Task
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof Task
      */
-    data?: object;
+    'data'?: object;
     /**
      * 
      * @type {boolean}
      * @memberof Task
      */
-    done: boolean;
+    'done': boolean;
     /**
      * 
      * @type {boolean}
      * @memberof Task
      */
-    join?: boolean;
+    'join'?: boolean;
     /**
      * 
      * @type {string}
      * @memberof Task
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof Task
      */
-    next?: { [key: string]: string; };
+    'next'?: { [key: string]: string; };
     /**
      * 
      * @type {string}
      * @memberof Task
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof Task
      */
-    payload?: { [key: string]: string; };
+    'payload'?: { [key: string]: string; };
     /**
      * 
      * @type {object}
      * @memberof Task
      */
-    schema?: object;
+    'schema'?: object;
     /**
      * 
      * @type {string}
      * @memberof Task
      */
-    type: TaskTypeEnum;
+    'type': TaskTypeEnum;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TaskTypeEnum {
-    Task = 'task',
-    Input = 'input',
-    Automation = 'automation'
-}
+export const TaskTypeEnum = {
+    Task: 'task',
+    Input: 'input',
+    Automation: 'automation'
+} as const;
+
+export type TaskTypeEnum = typeof TaskTypeEnum[keyof typeof TaskTypeEnum];
 
 /**
  * 
@@ -1124,84 +1114,82 @@ export interface TaskForm {
      * @type {string}
      * @memberof TaskForm
      */
-    automation?: string;
+    'automation'?: string;
     /**
      * 
      * @type {string}
      * @memberof TaskForm
      */
-    closed?: string;
+    'closed'?: string;
     /**
      * 
      * @type {string}
      * @memberof TaskForm
      */
-    created?: string;
+    'created'?: string;
     /**
      * 
      * @type {object}
      * @memberof TaskForm
      */
-    data?: object;
+    'data'?: object;
     /**
      * 
      * @type {boolean}
      * @memberof TaskForm
      */
-    done?: boolean;
+    'done'?: boolean;
     /**
      * 
      * @type {boolean}
      * @memberof TaskForm
      */
-    join?: boolean;
+    'join'?: boolean;
     /**
      * 
      * @type {string}
      * @memberof TaskForm
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof TaskForm
      */
-    next?: { [key: string]: string; };
+    'next'?: { [key: string]: string; };
     /**
      * 
      * @type {string}
      * @memberof TaskForm
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof TaskForm
      */
-    payload?: { [key: string]: string; };
+    'payload'?: { [key: string]: string; };
     /**
      * 
      * @type {object}
      * @memberof TaskForm
      */
-    schema?: object;
+    'schema'?: object;
     /**
      * 
      * @type {string}
      * @memberof TaskForm
      */
-    type: TaskFormTypeEnum;
+    'type': TaskFormTypeEnum;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TaskFormTypeEnum {
-    Task = 'task',
-    Input = 'input',
-    Automation = 'automation'
-}
+export const TaskFormTypeEnum = {
+    Task: 'task',
+    Input: 'input',
+    Automation: 'automation'
+} as const;
+
+export type TaskFormTypeEnum = typeof TaskFormTypeEnum[keyof typeof TaskFormTypeEnum];
 
 /**
  * 
@@ -1214,19 +1202,19 @@ export interface TaskOrigin {
      * @type {string}
      * @memberof TaskOrigin
      */
-    playbook_id: string;
+    'playbook_id': string;
     /**
      * 
      * @type {string}
      * @memberof TaskOrigin
      */
-    task_id: string;
+    'task_id': string;
     /**
      * 
      * @type {number}
      * @memberof TaskOrigin
      */
-    ticket_id: number;
+    'ticket_id': number;
 }
 /**
  * 
@@ -1239,96 +1227,94 @@ export interface TaskResponse {
      * @type {boolean}
      * @memberof TaskResponse
      */
-    active: boolean;
+    'active': boolean;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    automation?: string;
+    'automation'?: string;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    closed?: string;
+    'closed'?: string;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof TaskResponse
      */
-    data?: object;
+    'data'?: object;
     /**
      * 
      * @type {boolean}
      * @memberof TaskResponse
      */
-    done: boolean;
+    'done': boolean;
     /**
      * 
      * @type {boolean}
      * @memberof TaskResponse
      */
-    join?: boolean;
+    'join'?: boolean;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof TaskResponse
      */
-    next?: { [key: string]: string; };
+    'next'?: { [key: string]: string; };
     /**
      * 
      * @type {number}
      * @memberof TaskResponse
      */
-    order: number;
+    'order': number;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
      * @memberof TaskResponse
      */
-    payload?: { [key: string]: string; };
+    'payload'?: { [key: string]: string; };
     /**
      * 
      * @type {object}
      * @memberof TaskResponse
      */
-    schema?: object;
+    'schema'?: object;
     /**
      * 
      * @type {string}
      * @memberof TaskResponse
      */
-    type: TaskResponseTypeEnum;
+    'type': TaskResponseTypeEnum;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TaskResponseTypeEnum {
-    Task = 'task',
-    Input = 'input',
-    Automation = 'automation'
-}
+export const TaskResponseTypeEnum = {
+    Task: 'task',
+    Input: 'input',
+    Automation: 'automation'
+} as const;
+
+export type TaskResponseTypeEnum = typeof TaskResponseTypeEnum[keyof typeof TaskResponseTypeEnum];
 
 /**
  * 
@@ -1341,37 +1327,37 @@ export interface TaskWithContext {
      * @type {string}
      * @memberof TaskWithContext
      */
-    playbook_id: string;
+    'playbook_id': string;
     /**
      * 
      * @type {string}
      * @memberof TaskWithContext
      */
-    playbook_name: string;
+    'playbook_name': string;
     /**
      * 
      * @type {TaskResponse}
      * @memberof TaskWithContext
      */
-    task: TaskResponse;
+    'task': TaskResponse;
     /**
      * 
      * @type {string}
      * @memberof TaskWithContext
      */
-    task_id: string;
+    'task_id': string;
     /**
      * 
      * @type {number}
      * @memberof TaskWithContext
      */
-    ticket_id: number;
+    'ticket_id': number;
     /**
      * 
      * @type {string}
      * @memberof TaskWithContext
      */
-    ticket_name: string;
+    'ticket_name': string;
 }
 /**
  * 
@@ -1384,91 +1370,91 @@ export interface Ticket {
      * @type {Array<Artifact>}
      * @memberof Ticket
      */
-    artifacts?: Array<Artifact>;
+    'artifacts'?: Array<Artifact>;
     /**
      * 
      * @type {Array<Comment>}
      * @memberof Ticket
      */
-    comments?: Array<Comment>;
+    'comments'?: Array<Comment>;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof Ticket
      */
-    details?: object;
+    'details'?: object;
     /**
      * 
      * @type {Array<any>}
      * @memberof Ticket
      */
-    files?: Array<any>;
+    'files'?: Array<any>;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    modified: string;
+    'modified': string;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: Playbook; }}
      * @memberof Ticket
      */
-    playbooks?: { [key: string]: Playbook; };
+    'playbooks'?: { [key: string]: Playbook; };
     /**
      * 
      * @type {Array<string>}
      * @memberof Ticket
      */
-    read?: Array<string>;
+    'read'?: Array<string>;
     /**
      * 
      * @type {Array<Reference>}
      * @memberof Ticket
      */
-    references?: Array<Reference>;
+    'references'?: Array<Reference>;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    schema: string;
+    'schema': string;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    status: string;
+    'status': string;
     /**
      * 
      * @type {string}
      * @memberof Ticket
      */
-    type: string;
+    'type': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof Ticket
      */
-    write?: Array<string>;
+    'write'?: Array<string>;
 }
 /**
  * 
@@ -1481,97 +1467,97 @@ export interface TicketForm {
      * @type {Array<Artifact>}
      * @memberof TicketForm
      */
-    artifacts?: Array<Artifact>;
+    'artifacts'?: Array<Artifact>;
     /**
      * 
      * @type {Array<Comment>}
      * @memberof TicketForm
      */
-    comments?: Array<Comment>;
+    'comments'?: Array<Comment>;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    created?: string;
+    'created'?: string;
     /**
      * 
      * @type {object}
      * @memberof TicketForm
      */
-    details?: object;
+    'details'?: object;
     /**
      * 
      * @type {Array<any>}
      * @memberof TicketForm
      */
-    files?: Array<any>;
+    'files'?: Array<any>;
     /**
      * 
      * @type {number}
      * @memberof TicketForm
      */
-    id?: number;
+    'id'?: number;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    modified?: string;
+    'modified'?: string;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {Array<PlaybookTemplateForm>}
      * @memberof TicketForm
      */
-    playbooks?: Array<PlaybookTemplateForm>;
+    'playbooks'?: Array<PlaybookTemplateForm>;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketForm
      */
-    read?: Array<string>;
+    'read'?: Array<string>;
     /**
      * 
      * @type {Array<Reference>}
      * @memberof TicketForm
      */
-    references?: Array<Reference>;
+    'references'?: Array<Reference>;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    schema?: string;
+    'schema'?: string;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    status: string;
+    'status': string;
     /**
      * 
      * @type {string}
      * @memberof TicketForm
      */
-    type: string;
+    'type': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketForm
      */
-    write?: Array<string>;
+    'write'?: Array<string>;
 }
 /**
  * 
@@ -1584,13 +1570,13 @@ export interface TicketList {
      * @type {number}
      * @memberof TicketList
      */
-    count: number;
+    'count': number;
     /**
      * 
      * @type {Array<TicketSimpleResponse>}
      * @memberof TicketList
      */
-    tickets: Array<TicketSimpleResponse>;
+    'tickets': Array<TicketSimpleResponse>;
 }
 /**
  * 
@@ -1603,97 +1589,97 @@ export interface TicketResponse {
      * @type {Array<Artifact>}
      * @memberof TicketResponse
      */
-    artifacts?: Array<Artifact>;
+    'artifacts'?: Array<Artifact>;
     /**
      * 
      * @type {Array<Comment>}
      * @memberof TicketResponse
      */
-    comments?: Array<Comment>;
+    'comments'?: Array<Comment>;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof TicketResponse
      */
-    details?: object;
+    'details'?: object;
     /**
      * 
      * @type {Array<any>}
      * @memberof TicketResponse
      */
-    files?: Array<any>;
+    'files'?: Array<any>;
     /**
      * 
      * @type {number}
      * @memberof TicketResponse
      */
-    id: number;
+    'id': number;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    modified: string;
+    'modified': string;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: PlaybookResponse; }}
      * @memberof TicketResponse
      */
-    playbooks?: { [key: string]: PlaybookResponse; };
+    'playbooks'?: { [key: string]: PlaybookResponse; };
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketResponse
      */
-    read?: Array<string>;
+    'read'?: Array<string>;
     /**
      * 
      * @type {Array<Reference>}
      * @memberof TicketResponse
      */
-    references?: Array<Reference>;
+    'references'?: Array<Reference>;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    schema: string;
+    'schema': string;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    status: string;
+    'status': string;
     /**
      * 
      * @type {string}
      * @memberof TicketResponse
      */
-    type: string;
+    'type': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketResponse
      */
-    write?: Array<string>;
+    'write'?: Array<string>;
 }
 /**
  * 
@@ -1706,97 +1692,97 @@ export interface TicketSimpleResponse {
      * @type {Array<Artifact>}
      * @memberof TicketSimpleResponse
      */
-    artifacts?: Array<Artifact>;
+    'artifacts'?: Array<Artifact>;
     /**
      * 
      * @type {Array<Comment>}
      * @memberof TicketSimpleResponse
      */
-    comments?: Array<Comment>;
+    'comments'?: Array<Comment>;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof TicketSimpleResponse
      */
-    details?: object;
+    'details'?: object;
     /**
      * 
      * @type {Array<any>}
      * @memberof TicketSimpleResponse
      */
-    files?: Array<any>;
+    'files'?: Array<any>;
     /**
      * 
      * @type {number}
      * @memberof TicketSimpleResponse
      */
-    id: number;
+    'id': number;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    modified: string;
+    'modified': string;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: Playbook; }}
      * @memberof TicketSimpleResponse
      */
-    playbooks?: { [key: string]: Playbook; };
+    'playbooks'?: { [key: string]: Playbook; };
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketSimpleResponse
      */
-    read?: Array<string>;
+    'read'?: Array<string>;
     /**
      * 
      * @type {Array<Reference>}
      * @memberof TicketSimpleResponse
      */
-    references?: Array<Reference>;
+    'references'?: Array<Reference>;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    schema: string;
+    'schema': string;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    status: string;
+    'status': string;
     /**
      * 
      * @type {string}
      * @memberof TicketSimpleResponse
      */
-    type: string;
+    'type': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketSimpleResponse
      */
-    write?: Array<string>;
+    'write'?: Array<string>;
 }
 /**
  * 
@@ -1809,13 +1795,13 @@ export interface TicketTemplate {
      * @type {string}
      * @memberof TicketTemplate
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTemplate
      */
-    schema: string;
+    'schema': string;
 }
 /**
  * 
@@ -1828,19 +1814,19 @@ export interface TicketTemplateForm {
      * @type {string}
      * @memberof TicketTemplateForm
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof TicketTemplateForm
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTemplateForm
      */
-    schema: string;
+    'schema': string;
 }
 /**
  * 
@@ -1853,19 +1839,19 @@ export interface TicketTemplateResponse {
      * @type {string}
      * @memberof TicketTemplateResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTemplateResponse
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTemplateResponse
      */
-    schema: string;
+    'schema': string;
 }
 /**
  * 
@@ -1878,31 +1864,31 @@ export interface TicketType {
      * @type {Array<string>}
      * @memberof TicketType
      */
-    default_groups?: Array<string>;
+    'default_groups'?: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketType
      */
-    default_playbooks: Array<string>;
+    'default_playbooks': Array<string>;
     /**
      * 
      * @type {string}
      * @memberof TicketType
      */
-    default_template: string;
+    'default_template': string;
     /**
      * 
      * @type {string}
      * @memberof TicketType
      */
-    icon: string;
+    'icon': string;
     /**
      * 
      * @type {string}
      * @memberof TicketType
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -1915,37 +1901,37 @@ export interface TicketTypeForm {
      * @type {Array<string>}
      * @memberof TicketTypeForm
      */
-    default_groups?: Array<string>;
+    'default_groups'?: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketTypeForm
      */
-    default_playbooks: Array<string>;
+    'default_playbooks': Array<string>;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeForm
      */
-    default_template: string;
+    'default_template': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeForm
      */
-    icon: string;
+    'icon': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeForm
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeForm
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -1958,37 +1944,37 @@ export interface TicketTypeResponse {
      * @type {Array<string>}
      * @memberof TicketTypeResponse
      */
-    default_groups?: Array<string>;
+    'default_groups'?: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketTypeResponse
      */
-    default_playbooks: Array<string>;
+    'default_playbooks': Array<string>;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeResponse
      */
-    default_template: string;
+    'default_template': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeResponse
      */
-    icon: string;
+    'icon': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof TicketTypeResponse
      */
-    name: string;
+    'name': string;
 }
 /**
  * 
@@ -2001,109 +1987,109 @@ export interface TicketWithTickets {
      * @type {Array<Artifact>}
      * @memberof TicketWithTickets
      */
-    artifacts?: Array<Artifact>;
+    'artifacts'?: Array<Artifact>;
     /**
      * 
      * @type {Array<Comment>}
      * @memberof TicketWithTickets
      */
-    comments?: Array<Comment>;
+    'comments'?: Array<Comment>;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    created: string;
+    'created': string;
     /**
      * 
      * @type {object}
      * @memberof TicketWithTickets
      */
-    details?: object;
+    'details'?: object;
     /**
      * 
      * @type {Array<any>}
      * @memberof TicketWithTickets
      */
-    files?: Array<any>;
+    'files'?: Array<any>;
     /**
      * 
      * @type {number}
      * @memberof TicketWithTickets
      */
-    id: number;
+    'id': number;
     /**
      * 
      * @type {Array<LogEntry>}
      * @memberof TicketWithTickets
      */
-    logs?: Array<LogEntry>;
+    'logs'?: Array<LogEntry>;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    modified: string;
+    'modified': string;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    name: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    owner?: string;
+    'owner'?: string;
     /**
      * 
      * @type {{ [key: string]: PlaybookResponse; }}
      * @memberof TicketWithTickets
      */
-    playbooks?: { [key: string]: PlaybookResponse; };
+    'playbooks'?: { [key: string]: PlaybookResponse; };
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketWithTickets
      */
-    read?: Array<string>;
+    'read'?: Array<string>;
     /**
      * 
      * @type {Array<Reference>}
      * @memberof TicketWithTickets
      */
-    references?: Array<Reference>;
+    'references'?: Array<Reference>;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    schema: string;
+    'schema': string;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    status: string;
+    'status': string;
     /**
      * 
      * @type {Array<TicketSimpleResponse>}
      * @memberof TicketWithTickets
      */
-    tickets?: Array<TicketSimpleResponse>;
+    'tickets'?: Array<TicketSimpleResponse>;
     /**
      * 
      * @type {string}
      * @memberof TicketWithTickets
      */
-    type: string;
+    'type': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof TicketWithTickets
      */
-    write?: Array<string>;
+    'write'?: Array<string>;
 }
 /**
  * 
@@ -2116,37 +2102,35 @@ export interface Type {
      * @type {string}
      * @memberof Type
      */
-    color?: TypeColorEnum;
+    'color'?: TypeColorEnum;
     /**
      * 
      * @type {string}
      * @memberof Type
      */
-    icon: string;
+    'icon': string;
     /**
      * 
      * @type {string}
      * @memberof Type
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof Type
      */
-    name: string;
+    'name': string;
 }
 
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TypeColorEnum {
-    Error = 'error',
-    Info = 'info',
-    Success = 'success',
-    Warning = 'warning'
-}
+export const TypeColorEnum = {
+    Error: 'error',
+    Info: 'info',
+    Success: 'success',
+    Warning: 'warning'
+} as const;
+
+export type TypeColorEnum = typeof TypeColorEnum[keyof typeof TypeColorEnum];
 
 /**
  * 
@@ -2159,25 +2143,25 @@ export interface User {
      * @type {boolean}
      * @memberof User
      */
-    apikey: boolean;
+    'apikey': boolean;
     /**
      * 
      * @type {boolean}
      * @memberof User
      */
-    blocked: boolean;
+    'blocked': boolean;
     /**
      * 
      * @type {Array<string>}
      * @memberof User
      */
-    roles: Array<string>;
+    'roles': Array<string>;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    sha256?: string;
+    'sha256'?: string;
 }
 /**
  * 
@@ -2190,25 +2174,25 @@ export interface UserData {
      * @type {string}
      * @memberof UserData
      */
-    email?: string;
+    'email'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserData
      */
-    image?: string;
+    'image'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserData
      */
-    name?: string;
+    'name'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserData
      */
-    timeformat?: string;
+    'timeformat'?: string;
 }
 /**
  * 
@@ -2221,31 +2205,31 @@ export interface UserDataResponse {
      * @type {string}
      * @memberof UserDataResponse
      */
-    email?: string;
+    'email'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserDataResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof UserDataResponse
      */
-    image?: string;
+    'image'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserDataResponse
      */
-    name?: string;
+    'name'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserDataResponse
      */
-    timeformat?: string;
+    'timeformat'?: string;
 }
 /**
  * 
@@ -2258,25 +2242,25 @@ export interface UserForm {
      * @type {boolean}
      * @memberof UserForm
      */
-    apikey: boolean;
+    'apikey': boolean;
     /**
      * 
      * @type {boolean}
      * @memberof UserForm
      */
-    blocked: boolean;
+    'blocked': boolean;
     /**
      * 
      * @type {string}
      * @memberof UserForm
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof UserForm
      */
-    roles: Array<string>;
+    'roles': Array<string>;
 }
 /**
  * 
@@ -2289,25 +2273,25 @@ export interface UserResponse {
      * @type {boolean}
      * @memberof UserResponse
      */
-    apikey: boolean;
+    'apikey': boolean;
     /**
      * 
      * @type {boolean}
      * @memberof UserResponse
      */
-    blocked: boolean;
+    'blocked': boolean;
     /**
      * 
      * @type {string}
      * @memberof UserResponse
      */
-    id: string;
+    'id': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof UserResponse
      */
-    roles: Array<string>;
+    'roles': Array<string>;
 }
 
 /**
@@ -2323,7 +2307,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAutomation: async (automation: AutomationForm, options: any = {}): Promise<RequestArgs> => {
+        createAutomation: async (automation: AutomationForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'automation' is not null or undefined
             assertParamExists('createAutomation', 'automation', automation)
             const localVarPath = `/automations`;
@@ -2342,7 +2326,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(automation, localVarRequestOptions, configuration)
@@ -2359,7 +2343,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteAutomation: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteAutomation: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteAutomation', 'id', id)
             const localVarPath = `/automations/{id}`
@@ -2377,7 +2361,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2393,7 +2377,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAutomation: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getAutomation: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAutomation', 'id', id)
             const localVarPath = `/automations/{id}`
@@ -2411,7 +2395,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2426,7 +2410,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAutomations: async (options: any = {}): Promise<RequestArgs> => {
+        listAutomations: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/automations`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2441,7 +2425,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2458,7 +2442,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAutomation: async (id: string, automation: AutomationForm, options: any = {}): Promise<RequestArgs> => {
+        updateAutomation: async (id: string, automation: AutomationForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateAutomation', 'id', id)
             // verify required parameter 'automation' is not null or undefined
@@ -2480,7 +2464,7 @@ export const AutomationsApiAxiosParamCreator = function (configuration?: Configu
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(automation, localVarRequestOptions, configuration)
@@ -2507,7 +2491,7 @@ export const AutomationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAutomation(automation: AutomationForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
+        async createAutomation(automation: AutomationForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAutomation(automation, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2518,7 +2502,7 @@ export const AutomationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteAutomation(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteAutomation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAutomation(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2529,7 +2513,7 @@ export const AutomationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAutomation(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
+        async getAutomation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAutomation(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2539,7 +2523,7 @@ export const AutomationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAutomations(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AutomationResponse>>> {
+        async listAutomations(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AutomationResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAutomations(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2551,7 +2535,7 @@ export const AutomationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateAutomation(id: string, automation: AutomationForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
+        async updateAutomation(id: string, automation: AutomationForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AutomationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateAutomation(id, automation, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2633,7 +2617,7 @@ export class AutomationsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AutomationsApi
      */
-    public createAutomation(automation: AutomationForm, options?: any) {
+    public createAutomation(automation: AutomationForm, options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).createAutomation(automation, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2645,7 +2629,7 @@ export class AutomationsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AutomationsApi
      */
-    public deleteAutomation(id: string, options?: any) {
+    public deleteAutomation(id: string, options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).deleteAutomation(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2657,7 +2641,7 @@ export class AutomationsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AutomationsApi
      */
-    public getAutomation(id: string, options?: any) {
+    public getAutomation(id: string, options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).getAutomation(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2668,7 +2652,7 @@ export class AutomationsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AutomationsApi
      */
-    public listAutomations(options?: any) {
+    public listAutomations(options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).listAutomations(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2681,7 +2665,7 @@ export class AutomationsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AutomationsApi
      */
-    public updateAutomation(id: string, automation: AutomationForm, options?: any) {
+    public updateAutomation(id: string, automation: AutomationForm, options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).updateAutomation(id, automation, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -2702,7 +2686,7 @@ export const GraphApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        graph: async (col: string, id: string, depth: number, options: any = {}): Promise<RequestArgs> => {
+        graph: async (col: string, id: string, depth: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'col' is not null or undefined
             assertParamExists('graph', 'col', col)
             // verify required parameter 'id' is not null or undefined
@@ -2729,7 +2713,7 @@ export const GraphApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2757,7 +2741,7 @@ export const GraphApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async graph(col: string, id: string, depth: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Graph>> {
+        async graph(col: string, id: string, depth: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Graph>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.graph(col, id, depth, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2803,7 +2787,7 @@ export class GraphApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GraphApi
      */
-    public graph(col: string, id: string, depth: number, options?: any) {
+    public graph(col: string, id: string, depth: number, options?: AxiosRequestConfig) {
         return GraphApiFp(this.configuration).graph(col, id, depth, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -2822,7 +2806,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroup: async (group: GroupForm, options: any = {}): Promise<RequestArgs> => {
+        createGroup: async (group: GroupForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'group' is not null or undefined
             assertParamExists('createGroup', 'group', group)
             const localVarPath = `/groups`;
@@ -2841,7 +2825,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(group, localVarRequestOptions, configuration)
@@ -2858,7 +2842,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroup: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteGroup: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteGroup', 'id', id)
             const localVarPath = `/groups/{id}`
@@ -2876,7 +2860,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2892,7 +2876,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroup: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getGroup: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getGroup', 'id', id)
             const localVarPath = `/groups/{id}`
@@ -2910,7 +2894,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2925,7 +2909,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listGroups: async (options: any = {}): Promise<RequestArgs> => {
+        listGroups: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/groups`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2940,7 +2924,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2957,7 +2941,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateGroup: async (id: string, group: Group, options: any = {}): Promise<RequestArgs> => {
+        updateGroup: async (id: string, group: Group, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateGroup', 'id', id)
             // verify required parameter 'group' is not null or undefined
@@ -2979,7 +2963,7 @@ export const GroupsApiAxiosParamCreator = function (configuration?: Configuratio
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(group, localVarRequestOptions, configuration)
@@ -3006,7 +2990,7 @@ export const GroupsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroup(group: GroupForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
+        async createGroup(group: GroupForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroup(group, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3017,7 +3001,7 @@ export const GroupsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteGroup(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteGroup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroup(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3028,7 +3012,7 @@ export const GroupsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getGroup(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
+        async getGroup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getGroup(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3038,7 +3022,7 @@ export const GroupsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listGroups(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Group>>> {
+        async listGroups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Group>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listGroups(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3050,7 +3034,7 @@ export const GroupsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateGroup(id: string, group: Group, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Group>> {
+        async updateGroup(id: string, group: Group, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Group>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateGroup(id, group, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3132,7 +3116,7 @@ export class GroupsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GroupsApi
      */
-    public createGroup(group: GroupForm, options?: any) {
+    public createGroup(group: GroupForm, options?: AxiosRequestConfig) {
         return GroupsApiFp(this.configuration).createGroup(group, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3144,7 +3128,7 @@ export class GroupsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GroupsApi
      */
-    public deleteGroup(id: string, options?: any) {
+    public deleteGroup(id: string, options?: AxiosRequestConfig) {
         return GroupsApiFp(this.configuration).deleteGroup(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3156,7 +3140,7 @@ export class GroupsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GroupsApi
      */
-    public getGroup(id: string, options?: any) {
+    public getGroup(id: string, options?: AxiosRequestConfig) {
         return GroupsApiFp(this.configuration).getGroup(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3167,7 +3151,7 @@ export class GroupsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GroupsApi
      */
-    public listGroups(options?: any) {
+    public listGroups(options?: AxiosRequestConfig) {
         return GroupsApiFp(this.configuration).listGroups(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3180,7 +3164,7 @@ export class GroupsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GroupsApi
      */
-    public updateGroup(id: string, group: Group, options?: any) {
+    public updateGroup(id: string, group: Group, options?: AxiosRequestConfig) {
         return GroupsApiFp(this.configuration).updateGroup(id, group, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -3199,7 +3183,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getJob: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getJob: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getJob', 'id', id)
             const localVarPath = `/jobs/{id}`
@@ -3217,7 +3201,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3232,7 +3216,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listJobs: async (options: any = {}): Promise<RequestArgs> => {
+        listJobs: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/jobs`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3247,7 +3231,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3263,7 +3247,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runJob: async (job: JobForm, options: any = {}): Promise<RequestArgs> => {
+        runJob: async (job: JobForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'job' is not null or undefined
             assertParamExists('runJob', 'job', job)
             const localVarPath = `/jobs`;
@@ -3282,7 +3266,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(job, localVarRequestOptions, configuration)
@@ -3300,7 +3284,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateJob: async (id: string, job: Job, options: any = {}): Promise<RequestArgs> => {
+        updateJob: async (id: string, job: Job, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateJob', 'id', id)
             // verify required parameter 'job' is not null or undefined
@@ -3322,7 +3306,7 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(job, localVarRequestOptions, configuration)
@@ -3349,7 +3333,7 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getJob(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
+        async getJob(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getJob(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3359,7 +3343,7 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listJobs(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<JobResponse>>> {
+        async listJobs(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<JobResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listJobs(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3370,7 +3354,7 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async runJob(job: JobForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async runJob(job: JobForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.runJob(job, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3382,7 +3366,7 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateJob(id: string, job: Job, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
+        async updateJob(id: string, job: Job, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateJob(id, job, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3454,7 +3438,7 @@ export class JobsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof JobsApi
      */
-    public getJob(id: string, options?: any) {
+    public getJob(id: string, options?: AxiosRequestConfig) {
         return JobsApiFp(this.configuration).getJob(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3465,7 +3449,7 @@ export class JobsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof JobsApi
      */
-    public listJobs(options?: any) {
+    public listJobs(options?: AxiosRequestConfig) {
         return JobsApiFp(this.configuration).listJobs(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3477,7 +3461,7 @@ export class JobsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof JobsApi
      */
-    public runJob(job: JobForm, options?: any) {
+    public runJob(job: JobForm, options?: AxiosRequestConfig) {
         return JobsApiFp(this.configuration).runJob(job, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3490,7 +3474,7 @@ export class JobsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof JobsApi
      */
-    public updateJob(id: string, job: Job, options?: any) {
+    public updateJob(id: string, job: Job, options?: AxiosRequestConfig) {
         return JobsApiFp(this.configuration).updateJob(id, job, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -3509,7 +3493,7 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLogs: async (reference: string, options: any = {}): Promise<RequestArgs> => {
+        getLogs: async (reference: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'reference' is not null or undefined
             assertParamExists('getLogs', 'reference', reference)
             const localVarPath = `/logs/{reference}`
@@ -3527,7 +3511,7 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3553,7 +3537,7 @@ export const LogsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLogs(reference: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<LogEntry>>> {
+        async getLogs(reference: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<LogEntry>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLogs(reference, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3595,7 +3579,7 @@ export class LogsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof LogsApi
      */
-    public getLogs(reference: string, options?: any) {
+    public getLogs(reference: string, options?: AxiosRequestConfig) {
         return LogsApiFp(this.configuration).getLogs(reference, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -3614,7 +3598,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlaybook: async (playbook: PlaybookTemplateForm, options: any = {}): Promise<RequestArgs> => {
+        createPlaybook: async (playbook: PlaybookTemplateForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'playbook' is not null or undefined
             assertParamExists('createPlaybook', 'playbook', playbook)
             const localVarPath = `/playbooks`;
@@ -3633,7 +3617,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(playbook, localVarRequestOptions, configuration)
@@ -3650,7 +3634,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePlaybook: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deletePlaybook: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deletePlaybook', 'id', id)
             const localVarPath = `/playbooks/{id}`
@@ -3668,7 +3652,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3684,7 +3668,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlaybook: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getPlaybook: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlaybook', 'id', id)
             const localVarPath = `/playbooks/{id}`
@@ -3702,7 +3686,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3717,7 +3701,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPlaybooks: async (options: any = {}): Promise<RequestArgs> => {
+        listPlaybooks: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/playbooks`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3732,7 +3716,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -3749,7 +3733,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePlaybook: async (id: string, playbook: PlaybookTemplateForm, options: any = {}): Promise<RequestArgs> => {
+        updatePlaybook: async (id: string, playbook: PlaybookTemplateForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePlaybook', 'id', id)
             // verify required parameter 'playbook' is not null or undefined
@@ -3771,7 +3755,7 @@ export const PlaybooksApiAxiosParamCreator = function (configuration?: Configura
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(playbook, localVarRequestOptions, configuration)
@@ -3798,7 +3782,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlaybook(playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
+        async createPlaybook(playbook: PlaybookTemplateForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaybook(playbook, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3809,7 +3793,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePlaybook(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deletePlaybook(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaybook(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3820,7 +3804,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlaybook(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
+        async getPlaybook(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaybook(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3830,7 +3814,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPlaybooks(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PlaybookTemplateResponse>>> {
+        async listPlaybooks(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PlaybookTemplateResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaybooks(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3842,7 +3826,7 @@ export const PlaybooksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePlaybook(id: string, playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
+        async updatePlaybook(id: string, playbook: PlaybookTemplateForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlaybookTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaybook(id, playbook, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3924,7 +3908,7 @@ export class PlaybooksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlaybooksApi
      */
-    public createPlaybook(playbook: PlaybookTemplateForm, options?: any) {
+    public createPlaybook(playbook: PlaybookTemplateForm, options?: AxiosRequestConfig) {
         return PlaybooksApiFp(this.configuration).createPlaybook(playbook, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3936,7 +3920,7 @@ export class PlaybooksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlaybooksApi
      */
-    public deletePlaybook(id: string, options?: any) {
+    public deletePlaybook(id: string, options?: AxiosRequestConfig) {
         return PlaybooksApiFp(this.configuration).deletePlaybook(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3948,7 +3932,7 @@ export class PlaybooksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlaybooksApi
      */
-    public getPlaybook(id: string, options?: any) {
+    public getPlaybook(id: string, options?: AxiosRequestConfig) {
         return PlaybooksApiFp(this.configuration).getPlaybook(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3959,7 +3943,7 @@ export class PlaybooksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlaybooksApi
      */
-    public listPlaybooks(options?: any) {
+    public listPlaybooks(options?: AxiosRequestConfig) {
         return PlaybooksApiFp(this.configuration).listPlaybooks(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3972,7 +3956,7 @@ export class PlaybooksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlaybooksApi
      */
-    public updatePlaybook(id: string, playbook: PlaybookTemplateForm, options?: any) {
+    public updatePlaybook(id: string, playbook: PlaybookTemplateForm, options?: AxiosRequestConfig) {
         return PlaybooksApiFp(this.configuration).updatePlaybook(id, playbook, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -3991,7 +3975,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createRule: async (rule: RuleForm, options: any = {}): Promise<RequestArgs> => {
+        createRule: async (rule: RuleForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'rule' is not null or undefined
             assertParamExists('createRule', 'rule', rule)
             const localVarPath = `/rules`;
@@ -4010,7 +3994,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(rule, localVarRequestOptions, configuration)
@@ -4027,7 +4011,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteRule: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteRule: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteRule', 'id', id)
             const localVarPath = `/rules/{id}`
@@ -4045,7 +4029,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4061,7 +4045,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRule: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getRule: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getRule', 'id', id)
             const localVarPath = `/rules/{id}`
@@ -4079,7 +4063,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4094,7 +4078,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listRules: async (options: any = {}): Promise<RequestArgs> => {
+        listRules: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/rules`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4109,7 +4093,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4126,7 +4110,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateRule: async (id: string, rule: RuleForm, options: any = {}): Promise<RequestArgs> => {
+        updateRule: async (id: string, rule: RuleForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateRule', 'id', id)
             // verify required parameter 'rule' is not null or undefined
@@ -4148,7 +4132,7 @@ export const RulesApiAxiosParamCreator = function (configuration?: Configuration
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(rule, localVarRequestOptions, configuration)
@@ -4175,7 +4159,7 @@ export const RulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createRule(rule: RuleForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RuleResponse>>> {
+        async createRule(rule: RuleForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RuleResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createRule(rule, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4186,7 +4170,7 @@ export const RulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteRule(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteRule(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRule(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4197,7 +4181,7 @@ export const RulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRule(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RuleResponse>> {
+        async getRule(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RuleResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRule(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4207,7 +4191,7 @@ export const RulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listRules(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RuleResponse>>> {
+        async listRules(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RuleResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listRules(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4219,7 +4203,7 @@ export const RulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateRule(id: string, rule: RuleForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RuleResponse>> {
+        async updateRule(id: string, rule: RuleForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RuleResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateRule(id, rule, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4301,7 +4285,7 @@ export class RulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof RulesApi
      */
-    public createRule(rule: RuleForm, options?: any) {
+    public createRule(rule: RuleForm, options?: AxiosRequestConfig) {
         return RulesApiFp(this.configuration).createRule(rule, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4313,7 +4297,7 @@ export class RulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof RulesApi
      */
-    public deleteRule(id: string, options?: any) {
+    public deleteRule(id: string, options?: AxiosRequestConfig) {
         return RulesApiFp(this.configuration).deleteRule(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4325,7 +4309,7 @@ export class RulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof RulesApi
      */
-    public getRule(id: string, options?: any) {
+    public getRule(id: string, options?: AxiosRequestConfig) {
         return RulesApiFp(this.configuration).getRule(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4336,7 +4320,7 @@ export class RulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof RulesApi
      */
-    public listRules(options?: any) {
+    public listRules(options?: AxiosRequestConfig) {
         return RulesApiFp(this.configuration).listRules(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4349,7 +4333,7 @@ export class RulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof RulesApi
      */
-    public updateRule(id: string, rule: RuleForm, options?: any) {
+    public updateRule(id: string, rule: RuleForm, options?: AxiosRequestConfig) {
         return RulesApiFp(this.configuration).updateRule(id, rule, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -4367,7 +4351,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSettings: async (options: any = {}): Promise<RequestArgs> => {
+        getSettings: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/settings`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4382,7 +4366,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4407,7 +4391,7 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSettings(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Settings>> {
+        async getSettings(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Settings>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSettings(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4447,7 +4431,7 @@ export class SettingsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof SettingsApi
      */
-    public getSettings(options?: any) {
+    public getSettings(options?: AxiosRequestConfig) {
         return SettingsApiFp(this.configuration).getSettings(options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -4465,7 +4449,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatistics: async (options: any = {}): Promise<RequestArgs> => {
+        getStatistics: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/statistics`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4480,7 +4464,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4505,7 +4489,7 @@ export const StatisticsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatistics(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Statistics>> {
+        async getStatistics(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Statistics>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStatistics(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4545,7 +4529,7 @@ export class StatisticsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof StatisticsApi
      */
-    public getStatistics(options?: any) {
+    public getStatistics(options?: AxiosRequestConfig) {
         return StatisticsApiFp(this.configuration).getStatistics(options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -4563,7 +4547,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTasks: async (options: any = {}): Promise<RequestArgs> => {
+        listTasks: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/tasks`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4578,7 +4562,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4603,7 +4587,7 @@ export const TasksApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTasks(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskWithContext>>> {
+        async listTasks(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskWithContext>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTasks(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4643,7 +4627,7 @@ export class TasksApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TasksApi
      */
-    public listTasks(options?: any) {
+    public listTasks(options?: AxiosRequestConfig) {
         return TasksApiFp(this.configuration).listTasks(options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -4662,7 +4646,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTemplate: async (template: TicketTemplateForm, options: any = {}): Promise<RequestArgs> => {
+        createTemplate: async (template: TicketTemplateForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'template' is not null or undefined
             assertParamExists('createTemplate', 'template', template)
             const localVarPath = `/templates`;
@@ -4681,7 +4665,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(template, localVarRequestOptions, configuration)
@@ -4698,7 +4682,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTemplate: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteTemplate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteTemplate', 'id', id)
             const localVarPath = `/templates/{id}`
@@ -4716,7 +4700,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4732,7 +4716,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTemplate: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getTemplate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getTemplate', 'id', id)
             const localVarPath = `/templates/{id}`
@@ -4750,7 +4734,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4765,7 +4749,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTemplates: async (options: any = {}): Promise<RequestArgs> => {
+        listTemplates: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/templates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4780,7 +4764,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -4797,7 +4781,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate: async (id: string, template: TicketTemplateForm, options: any = {}): Promise<RequestArgs> => {
+        updateTemplate: async (id: string, template: TicketTemplateForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateTemplate', 'id', id)
             // verify required parameter 'template' is not null or undefined
@@ -4819,7 +4803,7 @@ export const TemplatesApiAxiosParamCreator = function (configuration?: Configura
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(template, localVarRequestOptions, configuration)
@@ -4846,7 +4830,7 @@ export const TemplatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTemplate(template: TicketTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
+        async createTemplate(template: TicketTemplateForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createTemplate(template, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4857,7 +4841,7 @@ export const TemplatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteTemplate(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteTemplate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTemplate(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4868,7 +4852,7 @@ export const TemplatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTemplate(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
+        async getTemplate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTemplate(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4878,7 +4862,7 @@ export const TemplatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTemplates(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TicketTemplateResponse>>> {
+        async listTemplates(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TicketTemplateResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTemplates(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4890,7 +4874,7 @@ export const TemplatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTemplate(id: string, template: TicketTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
+        async updateTemplate(id: string, template: TicketTemplateForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTemplateResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateTemplate(id, template, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4972,7 +4956,7 @@ export class TemplatesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplatesApi
      */
-    public createTemplate(template: TicketTemplateForm, options?: any) {
+    public createTemplate(template: TicketTemplateForm, options?: AxiosRequestConfig) {
         return TemplatesApiFp(this.configuration).createTemplate(template, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4984,7 +4968,7 @@ export class TemplatesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplatesApi
      */
-    public deleteTemplate(id: string, options?: any) {
+    public deleteTemplate(id: string, options?: AxiosRequestConfig) {
         return TemplatesApiFp(this.configuration).deleteTemplate(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4996,7 +4980,7 @@ export class TemplatesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplatesApi
      */
-    public getTemplate(id: string, options?: any) {
+    public getTemplate(id: string, options?: AxiosRequestConfig) {
         return TemplatesApiFp(this.configuration).getTemplate(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -5007,7 +4991,7 @@ export class TemplatesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplatesApi
      */
-    public listTemplates(options?: any) {
+    public listTemplates(options?: AxiosRequestConfig) {
         return TemplatesApiFp(this.configuration).listTemplates(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -5020,7 +5004,7 @@ export class TemplatesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplatesApi
      */
-    public updateTemplate(id: string, template: TicketTemplateForm, options?: any) {
+    public updateTemplate(id: string, template: TicketTemplateForm, options?: AxiosRequestConfig) {
         return TemplatesApiFp(this.configuration).updateTemplate(id, template, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -5040,7 +5024,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addArtifact: async (id: number, artifact: Artifact, options: any = {}): Promise<RequestArgs> => {
+        addArtifact: async (id: number, artifact: Artifact, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('addArtifact', 'id', id)
             // verify required parameter 'artifact' is not null or undefined
@@ -5062,7 +5046,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(artifact, localVarRequestOptions, configuration)
@@ -5080,7 +5064,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addComment: async (id: number, comment: CommentForm, options: any = {}): Promise<RequestArgs> => {
+        addComment: async (id: number, comment: CommentForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('addComment', 'id', id)
             // verify required parameter 'comment' is not null or undefined
@@ -5102,7 +5086,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(comment, localVarRequestOptions, configuration)
@@ -5120,7 +5104,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTicketPlaybook: async (id: number, playbook: PlaybookTemplateForm, options: any = {}): Promise<RequestArgs> => {
+        addTicketPlaybook: async (id: number, playbook: PlaybookTemplateForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('addTicketPlaybook', 'id', id)
             // verify required parameter 'playbook' is not null or undefined
@@ -5142,7 +5126,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(playbook, localVarRequestOptions, configuration)
@@ -5162,7 +5146,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        completeTask: async (id: number, playbookID: string, taskID: string, data: object, options: any = {}): Promise<RequestArgs> => {
+        completeTask: async (id: number, playbookID: string, taskID: string, data: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('completeTask', 'id', id)
             // verify required parameter 'playbookID' is not null or undefined
@@ -5190,7 +5174,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(data, localVarRequestOptions, configuration)
@@ -5207,7 +5191,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTicket: async (ticket: TicketForm, options: any = {}): Promise<RequestArgs> => {
+        createTicket: async (ticket: TicketForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ticket' is not null or undefined
             assertParamExists('createTicket', 'ticket', ticket)
             const localVarPath = `/tickets`;
@@ -5226,7 +5210,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(ticket, localVarRequestOptions, configuration)
@@ -5243,7 +5227,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTicketBatch: async (ticket: Array<TicketForm>, options: any = {}): Promise<RequestArgs> => {
+        createTicketBatch: async (ticket: Array<TicketForm>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ticket' is not null or undefined
             assertParamExists('createTicketBatch', 'ticket', ticket)
             const localVarPath = `/tickets/batch`;
@@ -5262,7 +5246,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(ticket, localVarRequestOptions, configuration)
@@ -5279,7 +5263,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTicket: async (id: number, options: any = {}): Promise<RequestArgs> => {
+        deleteTicket: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteTicket', 'id', id)
             const localVarPath = `/tickets/{id}`
@@ -5297,7 +5281,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5315,7 +5299,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        enrichArtifact: async (id: number, name: string, data: EnrichmentForm, options: any = {}): Promise<RequestArgs> => {
+        enrichArtifact: async (id: number, name: string, data: EnrichmentForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('enrichArtifact', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -5340,7 +5324,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(data, localVarRequestOptions, configuration)
@@ -5358,7 +5342,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getArtifact: async (id: number, name: string, options: any = {}): Promise<RequestArgs> => {
+        getArtifact: async (id: number, name: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getArtifact', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -5379,7 +5363,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5395,7 +5379,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTicket: async (id: number, options: any = {}): Promise<RequestArgs> => {
+        getTicket: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getTicket', 'id', id)
             const localVarPath = `/tickets/{id}`
@@ -5413,7 +5397,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5430,7 +5414,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkTicket: async (id: number, linkedID: number, options: any = {}): Promise<RequestArgs> => {
+        linkTicket: async (id: number, linkedID: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('linkTicket', 'id', id)
             // verify required parameter 'linkedID' is not null or undefined
@@ -5452,7 +5436,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(linkedID, localVarRequestOptions, configuration)
@@ -5474,7 +5458,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTickets: async (type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options: any = {}): Promise<RequestArgs> => {
+        listTickets: async (type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/tickets`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5513,7 +5497,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5530,7 +5514,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeArtifact: async (id: number, name: string, options: any = {}): Promise<RequestArgs> => {
+        removeArtifact: async (id: number, name: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('removeArtifact', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -5551,7 +5535,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5568,7 +5552,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeComment: async (id: number, commentID: number, options: any = {}): Promise<RequestArgs> => {
+        removeComment: async (id: number, commentID: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('removeComment', 'id', id)
             // verify required parameter 'commentID' is not null or undefined
@@ -5589,7 +5573,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5606,7 +5590,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeTicketPlaybook: async (id: number, playbookID: string, options: any = {}): Promise<RequestArgs> => {
+        removeTicketPlaybook: async (id: number, playbookID: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('removeTicketPlaybook', 'id', id)
             // verify required parameter 'playbookID' is not null or undefined
@@ -5627,7 +5611,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5645,7 +5629,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runArtifact: async (id: number, name: string, automation: string, options: any = {}): Promise<RequestArgs> => {
+        runArtifact: async (id: number, name: string, automation: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('runArtifact', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -5669,7 +5653,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5687,7 +5671,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runTask: async (id: number, playbookID: string, taskID: string, options: any = {}): Promise<RequestArgs> => {
+        runTask: async (id: number, playbookID: string, taskID: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('runTask', 'id', id)
             // verify required parameter 'playbookID' is not null or undefined
@@ -5711,7 +5695,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -5729,7 +5713,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setArtifact: async (id: number, name: string, artifact: Artifact, options: any = {}): Promise<RequestArgs> => {
+        setArtifact: async (id: number, name: string, artifact: Artifact, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('setArtifact', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -5754,7 +5738,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(artifact, localVarRequestOptions, configuration)
@@ -5772,7 +5756,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setReferences: async (id: number, references: Array<Reference>, options: any = {}): Promise<RequestArgs> => {
+        setReferences: async (id: number, references: Array<Reference>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('setReferences', 'id', id)
             // verify required parameter 'references' is not null or undefined
@@ -5794,7 +5778,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(references, localVarRequestOptions, configuration)
@@ -5812,7 +5796,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setSchema: async (id: number, schema: string, options: any = {}): Promise<RequestArgs> => {
+        setSchema: async (id: number, schema: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('setSchema', 'id', id)
             // verify required parameter 'schema' is not null or undefined
@@ -5834,7 +5818,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(schema, localVarRequestOptions, configuration)
@@ -5854,7 +5838,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTask: async (id: number, playbookID: string, taskID: string, task: Task, options: any = {}): Promise<RequestArgs> => {
+        setTask: async (id: number, playbookID: string, taskID: string, task: Task, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('setTask', 'id', id)
             // verify required parameter 'playbookID' is not null or undefined
@@ -5882,7 +5866,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(task, localVarRequestOptions, configuration)
@@ -5900,7 +5884,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkTicket: async (id: number, linkedID: number, options: any = {}): Promise<RequestArgs> => {
+        unlinkTicket: async (id: number, linkedID: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('unlinkTicket', 'id', id)
             // verify required parameter 'linkedID' is not null or undefined
@@ -5922,7 +5906,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(linkedID, localVarRequestOptions, configuration)
@@ -5940,7 +5924,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTicket: async (id: number, ticket: Ticket, options: any = {}): Promise<RequestArgs> => {
+        updateTicket: async (id: number, ticket: Ticket, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateTicket', 'id', id)
             // verify required parameter 'ticket' is not null or undefined
@@ -5962,7 +5946,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(ticket, localVarRequestOptions, configuration)
@@ -5990,7 +5974,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addArtifact(id: number, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async addArtifact(id: number, artifact: Artifact, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addArtifact(id, artifact, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6002,7 +5986,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addComment(id: number, comment: CommentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async addComment(id: number, comment: CommentForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addComment(id, comment, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6014,7 +5998,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addTicketPlaybook(id, playbook, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6028,7 +6012,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async completeTask(id: number, playbookID: string, taskID: string, data: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.completeTask(id, playbookID, taskID, data, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6039,7 +6023,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTicket(ticket: TicketForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+        async createTicket(ticket: TicketForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createTicket(ticket, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6050,7 +6034,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTicketBatch(ticket: Array<TicketForm>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async createTicketBatch(ticket: Array<TicketForm>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createTicketBatch(ticket, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6061,7 +6045,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteTicket(id: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteTicket(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTicket(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6074,7 +6058,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.enrichArtifact(id, name, data, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6086,7 +6070,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getArtifact(id: number, name: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Artifact>> {
+        async getArtifact(id: number, name: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Artifact>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getArtifact(id, name, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6097,7 +6081,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTicket(id: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async getTicket(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTicket(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6109,7 +6093,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async linkTicket(id: number, linkedID: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.linkTicket(id, linkedID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6125,7 +6109,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTickets(type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketList>> {
+        async listTickets(type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketList>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTickets(type, offset, count, sort, desc, query, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6137,7 +6121,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeArtifact(id: number, name: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async removeArtifact(id: number, name: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeArtifact(id, name, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6149,7 +6133,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeComment(id: number, commentID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async removeComment(id: number, commentID: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeComment(id, commentID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6161,7 +6145,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeTicketPlaybook(id: number, playbookID: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async removeTicketPlaybook(id: number, playbookID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.removeTicketPlaybook(id, playbookID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6174,7 +6158,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async runArtifact(id: number, name: string, automation: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async runArtifact(id: number, name: string, automation: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.runArtifact(id, name, automation, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6187,7 +6171,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async runTask(id: number, playbookID: string, taskID: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async runTask(id: number, playbookID: string, taskID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.runTask(id, playbookID, taskID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6200,7 +6184,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setArtifact(id: number, name: string, artifact: Artifact, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async setArtifact(id: number, name: string, artifact: Artifact, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setArtifact(id, name, artifact, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6212,7 +6196,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setReferences(id: number, references: Array<Reference>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async setReferences(id: number, references: Array<Reference>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setReferences(id, references, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6224,7 +6208,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setSchema(id: number, schema: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async setSchema(id: number, schema: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setSchema(id, schema, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6238,7 +6222,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async setTask(id: number, playbookID: string, taskID: string, task: Task, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setTask(id, playbookID, taskID, task, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6250,7 +6234,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async unlinkTicket(id: number, linkedID: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async unlinkTicket(id: number, linkedID: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkTicket(id, linkedID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6262,7 +6246,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTicket(id: number, ticket: Ticket, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+        async updateTicket(id: number, ticket: Ticket, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateTicket(id, ticket, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6556,7 +6540,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public addArtifact(id: number, artifact: Artifact, options?: any) {
+    public addArtifact(id: number, artifact: Artifact, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).addArtifact(id, artifact, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6569,7 +6553,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public addComment(id: number, comment: CommentForm, options?: any) {
+    public addComment(id: number, comment: CommentForm, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).addComment(id, comment, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6582,7 +6566,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: any) {
+    public addTicketPlaybook(id: number, playbook: PlaybookTemplateForm, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).addTicketPlaybook(id, playbook, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6597,7 +6581,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public completeTask(id: number, playbookID: string, taskID: string, data: object, options?: any) {
+    public completeTask(id: number, playbookID: string, taskID: string, data: object, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).completeTask(id, playbookID, taskID, data, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6609,7 +6593,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public createTicket(ticket: TicketForm, options?: any) {
+    public createTicket(ticket: TicketForm, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).createTicket(ticket, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6621,7 +6605,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public createTicketBatch(ticket: Array<TicketForm>, options?: any) {
+    public createTicketBatch(ticket: Array<TicketForm>, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).createTicketBatch(ticket, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6633,7 +6617,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public deleteTicket(id: number, options?: any) {
+    public deleteTicket(id: number, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).deleteTicket(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6647,7 +6631,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: any) {
+    public enrichArtifact(id: number, name: string, data: EnrichmentForm, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).enrichArtifact(id, name, data, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6660,7 +6644,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public getArtifact(id: number, name: string, options?: any) {
+    public getArtifact(id: number, name: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).getArtifact(id, name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6672,7 +6656,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public getTicket(id: number, options?: any) {
+    public getTicket(id: number, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).getTicket(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6685,7 +6669,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public linkTicket(id: number, linkedID: number, options?: any) {
+    public linkTicket(id: number, linkedID: number, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).linkTicket(id, linkedID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6702,7 +6686,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public listTickets(type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options?: any) {
+    public listTickets(type?: string, offset?: number, count?: number, sort?: Array<string>, desc?: Array<boolean>, query?: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).listTickets(type, offset, count, sort, desc, query, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6715,7 +6699,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public removeArtifact(id: number, name: string, options?: any) {
+    public removeArtifact(id: number, name: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).removeArtifact(id, name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6728,7 +6712,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public removeComment(id: number, commentID: number, options?: any) {
+    public removeComment(id: number, commentID: number, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).removeComment(id, commentID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6741,7 +6725,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public removeTicketPlaybook(id: number, playbookID: string, options?: any) {
+    public removeTicketPlaybook(id: number, playbookID: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).removeTicketPlaybook(id, playbookID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6755,7 +6739,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public runArtifact(id: number, name: string, automation: string, options?: any) {
+    public runArtifact(id: number, name: string, automation: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).runArtifact(id, name, automation, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6769,7 +6753,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public runTask(id: number, playbookID: string, taskID: string, options?: any) {
+    public runTask(id: number, playbookID: string, taskID: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).runTask(id, playbookID, taskID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6783,7 +6767,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setArtifact(id: number, name: string, artifact: Artifact, options?: any) {
+    public setArtifact(id: number, name: string, artifact: Artifact, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).setArtifact(id, name, artifact, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6796,7 +6780,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setReferences(id: number, references: Array<Reference>, options?: any) {
+    public setReferences(id: number, references: Array<Reference>, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).setReferences(id, references, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6809,7 +6793,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setSchema(id: number, schema: string, options?: any) {
+    public setSchema(id: number, schema: string, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).setSchema(id, schema, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6824,7 +6808,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any) {
+    public setTask(id: number, playbookID: string, taskID: string, task: Task, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).setTask(id, playbookID, taskID, task, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6837,7 +6821,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public unlinkTicket(id: number, linkedID: number, options?: any) {
+    public unlinkTicket(id: number, linkedID: number, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).unlinkTicket(id, linkedID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -6850,7 +6834,7 @@ export class TicketsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public updateTicket(id: number, ticket: Ticket, options?: any) {
+    public updateTicket(id: number, ticket: Ticket, options?: AxiosRequestConfig) {
         return TicketsApiFp(this.configuration).updateTicket(id, ticket, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -6869,7 +6853,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTicketType: async (tickettype: TicketTypeForm, options: any = {}): Promise<RequestArgs> => {
+        createTicketType: async (tickettype: TicketTypeForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'tickettype' is not null or undefined
             assertParamExists('createTicketType', 'tickettype', tickettype)
             const localVarPath = `/tickettypes`;
@@ -6888,7 +6872,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(tickettype, localVarRequestOptions, configuration)
@@ -6905,7 +6889,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTicketType: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteTicketType: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteTicketType', 'id', id)
             const localVarPath = `/tickettypes/{id}`
@@ -6923,7 +6907,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -6939,7 +6923,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTicketType: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getTicketType: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getTicketType', 'id', id)
             const localVarPath = `/tickettypes/{id}`
@@ -6957,7 +6941,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -6972,7 +6956,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTicketTypes: async (options: any = {}): Promise<RequestArgs> => {
+        listTicketTypes: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/tickettypes`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6987,7 +6971,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7004,7 +6988,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTicketType: async (id: string, tickettype: TicketTypeForm, options: any = {}): Promise<RequestArgs> => {
+        updateTicketType: async (id: string, tickettype: TicketTypeForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateTicketType', 'id', id)
             // verify required parameter 'tickettype' is not null or undefined
@@ -7026,7 +7010,7 @@ export const TickettypesApiAxiosParamCreator = function (configuration?: Configu
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(tickettype, localVarRequestOptions, configuration)
@@ -7053,7 +7037,7 @@ export const TickettypesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTicketType(tickettype: TicketTypeForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
+        async createTicketType(tickettype: TicketTypeForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createTicketType(tickettype, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7064,7 +7048,7 @@ export const TickettypesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteTicketType(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteTicketType(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTicketType(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7075,7 +7059,7 @@ export const TickettypesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTicketType(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
+        async getTicketType(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTicketType(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7085,7 +7069,7 @@ export const TickettypesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTicketTypes(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TicketTypeResponse>>> {
+        async listTicketTypes(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TicketTypeResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTicketTypes(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7097,7 +7081,7 @@ export const TickettypesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTicketType(id: string, tickettype: TicketTypeForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
+        async updateTicketType(id: string, tickettype: TicketTypeForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketTypeResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateTicketType(id, tickettype, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7179,7 +7163,7 @@ export class TickettypesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TickettypesApi
      */
-    public createTicketType(tickettype: TicketTypeForm, options?: any) {
+    public createTicketType(tickettype: TicketTypeForm, options?: AxiosRequestConfig) {
         return TickettypesApiFp(this.configuration).createTicketType(tickettype, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7191,7 +7175,7 @@ export class TickettypesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TickettypesApi
      */
-    public deleteTicketType(id: string, options?: any) {
+    public deleteTicketType(id: string, options?: AxiosRequestConfig) {
         return TickettypesApiFp(this.configuration).deleteTicketType(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7203,7 +7187,7 @@ export class TickettypesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TickettypesApi
      */
-    public getTicketType(id: string, options?: any) {
+    public getTicketType(id: string, options?: AxiosRequestConfig) {
         return TickettypesApiFp(this.configuration).getTicketType(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7214,7 +7198,7 @@ export class TickettypesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TickettypesApi
      */
-    public listTicketTypes(options?: any) {
+    public listTicketTypes(options?: AxiosRequestConfig) {
         return TickettypesApiFp(this.configuration).listTicketTypes(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7227,7 +7211,7 @@ export class TickettypesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TickettypesApi
      */
-    public updateTicketType(id: string, tickettype: TicketTypeForm, options?: any) {
+    public updateTicketType(id: string, tickettype: TicketTypeForm, options?: AxiosRequestConfig) {
         return TickettypesApiFp(this.configuration).updateTicketType(id, tickettype, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -7245,7 +7229,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        currentUserData: async (options: any = {}): Promise<RequestArgs> => {
+        currentUserData: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/currentuserdata`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7260,7 +7244,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7276,7 +7260,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserData: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getUserData: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getUserData', 'id', id)
             const localVarPath = `/userdata/{id}`
@@ -7294,7 +7278,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7309,7 +7293,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUserData: async (options: any = {}): Promise<RequestArgs> => {
+        listUserData: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/userdata`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7324,7 +7308,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7340,7 +7324,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateCurrentUserData: async (userdata: UserData, options: any = {}): Promise<RequestArgs> => {
+        updateCurrentUserData: async (userdata: UserData, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userdata' is not null or undefined
             assertParamExists('updateCurrentUserData', 'userdata', userdata)
             const localVarPath = `/currentuserdata`;
@@ -7359,7 +7343,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(userdata, localVarRequestOptions, configuration)
@@ -7377,7 +7361,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUserData: async (id: string, userdata: UserData, options: any = {}): Promise<RequestArgs> => {
+        updateUserData: async (id: string, userdata: UserData, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateUserData', 'id', id)
             // verify required parameter 'userdata' is not null or undefined
@@ -7399,7 +7383,7 @@ export const UserdataApiAxiosParamCreator = function (configuration?: Configurat
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(userdata, localVarRequestOptions, configuration)
@@ -7425,7 +7409,7 @@ export const UserdataApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async currentUserData(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
+        async currentUserData(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.currentUserData(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7436,7 +7420,7 @@ export const UserdataApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUserData(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
+        async getUserData(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUserData(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7446,7 +7430,7 @@ export const UserdataApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUserData(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDataResponse>>> {
+        async listUserData(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDataResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUserData(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7457,7 +7441,7 @@ export const UserdataApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateCurrentUserData(userdata: UserData, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
+        async updateCurrentUserData(userdata: UserData, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateCurrentUserData(userdata, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7469,7 +7453,7 @@ export const UserdataApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUserData(id: string, userdata: UserData, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
+        async updateUserData(id: string, userdata: UserData, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDataResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserData(id, userdata, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7549,7 +7533,7 @@ export class UserdataApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UserdataApi
      */
-    public currentUserData(options?: any) {
+    public currentUserData(options?: AxiosRequestConfig) {
         return UserdataApiFp(this.configuration).currentUserData(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7561,7 +7545,7 @@ export class UserdataApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UserdataApi
      */
-    public getUserData(id: string, options?: any) {
+    public getUserData(id: string, options?: AxiosRequestConfig) {
         return UserdataApiFp(this.configuration).getUserData(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7572,7 +7556,7 @@ export class UserdataApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UserdataApi
      */
-    public listUserData(options?: any) {
+    public listUserData(options?: AxiosRequestConfig) {
         return UserdataApiFp(this.configuration).listUserData(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7584,7 +7568,7 @@ export class UserdataApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UserdataApi
      */
-    public updateCurrentUserData(userdata: UserData, options?: any) {
+    public updateCurrentUserData(userdata: UserData, options?: AxiosRequestConfig) {
         return UserdataApiFp(this.configuration).updateCurrentUserData(userdata, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7597,7 +7581,7 @@ export class UserdataApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UserdataApi
      */
-    public updateUserData(id: string, userdata: UserData, options?: any) {
+    public updateUserData(id: string, userdata: UserData, options?: AxiosRequestConfig) {
         return UserdataApiFp(this.configuration).updateUserData(id, userdata, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -7616,7 +7600,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser: async (user: UserForm, options: any = {}): Promise<RequestArgs> => {
+        createUser: async (user: UserForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'user' is not null or undefined
             assertParamExists('createUser', 'user', user)
             const localVarPath = `/users`;
@@ -7635,7 +7619,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(user, localVarRequestOptions, configuration)
@@ -7651,7 +7635,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        currentUser: async (options: any = {}): Promise<RequestArgs> => {
+        currentUser: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/currentuser`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7666,7 +7650,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7682,7 +7666,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        deleteUser: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteUser', 'id', id)
             const localVarPath = `/users/{id}`
@@ -7700,7 +7684,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7716,7 +7700,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUser: async (id: string, options: any = {}): Promise<RequestArgs> => {
+        getUser: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getUser', 'id', id)
             const localVarPath = `/users/{id}`
@@ -7734,7 +7718,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7749,7 +7733,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers: async (options: any = {}): Promise<RequestArgs> => {
+        listUsers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7764,7 +7748,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -7781,7 +7765,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser: async (id: string, user: UserForm, options: any = {}): Promise<RequestArgs> => {
+        updateUser: async (id: string, user: UserForm, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateUser', 'id', id)
             // verify required parameter 'user' is not null or undefined
@@ -7803,7 +7787,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(user, localVarRequestOptions, configuration)
@@ -7830,7 +7814,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUser(user: UserForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NewUserResponse>> {
+        async createUser(user: UserForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NewUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(user, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7840,7 +7824,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async currentUser(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async currentUser(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.currentUser(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7851,7 +7835,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteUser(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteUser(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7862,7 +7846,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUser(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async getUser(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7872,7 +7856,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUsers(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponse>>> {
+        async listUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7884,7 +7868,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUser(id: string, user: UserForm, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async updateUser(id: string, user: UserForm, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(id, user, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7975,7 +7959,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public createUser(user: UserForm, options?: any) {
+    public createUser(user: UserForm, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).createUser(user, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7986,7 +7970,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public currentUser(options?: any) {
+    public currentUser(options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).currentUser(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7998,7 +7982,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public deleteUser(id: string, options?: any) {
+    public deleteUser(id: string, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).deleteUser(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -8010,7 +7994,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public getUser(id: string, options?: any) {
+    public getUser(id: string, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).getUser(id, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -8021,7 +8005,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public listUsers(options?: any) {
+    public listUsers(options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).listUsers(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -8034,7 +8018,7 @@ export class UsersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public updateUser(id: string, user: UserForm, options?: any) {
+    public updateUser(id: string, user: UserForm, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).updateUser(id, user, options).then((request) => request(this.axios, this.basePath));
     }
 }

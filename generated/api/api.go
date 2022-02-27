@@ -58,7 +58,7 @@ type Service interface {
 	DeleteTemplate(context.Context, string) error
 	ListTickets(context.Context, *string, *int, *int, []string, []bool, *string) (*model.TicketList, error)
 	CreateTicket(context.Context, *model.TicketForm) (*model.TicketResponse, error)
-	CreateTicketBatch(context.Context, []*model.TicketForm) error
+	CreateTicketBatch(context.Context, *model.TicketFormArray) error
 	GetTicket(context.Context, int64) (*model.TicketWithTickets, error)
 	UpdateTicket(context.Context, int64, *model.Ticket) (*model.TicketWithTickets, error)
 	DeleteTicket(context.Context, int64) error
@@ -75,7 +75,7 @@ type Service interface {
 	SetTask(context.Context, int64, string, string, *model.Task) (*model.TicketWithTickets, error)
 	CompleteTask(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
 	RunTask(context.Context, int64, string, string) error
-	SetReferences(context.Context, int64, []*model.Reference) (*model.TicketWithTickets, error)
+	SetReferences(context.Context, int64, *model.ReferenceArray) (*model.TicketWithTickets, error)
 	SetSchema(context.Context, int64, string) (*model.TicketWithTickets, error)
 	LinkTicket(context.Context, int64, int64) (*model.TicketWithTickets, error)
 	UnlinkTicket(context.Context, int64, int64) (*model.TicketWithTickets, error)
@@ -674,7 +674,26 @@ func (s *server) createTicketBatchHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var ticketP []*model.TicketForm
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.TicketFormArraySchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
+
+	var ticketP *model.TicketFormArray
 	if err := parseBody(body, &ticketP); err != nil {
 		JSONError(w, err)
 		return
@@ -1130,7 +1149,26 @@ func (s *server) setReferencesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var referencesP []*model.Reference
+	jl := gojsonschema.NewBytesLoader(body)
+	validationResult, err := model.ReferenceArraySchema.Validate(jl)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+	if !validationResult.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		var valdiationErrors []string
+		for _, valdiationError := range validationResult.Errors() {
+			valdiationErrors = append(valdiationErrors, valdiationError.String())
+		}
+
+		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
+		w.Write(b)
+		return
+	}
+
+	var referencesP *model.ReferenceArray
 	if err := parseBody(body, &referencesP); err != nil {
 		JSONError(w, err)
 		return

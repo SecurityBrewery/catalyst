@@ -435,6 +435,10 @@ definitions:
     - name
     - href
     type: object
+  ReferenceArray:
+    items:
+      $ref: '#/definitions/Reference'
+    type: array
   Rule:
     properties:
       condition:
@@ -861,6 +865,10 @@ definitions:
     - type
     - status
     type: object
+  TicketFormArray:
+    items:
+      $ref: '#/definitions/TicketForm'
+    type: array
   TicketList:
     properties:
       count:
@@ -6057,9 +6065,7 @@ paths:
         name: references
         required: true
         schema:
-          items:
-            $ref: '#/definitions/Reference'
-          type: array
+          $ref: '#/definitions/ReferenceArray'
         x-example:
         - href: http://www.leadscalable.biz/envisioneer
           name: fund
@@ -6486,9 +6492,7 @@ paths:
         name: ticket
         required: true
         schema:
-          items:
-            $ref: '#/definitions/TicketForm'
-          type: array
+          $ref: '#/definitions/TicketFormArray'
         x-example:
         - id: 123
           name: Wannacry infection

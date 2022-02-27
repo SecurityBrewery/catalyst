@@ -18,11 +18,7 @@ mv generated/openapi.json generated/community.json
 openapi-generator generate -i generated/catalyst.yml -o generated -g openapi
 mv generated/openapi.json generated/catalyst.json
 
-# generate python client
-# openapi-generator generate -i generated/community.yml -o generated/python -g python --package-name catalystpy --ignore-file-override .openapi-generator-ignore
-
 echo generate server and tests
-# go run ./generator/. ./generator
 swagger-go-chi generated/community.yml generated
 
 echo generate typescript client
@@ -31,8 +27,7 @@ openapi-generator generate -i generated/catalyst.yml -o ui/src/client -g typescr
 rm -rf gen
 rm -rf generated/models/old
 rm -rf generated/.openapi-generator generated/.openapi-generator-ignore generated/README.md
-# rm -rf generated/python/.openapi-generator generated/python/.gitlab-ci.yml generated/python/git_push.sh generated/python/.travis.yml generated/python/.gitignore generated/python/.openapi-generator-ignore
 rm -rf ui/src/client/.openapi-generator ui/src/client/git_push.sh ui/src/client/.gitignore ui/src/client/.openapi-generator-ignore
 
 go mod tidy
-gci -w -local "github.com/SecurityBrewery/catalyst" .
+gci write --Section Standard --Section Default --Section "Prefix(github.com/SecurityBrewery/catalyst)" .

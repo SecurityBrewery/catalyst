@@ -80,7 +80,7 @@ paths:
       summary: "Create a new tickets in batch"
       operationId: "createTicketBatch"
       parameters:
-        - { name: "ticket", in: "body", description: "New ticket", required: true, schema: { type: array, items: { $ref: "#/definitions/TicketForm" } }, x-example: [ { id: 123, owner: bob, name: "Wannacry infection", status: "open", type: "incident" } ] }
+        - { name: "ticket", in: "body", description: "New ticket", required: true, schema: { $ref: "#/definitions/TicketFormArray" }, x-example: [ { id: 123, owner: bob, name: "Wannacry infection", status: "open", type: "incident" } ] }
       responses:
         "204": { description: "successful operation" }
       security: [ { roles: [ "ticket:write" ] } ]
@@ -336,7 +336,7 @@ paths:
       operationId: "setReferences"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8125 }
-        - { name: "references", in: "body", description: "All ticket references", required: true, schema: { type: array, items: { $ref: "#/definitions/Reference" } }, x-example: [ { href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ] }
+        - { name: "references", in: "body", description: "All ticket references", required: true, schema: { $ref: "#/definitions/ReferenceArray" }, x-example: [ { href: "http://www.leadscalable.biz/envisioneer", name: "fund" } ] }
       responses:
         "200":
           description: "successful operation"
@@ -883,6 +883,9 @@ paths:
       security: [ { roles: [ "ticket:write" ] } ]
 
 definitions:
+  TicketFormArray:
+    type: array
+    items: { $ref: "#/definitions/TicketForm" }
 
   TicketForm:
     type: object
@@ -1034,6 +1037,10 @@ definitions:
       creator: { type: string }
       created: { type: string, format: "date-time" }
       message: { type: string }
+
+  ReferenceArray:
+    type: array
+    items: { $ref: '#/definitions/Reference' }
 
   Reference:
     type: object
