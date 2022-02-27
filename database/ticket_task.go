@@ -113,18 +113,18 @@ func extractTicketResponse(ticket *model.TicketWithTickets) *model.TicketRespons
 	}
 }
 
-func (db *Database) TaskUpdate(ctx context.Context, id int64, playbookID string, taskID string, task *model.Task) (*model.TicketWithTickets, error) {
+func (db *Database) TaskUpdateOwner(ctx context.Context, id int64, playbookID string, taskID string, owner string) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	task.Created = time.Now().UTC()
-
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	` + ticketFilterQuery + `
 	LET playbook = d.playbooks[@playbookID]
-	LET newtasks = MERGE(playbook.tasks, { @taskID: @task } )
+	LET task = playbook.tasks[@taskID]
+	LET newtask = MERGE(task, {"owner": @owner })
+	LET newtasks = MERGE(playbook.tasks, { @taskID: newtask } )
 	LET newplaybook = MERGE(playbook, {"tasks": newtasks})
 	LET newplaybooks = MERGE(d.playbooks, { @playbookID: newplaybook } )
 	
@@ -133,7 +133,42 @@ func (db *Database) TaskUpdate(ctx context.Context, id int64, playbookID string,
 	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
 		"playbookID": playbookID,
 		"taskID":     taskID,
-		"task":       task,
+		"owner":      owner,
+		"now":        time.Now().UTC(),
+	}, ticketFilterVars), &busdb.Operation{
+		Type: bus.DatabaseEntryUpdated,
+		Ids: []driver.DocumentID{
+			driver.NewDocumentID(TicketCollectionName, fmt.Sprintf("%d", id)),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return ticket, nil
+}
+
+func (db *Database) TaskUpdateData(ctx context.Context, id int64, playbookID string, taskID string, data map[string]interface{}) (*model.TicketWithTickets, error) {
+	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `LET d = DOCUMENT(@@collection, @ID)
+	` + ticketFilterQuery + `
+	LET playbook = d.playbooks[@playbookID]
+	LET task = playbook.tasks[@taskID]
+	LET newtask = MERGE(task, {"data": @data })
+	LET newtasks = MERGE(playbook.tasks, { @taskID: newtask } )
+	LET newplaybook = MERGE(playbook, {"tasks": newtasks})
+	LET newplaybooks = MERGE(d.playbooks, { @playbookID: newplaybook } )
+	
+	UPDATE d WITH { "modified": @now, "playbooks": newplaybooks } IN @@collection
+	RETURN NEW`
+	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+		"playbookID": playbookID,
+		"taskID":     taskID,
+		"data":       data,
 		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,

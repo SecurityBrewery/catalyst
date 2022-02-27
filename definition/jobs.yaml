@@ -48,13 +48,13 @@ paths:
       operationId: "updateJob"
       parameters:
         - { name: "id", in: "path", description: "Job ID", required: true, type: string, x-example: "99cd67131b48" }
-        - { name: "job", in: "body", description: "Job object that needs to be added", required: true, schema: { $ref: "#/definitions/Job" }, x-example: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed" } }
+        - { name: "job", in: "body", description: "Job object that needs to be added", required: true, schema: { $ref: "#/definitions/Job" }, x-example: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed", running: false } }
       responses:
         "200":
           description: "successful operation"
           schema: { $ref: "#/definitions/JobResponse" }
           examples:
-            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed" }
+            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed", running: false }
 
       security: [ { roles: [ "job:write" ] } ]
 

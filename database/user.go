@@ -191,6 +191,8 @@ func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserF
 
 	ctx = driver.WithReturnNew(ctx, &doc)
 
+	user.ID = id
+
 	meta, err := db.userCollection.ReplaceDocument(ctx, id, toUser(user, nil))
 	if err != nil {
 		return nil, err

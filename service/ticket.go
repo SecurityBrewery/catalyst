@@ -146,9 +146,14 @@ func (s *Service) RemoveTicketPlaybook(ctx context.Context, i int64, s2 string) 
 	return s.database.RemoveTicketPlaybook(ctx, i, s2)
 }
 
-func (s *Service) SetTask(ctx context.Context, i int64, s3 string, s2 string, task *model.Task) (doc *model.TicketWithTickets, err error) {
+func (s *Service) SetTaskData(ctx context.Context, i int64, s3 string, s2 string, data map[string]interface{}) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
-	return s.database.TaskUpdate(ctx, i, s3, s2, task)
+	return s.database.TaskUpdateData(ctx, i, s3, s2, data)
+}
+
+func (s *Service) SetTaskOwner(ctx context.Context, i int64, s3 string, s2 string, owner string) (doc *model.TicketWithTickets, err error) {
+	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
+	return s.database.TaskUpdateOwner(ctx, i, s3, s2, owner)
 }
 
 func (s *Service) CompleteTask(ctx context.Context, i int64, s3 string, s2 string, m map[string]interface{}) (doc *model.TicketWithTickets, err error) {

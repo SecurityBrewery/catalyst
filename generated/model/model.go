@@ -36,7 +36,6 @@ var (
 	SettingsSchema                 = new(gojsonschema.Schema)
 	StatisticsSchema               = new(gojsonschema.Schema)
 	TaskSchema                     = new(gojsonschema.Schema)
-	TaskFormSchema                 = new(gojsonschema.Schema)
 	TaskOriginSchema               = new(gojsonschema.Schema)
 	TaskResponseSchema             = new(gojsonschema.Schema)
 	TaskWithContextSchema          = new(gojsonschema.Schema)
@@ -91,7 +90,6 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifactStates":{"title":"Artifact States","items":{"$ref":"#/definitions/Type"},"type":"array"},"roles":{"title":"Roles","items":{"type":"string"},"type":"array"},"ticketTypes":{"title":"Ticket Types","items":{"$ref":"#/definitions/TicketTypeResponse"},"type":"array"},"tier":{"title":"Tier","type":"string","enum":["community","enterprise"]},"timeformat":{"title":"Time Format","type":"string"},"version":{"title":"Version","type":"string"}},"required":["version","tier","timeformat","ticketTypes","artifactStates"],"$id":"#/definitions/Settings"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"open_tickets_per_user":{"type":"object","additionalProperties":{"type":"integer"}},"tickets_per_type":{"type":"object","additionalProperties":{"type":"integer"}},"tickets_per_week":{"type":"object","additionalProperties":{"type":"integer"}},"unassigned":{"type":"integer"}},"required":["unassigned","open_tickets_per_user","tickets_per_week","tickets_per_type"],"$id":"#/definitions/Statistics"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"automation":{"type":"string"},"closed":{"format":"date-time","type":"string"},"created":{"format":"date-time","type":"string"},"data":{"type":"object"},"done":{"type":"boolean"},"join":{"type":"boolean"},"name":{"type":"string"},"next":{"type":"object","additionalProperties":{"type":"string"}},"owner":{"type":"string"},"payload":{"type":"object","additionalProperties":{"type":"string"}},"schema":{"type":"object"},"type":{"type":"string","enum":["task","input","automation"]}},"required":["name","type","done","created"],"$id":"#/definitions/Task"}`),
-		gojsonschema.NewStringLoader(`{"type":"object","properties":{"automation":{"type":"string"},"closed":{"format":"date-time","type":"string"},"created":{"format":"date-time","type":"string"},"data":{"type":"object"},"done":{"type":"boolean"},"join":{"type":"boolean"},"name":{"type":"string"},"next":{"type":"object","additionalProperties":{"type":"string"}},"owner":{"type":"string"},"payload":{"type":"object","additionalProperties":{"type":"string"}},"schema":{"type":"object"},"type":{"type":"string","enum":["task","input","automation"]}},"required":["name","type"],"$id":"#/definitions/TaskForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"playbook_id":{"type":"string"},"task_id":{"type":"string"},"ticket_id":{"format":"int64","type":"integer"}},"required":["ticket_id","playbook_id","task_id"],"$id":"#/definitions/TaskOrigin"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"active":{"type":"boolean"},"automation":{"type":"string"},"closed":{"format":"date-time","type":"string"},"created":{"format":"date-time","type":"string"},"data":{"type":"object"},"done":{"type":"boolean"},"join":{"type":"boolean"},"name":{"type":"string"},"next":{"type":"object","additionalProperties":{"type":"string"}},"order":{"format":"int64","type":"number"},"owner":{"type":"string"},"payload":{"type":"object","additionalProperties":{"type":"string"}},"schema":{"type":"object"},"type":{"type":"string","enum":["task","input","automation"]}},"required":["name","type","done","created","order","active"],"$id":"#/definitions/TaskResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"playbook_id":{"type":"string"},"playbook_name":{"type":"string"},"task":{"$ref":"#/definitions/TaskResponse"},"task_id":{"type":"string"},"ticket_id":{"format":"int64","type":"number"},"ticket_name":{"type":"string"}},"required":["ticket_id","ticket_name","playbook_id","playbook_name","task_id","task"],"$id":"#/definitions/TaskWithContext"}`),
@@ -147,7 +145,6 @@ func init() {
 	SettingsSchema = mustCompile(`#/definitions/Settings`)
 	StatisticsSchema = mustCompile(`#/definitions/Statistics`)
 	TaskSchema = mustCompile(`#/definitions/Task`)
-	TaskFormSchema = mustCompile(`#/definitions/TaskForm`)
 	TaskOriginSchema = mustCompile(`#/definitions/TaskOrigin`)
 	TaskResponseSchema = mustCompile(`#/definitions/TaskResponse`)
 	TaskWithContextSchema = mustCompile(`#/definitions/TaskWithContext`)
@@ -351,21 +348,6 @@ type Task struct {
 	Created    time.Time              `json:"created"`
 	Data       map[string]interface{} `json:"data,omitempty"`
 	Done       bool                   `json:"done"`
-	Join       *bool                  `json:"join,omitempty"`
-	Name       string                 `json:"name"`
-	Next       map[string]string      `json:"next,omitempty"`
-	Owner      *string                `json:"owner,omitempty"`
-	Payload    map[string]string      `json:"payload,omitempty"`
-	Schema     map[string]interface{} `json:"schema,omitempty"`
-	Type       string                 `json:"type"`
-}
-
-type TaskForm struct {
-	Automation *string                `json:"automation,omitempty"`
-	Closed     *time.Time             `json:"closed,omitempty"`
-	Created    *time.Time             `json:"created,omitempty"`
-	Data       map[string]interface{} `json:"data,omitempty"`
-	Done       *bool                  `json:"done,omitempty"`
 	Join       *bool                  `json:"join,omitempty"`
 	Name       string                 `json:"name"`
 	Next       map[string]string      `json:"next,omitempty"`
@@ -614,12 +596,6 @@ const (
 	TaskTypeInput = "input"
 
 	TaskTypeAutomation = "automation"
-
-	TaskFormTypeTask = "task"
-
-	TaskFormTypeInput = "input"
-
-	TaskFormTypeAutomation = "automation"
 
 	TaskResponseTypeTask = "task"
 

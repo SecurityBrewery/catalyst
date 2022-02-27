@@ -1145,30 +1145,13 @@ export default Vue.extend({
       this.selectedTask = undefined;
       this.selectedTaskPlaybook = undefined;
     },
-    toTaskForm(task: TaskResponse): Task {
-      return {
-        automation: task.automation,
-        closed: task.closed,
-        created: task.created,
-        data: task.data,
-        done: task.done,
-        join: task.join,
-        payload: task.payload,
-        name: task.name,
-        next: task.next,
-        owner: task.owner,
-        schema: task.schema,
-        type: task.type.toString() as TaskTypeEnum,
-      } as Task
-    },
     save(playbookID: string, taskID: string) {
       if (!this.ticket || !this.ticket.id || !this.ticket.playbooks) {
         return;
       }
 
-      let task = this.ticket.playbooks[playbookID].tasks[taskID]
-      task.data = this.tdata[playbookID.toString() + "-" + taskID];
-      API.setTask(this.ticket.id, playbookID, taskID, this.toTaskForm(task)).then((response) => {
+      let data = this.tdata[playbookID.toString() + "-" + taskID];
+      API.setTaskData(this.ticket.id, playbookID, taskID, data).then((response) => {
         this.$store.dispatch("alertSuccess", { name: "Task saved" });
         this.setTicket(response.data);
       });
@@ -1181,9 +1164,7 @@ export default Vue.extend({
         return;
       }
 
-      let task = this.ticket.playbooks[playbookID].tasks[taskID]
-      task.owner = owner
-      API.setTask(this.ticket.id, playbookID, taskID, this.toTaskForm(task)).then((response) => {
+      API.setTaskOwner(this.ticket.id, playbookID, taskID, owner).then((response) => {
         this.$store.dispatch("alertSuccess", { name: "Owner saved" });
         this.setTicket(response.data);
         if (response.data.playbooks) {

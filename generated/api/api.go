@@ -72,8 +72,9 @@ type Service interface {
 	RemoveComment(context.Context, int64, int) (*model.TicketWithTickets, error)
 	AddTicketPlaybook(context.Context, int64, *model.PlaybookTemplateForm) (*model.TicketWithTickets, error)
 	RemoveTicketPlaybook(context.Context, int64, string) (*model.TicketWithTickets, error)
-	SetTask(context.Context, int64, string, string, *model.Task) (*model.TicketWithTickets, error)
+	SetTaskData(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
 	CompleteTask(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
+	SetTaskOwner(context.Context, int64, string, string, string) (*model.TicketWithTickets, error)
 	RunTask(context.Context, int64, string, string) error
 	SetReferences(context.Context, int64, *model.ReferenceArray) (*model.TicketWithTickets, error)
 	SetSchema(context.Context, int64, string) (*model.TicketWithTickets, error)
@@ -142,8 +143,9 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/comments/{commentID}", s.removeCommentHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks", s.addTicketPlaybookHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Delete("/tickets/{id}/playbooks/{playbookID}", s.removeTicketPlaybookHandler)
-	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}", s.setTaskDataHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/complete", s.completeTaskHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner", s.setTaskOwnerHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/{id}/playbooks/{playbookID}/task/{taskID}/run", s.runTaskHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/references", s.setReferencesHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}/schema", s.setSchemaHandler)
@@ -1049,7 +1051,7 @@ func (s *server) removeTicketPlaybookHandler(w http.ResponseWriter, r *http.Requ
 	response(w, result, err)
 }
 
-func (s *server) setTaskHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) setTaskDataHandler(w http.ResponseWriter, r *http.Request) {
 	idP, err := parseURLInt64(r, "id")
 	if err != nil {
 		JSONError(w, err)
@@ -1066,32 +1068,13 @@ func (s *server) setTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jl := gojsonschema.NewBytesLoader(body)
-	validationResult, err := model.TaskSchema.Validate(jl)
-	if err != nil {
-		JSONError(w, err)
-		return
-	}
-	if !validationResult.Valid() {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-
-		var valdiationErrors []string
-		for _, valdiationError := range validationResult.Errors() {
-			valdiationErrors = append(valdiationErrors, valdiationError.String())
-		}
-
-		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": valdiationErrors})
-		w.Write(b)
-		return
-	}
-
-	var taskP *model.Task
-	if err := parseBody(body, &taskP); err != nil {
+	var dataP map[string]interface{}
+	if err := parseBody(body, &dataP); err != nil {
 		JSONError(w, err)
 		return
 	}
 
-	result, err := s.service.SetTask(r.Context(), idP, playbookIDP, taskIDP, taskP)
+	result, err := s.service.SetTaskData(r.Context(), idP, playbookIDP, taskIDP, dataP)
 	response(w, result, err)
 }
 
@@ -1119,6 +1102,33 @@ func (s *server) completeTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := s.service.CompleteTask(r.Context(), idP, playbookIDP, taskIDP, dataP)
+	response(w, result, err)
+}
+
+func (s *server) setTaskOwnerHandler(w http.ResponseWriter, r *http.Request) {
+	idP, err := parseURLInt64(r, "id")
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	playbookIDP := chi.URLParam(r, "playbookID")
+
+	taskIDP := chi.URLParam(r, "taskID")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	var ownerP string
+	if err := parseBody(body, &ownerP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.SetTaskOwner(r.Context(), idP, playbookIDP, taskIDP, ownerP)
 	response(w, result, err)
 }
 

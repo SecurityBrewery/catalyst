@@ -1106,94 +1106,6 @@ export type TaskTypeEnum = typeof TaskTypeEnum[keyof typeof TaskTypeEnum];
 /**
  * 
  * @export
- * @interface TaskForm
- */
-export interface TaskForm {
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'automation'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'closed'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'created'?: string;
-    /**
-     * 
-     * @type {object}
-     * @memberof TaskForm
-     */
-    'data'?: object;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof TaskForm
-     */
-    'done'?: boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof TaskForm
-     */
-    'join'?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'name': string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof TaskForm
-     */
-    'next'?: { [key: string]: string; };
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'owner'?: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof TaskForm
-     */
-    'payload'?: { [key: string]: string; };
-    /**
-     * 
-     * @type {object}
-     * @memberof TaskForm
-     */
-    'schema'?: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaskForm
-     */
-    'type': TaskFormTypeEnum;
-}
-
-export const TaskFormTypeEnum = {
-    Task: 'task',
-    Input: 'input',
-    Automation: 'automation'
-} as const;
-
-export type TaskFormTypeEnum = typeof TaskFormTypeEnum[keyof typeof TaskFormTypeEnum];
-
-/**
- * 
- * @export
  * @interface TaskOrigin
  */
 export interface TaskOrigin {
@@ -5830,23 +5742,23 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Set a ticket playbook task
+         * @summary Set a ticket playbook task data
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
-         * @param {Task} task Task
+         * @param {object} data Task data
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTask: async (id: number, playbookID: string, taskID: string, task: Task, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        setTaskData: async (id: number, playbookID: string, taskID: string, data: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('setTask', 'id', id)
+            assertParamExists('setTaskData', 'id', id)
             // verify required parameter 'playbookID' is not null or undefined
-            assertParamExists('setTask', 'playbookID', playbookID)
+            assertParamExists('setTaskData', 'playbookID', playbookID)
             // verify required parameter 'taskID' is not null or undefined
-            assertParamExists('setTask', 'taskID', taskID)
-            // verify required parameter 'task' is not null or undefined
-            assertParamExists('setTask', 'task', task)
+            assertParamExists('setTaskData', 'taskID', taskID)
+            // verify required parameter 'data' is not null or undefined
+            assertParamExists('setTaskData', 'data', data)
             const localVarPath = `/tickets/{id}/playbooks/{playbookID}/task/{taskID}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)))
                 .replace(`{${"playbookID"}}`, encodeURIComponent(String(playbookID)))
@@ -5869,7 +5781,55 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(task, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(data, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Set a ticket playbook task data
+         * @param {number} id Ticket ID
+         * @param {string} playbookID Playbook ID
+         * @param {string} taskID Task ID
+         * @param {string} owner Task owner
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTaskOwner: async (id: number, playbookID: string, taskID: string, owner: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('setTaskOwner', 'id', id)
+            // verify required parameter 'playbookID' is not null or undefined
+            assertParamExists('setTaskOwner', 'playbookID', playbookID)
+            // verify required parameter 'taskID' is not null or undefined
+            assertParamExists('setTaskOwner', 'taskID', taskID)
+            // verify required parameter 'owner' is not null or undefined
+            assertParamExists('setTaskOwner', 'owner', owner)
+            const localVarPath = `/tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"playbookID"}}`, encodeURIComponent(String(playbookID)))
+                .replace(`{${"taskID"}}`, encodeURIComponent(String(taskID)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(owner, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -6214,16 +6174,30 @@ export const TicketsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Set a ticket playbook task
+         * @summary Set a ticket playbook task data
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
-         * @param {Task} task Task
+         * @param {object} data Task data
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setTask(id: number, playbookID: string, taskID: string, task: Task, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.setTask(id, playbookID, taskID, task, options);
+        async setTaskData(id: number, playbookID: string, taskID: string, data: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setTaskData(id, playbookID, taskID, data, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Set a ticket playbook task data
+         * @param {number} id Ticket ID
+         * @param {string} playbookID Playbook ID
+         * @param {string} taskID Task ID
+         * @param {string} owner Task owner
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setTaskOwner(id: number, playbookID: string, taskID: string, owner: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketWithTickets>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setTaskOwner(id, playbookID, taskID, owner, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6488,16 +6462,29 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Set a ticket playbook task
+         * @summary Set a ticket playbook task data
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
-         * @param {Task} task Task
+         * @param {object} data Task data
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTask(id: number, playbookID: string, taskID: string, task: Task, options?: any): AxiosPromise<TicketWithTickets> {
-            return localVarFp.setTask(id, playbookID, taskID, task, options).then((request) => request(axios, basePath));
+        setTaskData(id: number, playbookID: string, taskID: string, data: object, options?: any): AxiosPromise<TicketWithTickets> {
+            return localVarFp.setTaskData(id, playbookID, taskID, data, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Set a ticket playbook task data
+         * @param {number} id Ticket ID
+         * @param {string} playbookID Playbook ID
+         * @param {string} taskID Task ID
+         * @param {string} owner Task owner
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTaskOwner(id: number, playbookID: string, taskID: string, owner: string, options?: any): AxiosPromise<TicketWithTickets> {
+            return localVarFp.setTaskOwner(id, playbookID, taskID, owner, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6799,17 +6786,32 @@ export class TicketsApi extends BaseAPI {
 
     /**
      * 
-     * @summary Set a ticket playbook task
+     * @summary Set a ticket playbook task data
      * @param {number} id Ticket ID
      * @param {string} playbookID Playbook ID
      * @param {string} taskID Task ID
-     * @param {Task} task Task
+     * @param {object} data Task data
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TicketsApi
      */
-    public setTask(id: number, playbookID: string, taskID: string, task: Task, options?: AxiosRequestConfig) {
-        return TicketsApiFp(this.configuration).setTask(id, playbookID, taskID, task, options).then((request) => request(this.axios, this.basePath));
+    public setTaskData(id: number, playbookID: string, taskID: string, data: object, options?: AxiosRequestConfig) {
+        return TicketsApiFp(this.configuration).setTaskData(id, playbookID, taskID, data, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Set a ticket playbook task data
+     * @param {number} id Ticket ID
+     * @param {string} playbookID Playbook ID
+     * @param {string} taskID Task ID
+     * @param {string} owner Task owner
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TicketsApi
+     */
+    public setTaskOwner(id: number, playbookID: string, taskID: string, owner: string, options?: AxiosRequestConfig) {
+        return TicketsApiFp(this.configuration).setTaskOwner(id, playbookID, taskID, owner, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -34,7 +34,7 @@ paths:
       summary: "Create user"
       operationId: "createUser"
       parameters:
-        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { id: "syncscript", roles: [ "analyst" ] } }
+        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { id: "syncscript", roles: [ "analyst" ], blocked: false, apikey: true } }
       responses:
         "200":
           description: "successful operation"
@@ -62,7 +62,7 @@ paths:
       operationId: "updateUser"
       parameters:
         - { name: "id", in: "path", description: "Template ID", required: true, type: string, x-example: "bob" }
-        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { roles: [ "analyst", "admin" ] } }
+        - { name: "user", in: "body", description: "user object that needs to be added", required: true, schema: { $ref: "#/definitions/UserForm" }, x-example: { id: "syncscript", roles: [ "analyst", "admin" ], blocked: false, apikey: false } }
       responses:
         "200":
           description: "successful operation"
