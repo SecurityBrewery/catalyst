@@ -554,6 +554,43 @@ export interface JobResponse {
 /**
  * 
  * @export
+ * @interface JobUpdate
+ */
+export interface JobUpdate {
+    /**
+     * 
+     * @type {string}
+     * @memberof JobUpdate
+     */
+    'container'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JobUpdate
+     */
+    'log'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof JobUpdate
+     */
+    'output'?: object;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof JobUpdate
+     */
+    'running': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof JobUpdate
+     */
+    'status': string;
+}
+/**
+ * 
+ * @export
  * @interface Link
  */
 export interface Link {
@@ -3192,11 +3229,11 @@ export const JobsApiAxiosParamCreator = function (configuration?: Configuration)
          * 
          * @summary Update an existing job
          * @param {string} id Job ID
-         * @param {Job} job Job object that needs to be added
+         * @param {JobUpdate} job Job object that needs to be added
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateJob: async (id: string, job: Job, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateJob: async (id: string, job: JobUpdate, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateJob', 'id', id)
             // verify required parameter 'job' is not null or undefined
@@ -3274,11 +3311,11 @@ export const JobsApiFp = function(configuration?: Configuration) {
          * 
          * @summary Update an existing job
          * @param {string} id Job ID
-         * @param {Job} job Job object that needs to be added
+         * @param {JobUpdate} job Job object that needs to be added
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateJob(id: string, job: Job, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
+        async updateJob(id: string, job: JobUpdate, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateJob(id, job, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3325,11 +3362,11 @@ export const JobsApiFactory = function (configuration?: Configuration, basePath?
          * 
          * @summary Update an existing job
          * @param {string} id Job ID
-         * @param {Job} job Job object that needs to be added
+         * @param {JobUpdate} job Job object that needs to be added
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateJob(id: string, job: Job, options?: any): AxiosPromise<JobResponse> {
+        updateJob(id: string, job: JobUpdate, options?: any): AxiosPromise<JobResponse> {
             return localVarFp.updateJob(id, job, options).then((request) => request(axios, basePath));
         },
     };
@@ -3381,12 +3418,12 @@ export class JobsApi extends BaseAPI {
      * 
      * @summary Update an existing job
      * @param {string} id Job ID
-     * @param {Job} job Job object that needs to be added
+     * @param {JobUpdate} job Job object that needs to be added
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof JobsApi
      */
-    public updateJob(id: string, job: Job, options?: AxiosRequestConfig) {
+    public updateJob(id: string, job: JobUpdate, options?: AxiosRequestConfig) {
         return JobsApiFp(this.configuration).updateJob(id, job, options).then((request) => request(this.axios, this.basePath));
     }
 }

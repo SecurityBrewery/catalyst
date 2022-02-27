@@ -236,6 +236,22 @@ definitions:
     - automation
     - status
     type: object
+  JobUpdate:
+    properties:
+      container:
+        type: string
+      log:
+        type: string
+      output:
+        type: object
+      running:
+        type: boolean
+      status:
+        type: string
+    required:
+    - running
+    - status
+    type: object
   LogEntry:
     properties:
       created:
@@ -1591,11 +1607,8 @@ paths:
         name: job
         required: true
         schema:
-          $ref: '#/definitions/Job'
+          $ref: '#/definitions/JobUpdate'
         x-example:
-          automation: hash.sha1
-          id: 99cd67131b48
-          payload: test
           running: false
           status: failed
       responses:
@@ -5046,8 +5059,7 @@ paths:
         schema:
           type: object
         x-example:
-          data:
-            boardInvolved: true
+          boardInvolved: true
       responses:
         "200":
           description: successful operation

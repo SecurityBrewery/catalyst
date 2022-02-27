@@ -659,7 +659,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Job"
+                "$ref" : "#/components/schemas/JobUpdate"
               }
             }
           },
@@ -5520,6 +5520,28 @@
           }
         },
         "required" : [ "automation", "id", "status" ],
+        "type" : "object"
+      },
+      "JobUpdate" : {
+        "properties" : {
+          "container" : {
+            "type" : "string"
+          },
+          "log" : {
+            "type" : "string"
+          },
+          "output" : {
+            "properties" : { },
+            "type" : "object"
+          },
+          "running" : {
+            "type" : "boolean"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "running", "status" ],
         "type" : "object"
       },
       "Link" : {

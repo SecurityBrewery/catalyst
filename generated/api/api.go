@@ -41,7 +41,7 @@ type Service interface {
 	ListJobs(context.Context) ([]*model.JobResponse, error)
 	RunJob(context.Context, *model.JobForm) error
 	GetJob(context.Context, string) (*model.JobResponse, error)
-	UpdateJob(context.Context, string, *model.Job) (*model.JobResponse, error)
+	UpdateJob(context.Context, string, *model.JobUpdate) (*model.JobResponse, error)
 	GetLogs(context.Context, string) ([]*model.LogEntry, error)
 	ListPlaybooks(context.Context) ([]*model.PlaybookTemplateResponse, error)
 	CreatePlaybook(context.Context, *model.PlaybookTemplateForm) (*model.PlaybookTemplateResponse, error)
@@ -366,7 +366,7 @@ func (s *server) updateJobHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jl := gojsonschema.NewBytesLoader(body)
-	validationResult, err := model.JobSchema.Validate(jl)
+	validationResult, err := model.JobUpdateSchema.Validate(jl)
 	if err != nil {
 		JSONError(w, err)
 		return
@@ -384,7 +384,7 @@ func (s *server) updateJobHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var jobP *model.Job
+	var jobP *model.JobUpdate
 	if err := parseBody(body, &jobP); err != nil {
 		JSONError(w, err)
 		return

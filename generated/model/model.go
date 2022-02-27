@@ -22,6 +22,7 @@ var (
 	JobSchema                      = new(gojsonschema.Schema)
 	JobFormSchema                  = new(gojsonschema.Schema)
 	JobResponseSchema              = new(gojsonschema.Schema)
+	JobUpdateSchema                = new(gojsonschema.Schema)
 	LogEntrySchema                 = new(gojsonschema.Schema)
 	MessageSchema                  = new(gojsonschema.Schema)
 	NewUserResponseSchema          = new(gojsonschema.Schema)
@@ -76,6 +77,7 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"automation":{"type":"string"},"container":{"type":"string"},"log":{"type":"string"},"origin":{"$ref":"#/definitions/Origin"},"output":{"type":"object"},"payload":{},"running":{"type":"boolean"},"status":{"type":"string"}},"required":["automation","running","status"],"$id":"#/definitions/Job"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"automation":{"type":"string"},"origin":{"$ref":"#/definitions/Origin"},"payload":{}},"required":["automation"],"$id":"#/definitions/JobForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"automation":{"type":"string"},"container":{"type":"string"},"id":{"type":"string"},"log":{"type":"string"},"origin":{"$ref":"#/definitions/Origin"},"output":{"type":"object"},"payload":{},"status":{"type":"string"}},"required":["id","automation","status"],"$id":"#/definitions/JobResponse"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"container":{"type":"string"},"log":{"type":"string"},"output":{"type":"object"},"running":{"type":"boolean"},"status":{"type":"string"}},"required":["running","status"],"$id":"#/definitions/JobUpdate"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"created":{"format":"date-time","type":"string"},"creator":{"type":"string"},"message":{"type":"string"},"reference":{"type":"string"},"type":{"type":"string"}},"required":["type","reference","creator","created","message"],"$id":"#/definitions/LogEntry"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"context":{"$ref":"#/definitions/Context"},"payload":{},"secrets":{"type":"object","additionalProperties":{"type":"string"}}},"$id":"#/definitions/Message"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"},"secret":{"type":"string"}},"required":["id","blocked","roles"],"$id":"#/definitions/NewUserResponse"}`),
@@ -131,6 +133,7 @@ func init() {
 	JobSchema = mustCompile(`#/definitions/Job`)
 	JobFormSchema = mustCompile(`#/definitions/JobForm`)
 	JobResponseSchema = mustCompile(`#/definitions/JobResponse`)
+	JobUpdateSchema = mustCompile(`#/definitions/JobUpdate`)
 	LogEntrySchema = mustCompile(`#/definitions/LogEntry`)
 	MessageSchema = mustCompile(`#/definitions/Message`)
 	NewUserResponseSchema = mustCompile(`#/definitions/NewUserResponse`)
@@ -265,6 +268,14 @@ type JobResponse struct {
 	Output     map[string]interface{} `json:"output,omitempty"`
 	Payload    interface{}            `json:"payload,omitempty"`
 	Status     string                 `json:"status"`
+}
+
+type JobUpdate struct {
+	Container *string                `json:"container,omitempty"`
+	Log       *string                `json:"log,omitempty"`
+	Output    map[string]interface{} `json:"output,omitempty"`
+	Running   bool                   `json:"running"`
+	Status    string                 `json:"status"`
 }
 
 type LogEntry struct {

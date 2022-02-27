@@ -39,15 +39,19 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *model.Jo
 	if doc.Running {
 		inspect, err := cli.ContainerInspect(ctx, key)
 		if err != nil || inspect.State == nil {
-			doc.Running = false
 			if update {
-				db.JobUpdate(ctx, key, doc)
+				db.JobUpdate(ctx, key, &model.JobUpdate{
+					Status:  doc.Status,
+					Running: false,
+				})
 			}
 		} else if doc.Status != inspect.State.Status {
 			status = inspect.State.Status
-			doc.Status = inspect.State.Status
 			if update {
-				db.JobUpdate(ctx, key, doc)
+				db.JobUpdate(ctx, key, &model.JobUpdate{
+					Status:  status,
+					Running: doc.Running,
+				})
 			}
 		}
 	}
@@ -108,7 +112,7 @@ func (db *Database) JobGet(ctx context.Context, id string) (*model.JobResponse, 
 	return db.toJobResponse(ctx, meta.Key, &doc, true)
 }
 
-func (db *Database) JobUpdate(ctx context.Context, id string, job *model.Job) (*model.JobResponse, error) {
+func (db *Database) JobUpdate(ctx context.Context, id string, job *model.JobUpdate) (*model.JobResponse, error) {
 	var doc model.Job
 	ctx = driver.WithReturnNew(ctx, &doc)
 
@@ -129,7 +133,7 @@ func (db *Database) JobUpdate(ctx context.Context, id string, job *model.Job) (*
 	}
 	/* End validation */
 
-	meta, err := db.jobCollection.ReplaceDocument(ctx, id, job)
+	meta, err := db.jobCollection.UpdateDocument(ctx, id, job)
 	if err != nil {
 		return nil, err
 	}
