@@ -628,7 +628,7 @@ paths:
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}/owner:
     put:
       tags: [ "tickets" ]
-      summary: "Set a ticket playbook task data"
+      summary: "Set a ticket playbook task owner"
       operationId: "setTaskOwner"
       parameters:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8123 }
@@ -652,7 +652,7 @@ paths:
                   tasks:
                     "block-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 6, name: "Block IOCs", type: "task" }
                     "block-sender": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 3, name: "Block sender","next": { "extract-iocs": "" }, type: "task" }
-                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", data: { boardInvolved: true }, owner: "eve" }
+                    "board": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": true, "order": 0, name: "Board Involvement?","next": { "escalate": "boardInvolved == true","mail-available": "boardInvolved == false" },"schema": { "properties": { "boardInvolved": { "default": false, "title": "A board member is involved.", type: "boolean" } }, "required": [ "boardInvolved" ], "title": "Board Involvement?", type: "object" }, type: "input", owner: "eve" }
                     "escalate": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 1, name: "Escalate to CISO", type: "task" }
                     "extract-iocs": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 5, name: "Extract IOCs", "next": { "block-iocs": "" },"schema": { "properties": { "iocs": { "items": { type: "string" },"title": "IOCs", type: "array" } }, "title": "Extract IOCs", type: "object" }, type: "input" }
                     "mail-available": { created: "2021-12-12T12:12:12.000000012Z", done: false, "active": false, "order": 2, name: "Mail available","next": { "block-sender": "schemaKey == 'yes'", "extract-iocs": "schemaKey == 'yes'", "search-email-gateway": "schemaKey == 'no'" },"schema": { "oneOf": [ { "properties": { "mail": { "title": "Mail", type: "string", "x-display": "textarea" }, "schemaKey": { "const": "yes", type: "string" } },"required": [ "mail" ], "title": "Yes" },{ "properties": { "schemaKey": { "const": "no", type: "string" } },"title": "No" } ],"title": "Mail available", type: "object" }, type: "input" }
