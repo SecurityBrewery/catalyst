@@ -116,23 +116,6 @@ func (db *Database) JobUpdate(ctx context.Context, id string, job *model.JobUpda
 	var doc model.Job
 	ctx = driver.WithReturnNew(ctx, &doc)
 
-	/* Start validation */
-	b, _ := json.Marshal(job)
-
-	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	if !r.Valid() {
-		var errs []string
-		for _, e := range r.Errors() {
-			errs = append(errs, e.String())
-		}
-		return nil, errors.New(strings.Join(errs, ", "))
-	}
-	/* End validation */
-
 	meta, err := db.jobCollection.UpdateDocument(ctx, id, job)
 	if err != nil {
 		return nil, err

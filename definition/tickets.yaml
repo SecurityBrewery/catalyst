@@ -634,7 +634,7 @@ paths:
         - { name: "id", in: "path", description: "Ticket ID", required: true, type: integer, format: "int64", x-example: 8123 }
         - { name: "playbookID", in: "path", description: "Playbook ID", required: true, type: string, x-example: "phishing" }
         - { name: "taskID", in: "path", description: "Task ID", required: true, type: string, x-example: "board" }
-        - { name: "owner", in: "body", description: "Task owner", required: true, schema: { type: string }, x-example: { "eve" } }
+        - { name: "owner", in: "body", description: "Task owner", required: true, schema: { type: string }, x-example: "eve" }
       responses:
         "200":
           description: "successful operation"
