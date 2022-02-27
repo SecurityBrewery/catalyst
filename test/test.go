@@ -201,6 +201,7 @@ func Catalyst(t *testing.T) (context.Context, *catalyst.Config, *catalyst.Server
 		t.Fatal(err)
 	}
 	config.DB.Name = cleanName(t)
+	config.IndexPath = cleanName(t) + ".bleve"
 
 	c, err := catalyst.New(&hooks.Hooks{
 		DatabaseAfterConnectFuncs: []func(ctx context.Context, client driver.Client, name string){Clear},
