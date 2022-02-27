@@ -3959,9 +3959,6 @@
                         "board" : {
                           "active" : true,
                           "created" : "2021-12-12T12:12:12.000+0000",
-                          "data" : {
-                            "boardInvolved" : true
-                          },
                           "done" : false,
                           "name" : "Board Involvement?",
                           "next" : {
@@ -4092,7 +4089,7 @@
         "security" : [ {
           "roles" : [ "ticket:write" ]
         } ],
-        "summary" : "Set a ticket playbook task data",
+        "summary" : "Set a ticket playbook task owner",
         "tags" : [ "tickets" ],
         "x-codegen-request-body-name" : "owner"
       }

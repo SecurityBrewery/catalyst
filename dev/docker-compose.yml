@@ -1,4 +1,4 @@
-version: '2.2'
+version: '2.4'
 services:
   nginx:
     image: nginx:1.21
@@ -38,6 +38,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:14.0.0
+    platform: linux/amd64
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres

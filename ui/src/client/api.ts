@@ -5827,7 +5827,7 @@ export const TicketsApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Set a ticket playbook task data
+         * @summary Set a ticket playbook task owner
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
@@ -6225,7 +6225,7 @@ export const TicketsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Set a ticket playbook task data
+         * @summary Set a ticket playbook task owner
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
@@ -6512,7 +6512,7 @@ export const TicketsApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Set a ticket playbook task data
+         * @summary Set a ticket playbook task owner
          * @param {number} id Ticket ID
          * @param {string} playbookID Playbook ID
          * @param {string} taskID Task ID
@@ -6838,7 +6838,7 @@ export class TicketsApi extends BaseAPI {
 
     /**
      * 
-     * @summary Set a ticket playbook task data
+     * @summary Set a ticket playbook task owner
      * @param {number} id Ticket ID
      * @param {string} playbookID Playbook ID
      * @param {string} taskID Task ID

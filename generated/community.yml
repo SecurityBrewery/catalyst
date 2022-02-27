@@ -5625,8 +5625,6 @@ paths:
                     board:
                       active: true
                       created: 2021-12-12T12:12:12.000000012Z
-                      data:
-                        boardInvolved: true
                       done: false
                       name: Board Involvement?
                       next:
@@ -5815,7 +5813,7 @@ paths:
       security:
       - roles:
         - ticket:write
-      summary: Set a ticket playbook task data
+      summary: Set a ticket playbook task owner
       tags:
       - tickets
   /tickets/{id}/playbooks/{playbookID}/task/{taskID}/run:
