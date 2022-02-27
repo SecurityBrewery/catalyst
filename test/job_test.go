@@ -40,7 +40,7 @@ func TestJob(t *testing.T) {
 		time.Sleep(2 * time.Second)
 
 		if time.Since(start) > time.Minute {
-			assert.Fail(t, "job did not complete within a minute")
+			t.Fatal("job did not complete within a minute")
 		}
 
 		job := request(t, server.Server, http.MethodGet, "/api/jobs/"+id, nil)
