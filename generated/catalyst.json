@@ -679,7 +679,6 @@
                   "automation" : "hash.sha1",
                   "id" : "99cd67131b48",
                   "payload" : "test",
-                  "running" : false,
                   "status" : "failed"
                 }
               }

@@ -1890,7 +1890,6 @@ paths:
               automation: hash.sha1
               id: 99cd67131b48
               payload: test
-              running: false
               status: failed
           schema:
             $ref: '#/definitions/JobResponse'
@@ -5997,8 +5996,7 @@ paths:
         required: true
         schema:
           type: string
-        x-example:
-          eve: null
+        x-example: eve
       responses:
         "200":
           description: successful operation

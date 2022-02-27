@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/arangodb/go-driver"
 	"github.com/docker/docker/client"
-	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/caql"
@@ -76,25 +74,7 @@ func (db *Database) JobCreate(ctx context.Context, id string, job *model.JobForm
 	var doc model.Job
 	newctx := driver.WithReturnNew(ctx, &doc)
 
-	/* Start validation */
-	j := toJob(job)
-	b, _ := json.Marshal(j)
-
-	r, err := model.JobSchema.Validate(gojsonschema.NewBytesLoader(b))
-	if err != nil {
-		return nil, err
-	}
-
-	if !r.Valid() {
-		var errs []string
-		for _, e := range r.Errors() {
-			errs = append(errs, e.String())
-		}
-		return nil, errors.New(strings.Join(errs, ", "))
-	}
-	/* End validation */
-
-	meta, err := db.jobCollection.CreateDocument(ctx, newctx, id, j)
+	meta, err := db.jobCollection.CreateDocument(ctx, newctx, id, toJob(job))
 	if err != nil {
 		return nil, err
 	}

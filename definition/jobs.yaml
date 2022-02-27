@@ -54,7 +54,7 @@ paths:
           description: "successful operation"
           schema: { $ref: "#/definitions/JobResponse" }
           examples:
-            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed", running: false }
+            test: { id: "99cd67131b48", automation: "hash.sha1", payload: "test", status: "failed" }
 
       security: [ { roles: [ "job:write" ] } ]
 
