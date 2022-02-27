@@ -591,8 +591,22 @@
           "required" : true
         },
         "responses" : {
-          "204" : {
-            "content" : { },
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "automation" : "hash.sha1",
+                  "id" : "99cd67131b48",
+                  "payload" : "test",
+                  "status" : "created"
+                }
+              }
+            },
             "description" : "successful operation"
           }
         },

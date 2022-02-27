@@ -26,12 +26,20 @@ func (s *Service) ListJobs(ctx context.Context) ([]*model.JobResponse, error) {
 	return s.database.JobList(ctx)
 }
 
-func (s *Service) RunJob(ctx context.Context, form *model.JobForm) (err error) {
+func (s *Service) RunJob(ctx context.Context, form *model.JobForm) (doc *model.JobResponse, err error) {
 	msgContext := &model.Context{}
 	newJobID := uuid.NewString()
 
 	defer s.publishRequest(ctx, err, "RunJob", jobID(newJobID))
-	return s.bus.PublishJob(newJobID, form.Automation, form.Payload, msgContext, form.Origin)
+	err = s.bus.PublishJob(newJobID, form.Automation, form.Payload, msgContext, form.Origin)
+
+	return &model.JobResponse{
+		Automation: form.Automation,
+		ID:         newJobID,
+		Origin:     form.Origin,
+		Payload:    form.Payload,
+		Status:     "published",
+	}, err
 }
 
 func (s *Service) GetJob(ctx context.Context, id string) (*model.JobResponse, error) {

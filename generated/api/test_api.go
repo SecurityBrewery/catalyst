@@ -103,8 +103,8 @@ var Tests = []struct {
 		Name: "RunJob",
 		Args: Args{Method: "Post", URL: "/jobs", Data: map[string]interface{}{"automation": "hash.sha1", "message": map[string]interface{}{"payload": "test"}}},
 		Want: Want{
-			Status: 204,
-			Body:   nil,
+			Status: 200,
+			Body:   map[string]interface{}{"automation": "hash.sha1", "id": "99cd67131b48", "payload": "test", "status": "created"},
 		},
 	},
 

@@ -1558,8 +1558,16 @@ paths:
           message:
             payload: test
       responses:
-        "204":
+        "200":
           description: successful operation
+          examples:
+            test:
+              automation: hash.sha1
+              id: 99cd67131b48
+              payload: test
+              status: created
+          schema:
+            $ref: '#/definitions/JobResponse'
       security:
       - roles:
         - job:write
