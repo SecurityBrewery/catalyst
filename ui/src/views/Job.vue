@@ -152,7 +152,7 @@ export default Vue.extend({
       }
     },
     loadAutomations() {
-      API.listAutomations(this.$route.params.id).then((response) => {
+      API.listAutomations().then((response) => {
         this.automations = response.data;
       });
     },

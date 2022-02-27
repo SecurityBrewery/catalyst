@@ -40,10 +40,10 @@ export default Vue.extend({
       return icon;
     },
     statusColor: function () {
-      let color = TypeColorEnum.Info;
+      let color = TypeColorEnum.Info as TypeColorEnum;
       this.lodash.forEach(this.$store.state.settings.artifactStates, (state: Type) => {
         if (this.artifact.status === state.id && state.color) {
-          color = state.color
+          color = state.color;
         }
       })
       return color;
