@@ -32,6 +32,7 @@ type CLI struct {
 	OIDCClaimName     string   `env:"OIDC_CLAIM_NAME"     default:"name"               help:"name field in the OIDC claim"`
 	AuthBlockNew      bool     `env:"AUTH_BLOCK_NEW"      default:"true"               help:"Block newly created users"`
 	AuthDefaultRoles  []string `env:"AUTH_DEFAULT_ROLES"                               help:"Default roles for new users"`
+	AuthAdminUsers    []string `env:"AUTH_ADMIN_USERS"                                 help:"Username of admins"`
 
 	IndexPath string `env:"INDEX_PATH" default:"index.bleve" help:"Path for the bleve index"`
 
@@ -96,6 +97,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			OIDCClaimName:     cli.OIDCClaimName,
 			AuthBlockNew:      cli.AuthBlockNew,
 			AuthDefaultRoles:  roles,
+			AuthAdminUsers:    cli.AuthAdminUsers,
 		},
 		Bus: &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
 		UISettings: &model.Settings{

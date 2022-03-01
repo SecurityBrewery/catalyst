@@ -32,6 +32,7 @@ type AuthConfig struct {
 	OIDCClaimName    string
 	AuthBlockNew     bool
 	AuthDefaultRoles []role.Role
+	AuthAdminUsers   []string
 
 	provider *oidc.Provider
 }
@@ -267,14 +268,28 @@ func mapUserAndSettings(claims map[string]interface{}, config *AuthConfig) (*mod
 		name = ""
 	}
 
+	var roles = role.Strings(config.AuthDefaultRoles)
+	if contains(config.AuthAdminUsers, username) {
+		roles = append(roles, role.Admin)
+	}
+
 	return &model.UserForm{
 			ID:      username,
 			Blocked: config.AuthBlockNew,
-			Roles:   role.Strings(config.AuthDefaultRoles),
+			Roles:   roles,
 		}, &model.UserData{
 			Email: &email,
 			Name:  &name,
 		}, nil
+}
+
+func contains(l []string, s string) bool {
+	for _, e := range l {
+		if e == s {
+			return true
+		}
+	}
+	return false
 }
 
 func getString(m map[string]interface{}, key string) (string, error) {
