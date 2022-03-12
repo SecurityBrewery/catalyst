@@ -123,7 +123,7 @@ func (s *Service) RunArtifact(ctx context.Context, id int64, name string, automa
 
 	jobID := uuid.NewString()
 	origin := &model.Origin{ArtifactOrigin: &model.ArtifactOrigin{TicketId: id, Artifact: name}}
-	return s.bus.PublishJob(jobID, automation, name, &model.Context{Artifact: artifact}, origin)
+	return s.bus.PublishJob(jobID, automation, map[string]string{"default": name}, &model.Context{Artifact: artifact}, origin)
 }
 
 func (s *Service) AddComment(ctx context.Context, i int64, form *model.CommentForm) (doc *model.TicketWithTickets, err error) {
