@@ -73,9 +73,6 @@ func SetupTestData(ctx context.Context, db *database.Database) error {
 	if err := db.RelatedCreate(ctx, 8125, 8126); err != nil {
 		return err
 	}
-	if _, err := db.PlaybookCreate(ctx, &model.PlaybookTemplateForm{Yaml: "name: Simple\ntasks:\n  input:\n    name: Enter something to hash\n    type: input\n    schema:\n      title: Something\n      type: object\n      properties:\n        something:\n          type: string\n          title: Something\n          default: \"\"\n    next:\n      hash: \"something != ''\"\n\n  hash:\n    name: Hash the something\n    type: automation\n    automation: hash.sha1\n    payload:\n      default: \"playbook.tasks['input'].data['something']\"\n    next:\n      comment: \"hash != ''\"\n\n  comment:\n    name: Comment the hash\n    type: automation\n    automation: comment\n    payload:\n      default: \"playbook.tasks['hash'].data['hash']\"\n    next:\n      done: \"done\"\n\n  done:\n    name: You can close this case now\n    type: task\n"}); err != nil {
-		return err
-	}
 
 	if _, err := db.LogCreate(ctx, "manual", "tickets/294511", "Fail run account resist lend solve incident centre priority temperature. Cause change distribution examine location technique shape partner milk customer. Rail tea plate soil report cook railway interpretation breath action. Exercise dream accept park conclusion addition shoot assistance may answer. Gold writer link stop combine hear power name commitment operation. Determine lifespan support grow degree henry exclude detail set religion. Direct library policy convention chain retain discover ride walk student. Gather proposal select march aspect play noise avoid encourage employ. Assessment preserve transport combine wish influence income guess run stand. Charge limit crime ignore statement foundation study issue stop claim."); err != nil {
 		return err

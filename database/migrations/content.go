@@ -19,3 +19,6 @@ var MalwarePlaybook string
 
 //go:embed playbooks/phishing.yml
 var PhishingPlaybook string
+
+//go:embed playbooks/simple.yaml
+var SimplePlaybook string

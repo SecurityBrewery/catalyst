@@ -49,6 +49,8 @@ func generateMigrations() ([]Migration, error) {
 		&updateDocument{ID: "update-automation-hash.sha1-1", Collection: "automations", Key: "hash.sha1", Document: model.Automation{Image: "docker.io/python:3", Script: SHA1HashAutomation, Schema: pointer.String(`{"title":"Input","type":"object","properties":{"default":{"type":"string","title":"Value"}},"required":["default"]}`), Type: []string{"global", "artifact", "playbook"}}},
 
 		&createCollection{ID: "create-job-collection", Name: "jobs", DataType: "job", Schema: `{"properties":{"automation":{"type":"string"},"log":{"type":"string"},"payload":{},"origin":{"properties":{"artifact_origin":{"properties":{"artifact":{"type":"string"},"ticket_id":{"format":"int64","type":"integer"}},"required":["artifact","ticket_id"],"type":"object"},"task_origin":{"properties":{"playbook_id":{"type":"string"},"task_id":{"type":"string"},"ticket_id":{"format":"int64","type":"integer"}},"required":["playbook_id","task_id","ticket_id"],"type":"object"}},"type":"object"},"output":{"properties":{},"type":"object"},"running":{"type":"boolean"},"status":{"type":"string"}},"required":["automation","running","status"],"type":"object"}`},
+
+		&createDocument{ID: "create-playbook-simple", Collection: "playbooks", Document: &busdb.Keyed{Key: "simple", Doc: model.PlaybookTemplate{Name: "Simple", Yaml: SimplePlaybook}}},
 	}, nil
 }
 
