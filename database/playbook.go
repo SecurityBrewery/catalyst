@@ -11,7 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/time"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 )
 
 type PlaybookYAML struct {

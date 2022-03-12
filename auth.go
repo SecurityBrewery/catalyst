@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -58,11 +57,6 @@ func (c *AuthConfig) Load(ctx context.Context) error {
 	return nil
 }
 
-const (
-	stateSessionCookie = "state"
-	userSessionCookie  = "user"
-)
-
 func Authenticate(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -82,36 +76,6 @@ func Authenticate(db *database.Database, config *AuthConfig) func(next http.Hand
 	}
 }
 
-/*
-func oidcCtx(w http.ResponseWriter, r *http.Request) (context.Context, context.CancelFunc) {
-		if config.TLSCertFile != "" && config.TLSKeyFile != "" {
-			cert, err := tls.LoadX509KeyPair(config.TLSCertFile, config.TLSKeyFile)
-			if err != nil {
-				return nil, err
-			}
-
-			rootCAs, _ := x509.SystemCertPool()
-			if rootCAs == nil {
-				rootCAs = x509.NewCertPool()
-			}
-			for _, c := range cert.Certificate {
-				rootCAs.AppendCertsFromPEM(c)
-			}
-
-			return oidc.ClientContext(ctx, &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						RootCAs:            rootCAs,
-						InsecureSkipVerify: true,
-					},
-				},
-			}), nil
-		}
-	cctx, cancel := context.WithTimeout(ctx, time.Minute)
-	return cctx, cancel
-}
-*/
-
 func bearerAuth(db *database.Database, authHeader string, iss string, config *AuthConfig) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -120,23 +84,9 @@ func bearerAuth(db *database.Database, authHeader string, iss string, config *Au
 				return
 			}
 
-			// oidcCtx, cancel := oidcCtx(ctx)
-			// defer cancel()
-
-			verifier, err := config.Verifier(r.Context())
-			if err != nil {
-				api.JSONErrorStatus(w, http.StatusUnauthorized, fmt.Errorf("could not verify: %w", err))
-				return
-			}
-			authToken, err := verifier.Verify(r.Context(), authHeader[7:])
-			if err != nil {
-				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not verify bearer token: %w", err))
-				return
-			}
-
-			var claims map[string]interface{}
-			if err := authToken.Claims(&claims); err != nil {
-				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("failed to parse claims: %w", err))
+			claims, apiError := verifyClaims(r, config, authHeader[7:])
+			if apiError != nil {
+				api.JSONErrorStatus(w, apiError.Status, apiError.Internal)
 				return
 			}
 
@@ -145,10 +95,9 @@ func bearerAuth(db *database.Database, authHeader string, iss string, config *Au
 			// 	return
 			// }
 
-			b, _ := json.Marshal(claims)
-			http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: base64.StdEncoding.EncodeToString(b)})
+			setClaimsCookie(w, claims)
 
-			r, err = setContextClaims(r, db, claims, config)
+			r, err := setContextClaims(r, db, claims, config)
 			if err != nil {
 				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not load user: %w", err))
 				return
@@ -180,22 +129,13 @@ func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) ht
 func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			userCookie, err := r.Cookie(userSessionCookie)
+			claims, noCookie, err := claimsCookie(r)
 			if err != nil {
+				api.JSONError(w, err)
+				return
+			}
+			if noCookie {
 				redirectToLogin(w, r, config.OAuth2)
-
-				return
-			}
-
-			b, err := base64.StdEncoding.DecodeString(userCookie.Value)
-			if err != nil {
-				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not decode cookie: %w", err))
-				return
-			}
-
-			var claims map[string]interface{}
-			if err := json.Unmarshal(b, &claims); err != nil {
-				api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("claims not in session"))
 				return
 			}
 
@@ -310,7 +250,7 @@ func redirectToLogin(w http.ResponseWriter, r *http.Request, oauth2Config *oauth
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{Name: stateSessionCookie, Value: state})
+	setStateCookie(w, state)
 
 	http.Redirect(w, r, oauth2Config.AuthCodeURL(state), http.StatusFound)
 	return
@@ -356,13 +296,13 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 
 func callback(config *AuthConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		stateCookie, err := r.Cookie(stateSessionCookie)
-		if err != nil || stateCookie.Value == "" {
+		state, err := stateCookie(r)
+		if err != nil || state == "" {
 			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state missing"))
 			return
 		}
 
-		if stateCookie.Value != r.URL.Query().Get("state") {
+		if state != r.URL.Query().Get("state") {
 			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state mismatch"))
 			return
 		}
@@ -380,31 +320,13 @@ func callback(config *AuthConfig) http.HandlerFunc {
 			return
 		}
 
-		// oidcCtx, cancel := oidcCtx(ctx)
-		// defer cancel()
-
-		verifier, err := config.Verifier(r.Context())
-		if err != nil {
-			api.JSONErrorStatus(w, http.StatusUnauthorized, fmt.Errorf("could not verify: %w", err))
+		claims, apiError := verifyClaims(r, config, rawIDToken)
+		if apiError != nil {
+			api.JSONErrorStatus(w, apiError.Status, apiError.Internal)
 			return
 		}
 
-		// Parse and verify ID Token payload.
-		idToken, err := verifier.Verify(r.Context(), rawIDToken)
-		if err != nil {
-			api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("token verification failed: %w", err))
-			return
-		}
-
-		// Extract custom claims
-		var claims map[string]interface{}
-		if err := idToken.Claims(&claims); err != nil {
-			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("claim extraction failed"))
-			return
-		}
-
-		b, _ := json.Marshal(claims)
-		http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: base64.StdEncoding.EncodeToString(b)})
+		setClaimsCookie(w, claims)
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
@@ -416,4 +338,21 @@ func state() (string, error) {
 		return "", err
 	}
 	return base64.URLEncoding.EncodeToString(rnd), nil
+}
+
+func verifyClaims(r *http.Request, config *AuthConfig, rawIDToken string) (map[string]interface{}, *api.HTTPError) {
+	verifier, err := config.Verifier(r.Context())
+	if err != nil {
+		return nil, &api.HTTPError{Status: http.StatusUnauthorized, Internal: fmt.Errorf("could not verify: %w", err)}
+	}
+	authToken, err := verifier.Verify(r.Context(), rawIDToken)
+	if err != nil {
+		return nil, &api.HTTPError{Status: http.StatusInternalServerError, Internal: fmt.Errorf("could not verify bearer token: %w", err)}
+	}
+
+	var claims map[string]interface{}
+	if err := authToken.Claims(&claims); err != nil {
+		return nil, &api.HTTPError{Status: http.StatusInternalServerError, Internal: fmt.Errorf("failed to parse claims: %w", err)}
+	}
+	return claims, nil
 }

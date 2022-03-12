@@ -20,6 +20,7 @@ mv generated/openapi.json generated/catalyst.json
 
 echo generate server and tests
 swagger-go-chi generated/community.yml generated
+rm -rf generated/auth generated/cli
 
 echo generate typescript client
 openapi-generator generate -i generated/catalyst.yml -o ui/src/client -g typescript-axios --artifact-version 1.0.0-SNAPSHOT

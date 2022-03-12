@@ -2,6 +2,7 @@ package catalyst
 
 import (
 	"context"
+	"io/fs"
 	"log"
 	"net/http"
 	"time"
@@ -21,6 +22,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/service"
 	"github.com/SecurityBrewery/catalyst/storage"
+	"github.com/SecurityBrewery/catalyst/ui"
 )
 
 type Config struct {
@@ -138,10 +140,11 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 
 	server.Get("/callback", callback(config.Auth))
 	server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).Handle("/wss", handleWebSocket(bus))
-	// server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).NotFound(static)
+
+	fsys, _ := fs.Sub(ui.UI, "dist")
 	server.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("not found", r.URL.RawPath)
-		Authenticate(catalystDatabase, config.Auth)(AuthorizeBlockedUser()(http.HandlerFunc(static))).ServeHTTP(w, r)
+		Authenticate(catalystDatabase, config.Auth)(AuthorizeBlockedUser()(http.HandlerFunc(api.Static(fsys)))).ServeHTTP(w, r)
 	})
 
 	return server, nil

@@ -12,8 +12,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/pointer"
-	"github.com/SecurityBrewery/catalyst/time"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 )
 
 func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *model.Artifact) (*model.TicketWithTickets, error) {
