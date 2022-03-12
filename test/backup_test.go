@@ -21,7 +21,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
 )
 
 func TestBackupAndRestore(t *testing.T) {

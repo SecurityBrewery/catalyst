@@ -12,9 +12,9 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 	"github.com/SecurityBrewery/catalyst/role"
-	"github.com/SecurityBrewery/catalyst/time"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")

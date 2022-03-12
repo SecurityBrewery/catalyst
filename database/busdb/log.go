@@ -9,7 +9,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/time"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 )
 
 const LogCollectionName = "logs"

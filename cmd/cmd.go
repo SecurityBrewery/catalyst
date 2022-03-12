@@ -12,7 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
 )

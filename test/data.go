@@ -7,7 +7,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/migrations"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/pointer"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
 )
 
 var bobSetting = &model.UserData{Email: pointer.String("bob@example.org"), Name: pointer.String("Bob Bad")}

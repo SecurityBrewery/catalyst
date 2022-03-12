@@ -9,7 +9,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/time"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 )
 
 func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*model.Artifact, error) {

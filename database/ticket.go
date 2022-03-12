@@ -17,8 +17,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
+	"github.com/SecurityBrewery/catalyst/generated/time"
 	"github.com/SecurityBrewery/catalyst/index"
-	"github.com/SecurityBrewery/catalyst/time"
 )
 
 func toTicket(ticketForm *model.TicketForm) (interface{}, error) {
