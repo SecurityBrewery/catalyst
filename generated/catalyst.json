@@ -225,7 +225,7 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
@@ -305,6 +305,257 @@
         "summary" : "Update current user data",
         "tags" : [ "userdata" ],
         "x-codegen-request-body-name" : "userdata"
+      }
+    },
+    "/dashboard/data" : {
+      "get" : {
+        "operationId" : "dashboardData",
+        "parameters" : [ {
+          "description" : "Aggregation",
+          "example" : "type",
+          "in" : "query",
+          "name" : "aggregation",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Filter",
+          "example" : "status == \"closed\"",
+          "in" : "query",
+          "name" : "filter",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "alert" : 2,
+                  "incident" : 1
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "Get widget data",
+        "tags" : [ "dashboards" ]
+      }
+    },
+    "/dashboards" : {
+      "get" : {
+        "operationId" : "listDashboards",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/DashboardResponse"
+                  },
+                  "type" : "array"
+                }
+              },
+              "test" : {
+                "example" : [ {
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ {
+                    "aggregation" : "owner",
+                    "filter" : "status == \"open\"",
+                    "name" : "open_tickets_per_user",
+                    "type" : "bar",
+                    "width" : 4
+                  }, {
+                    "aggregation" : "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))",
+                    "name" : "tickets_per_week",
+                    "type" : "line",
+                    "width" : 8
+                  } ]
+                } ]
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "List dashboards",
+        "tags" : [ "dashboards" ]
+      },
+      "post" : {
+        "operationId" : "createDashboard",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Dashboard"
+              }
+            }
+          },
+          "description" : "New template",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "my-dashboard",
+                  "name" : "My Dashboard",
+                  "widgets" : [ ]
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Create a new dashboard",
+        "tags" : [ "dashboards" ],
+        "x-codegen-request-body-name" : "template"
+      }
+    },
+    "/dashboards/{id}" : {
+      "delete" : {
+        "operationId" : "deleteDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "simple",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "content" : { },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Delete a dashboard",
+        "tags" : [ "dashboards" ]
+      },
+      "get" : {
+        "operationId" : "getDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "simple",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ {
+                    "aggregation" : "owner",
+                    "filter" : "status == \"open\"",
+                    "name" : "open_tickets_per_user",
+                    "type" : "bar",
+                    "width" : 4
+                  }, {
+                    "aggregation" : "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))",
+                    "name" : "tickets_per_week",
+                    "type" : "line",
+                    "width" : 8
+                  } ]
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "Get a single dashboard",
+        "tags" : [ "dashboards" ]
+      },
+      "put" : {
+        "operationId" : "updateDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "simple",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Dashboard"
+              }
+            }
+          },
+          "description" : "Dashboard object that needs to be added",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ ]
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Update an existing dashboard",
+        "tags" : [ "dashboards" ],
+        "x-codegen-request-body-name" : "dashboard"
       }
     },
     "/graph/{col}/{id}" : {
@@ -1173,7 +1424,7 @@
                     "id" : "clean",
                     "name" : "Clean"
                   } ],
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
                   "ticketTypes" : [ {
                     "default_playbooks" : [ ],
                     "default_template" : "default",
@@ -1262,7 +1513,7 @@
                     "id" : "clean",
                     "name" : "Clean"
                   } ],
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
                   "ticketTypes" : [ {
                     "default_playbooks" : [ ],
                     "default_template" : "default",
@@ -5092,12 +5343,12 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }, {
                   "apikey" : true,
                   "blocked" : false,
                   "id" : "script",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 } ]
               }
             },
@@ -5135,7 +5386,7 @@
                 "example" : {
                   "blocked" : false,
                   "id" : "syncscript",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ],
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ],
                   "secret" : "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH"
                 }
               }
@@ -5201,7 +5452,7 @@
                   "apikey" : true,
                   "blocked" : false,
                   "id" : "script",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
@@ -5250,7 +5501,7 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
@@ -5429,6 +5680,39 @@
             "$ref" : "#/components/schemas/TicketResponse"
           }
         },
+        "type" : "object"
+      },
+      "Dashboard" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "widgets" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Widget"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "widgets" ],
+        "type" : "object"
+      },
+      "DashboardResponse" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "widgets" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Widget"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "id", "name", "widgets" ],
         "type" : "object"
       },
       "Enrichment" : {
@@ -6894,6 +7178,30 @@
           }
         },
         "required" : [ "apikey", "blocked", "id", "roles" ],
+        "type" : "object"
+      },
+      "Widget" : {
+        "properties" : {
+          "aggregation" : {
+            "type" : "string"
+          },
+          "filter" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [ "bar", "line", "pie" ],
+            "type" : "string"
+          },
+          "width" : {
+            "maximum" : 12,
+            "minimum" : 1,
+            "type" : "integer"
+          }
+        },
+        "required" : [ "aggregation", "name", "type", "width" ],
         "type" : "object"
       }
     }

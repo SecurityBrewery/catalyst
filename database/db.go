@@ -26,6 +26,7 @@ const (
 	TicketTypeCollectionName = "tickettypes"
 	JobCollectionName        = "jobs"
 	SettingsCollectionName   = "settings"
+	DashboardCollectionName  = "dashboards"
 
 	TicketArtifactsGraphName     = "Graph"
 	RelatedTicketsCollectionName = "related"
@@ -46,6 +47,7 @@ type Database struct {
 	tickettypeCollection *busdb.Collection
 	jobCollection        *busdb.Collection
 	settingsCollection   *busdb.Collection
+	dashboardCollection  *busdb.Collection
 
 	relatedCollection *busdb.Collection
 	// containsCollection *busdb.Collection
@@ -128,6 +130,10 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 	if err != nil {
 		return nil, err
 	}
+	dashboardCollection, err := arangoDB.Collection(ctx, DashboardCollectionName)
+	if err != nil {
+		return nil, err
+	}
 
 	hookedDB, err := busdb.NewDatabase(ctx, arangoDB, bus)
 	if err != nil {
@@ -149,6 +155,7 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 		tickettypeCollection: busdb.NewCollection(tickettypeCollection, hookedDB),
 		jobCollection:        busdb.NewCollection(jobCollection, hookedDB),
 		settingsCollection:   busdb.NewCollection(settingsCollection, hookedDB),
+		dashboardCollection:  busdb.NewCollection(dashboardCollection, hookedDB),
 	}
 
 	return db, nil
@@ -197,5 +204,6 @@ func (db *Database) Truncate(ctx context.Context) {
 	db.jobCollection.Truncate(ctx)
 	db.relatedCollection.Truncate(ctx)
 	db.settingsCollection.Truncate(ctx)
+	db.dashboardCollection.Truncate(ctx)
 	// db.containsCollection.Truncate(ctx)
 }

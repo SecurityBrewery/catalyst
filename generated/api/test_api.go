@@ -68,7 +68,7 @@ var Tests = []struct {
 		Args: Args{Method: "Get", URL: "/currentuser"},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
+			Body:   map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
 		},
 	},
 
@@ -87,6 +87,60 @@ var Tests = []struct {
 		Want: Want{
 			Status: 200,
 			Body:   map[string]interface{}{"email": "bob@example.org", "id": "bob", "name": "Bob Bad"},
+		},
+	},
+
+	{
+		Name: "DashboardData",
+		Args: Args{Method: "Get", URL: "/dashboard/data?aggregation=type&filter=status+%3D%3D+%22closed%22"},
+		Want: Want{
+			Status: 200,
+			Body:   map[string]interface{}{"alert": 2, "incident": 1},
+		},
+	},
+
+	{
+		Name: "ListDashboards",
+		Args: Args{Method: "Get", URL: "/dashboards"},
+		Want: Want{
+			Status: 200,
+			Body:   []interface{}{map[string]interface{}{"id": "simple", "name": "Simple", "widgets": []interface{}{map[string]interface{}{"aggregation": "owner", "filter": "status == \"open\"", "name": "open_tickets_per_user", "type": "bar", "width": 4}, map[string]interface{}{"aggregation": "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))", "name": "tickets_per_week", "type": "line", "width": 8}}}},
+		},
+	},
+
+	{
+		Name: "CreateDashboard",
+		Args: Args{Method: "Post", URL: "/dashboards", Data: map[string]interface{}{"name": "My Dashboard", "widgets": []interface{}{}}},
+		Want: Want{
+			Status: 200,
+			Body:   map[string]interface{}{"id": "my-dashboard", "name": "My Dashboard", "widgets": []interface{}{}},
+		},
+	},
+
+	{
+		Name: "GetDashboard",
+		Args: Args{Method: "Get", URL: "/dashboards/simple"},
+		Want: Want{
+			Status: 200,
+			Body:   map[string]interface{}{"id": "simple", "name": "Simple", "widgets": []interface{}{map[string]interface{}{"aggregation": "owner", "filter": "status == \"open\"", "name": "open_tickets_per_user", "type": "bar", "width": 4}, map[string]interface{}{"aggregation": "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))", "name": "tickets_per_week", "type": "line", "width": 8}}},
+		},
+	},
+
+	{
+		Name: "UpdateDashboard",
+		Args: Args{Method: "Put", URL: "/dashboards/simple", Data: map[string]interface{}{"name": "Simple", "widgets": []interface{}{}}},
+		Want: Want{
+			Status: 200,
+			Body:   map[string]interface{}{"id": "simple", "name": "Simple", "widgets": []interface{}{}},
+		},
+	},
+
+	{
+		Name: "DeleteDashboard",
+		Args: Args{Method: "Delete", URL: "/dashboards/simple"},
+		Want: Want{
+			Status: 204,
+			Body:   nil,
 		},
 	},
 
@@ -185,7 +239,7 @@ var Tests = []struct {
 		Args: Args{Method: "Get", URL: "/settings"},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"artifactKinds": []interface{}{map[string]interface{}{"icon": "mdi-server", "id": "asset", "name": "Asset"}, map[string]interface{}{"icon": "mdi-bullseye", "id": "ioc", "name": "IOC"}}, "artifactStates": []interface{}{map[string]interface{}{"color": "info", "icon": "mdi-help-circle-outline", "id": "unknown", "name": "Unknown"}, map[string]interface{}{"color": "error", "icon": "mdi-skull", "id": "malicious", "name": "Malicious"}, map[string]interface{}{"color": "success", "icon": "mdi-check", "id": "clean", "name": "Clean"}}, "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}, "ticketTypes": []interface{}{map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-alert", "id": "alert", "name": "Alerts"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-radioactive", "id": "incident", "name": "Incidents"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-fingerprint", "id": "investigation", "name": "Forensic Investigations"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-target", "id": "hunt", "name": "Threat Hunting"}}, "tier": "community", "timeformat": "YYYY-MM-DDThh:mm:ss", "version": "0.0.0-test"},
+			Body:   map[string]interface{}{"artifactKinds": []interface{}{map[string]interface{}{"icon": "mdi-server", "id": "asset", "name": "Asset"}, map[string]interface{}{"icon": "mdi-bullseye", "id": "ioc", "name": "IOC"}}, "artifactStates": []interface{}{map[string]interface{}{"color": "info", "icon": "mdi-help-circle-outline", "id": "unknown", "name": "Unknown"}, map[string]interface{}{"color": "error", "icon": "mdi-skull", "id": "malicious", "name": "Malicious"}, map[string]interface{}{"color": "success", "icon": "mdi-check", "id": "clean", "name": "Clean"}}, "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}, "ticketTypes": []interface{}{map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-alert", "id": "alert", "name": "Alerts"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-radioactive", "id": "incident", "name": "Incidents"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-fingerprint", "id": "investigation", "name": "Forensic Investigations"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-target", "id": "hunt", "name": "Threat Hunting"}}, "tier": "community", "timeformat": "YYYY-MM-DDThh:mm:ss", "version": "0.0.0-test"},
 		},
 	},
 
@@ -194,7 +248,7 @@ var Tests = []struct {
 		Args: Args{Method: "Post", URL: "/settings", Data: map[string]interface{}{"artifactKinds": []interface{}{map[string]interface{}{"icon": "mdi-server", "id": "asset", "name": "Asset"}, map[string]interface{}{"icon": "mdi-bullseye", "id": "ioc", "name": "IOC"}}, "artifactStates": []interface{}{map[string]interface{}{"color": "info", "icon": "mdi-help-circle-outline", "id": "unknown", "name": "Unknown"}, map[string]interface{}{"color": "error", "icon": "mdi-skull", "id": "malicious", "name": "Malicious"}, map[string]interface{}{"color": "success", "icon": "mdi-check", "id": "clean", "name": "Clean"}}, "timeformat": "YYYY-MM-DDThh:mm:ss"}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"artifactKinds": []interface{}{map[string]interface{}{"icon": "mdi-server", "id": "asset", "name": "Asset"}, map[string]interface{}{"icon": "mdi-bullseye", "id": "ioc", "name": "IOC"}}, "artifactStates": []interface{}{map[string]interface{}{"color": "info", "icon": "mdi-help-circle-outline", "id": "unknown", "name": "Unknown"}, map[string]interface{}{"color": "error", "icon": "mdi-skull", "id": "malicious", "name": "Malicious"}, map[string]interface{}{"color": "success", "icon": "mdi-check", "id": "clean", "name": "Clean"}}, "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}, "ticketTypes": []interface{}{map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-alert", "id": "alert", "name": "Alerts"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-radioactive", "id": "incident", "name": "Incidents"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-fingerprint", "id": "investigation", "name": "Forensic Investigations"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-target", "id": "hunt", "name": "Threat Hunting"}}, "tier": "community", "timeformat": "YYYY-MM-DDThh:mm:ss", "version": "0.0.0-test"},
+			Body:   map[string]interface{}{"artifactKinds": []interface{}{map[string]interface{}{"icon": "mdi-server", "id": "asset", "name": "Asset"}, map[string]interface{}{"icon": "mdi-bullseye", "id": "ioc", "name": "IOC"}}, "artifactStates": []interface{}{map[string]interface{}{"color": "info", "icon": "mdi-help-circle-outline", "id": "unknown", "name": "Unknown"}, map[string]interface{}{"color": "error", "icon": "mdi-skull", "id": "malicious", "name": "Malicious"}, map[string]interface{}{"color": "success", "icon": "mdi-check", "id": "clean", "name": "Clean"}}, "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}, "ticketTypes": []interface{}{map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-alert", "id": "alert", "name": "Alerts"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-radioactive", "id": "incident", "name": "Incidents"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-fingerprint", "id": "investigation", "name": "Forensic Investigations"}, map[string]interface{}{"default_playbooks": []interface{}{}, "default_template": "default", "icon": "mdi-target", "id": "hunt", "name": "Threat Hunting"}}, "tier": "community", "timeformat": "YYYY-MM-DDThh:mm:ss", "version": "0.0.0-test"},
 		},
 	},
 
@@ -554,7 +608,7 @@ var Tests = []struct {
 		Args: Args{Method: "Get", URL: "/users"},
 		Want: Want{
 			Status: 200,
-			Body:   []interface{}{map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}}, map[string]interface{}{"apikey": true, "blocked": false, "id": "script", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}}},
+			Body:   []interface{}{map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}}, map[string]interface{}{"apikey": true, "blocked": false, "id": "script", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}}},
 		},
 	},
 
@@ -563,7 +617,7 @@ var Tests = []struct {
 		Args: Args{Method: "Post", URL: "/users", Data: map[string]interface{}{"apikey": true, "blocked": false, "id": "syncscript", "roles": []interface{}{"analyst"}}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"blocked": false, "id": "syncscript", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read"}, "secret": "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH"},
+			Body:   map[string]interface{}{"blocked": false, "id": "syncscript", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read"}, "secret": "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH"},
 		},
 	},
 
@@ -572,7 +626,7 @@ var Tests = []struct {
 		Args: Args{Method: "Get", URL: "/users/script"},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"apikey": true, "blocked": false, "id": "script", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
+			Body:   map[string]interface{}{"apikey": true, "blocked": false, "id": "script", "roles": []interface{}{"analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
 		},
 	},
 
@@ -581,7 +635,7 @@ var Tests = []struct {
 		Args: Args{Method: "Put", URL: "/users/bob", Data: map[string]interface{}{"apikey": false, "blocked": false, "id": "syncscript", "roles": []interface{}{"analyst", "admin"}}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
+			Body:   map[string]interface{}{"apikey": false, "blocked": false, "id": "bob", "roles": []interface{}{"admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write"}},
 		},
 	},
 

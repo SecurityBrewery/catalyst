@@ -15,13 +15,15 @@ import Rule from "../views/Rule.vue";
 import RuleList from "../views/RuleList.vue";
 import Template from "../views/Template.vue";
 import TemplateList from "../views/TemplateList.vue";
+import Dashboard from "../views/Dashboard.vue";
+import DashboardList from "../views/DashboardList.vue";
 import API from "../views/API.vue";
 import User from '../views/User.vue';
 import UserList from "@/views/UserList.vue";
 import Job from '../views/Job.vue';
 import JobList from "@/views/JobList.vue";
 import GroupList from "@/views/GroupList.vue";
-import Dashboard from "@/views/Dashboard.vue";
+import Home from "@/views/Home.vue";
 import Group from "@/views/Group.vue";
 import TicketType from '../views/TicketType.vue';
 import TicketTypeList from "@/views/TicketTypeList.vue";
@@ -59,10 +61,10 @@ const routes: Array<RouteConfig> = [
   },
 
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: Dashboard,
-    meta: { title: "Dashboard" },
+    path: "/home",
+    name: "Home",
+    component: Home,
+    meta: { title: "Home" },
   },
 
   {
@@ -223,6 +225,21 @@ const routes: Array<RouteConfig> = [
         path: ":id",
         name: "Group",
         component: Group,
+      },
+    ]
+  },
+
+
+  {
+    path: "/dashboards",
+    name: "DashboardList",
+    component: DashboardList,
+    meta: { title: "Dashboards" },
+    children: [
+      {
+        path: ":id",
+        name: "Dashboard",
+        component: Dashboard,
       },
     ]
   },

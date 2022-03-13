@@ -16,6 +16,8 @@ var (
 	CommentSchema                  = new(gojsonschema.Schema)
 	CommentFormSchema              = new(gojsonschema.Schema)
 	ContextSchema                  = new(gojsonschema.Schema)
+	DashboardSchema                = new(gojsonschema.Schema)
+	DashboardResponseSchema        = new(gojsonschema.Schema)
 	EnrichmentSchema               = new(gojsonschema.Schema)
 	EnrichmentFormSchema           = new(gojsonschema.Schema)
 	FileSchema                     = new(gojsonschema.Schema)
@@ -60,6 +62,7 @@ var (
 	UserDataResponseSchema         = new(gojsonschema.Schema)
 	UserFormSchema                 = new(gojsonschema.Schema)
 	UserResponseSchema             = new(gojsonschema.Schema)
+	WidgetSchema                   = new(gojsonschema.Schema)
 )
 
 func init() {
@@ -72,6 +75,8 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"created":{"format":"date-time","type":"string"},"creator":{"type":"string"},"message":{"type":"string"}},"required":["creator","created","message"],"$id":"#/definitions/Comment"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"created":{"format":"date-time","type":"string"},"creator":{"type":"string"},"message":{"type":"string"}},"required":["message"],"$id":"#/definitions/CommentForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifact":{"$ref":"#/definitions/Artifact"},"playbook":{"$ref":"#/definitions/PlaybookResponse"},"task":{"$ref":"#/definitions/TaskResponse"},"ticket":{"$ref":"#/definitions/TicketResponse"}},"$id":"#/definitions/Context"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"name":{"type":"string"},"widgets":{"items":{"$ref":"#/definitions/Widget"},"type":"array"}},"required":["name","widgets"],"$id":"#/definitions/Dashboard"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"widgets":{"items":{"$ref":"#/definitions/Widget"},"type":"array"}},"required":["id","name","widgets"],"$id":"#/definitions/DashboardResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"created":{"format":"date-time","type":"string"},"data":{"type":"object"},"name":{"type":"string"}},"required":["name","data","created"],"$id":"#/definitions/Enrichment"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"data":{"type":"object"},"name":{"type":"string"}},"required":["name","data"],"$id":"#/definitions/EnrichmentForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"key":{"type":"string"},"name":{"type":"string"}},"required":["key","name"],"$id":"#/definitions/File"}`),
@@ -116,6 +121,7 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"email":{"type":"string"},"id":{"type":"string"},"image":{"type":"string"},"name":{"type":"string"},"timeformat":{"title":"Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)","type":"string"}},"required":["id"],"$id":"#/definitions/UserDataResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"}},"required":["id","blocked","roles","apikey"],"$id":"#/definitions/UserForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"}},"required":["id","blocked","roles","apikey"],"$id":"#/definitions/UserResponse"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"aggregation":{"type":"string"},"filter":{"type":"string"},"name":{"type":"string"},"type":{"type":"string","enum":["bar","line","pie"]},"width":{"maximum":12,"type":"integer"}},"required":["name","type","aggregation","width"],"$id":"#/definitions/Widget"}`),
 	)
 	if err != nil {
 		panic(err)
@@ -129,6 +135,8 @@ func init() {
 	CommentSchema = mustCompile(`#/definitions/Comment`)
 	CommentFormSchema = mustCompile(`#/definitions/CommentForm`)
 	ContextSchema = mustCompile(`#/definitions/Context`)
+	DashboardSchema = mustCompile(`#/definitions/Dashboard`)
+	DashboardResponseSchema = mustCompile(`#/definitions/DashboardResponse`)
 	EnrichmentSchema = mustCompile(`#/definitions/Enrichment`)
 	EnrichmentFormSchema = mustCompile(`#/definitions/EnrichmentForm`)
 	FileSchema = mustCompile(`#/definitions/File`)
@@ -173,6 +181,7 @@ func init() {
 	UserDataResponseSchema = mustCompile(`#/definitions/UserDataResponse`)
 	UserFormSchema = mustCompile(`#/definitions/UserForm`)
 	UserResponseSchema = mustCompile(`#/definitions/UserResponse`)
+	WidgetSchema = mustCompile(`#/definitions/Widget`)
 }
 
 type Artifact struct {
@@ -228,6 +237,17 @@ type Context struct {
 	Playbook *PlaybookResponse `json:"playbook,omitempty"`
 	Task     *TaskResponse     `json:"task,omitempty"`
 	Ticket   *TicketResponse   `json:"ticket,omitempty"`
+}
+
+type Dashboard struct {
+	Name    string    `json:"name"`
+	Widgets []*Widget `json:"widgets"`
+}
+
+type DashboardResponse struct {
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Widgets []*Widget `json:"widgets"`
 }
 
 type Enrichment struct {
@@ -600,6 +620,14 @@ type UserResponse struct {
 	Roles   []string `json:"roles"`
 }
 
+type Widget struct {
+	Aggregation string  `json:"aggregation"`
+	Filter      *string `json:"filter,omitempty"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
+	Width       int     `json:"width"`
+}
+
 func mustCompile(uri string) *gojsonschema.Schema {
 	s, err := schemaLoader.Compile(gojsonschema.NewReferenceLoader(uri))
 	if err != nil {
@@ -632,4 +660,10 @@ const (
 	TypeColorSuccess = "success"
 
 	TypeColorWarning = "warning"
+
+	WidgetTypeBar = "bar"
+
+	WidgetTypeLine = "line"
+
+	WidgetTypePie = "pie"
 )

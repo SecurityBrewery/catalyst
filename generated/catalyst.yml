@@ -141,6 +141,33 @@ definitions:
       ticket:
         $ref: '#/definitions/TicketResponse'
     type: object
+  Dashboard:
+    properties:
+      name:
+        type: string
+      widgets:
+        items:
+          $ref: '#/definitions/Widget'
+        type: array
+    required:
+    - name
+    - widgets
+    type: object
+  DashboardResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      widgets:
+        items:
+          $ref: '#/definitions/Widget'
+        type: array
+    required:
+    - id
+    - name
+    - widgets
+    type: object
   Enrichment:
     properties:
       created:
@@ -1335,6 +1362,30 @@ definitions:
     - roles
     - apikey
     type: object
+  Widget:
+    properties:
+      aggregation:
+        type: string
+      filter:
+        type: string
+      name:
+        type: string
+      type:
+        enum:
+        - bar
+        - line
+        - pie
+        type: string
+      width:
+        maximum: 12
+        minimum: 1
+        type: integer
+    required:
+    - name
+    - type
+    - aggregation
+    - width
+    type: object
 host: .
 info:
   description: API for the catalyst incident response platform.
@@ -1576,6 +1627,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -1589,6 +1641,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -1659,6 +1712,183 @@ paths:
       summary: Update current user data
       tags:
       - userdata
+  /dashboard/data:
+    get:
+      operationId: dashboardData
+      parameters:
+      - description: Aggregation
+        in: query
+        name: aggregation
+        required: true
+        type: string
+        x-example: type
+      - description: Filter
+        in: query
+        name: filter
+        type: string
+        x-example: status == "closed"
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              alert: 2
+              incident: 1
+          schema:
+            type: object
+      security:
+      - roles:
+        - dashboard:read
+      summary: Get widget data
+      tags:
+      - dashboards
+  /dashboards:
+    get:
+      operationId: listDashboards
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+            - id: simple
+              name: Simple
+              widgets:
+              - aggregation: owner
+                filter: status == "open"
+                name: open_tickets_per_user
+                type: bar
+                width: 4
+              - aggregation: 'CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created)
+                  < 10 ? "0" : "", DATE_ISOWEEK(created))'
+                name: tickets_per_week
+                type: line
+                width: 8
+          schema:
+            items:
+              $ref: '#/definitions/DashboardResponse'
+            type: array
+      security:
+      - roles:
+        - dashboard:read
+      summary: List dashboards
+      tags:
+      - dashboards
+    post:
+      operationId: createDashboard
+      parameters:
+      - description: New template
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/Dashboard'
+        x-example:
+          name: My Dashboard
+          widgets: []
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: my-dashboard
+              name: My Dashboard
+              widgets: []
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:write
+      summary: Create a new dashboard
+      tags:
+      - dashboards
+  /dashboards/{id}:
+    delete:
+      operationId: deleteDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: simple
+      responses:
+        "204":
+          description: successful operation
+      security:
+      - roles:
+        - dashboard:write
+      summary: Delete a dashboard
+      tags:
+      - dashboards
+    get:
+      operationId: getDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: simple
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: simple
+              name: Simple
+              widgets:
+              - aggregation: owner
+                filter: status == "open"
+                name: open_tickets_per_user
+                type: bar
+                width: 4
+              - aggregation: 'CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created)
+                  < 10 ? "0" : "", DATE_ISOWEEK(created))'
+                name: tickets_per_week
+                type: line
+                width: 8
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:read
+      summary: Get a single dashboard
+      tags:
+      - dashboards
+    put:
+      operationId: updateDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: simple
+      - description: Dashboard object that needs to be added
+        in: body
+        name: dashboard
+        required: true
+        schema:
+          $ref: '#/definitions/Dashboard'
+        x-example:
+          name: Simple
+          widgets: []
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: simple
+              name: Simple
+              widgets: []
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:write
+      summary: Update an existing dashboard
+      tags:
+      - dashboards
   /graph/{col}/{id}:
     get:
       operationId: graph
@@ -2601,6 +2831,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -2614,6 +2845,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -2720,6 +2952,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -2733,6 +2966,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7122,6 +7356,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -7135,6 +7370,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7158,6 +7394,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7210,6 +7447,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7270,6 +7508,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7326,6 +7565,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -7339,6 +7579,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read

@@ -29,7 +29,7 @@ import {
     SettingsApi,
     SettingsApiFactory,
     JobsApi,
-    JobsApiFactory,
+    JobsApiFactory, DashboardsApiFactory, DashboardsApi,
 } from "@/client";
 
 const config = new Configuration({
@@ -56,7 +56,8 @@ export const API: TicketsApi &
     SettingsApi &
     TickettypesApi &
     JobsApi &
-    TasksApi = Object.assign(
+    TasksApi &
+    DashboardsApi = Object.assign(
     {},
     TicketsApiFactory(config),
     PlaybooksApiFactory(config),
@@ -74,5 +75,6 @@ export const API: TicketsApi &
     TickettypesApiFactory(config),
     TasksApiFactory(config),
     SettingsApiFactory(config),
-    JobsApiFactory(config)
+    JobsApiFactory(config),
+    DashboardsApiFactory(config)
 );

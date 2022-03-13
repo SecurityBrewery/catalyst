@@ -78,6 +78,27 @@ func SetupTestData(ctx context.Context, db *database.Database) error {
 		return err
 	}
 
+	if _, err := db.DashboardCreate(ctx, &model.Dashboard{
+		Name: "Simple",
+		Widgets: []*model.Widget{
+			{
+				Name:        "open_tickets_per_user",
+				Type:        model.WidgetTypeBar,
+				Aggregation: "owner",
+				Filter:      pointer.String(`status == "open"`),
+				Width:       4,
+			},
+			{
+				Name:        "tickets_per_week",
+				Type:        model.WidgetTypeLine,
+				Aggregation: `CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created) < 10 ? "0" : "", DATE_ISOWEEK(created))`,
+				Width:       8,
+			},
+		},
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 

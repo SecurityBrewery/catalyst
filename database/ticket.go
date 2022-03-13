@@ -449,8 +449,6 @@ func (db *Database) TicketDelete(ctx context.Context, ticketID int64) error {
 func (db *Database) TicketList(ctx context.Context, ticketType string, query string, sorts []string, desc []bool, offset, count int64) (*model.TicketList, error) {
 	binVars := map[string]interface{}{}
 
-	parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
-
 	var typeString = ""
 	if ticketType != "" {
 		typeString = "FILTER d.type == @type "
@@ -459,6 +457,7 @@ func (db *Database) TicketList(ctx context.Context, ticketType string, query str
 
 	var filterString = ""
 	if query != "" {
+		parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
 		queryTree, err := parser.Parse(query)
 		if err != nil {
 			return nil, errors.New("invalid filter query: syntax error")

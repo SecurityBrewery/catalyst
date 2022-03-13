@@ -84,7 +84,7 @@ func Index(t *testing.T) (*index.Index, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return catalystIndex, func() { os.RemoveAll(dir) }, nil
+	return catalystIndex, func() { catalystIndex.Close(); os.RemoveAll(dir) }, nil
 }
 
 func Bus(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, error) {
