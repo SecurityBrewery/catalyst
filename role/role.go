@@ -44,6 +44,7 @@ const (
 	LogRead       Role = "admin:log:read"
 	UserdataRead  Role = "admin:userdata:read"
 	UserdataWrite Role = "admin:userdata:write"
+	SettingsWrite Role = "admin:settings:write"
 	TicketDelete  Role = "admin:ticket:delete"
 	UserWrite     Role = "admin:user:write"
 )
@@ -145,6 +146,7 @@ func List() []Role {
 		TicketWrite, UserRead, AutomationWrite, PlaybookWrite, RuleWrite,
 		TemplateWrite, TickettypeWrite, BackupRead, BackupRestore, GroupWrite,
 		LogRead, UserdataWrite, TicketDelete, UserWrite, JobRead, JobWrite,
+		SettingsWrite,
 	}
 }
 

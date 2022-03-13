@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -11,8 +9,6 @@ import (
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
@@ -47,9 +43,7 @@ type CLI struct {
 	EmitterIOHost string `env:"EMITTER_IO_HOST" default:"tcp://emitter:8080"`
 	EmitterIORKey string `env:"EMITTER_IO_KEY"  required:""`
 
-	Timeformat     string              `env:"TIMEFORMAT"       default:"yyyy-MM-dd HH:mm:ss" help:""`
-	ArtifactStates []map[string]string `env:"ARTIFACT_STATES"`
-	InitialAPIKey  string              `env:"INITIAL_API_KEY"`
+	InitialAPIKey string `env:"INITIAL_API_KEY"`
 }
 
 func ParseCatalystConfig() (*catalyst.Config, error) {
@@ -67,19 +61,6 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 	roles := role.Explode(role.Analyst)
 	roles = append(roles, role.Explodes(cli.AuthDefaultRoles)...)
 	roles = role.Explodes(role.Strings(roles))
-
-	artifactStates, err := toTypes(cli.ArtifactStates)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(artifactStates) == 0 {
-		artifactStates = []*model.Type{
-			{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)},
-			{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)},
-			{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)},
-		}
-	}
 
 	scopes := unique(append([]string{oidc.ScopeOpenID, "profile", "email"}, cli.OIDCScopes...))
 	config := &catalyst.Config{
@@ -99,47 +80,10 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			AuthDefaultRoles:  roles,
 			AuthAdminUsers:    cli.AuthAdminUsers,
 		},
-		Bus: &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
-		UISettings: &model.Settings{
-			ArtifactStates: artifactStates,
-			Timeformat:     cli.Timeformat,
-			Version:        catalyst.GetVersion(),
-			Tier:           model.SettingsTierCommunity,
-		},
+		Bus:           &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
 		InitialAPIKey: cli.InitialAPIKey,
 	}
 	return config, nil
-}
-
-func toTypes(params []map[string]string) ([]*model.Type, error) {
-	var types []*model.Type
-	for _, param := range params {
-		t := &model.Type{}
-
-		icon, iconOK := param["icon"]
-		if iconOK {
-			t.Icon = icon
-		}
-		id, idOK := param["id"]
-		if idOK {
-			t.ID = id
-		}
-		name, nameOK := param["name"]
-		if nameOK {
-			t.Name = name
-		}
-		color, ok := param["color"]
-		if ok {
-			t.Color = pointer.String(color)
-		}
-
-		if iconOK && idOK && nameOK {
-			types = append(types, t)
-		} else {
-			return nil, fmt.Errorf("incomplete type: icon, id and name need to be provided (%s)", params)
-		}
-	}
-	return types, nil
 }
 
 func unique(l []string) []string {

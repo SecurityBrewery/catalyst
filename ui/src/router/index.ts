@@ -26,6 +26,7 @@ import Group from "@/views/Group.vue";
 import TicketType from '../views/TicketType.vue';
 import TicketTypeList from "@/views/TicketTypeList.vue";
 import TaskList from "@/views/TaskList.vue";
+import Settings from "@/views/Settings.vue";
 
 Vue.use(VueRouter);
 
@@ -224,6 +225,13 @@ const routes: Array<RouteConfig> = [
         component: Group,
       },
     ]
+  },
+
+  {
+    path: "/settings",
+    name: "Settings",
+    component: Settings,
+    meta: { title: "Settings" },
   },
 
   {

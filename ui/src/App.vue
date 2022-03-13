@@ -164,6 +164,7 @@ export default Vue.extend({
       { icon: "mdi-account-group", name: "Groups", to: "GroupList", role: "admin:group:write", tier: "enterprise" },
       { icon: "mdi-cogs", name: "User Data", to: "UserDataList", role: "admin:userdata:write" },
       { icon: "mdi-format-list-checks", name: "Jobs", to: "JobList", role: "admin:job:write" },
+      { icon: "mdi-cog", name: "Settings", to: "Settings", role: "admin:settings:write" },
     ],
     mini: true,
     goto: "",

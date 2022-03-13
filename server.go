@@ -31,7 +31,6 @@ type Config struct {
 	Storage   *storage.Config
 	Bus       *bus.Config
 
-	UISettings      *model.Settings
 	Secret          []byte
 	Auth            *AuthConfig
 	ExternalAddress string
@@ -82,7 +81,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, config.UISettings)
+	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
 		return nil, err
 	}

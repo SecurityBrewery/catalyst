@@ -1143,11 +1143,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Settings"
+                  "$ref" : "#/components/schemas/SettingsResponse"
                 }
               },
               "test" : {
                 "example" : {
+                  "artifactKinds" : [ {
+                    "icon" : "mdi-server",
+                    "id" : "asset",
+                    "name" : "Asset"
+                  }, {
+                    "icon" : "mdi-bullseye",
+                    "id" : "ioc",
+                    "name" : "IOC"
+                  } ],
                   "artifactStates" : [ {
                     "color" : "info",
                     "icon" : "mdi-help-circle-outline",
@@ -1204,6 +1213,96 @@
         } ],
         "summary" : "Get settings",
         "tags" : [ "settings" ]
+      },
+      "post" : {
+        "operationId" : "saveSettings",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Settings"
+              }
+            }
+          },
+          "description" : "Save settings",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SettingsResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "artifactKinds" : [ {
+                    "icon" : "mdi-server",
+                    "id" : "asset",
+                    "name" : "Asset"
+                  }, {
+                    "icon" : "mdi-bullseye",
+                    "id" : "ioc",
+                    "name" : "IOC"
+                  } ],
+                  "artifactStates" : [ {
+                    "color" : "info",
+                    "icon" : "mdi-help-circle-outline",
+                    "id" : "unknown",
+                    "name" : "Unknown"
+                  }, {
+                    "color" : "error",
+                    "icon" : "mdi-skull",
+                    "id" : "malicious",
+                    "name" : "Malicious"
+                  }, {
+                    "color" : "success",
+                    "icon" : "mdi-check",
+                    "id" : "clean",
+                    "name" : "Clean"
+                  } ],
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
+                  "ticketTypes" : [ {
+                    "default_playbooks" : [ ],
+                    "default_template" : "default",
+                    "icon" : "mdi-alert",
+                    "id" : "alert",
+                    "name" : "Alerts"
+                  }, {
+                    "default_playbooks" : [ ],
+                    "default_template" : "default",
+                    "icon" : "mdi-radioactive",
+                    "id" : "incident",
+                    "name" : "Incidents"
+                  }, {
+                    "default_playbooks" : [ ],
+                    "default_template" : "default",
+                    "icon" : "mdi-fingerprint",
+                    "id" : "investigation",
+                    "name" : "Forensic Investigations"
+                  }, {
+                    "default_playbooks" : [ ],
+                    "default_template" : "default",
+                    "icon" : "mdi-target",
+                    "id" : "hunt",
+                    "name" : "Threat Hunting"
+                  } ],
+                  "tier" : "community",
+                  "timeformat" : "YYYY-MM-DDThh:mm:ss",
+                  "version" : "0.0.0-test"
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "settings:write" ]
+        } ],
+        "summary" : "Save settings",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "settings"
       }
     },
     "/statistics" : {
@@ -5177,6 +5276,9 @@
             },
             "type" : "object"
           },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "example" : "2.2.2.2",
             "type" : "string"
@@ -5793,6 +5895,37 @@
       },
       "Settings" : {
         "properties" : {
+          "artifactKinds" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Type"
+            },
+            "title" : "Artifact Kinds",
+            "type" : "array"
+          },
+          "artifactStates" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Type"
+            },
+            "title" : "Artifact States",
+            "type" : "array"
+          },
+          "timeformat" : {
+            "title" : "Time Format",
+            "type" : "string"
+          }
+        },
+        "required" : [ "artifactKinds", "artifactStates", "timeformat" ],
+        "type" : "object"
+      },
+      "SettingsResponse" : {
+        "properties" : {
+          "artifactKinds" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Type"
+            },
+            "title" : "Artifact Kinds",
+            "type" : "array"
+          },
           "artifactStates" : {
             "items" : {
               "$ref" : "#/components/schemas/Type"
@@ -5828,7 +5961,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "artifactStates", "ticketTypes", "tier", "timeformat", "version" ],
+        "required" : [ "artifactKinds", "artifactStates", "ticketTypes", "tier", "timeformat", "version" ],
         "type" : "object"
       },
       "Statistics" : {

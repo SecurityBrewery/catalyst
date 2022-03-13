@@ -22,6 +22,23 @@
         </v-list>
       </v-menu>
       &middot;
+      Kind:
+      <v-menu offset-y class="mr-2">
+        <template v-slot:activator="{ on, attrs }">
+          <span v-bind="attrs" v-on="on">
+            <v-icon small class="mr-1" :color="kindColor(artifact.kind)">{{ kindIcon(artifact.kind) }}</v-icon>
+            <span :class="kindColor(artifact.kind) + '--text'">{{ artifact.kind | capitalize }}</span>
+          </span>
+        </template>
+        <v-list>
+          <v-list-item dense link v-for="state in otherKinds" :key="state.id" @click="setKind(state.id)">
+            <v-list-item-title>
+              Set kind to <v-icon small>{{ kindIcon(state.id) }}</v-icon> {{ state.name }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      &middot;
       Type:
       <v-menu
           :close-on-content-click="false"
@@ -148,6 +165,14 @@ export default Vue.extend({
         return state.id !== this.artifact.status;
       })
     },
+    otherKinds: function (): Array<Type> {
+      return this.lodash.filter(this.$store.state.settings.artifactKinds, (state: Type) => {
+        if (!this.artifact || !this.artifact.status) {
+          return true;
+        }
+        return state.id !== this.artifact.status;
+      })
+    },
   },
   methods: {
     setArtifactType() {
@@ -220,6 +245,42 @@ export default Vue.extend({
       artifact.status = status
       API.setArtifact(this.ticketID, this.artifact.name, artifact).then((response) => {
         this.$store.dispatch("alertSuccess", { name: "Artifact status changed", type: "success" })
+        if (response.data.artifacts) {
+          this.lodash.forEach(response.data.artifacts, (artifact) => {
+            if (artifact.name == this.name) {
+              this.artifact = artifact;
+            }
+          })
+        }
+      });
+    },
+    kindIcon: function (kind: string): string {
+      let icon = "mdi-help";
+      this.lodash.forEach(this.$store.state.settings.artifactKinds, (state: Type) => {
+        if (kind === state.id) {
+          icon = state.icon;
+        }
+      })
+      return icon;
+    },
+    kindColor: function (kind: string) {
+      let color = TypeColorEnum.Info as TypeColorEnum;
+      this.lodash.forEach(this.$store.state.settings.artifactKinds, (state: Type) => {
+        if (kind === state.id && state.color) {
+          color = state.color
+        }
+      })
+      return color;
+    },
+    setKind(kind: string) {
+      if (!this.artifact || !this.artifact.name || this.ticketID === undefined) {
+        return;
+      }
+
+      let artifact = this.artifact
+      artifact.kind = kind
+      API.setArtifact(this.ticketID, this.artifact.name, artifact).then((response) => {
+        this.$store.dispatch("alertSuccess", { name: "Artifact kind changed", type: "success" })
         if (response.data.artifacts) {
           this.lodash.forEach(response.data.artifacts, (artifact) => {
             if (artifact.name == this.name) {

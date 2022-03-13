@@ -8,19 +8,18 @@ import (
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
-	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
 type Service struct {
 	bus      *bus.Bus
 	database *database.Database
-	settings *model.Settings
 	storage  *storage.Storage
+	version  string
 }
 
-func New(bus *bus.Bus, database *database.Database, storage *storage.Storage, settings *model.Settings) (*Service, error) {
-	return &Service{database: database, bus: bus, settings: settings, storage: storage}, nil
+func New(bus *bus.Bus, database *database.Database, storage *storage.Storage, version string) (*Service, error) {
+	return &Service{database: database, bus: bus, storage: storage, version: version}, nil
 }
 
 func (s *Service) publishRequest(ctx context.Context, err error, function string, ids []driver.DocumentID) {

@@ -8,6 +8,8 @@ definitions:
         additionalProperties:
           $ref: '#/definitions/Enrichment'
         type: object
+      kind:
+        type: string
       name:
         example: 2.2.2.2
         type: string
@@ -382,6 +384,31 @@ definitions:
     type: array
   Settings:
     properties:
+      artifactKinds:
+        items:
+          $ref: '#/definitions/Type'
+        title: Artifact Kinds
+        type: array
+      artifactStates:
+        items:
+          $ref: '#/definitions/Type'
+        title: Artifact States
+        type: array
+      timeformat:
+        title: Time Format
+        type: string
+    required:
+    - timeformat
+    - artifactKinds
+    - artifactStates
+    type: object
+  SettingsResponse:
+    properties:
+      artifactKinds:
+        items:
+          $ref: '#/definitions/Type'
+        title: Artifact Kinds
+        type: array
       artifactStates:
         items:
           $ref: '#/definitions/Type'
@@ -414,6 +441,7 @@ definitions:
     - tier
     - timeformat
     - ticketTypes
+    - artifactKinds
     - artifactStates
     type: object
   Statistics:
@@ -2137,6 +2165,13 @@ paths:
           description: successful operation
           examples:
             test:
+              artifactKinds:
+              - icon: mdi-server
+                id: asset
+                name: Asset
+              - icon: mdi-bullseye
+                id: ioc
+                name: IOC
               artifactStates:
               - color: info
                 icon: mdi-help-circle-outline
@@ -2205,11 +2240,129 @@ paths:
               timeformat: YYYY-MM-DDThh:mm:ss
               version: 0.0.0-test
           schema:
-            $ref: '#/definitions/Settings'
+            $ref: '#/definitions/SettingsResponse'
       security:
       - roles:
         - settings:read
       summary: Get settings
+      tags:
+      - settings
+    post:
+      operationId: saveSettings
+      parameters:
+      - description: Save settings
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/Settings'
+        x-example:
+          artifactStates:
+          - color: info
+            icon: mdi-help-circle-outline
+            id: unknown
+            name: Unknown
+          - color: error
+            icon: mdi-skull
+            id: malicious
+            name: Malicious
+          - color: success
+            icon: mdi-check
+            id: clean
+            name: Clean
+          artifactTypes:
+          - icon: mdi-server
+            id: asset
+            name: Asset
+          - icon: mdi-bullseye
+            id: ioc
+            name: IOC
+          timeformat: YYYY-MM-DDThh:mm:ss
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              artifactKinds:
+              - icon: mdi-server
+                id: asset
+                name: Asset
+              - icon: mdi-bullseye
+                id: ioc
+                name: IOC
+              artifactStates:
+              - color: info
+                icon: mdi-help-circle-outline
+                id: unknown
+                name: Unknown
+              - color: error
+                icon: mdi-skull
+                id: malicious
+                name: Malicious
+              - color: success
+                icon: mdi-check
+                id: clean
+                name: Clean
+              roles:
+              - admin:backup:read
+              - admin:backup:restore
+              - admin:group:write
+              - admin:job:read
+              - admin:job:write
+              - admin:log:read
+              - admin:ticket:delete
+              - admin:user:write
+              - admin:userdata:read
+              - admin:userdata:write
+              - analyst:automation:read
+              - analyst:currentsettings:write
+              - analyst:currentuser:read
+              - analyst:currentuserdata:read
+              - analyst:file
+              - analyst:group:read
+              - analyst:playbook:read
+              - analyst:rule:read
+              - analyst:settings:read
+              - analyst:template:read
+              - analyst:ticket:read
+              - analyst:ticket:write
+              - analyst:tickettype:read
+              - analyst:user:read
+              - engineer:automation:write
+              - engineer:playbook:write
+              - engineer:rule:write
+              - engineer:template:write
+              - engineer:tickettype:write
+              ticketTypes:
+              - default_playbooks: []
+                default_template: default
+                icon: mdi-alert
+                id: alert
+                name: Alerts
+              - default_playbooks: []
+                default_template: default
+                icon: mdi-radioactive
+                id: incident
+                name: Incidents
+              - default_playbooks: []
+                default_template: default
+                icon: mdi-fingerprint
+                id: investigation
+                name: Forensic Investigations
+              - default_playbooks: []
+                default_template: default
+                icon: mdi-target
+                id: hunt
+                name: Threat Hunting
+              tier: community
+              timeformat: YYYY-MM-DDThh:mm:ss
+              version: 0.0.0-test
+          schema:
+            $ref: '#/definitions/SettingsResponse'
+      security:
+      - roles:
+        - settings:write
+      summary: Save settings
       tags:
       - settings
   /statistics:
