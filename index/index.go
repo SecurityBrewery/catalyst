@@ -78,3 +78,7 @@ func (i *Index) Truncate() error {
 	i.internal = index
 	return nil
 }
+
+func (i *Index) Close() error {
+	return i.internal.Close()
+}

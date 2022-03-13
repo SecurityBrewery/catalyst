@@ -12,7 +12,7 @@ paths:
           description: "successful operation"
           schema: { $ref: "#/definitions/UserResponse" }
           examples:
-            test: { id: bob, roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: false }
+            test: { id: bob, roles: [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read","analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: false }
       security: [ { roles: [ "currentuser:read" ] } ]
 
   /users:
@@ -26,8 +26,8 @@ paths:
           schema: { type: array, items: { $ref: "#/definitions/UserResponse" } }
           examples:
             test:
-              - { id: bob, blocked: false, roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], apikey: false }
-              - { id: script, roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
+              - { id: bob, blocked: false, roles: [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], apikey: false }
+              - { id: script, roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
       security: [ { roles: [ "user:read" ] } ]
     post:
       tags: [ "users" ]
@@ -40,7 +40,7 @@ paths:
           description: "successful operation"
           schema: { $ref: "#/definitions/NewUserResponse" }
           examples:
-            test: { id: "syncscript", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ], secret: "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH", blocked: false }
+            test: { id: "syncscript", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ], secret: "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH", blocked: false }
       security: [ { roles: [ "user:write" ] } ]
   /users/{id}:
     get:
@@ -54,7 +54,7 @@ paths:
           description: "successful operation"
           schema: { $ref: "#/definitions/UserResponse" }
           examples:
-            test: { id: "script", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
+            test: { id: "script", roles: [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ], blocked: false, apikey: true }
       security: [ { roles: [ "user:read" ] } ]
     put:
       tags: [ "users" ]
@@ -70,7 +70,7 @@ paths:
           examples:
             test:
               id: bob
-              roles: [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+              roles: [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
               apikey: false
               blocked: false
       security: [ { roles: [ "user:write" ] } ]

@@ -1627,6 +1627,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -1640,6 +1641,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -1719,20 +1721,19 @@ paths:
         name: aggregation
         required: true
         type: string
-        x-example: default
+        x-example: type
       - description: Filter
         in: query
         name: filter
         type: string
-        x-example: default
+        x-example: status == "closed"
       responses:
         "200":
           description: successful operation
           examples:
             test:
-              id: default
-              name: My Template
-              schema: ""
+              alert: 2
+              incident: 1
           schema:
             type: object
       security:
@@ -1752,12 +1753,16 @@ paths:
             - id: simple
               name: Simple
               widgets:
-              - aggregation: d.owner
-                filter: d.status == "open"
+              - aggregation: owner
+                filter: status == "open"
                 name: open_tickets_per_user
-              - aggregation: 'CONCAT(DATE_YEAR(d.created), "-", DATE_ISOWEEK(d.created)
-                  < 10 ? "0" : "", DATE_ISOWEEK(d.created))'
+                type: bar
+                width: 4
+              - aggregation: 'CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created)
+                  < 10 ? "0" : "", DATE_ISOWEEK(created))'
                 name: tickets_per_week
+                type: line
+                width: 8
           schema:
             items:
               $ref: '#/definitions/DashboardResponse'
@@ -1778,196 +1783,16 @@ paths:
         schema:
           $ref: '#/definitions/Dashboard'
         x-example:
-          name: My Template
-          schema: |
-            {
-              "definitions": {},
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "$id": "https://example.com/object1618746510.json",
-              "title": "Event",
-              "type": "object",
-              "required": [
-                "severity",
-                "description",
-                "tlp"
-              ],
-              "properties": {
-                "severity": {
-                  "$id": "#root/severity",
-                  "title": "Severity",
-                  "type": "string",
-                  "default": "Medium",
-                  "nx-enum": [
-                    "Low",
-                    "Medium",
-                    "High"
-                  ],
-                  "x-cols": 6,
-                  "x-class": "pr-2",
-                  "x-display": "icon",
-                  "x-itemIcon": "icon",
-                  "oneOf": [
-                    {
-                      "const": "Low",
-                      "title": "Low",
-                      "icon": "mdi-chevron-up"
-                    },
-                    {
-                      "const": "Medium",
-                      "title": "Medium",
-                      "icon": "mdi-chevron-double-up"
-                    },
-                    {
-                      "const": "High",
-                      "title": "High",
-                      "icon": "mdi-chevron-triple-up"
-                    }
-                  ]
-                },
-                "tlp": {
-                  "$id": "#root/tlp",
-                  "title": "TLP",
-                  "type": "string",
-                  "nx-enum": [
-                    "White",
-                    "Green",
-                    "Amber",
-                    "Red"
-                  ],
-                  "x-cols": 6,
-                  "x-class": "pr-2",
-                  "x-display": "icon",
-                  "x-itemIcon": "icon",
-                  "oneOf": [
-                    {
-                      "const": "White",
-                      "title": "White",
-                      "icon": "mdi-alpha-w"
-                    },
-                    {
-                      "const": "Green",
-                      "title": "Green",
-                      "icon": "mdi-alpha-g"
-                    },
-                    {
-                      "const": "Amber",
-                      "title": "Amber",
-                      "icon": "mdi-alpha-a"
-                    },
-                    {
-                      "const": "Red",
-                      "title": "Red",
-                      "icon": "mdi-alpha-r"
-                    }
-                  ]
-                },
-                "description": {
-                  "$id": "#root/description",
-                  "title": "Description",
-                  "type": "string",
-                  "x-display": "textarea",
-                  "x-class": "pr-2"
-                }
-              }
-            }
+          name: My Dashboard
+          widgets: []
       responses:
         "200":
           description: successful operation
           examples:
             test:
-              id: my-template
-              name: My Template
-              schema: |
-                {
-                  "definitions": {},
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "$id": "https://example.com/object1618746510.json",
-                  "title": "Event",
-                  "type": "object",
-                  "required": [
-                    "severity",
-                    "description",
-                    "tlp"
-                  ],
-                  "properties": {
-                    "severity": {
-                      "$id": "#root/severity",
-                      "title": "Severity",
-                      "type": "string",
-                      "default": "Medium",
-                      "nx-enum": [
-                        "Low",
-                        "Medium",
-                        "High"
-                      ],
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "Low",
-                          "title": "Low",
-                          "icon": "mdi-chevron-up"
-                        },
-                        {
-                          "const": "Medium",
-                          "title": "Medium",
-                          "icon": "mdi-chevron-double-up"
-                        },
-                        {
-                          "const": "High",
-                          "title": "High",
-                          "icon": "mdi-chevron-triple-up"
-                        }
-                      ]
-                    },
-                    "tlp": {
-                      "$id": "#root/tlp",
-                      "title": "TLP",
-                      "type": "string",
-                      "nx-enum": [
-                        "White",
-                        "Green",
-                        "Amber",
-                        "Red"
-                      ],
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "White",
-                          "title": "White",
-                          "icon": "mdi-alpha-w"
-                        },
-                        {
-                          "const": "Green",
-                          "title": "Green",
-                          "icon": "mdi-alpha-g"
-                        },
-                        {
-                          "const": "Amber",
-                          "title": "Amber",
-                          "icon": "mdi-alpha-a"
-                        },
-                        {
-                          "const": "Red",
-                          "title": "Red",
-                          "icon": "mdi-alpha-r"
-                        }
-                      ]
-                    },
-                    "description": {
-                      "$id": "#root/description",
-                      "title": "Description",
-                      "type": "string",
-                      "x-display": "textarea",
-                      "x-class": "pr-2"
-                    }
-                  }
-                }
+              id: my-dashboard
+              name: My Dashboard
+              widgets: []
           schema:
             $ref: '#/definitions/DashboardResponse'
       security:
@@ -1985,7 +1810,7 @@ paths:
         name: id
         required: true
         type: string
-        x-example: default
+        x-example: simple
       responses:
         "204":
           description: successful operation
@@ -2003,94 +1828,25 @@ paths:
         name: id
         required: true
         type: string
-        x-example: default
+        x-example: simple
       responses:
         "200":
           description: successful operation
           examples:
             test:
-              id: default
-              name: Default
-              schema: |
-                {
-                  "definitions": {},
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "$id": "https://example.com/object1618746510.json",
-                  "title": "Default",
-                  "type": "object",
-                  "required": [
-                    "severity",
-                    "description",
-                    "tlp"
-                  ],
-                  "properties": {
-                    "severity": {
-                      "$id": "#root/severity",
-                      "title": "Severity",
-                      "type": "string",
-                      "default": "Medium",
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "Low",
-                          "title": "Low",
-                          "icon": "mdi-chevron-up"
-                        },
-                        {
-                          "const": "Medium",
-                          "title": "Medium",
-                          "icon": "mdi-chevron-double-up"
-                        },
-                        {
-                          "const": "High",
-                          "title": "High",
-                          "icon": "mdi-chevron-triple-up"
-                        }
-                      ]
-                    },
-                    "tlp": {
-                      "$id": "#root/tlp",
-                      "title": "TLP",
-                      "type": "string",
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "White",
-                          "title": "White",
-                          "icon": "mdi-alpha-w"
-                        },
-                        {
-                          "const": "Green",
-                          "title": "Green",
-                          "icon": "mdi-alpha-g"
-                        },
-                        {
-                          "const": "Amber",
-                          "title": "Amber",
-                          "icon": "mdi-alpha-a"
-                        },
-                        {
-                          "const": "Red",
-                          "title": "Red",
-                          "icon": "mdi-alpha-r"
-                        }
-                      ]
-                    },
-                    "description": {
-                      "$id": "#root/description",
-                      "title": "Description",
-                      "type": "string",
-                      "x-display": "textarea",
-                      "x-class": "pr-2"
-                    }
-                  }
-                }
+              id: simple
+              name: Simple
+              widgets:
+              - aggregation: owner
+                filter: status == "open"
+                name: open_tickets_per_user
+                type: bar
+                width: 4
+              - aggregation: 'CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created)
+                  < 10 ? "0" : "", DATE_ISOWEEK(created))'
+                name: tickets_per_week
+                type: line
+                width: 8
           schema:
             $ref: '#/definitions/DashboardResponse'
       security:
@@ -2107,7 +1863,7 @@ paths:
         name: id
         required: true
         type: string
-        x-example: default
+        x-example: simple
       - description: Dashboard object that needs to be added
         in: body
         name: dashboard
@@ -2115,196 +1871,16 @@ paths:
         schema:
           $ref: '#/definitions/Dashboard'
         x-example:
-          name: My Template
-          schema: |
-            {
-              "definitions": {},
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "$id": "https://example.com/object1618746510.json",
-              "title": "Event",
-              "type": "object",
-              "required": [
-                "severity",
-                "description",
-                "tlp"
-              ],
-              "properties": {
-                "severity": {
-                  "$id": "#root/severity",
-                  "title": "Severity",
-                  "type": "string",
-                  "default": "Medium",
-                  "nx-enum": [
-                    "Low",
-                    "Medium",
-                    "High"
-                  ],
-                  "x-cols": 6,
-                  "x-class": "pr-2",
-                  "x-display": "icon",
-                  "x-itemIcon": "icon",
-                  "oneOf": [
-                    {
-                      "const": "Low",
-                      "title": "Low",
-                      "icon": "mdi-chevron-up"
-                    },
-                    {
-                      "const": "Medium",
-                      "title": "Medium",
-                      "icon": "mdi-chevron-double-up"
-                    },
-                    {
-                      "const": "High",
-                      "title": "High",
-                      "icon": "mdi-chevron-triple-up"
-                    }
-                  ]
-                },
-                "tlp": {
-                  "$id": "#root/tlp",
-                  "title": "TLP",
-                  "type": "string",
-                  "nx-enum": [
-                    "White",
-                    "Green",
-                    "Amber",
-                    "Red"
-                  ],
-                  "x-cols": 6,
-                  "x-class": "pr-2",
-                  "x-display": "icon",
-                  "x-itemIcon": "icon",
-                  "oneOf": [
-                    {
-                      "const": "White",
-                      "title": "White",
-                      "icon": "mdi-alpha-w"
-                    },
-                    {
-                      "const": "Green",
-                      "title": "Green",
-                      "icon": "mdi-alpha-g"
-                    },
-                    {
-                      "const": "Amber",
-                      "title": "Amber",
-                      "icon": "mdi-alpha-a"
-                    },
-                    {
-                      "const": "Red",
-                      "title": "Red",
-                      "icon": "mdi-alpha-r"
-                    }
-                  ]
-                },
-                "description": {
-                  "$id": "#root/description",
-                  "title": "Description",
-                  "type": "string",
-                  "x-display": "textarea",
-                  "x-class": "pr-2"
-                }
-              }
-            }
+          name: Simple
+          widgets: []
       responses:
         "200":
           description: successful operation
           examples:
             test:
-              id: default
-              name: My Template
-              schema: |
-                {
-                  "definitions": {},
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "$id": "https://example.com/object1618746510.json",
-                  "title": "Event",
-                  "type": "object",
-                  "required": [
-                    "severity",
-                    "description",
-                    "tlp"
-                  ],
-                  "properties": {
-                    "severity": {
-                      "$id": "#root/severity",
-                      "title": "Severity",
-                      "type": "string",
-                      "default": "Medium",
-                      "nx-enum": [
-                        "Low",
-                        "Medium",
-                        "High"
-                      ],
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "Low",
-                          "title": "Low",
-                          "icon": "mdi-chevron-up"
-                        },
-                        {
-                          "const": "Medium",
-                          "title": "Medium",
-                          "icon": "mdi-chevron-double-up"
-                        },
-                        {
-                          "const": "High",
-                          "title": "High",
-                          "icon": "mdi-chevron-triple-up"
-                        }
-                      ]
-                    },
-                    "tlp": {
-                      "$id": "#root/tlp",
-                      "title": "TLP",
-                      "type": "string",
-                      "nx-enum": [
-                        "White",
-                        "Green",
-                        "Amber",
-                        "Red"
-                      ],
-                      "x-cols": 6,
-                      "x-class": "pr-2",
-                      "x-display": "icon",
-                      "x-itemIcon": "icon",
-                      "oneOf": [
-                        {
-                          "const": "White",
-                          "title": "White",
-                          "icon": "mdi-alpha-w"
-                        },
-                        {
-                          "const": "Green",
-                          "title": "Green",
-                          "icon": "mdi-alpha-g"
-                        },
-                        {
-                          "const": "Amber",
-                          "title": "Amber",
-                          "icon": "mdi-alpha-a"
-                        },
-                        {
-                          "const": "Red",
-                          "title": "Red",
-                          "icon": "mdi-alpha-r"
-                        }
-                      ]
-                    },
-                    "description": {
-                      "$id": "#root/description",
-                      "title": "Description",
-                      "type": "string",
-                      "x-display": "textarea",
-                      "x-class": "pr-2"
-                    }
-                  }
-                }
+              id: simple
+              name: Simple
+              widgets: []
           schema:
             $ref: '#/definitions/DashboardResponse'
       security:
@@ -3255,6 +2831,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -3268,6 +2845,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -3374,6 +2952,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -3387,6 +2966,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7776,6 +7356,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -7789,6 +7370,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7812,6 +7394,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7864,6 +7447,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7924,6 +7508,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read
@@ -7980,6 +7565,7 @@ paths:
               roles:
               - admin:backup:read
               - admin:backup:restore
+              - admin:dashboard:write
               - admin:group:write
               - admin:job:read
               - admin:job:write
@@ -7993,6 +7579,7 @@ paths:
               - analyst:currentsettings:write
               - analyst:currentuser:read
               - analyst:currentuserdata:read
+              - analyst:dashboard:read
               - analyst:file
               - analyst:group:read
               - analyst:playbook:read

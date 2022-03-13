@@ -225,7 +225,7 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
@@ -312,7 +312,7 @@
         "operationId" : "dashboardData",
         "parameters" : [ {
           "description" : "Aggregation",
-          "example" : "default",
+          "example" : "type",
           "in" : "query",
           "name" : "aggregation",
           "required" : true,
@@ -321,7 +321,7 @@
           }
         }, {
           "description" : "Filter",
-          "example" : "default",
+          "example" : "status == \"closed\"",
           "in" : "query",
           "name" : "filter",
           "schema" : {
@@ -338,9 +338,8 @@
               },
               "test" : {
                 "example" : {
-                  "id" : "default",
-                  "name" : "My Template",
-                  "schema" : ""
+                  "alert" : 2,
+                  "incident" : 1
                 }
               }
             },
@@ -373,12 +372,16 @@
                   "id" : "simple",
                   "name" : "Simple",
                   "widgets" : [ {
-                    "aggregation" : "d.owner",
-                    "filter" : "d.status == \"open\"",
-                    "name" : "open_tickets_per_user"
+                    "aggregation" : "owner",
+                    "filter" : "status == \"open\"",
+                    "name" : "open_tickets_per_user",
+                    "type" : "bar",
+                    "width" : 4
                   }, {
-                    "aggregation" : "CONCAT(DATE_YEAR(d.created), \"-\", DATE_ISOWEEK(d.created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(d.created))",
-                    "name" : "tickets_per_week"
+                    "aggregation" : "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))",
+                    "name" : "tickets_per_week",
+                    "type" : "line",
+                    "width" : 8
                   } ]
                 } ]
               }
@@ -415,9 +418,9 @@
               },
               "test" : {
                 "example" : {
-                  "id" : "my-template",
-                  "name" : "My Template",
-                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"nx-enum\": [\n        \"Low\",\n        \"Medium\",\n        \"High\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"nx-enum\": [\n        \"White\",\n        \"Green\",\n        \"Amber\",\n        \"Red\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                  "id" : "my-dashboard",
+                  "name" : "My Dashboard",
+                  "widgets" : [ ]
                 }
               }
             },
@@ -437,7 +440,7 @@
         "operationId" : "deleteDashboard",
         "parameters" : [ {
           "description" : "Dashboard ID",
-          "example" : "default",
+          "example" : "simple",
           "in" : "path",
           "name" : "id",
           "required" : true,
@@ -461,7 +464,7 @@
         "operationId" : "getDashboard",
         "parameters" : [ {
           "description" : "Dashboard ID",
-          "example" : "default",
+          "example" : "simple",
           "in" : "path",
           "name" : "id",
           "required" : true,
@@ -479,9 +482,20 @@
               },
               "test" : {
                 "example" : {
-                  "id" : "default",
-                  "name" : "Default",
-                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Default\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ {
+                    "aggregation" : "owner",
+                    "filter" : "status == \"open\"",
+                    "name" : "open_tickets_per_user",
+                    "type" : "bar",
+                    "width" : 4
+                  }, {
+                    "aggregation" : "CONCAT(DATE_YEAR(created), \"-\", DATE_ISOWEEK(created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(created))",
+                    "name" : "tickets_per_week",
+                    "type" : "line",
+                    "width" : 8
+                  } ]
                 }
               }
             },
@@ -498,7 +512,7 @@
         "operationId" : "updateDashboard",
         "parameters" : [ {
           "description" : "Dashboard ID",
-          "example" : "default",
+          "example" : "simple",
           "in" : "path",
           "name" : "id",
           "required" : true,
@@ -527,9 +541,9 @@
               },
               "test" : {
                 "example" : {
-                  "id" : "default",
-                  "name" : "My Template",
-                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"nx-enum\": [\n        \"Low\",\n        \"Medium\",\n        \"High\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"nx-enum\": [\n        \"White\",\n        \"Green\",\n        \"Amber\",\n        \"Red\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ ]
                 }
               }
             },
@@ -1410,7 +1424,7 @@
                     "id" : "clean",
                     "name" : "Clean"
                   } ],
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
                   "ticketTypes" : [ {
                     "default_playbooks" : [ ],
                     "default_template" : "default",
@@ -1499,7 +1513,7 @@
                     "id" : "clean",
                     "name" : "Clean"
                   } ],
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ],
                   "ticketTypes" : [ {
                     "default_playbooks" : [ ],
                     "default_template" : "default",
@@ -5329,12 +5343,12 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }, {
                   "apikey" : true,
                   "blocked" : false,
                   "id" : "script",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 } ]
               }
             },
@@ -5372,7 +5386,7 @@
                 "example" : {
                   "blocked" : false,
                   "id" : "syncscript",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ],
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read" ],
                   "secret" : "v39bOuobnlEljfWzjAgoKzhmnh1xSMxH"
                 }
               }
@@ -5438,7 +5452,7 @@
                   "apikey" : true,
                   "blocked" : false,
                   "id" : "script",
-                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
@@ -5487,7 +5501,7 @@
                   "apikey" : false,
                   "blocked" : false,
                   "id" : "bob",
-                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
+                  "roles" : [ "admin:backup:read", "admin:backup:restore", "admin:dashboard:write", "admin:group:write", "admin:job:read", "admin:job:write", "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read", "admin:userdata:write", "analyst:automation:read", "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read", "analyst:dashboard:read", "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read", "analyst:settings:read", "analyst:template:read", "analyst:ticket:read", "analyst:ticket:write", "analyst:tickettype:read", "analyst:user:read", "engineer:automation:write", "engineer:playbook:write", "engineer:rule:write", "engineer:template:write", "engineer:tickettype:write" ]
                 }
               }
             },
