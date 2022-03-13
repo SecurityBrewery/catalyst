@@ -2,7 +2,9 @@ package database
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
@@ -43,9 +45,30 @@ func (db *Database) Statistics(ctx context.Context) (*model.Statistics, error) {
 }
 
 func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *string) (map[string]interface{}, error) {
+	parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
+
+	queryTree, err := parser.Parse(aggregation)
+	if err != nil {
+		return nil, fmt.Errorf("invalid aggregation query (%s): syntax error\n", aggregation)
+	}
+	aggregationString, err := queryTree.String()
+	if err != nil {
+		return nil, fmt.Errorf("invalid widget aggregation query (%s): %w", aggregation, err)
+	}
+	aggregation = aggregationString
+
 	filterQ := ""
 	if filter != nil && *filter != "" {
-		filterQ = "FILTER " + *filter
+		queryTree, err := parser.Parse(*filter)
+		if err != nil {
+			return nil, fmt.Errorf("invalid filter query (%s): syntax error\n", *filter)
+		}
+		filterString, err := queryTree.String()
+		if err != nil {
+			return nil, fmt.Errorf("invalid widget filter query (%s): %w", *filter, err)
+		}
+
+		filterQ = "FILTER " + filterString
 	}
 
 	query := `RETURN MERGE(FOR d in tickets

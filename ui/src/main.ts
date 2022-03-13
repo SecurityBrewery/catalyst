@@ -68,19 +68,26 @@ const v = new Vue({
 }).$mount("#app");
 
 axios.interceptors.response.use(
-  response => response,
+  // response => response,
+  response => {
+      lodash.unset(response.data, 'notoast');
+
+      return Promise.resolve(response);
+  },
   error => {
-      console.log(error)
-      if (error.response.data && 'title' in error.response.data && 'detail' in error.response.data) {
-          const problem = error.response.data as Problem;
-          v.$store.dispatch("alertError", { name: problem.title, detail: problem.detail });
-          return Promise.reject(error);
+      if (!lodash.has(error.response.data, 'notoast')) {
+          if (error.response.data && 'title' in error.response.data && 'detail' in error.response.data) {
+              const problem = error.response.data as Problem;
+              v.$store.dispatch("alertError", { name: problem.title, detail: problem.detail });
+              return Promise.reject(error);
+          }
+          if (error.response.data && 'error' in error.response.data) {
+              v.$store.dispatch("alertError", { name: "Error", detail: error.response.data.error });
+              return Promise.reject(error);
+          }
+          v.$store.dispatch("alertError", { name: "Error", detail: JSON.stringify(error.response.data) });
       }
-      if (error.response.data && 'error' in error.response.data) {
-          v.$store.dispatch("alertError", { name: "Error", detail: error.response.data.error });
-          return Promise.reject(error);
-      }
-      v.$store.dispatch("alertError", { name: "Error", detail: JSON.stringify(error.response.data) });
+
       return Promise.reject(error);
   }
 );

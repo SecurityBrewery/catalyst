@@ -7,9 +7,8 @@
         itemname="name"
         singular="Dashboard"
         plural="Dashboards"
-        :show-new="false"
-        :deletable="false"
         writepermission="admin:dashboard:write"
+        @delete="deleteDashboard"
     ></List>
   </v-main>
 </template>
@@ -37,6 +36,11 @@ export default Vue.extend({
         this.dashboards = response.data;
       });
     },
+    deleteDashboard(id: string) {
+      API.deleteDashboard(id).then(() => {
+        this.loadDashboards();
+      })
+    }
   },
   mounted() {
     this.loadDashboards();

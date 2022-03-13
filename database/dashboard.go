@@ -3,10 +3,12 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
 
+	"github.com/SecurityBrewery/catalyst/caql"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
@@ -25,6 +27,10 @@ func (db *Database) DashboardCreate(ctx context.Context, dashboard *model.Dashbo
 	}
 	if dashboard.Name == "" {
 		return nil, errors.New("requires dashboard name")
+	}
+
+	if err := db.parseWidgets(dashboard); err != nil {
+		return nil, err
 	}
 
 	var doc model.Dashboard
@@ -49,6 +55,10 @@ func (db *Database) DashboardGet(ctx context.Context, id string) (*model.Dashboa
 }
 
 func (db *Database) DashboardUpdate(ctx context.Context, id string, dashboard *model.Dashboard) (*model.DashboardResponse, error) {
+	if err := db.parseWidgets(dashboard); err != nil {
+		return nil, err
+	}
+
 	var doc model.Dashboard
 	ctx = driver.WithReturnNew(ctx, &doc)
 
@@ -85,4 +95,23 @@ func (db *Database) DashboardList(ctx context.Context) ([]*model.DashboardRespon
 	}
 
 	return docs, err
+}
+
+func (db *Database) parseWidgets(dashboard *model.Dashboard) error {
+	for _, widget := range dashboard.Widgets {
+		parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
+
+		_, err := parser.Parse(widget.Aggregation)
+		if err != nil {
+			return fmt.Errorf("invalid aggregation query (%s): syntax error\n", widget.Aggregation)
+		}
+
+		if widget.Filter != nil {
+			_, err := parser.Parse(*widget.Filter)
+			if err != nil {
+				return fmt.Errorf("invalid filter query (%s): syntax error\n", *widget.Filter)
+			}
+		}
+	}
+	return nil
 }

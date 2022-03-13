@@ -16,9 +16,10 @@ const (
 	Admin    string = "admin"
 
 	AutomationRead       Role = "analyst:automation:read"
+	CurrentuserRead      Role = "analyst:currentuser:read"
 	CurrentuserdataRead  Role = "analyst:currentuserdata:read"
 	CurrentuserdataWrite Role = "analyst:currentsettings:write"
-	CurrentuserRead      Role = "analyst:currentuser:read"
+	DashboardRead        Role = "analyst:dashboard:read"
 	FileReadWrite        Role = "analyst:file"
 	GroupRead            Role = "analyst:group:read"
 	PlaybookRead         Role = "analyst:playbook:read"
@@ -26,8 +27,8 @@ const (
 	SettingsRead         Role = "analyst:settings:read"
 	TemplateRead         Role = "analyst:template:read"
 	TicketRead           Role = "analyst:ticket:read"
-	TickettypeRead       Role = "analyst:tickettype:read"
 	TicketWrite          Role = "analyst:ticket:write"
+	TickettypeRead       Role = "analyst:tickettype:read"
 	UserRead             Role = "analyst:user:read"
 
 	AutomationWrite Role = "engineer:automation:write"
@@ -36,17 +37,18 @@ const (
 	TemplateWrite   Role = "engineer:template:write"
 	TickettypeWrite Role = "engineer:tickettype:write"
 
-	BackupRead    Role = "admin:backup:read"
-	BackupRestore Role = "admin:backup:restore"
-	GroupWrite    Role = "admin:group:write"
-	JobWrite      Role = "admin:job:write"
-	JobRead       Role = "admin:job:read"
-	LogRead       Role = "admin:log:read"
-	UserdataRead  Role = "admin:userdata:read"
-	UserdataWrite Role = "admin:userdata:write"
-	SettingsWrite Role = "admin:settings:write"
-	TicketDelete  Role = "admin:ticket:delete"
-	UserWrite     Role = "admin:user:write"
+	BackupRead     Role = "admin:backup:read"
+	BackupRestore  Role = "admin:backup:restore"
+	DashboardWrite Role = "admin:dashboard:write"
+	GroupWrite     Role = "admin:group:write"
+	JobRead        Role = "admin:job:read"
+	JobWrite       Role = "admin:job:write"
+	LogRead        Role = "admin:log:read"
+	SettingsWrite  Role = "admin:settings:write"
+	TicketDelete   Role = "admin:ticket:delete"
+	UserWrite      Role = "admin:user:write"
+	UserdataRead   Role = "admin:userdata:read"
+	UserdataWrite  Role = "admin:userdata:write"
 )
 
 func (p Role) String() string {
@@ -146,7 +148,7 @@ func List() []Role {
 		TicketWrite, UserRead, AutomationWrite, PlaybookWrite, RuleWrite,
 		TemplateWrite, TickettypeWrite, BackupRead, BackupRestore, GroupWrite,
 		LogRead, UserdataWrite, TicketDelete, UserWrite, JobRead, JobWrite,
-		SettingsWrite,
+		SettingsWrite, DashboardRead, DashboardWrite,
 	}
 }
 

@@ -182,6 +182,7 @@ export default Vue.extend({
     },
     internal: function (): Array<any> {
       return  [
+        { icon: "mdi-view-dashboard", name: "Dashboards", to: "DashboardList", role: "admin:dashboard:write" },
         { icon: "mdi-check-bold", name: "Open Tasks", to: "TaskList", count: this.$store.state.task_count },
       ]
     },

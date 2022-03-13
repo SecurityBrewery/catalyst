@@ -84,14 +84,14 @@ func SetupTestData(ctx context.Context, db *database.Database) error {
 			{
 				Name:        "open_tickets_per_user",
 				Type:        model.WidgetTypeBar,
-				Aggregation: "d.owner",
-				Filter:      pointer.String("d.status == \"open\""),
+				Aggregation: "owner",
+				Filter:      pointer.String(`status == "open"`),
 				Width:       4,
 			},
 			{
 				Name:        "tickets_per_week",
 				Type:        model.WidgetTypeLine,
-				Aggregation: "CONCAT(DATE_YEAR(d.created), \"-\", DATE_ISOWEEK(d.created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(d.created))",
+				Aggregation: `CONCAT(DATE_YEAR(created), "-", DATE_ISOWEEK(created) < 10 ? "0" : "", DATE_ISOWEEK(created))`,
 				Width:       8,
 			},
 		},
