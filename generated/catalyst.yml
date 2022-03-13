@@ -141,6 +141,33 @@ definitions:
       ticket:
         $ref: '#/definitions/TicketResponse'
     type: object
+  Dashboard:
+    properties:
+      name:
+        type: string
+      widgets:
+        items:
+          $ref: '#/definitions/Widget'
+        type: array
+    required:
+    - name
+    - widgets
+    type: object
+  DashboardResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      widgets:
+        items:
+          $ref: '#/definitions/Widget'
+        type: array
+    required:
+    - id
+    - name
+    - widgets
+    type: object
   Enrichment:
     properties:
       created:
@@ -1335,6 +1362,30 @@ definitions:
     - roles
     - apikey
     type: object
+  Widget:
+    properties:
+      aggregation:
+        type: string
+      filter:
+        type: string
+      name:
+        type: string
+      type:
+        enum:
+        - bar
+        - line
+        - pie
+        type: string
+      width:
+        maximum: 12
+        minimum: 1
+        type: integer
+    required:
+    - name
+    - type
+    - aggregation
+    - width
+    type: object
 host: .
 info:
   description: API for the catalyst incident response platform.
@@ -1659,6 +1710,609 @@ paths:
       summary: Update current user data
       tags:
       - userdata
+  /dashboard/data:
+    get:
+      operationId: dashboardData
+      parameters:
+      - description: Aggregation
+        in: query
+        name: aggregation
+        required: true
+        type: string
+        x-example: default
+      - description: Filter
+        in: query
+        name: filter
+        type: string
+        x-example: default
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: default
+              name: My Template
+              schema: ""
+          schema:
+            type: object
+      security:
+      - roles:
+        - dashboard:read
+      summary: Get widget data
+      tags:
+      - dashboards
+  /dashboards:
+    get:
+      operationId: listDashboards
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+            - id: simple
+              name: Simple
+              widgets:
+              - aggregation: d.owner
+                filter: d.status == "open"
+                name: open_tickets_per_user
+              - aggregation: 'CONCAT(DATE_YEAR(d.created), "-", DATE_ISOWEEK(d.created)
+                  < 10 ? "0" : "", DATE_ISOWEEK(d.created))'
+                name: tickets_per_week
+          schema:
+            items:
+              $ref: '#/definitions/DashboardResponse'
+            type: array
+      security:
+      - roles:
+        - dashboard:read
+      summary: List dashboards
+      tags:
+      - dashboards
+    post:
+      operationId: createDashboard
+      parameters:
+      - description: New template
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/Dashboard'
+        x-example:
+          name: My Template
+          schema: |
+            {
+              "definitions": {},
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "$id": "https://example.com/object1618746510.json",
+              "title": "Event",
+              "type": "object",
+              "required": [
+                "severity",
+                "description",
+                "tlp"
+              ],
+              "properties": {
+                "severity": {
+                  "$id": "#root/severity",
+                  "title": "Severity",
+                  "type": "string",
+                  "default": "Medium",
+                  "nx-enum": [
+                    "Low",
+                    "Medium",
+                    "High"
+                  ],
+                  "x-cols": 6,
+                  "x-class": "pr-2",
+                  "x-display": "icon",
+                  "x-itemIcon": "icon",
+                  "oneOf": [
+                    {
+                      "const": "Low",
+                      "title": "Low",
+                      "icon": "mdi-chevron-up"
+                    },
+                    {
+                      "const": "Medium",
+                      "title": "Medium",
+                      "icon": "mdi-chevron-double-up"
+                    },
+                    {
+                      "const": "High",
+                      "title": "High",
+                      "icon": "mdi-chevron-triple-up"
+                    }
+                  ]
+                },
+                "tlp": {
+                  "$id": "#root/tlp",
+                  "title": "TLP",
+                  "type": "string",
+                  "nx-enum": [
+                    "White",
+                    "Green",
+                    "Amber",
+                    "Red"
+                  ],
+                  "x-cols": 6,
+                  "x-class": "pr-2",
+                  "x-display": "icon",
+                  "x-itemIcon": "icon",
+                  "oneOf": [
+                    {
+                      "const": "White",
+                      "title": "White",
+                      "icon": "mdi-alpha-w"
+                    },
+                    {
+                      "const": "Green",
+                      "title": "Green",
+                      "icon": "mdi-alpha-g"
+                    },
+                    {
+                      "const": "Amber",
+                      "title": "Amber",
+                      "icon": "mdi-alpha-a"
+                    },
+                    {
+                      "const": "Red",
+                      "title": "Red",
+                      "icon": "mdi-alpha-r"
+                    }
+                  ]
+                },
+                "description": {
+                  "$id": "#root/description",
+                  "title": "Description",
+                  "type": "string",
+                  "x-display": "textarea",
+                  "x-class": "pr-2"
+                }
+              }
+            }
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: my-template
+              name: My Template
+              schema: |
+                {
+                  "definitions": {},
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "$id": "https://example.com/object1618746510.json",
+                  "title": "Event",
+                  "type": "object",
+                  "required": [
+                    "severity",
+                    "description",
+                    "tlp"
+                  ],
+                  "properties": {
+                    "severity": {
+                      "$id": "#root/severity",
+                      "title": "Severity",
+                      "type": "string",
+                      "default": "Medium",
+                      "nx-enum": [
+                        "Low",
+                        "Medium",
+                        "High"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "Low",
+                          "title": "Low",
+                          "icon": "mdi-chevron-up"
+                        },
+                        {
+                          "const": "Medium",
+                          "title": "Medium",
+                          "icon": "mdi-chevron-double-up"
+                        },
+                        {
+                          "const": "High",
+                          "title": "High",
+                          "icon": "mdi-chevron-triple-up"
+                        }
+                      ]
+                    },
+                    "tlp": {
+                      "$id": "#root/tlp",
+                      "title": "TLP",
+                      "type": "string",
+                      "nx-enum": [
+                        "White",
+                        "Green",
+                        "Amber",
+                        "Red"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "White",
+                          "title": "White",
+                          "icon": "mdi-alpha-w"
+                        },
+                        {
+                          "const": "Green",
+                          "title": "Green",
+                          "icon": "mdi-alpha-g"
+                        },
+                        {
+                          "const": "Amber",
+                          "title": "Amber",
+                          "icon": "mdi-alpha-a"
+                        },
+                        {
+                          "const": "Red",
+                          "title": "Red",
+                          "icon": "mdi-alpha-r"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "$id": "#root/description",
+                      "title": "Description",
+                      "type": "string",
+                      "x-display": "textarea",
+                      "x-class": "pr-2"
+                    }
+                  }
+                }
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:write
+      summary: Create a new dashboard
+      tags:
+      - dashboards
+  /dashboards/{id}:
+    delete:
+      operationId: deleteDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: default
+      responses:
+        "204":
+          description: successful operation
+      security:
+      - roles:
+        - dashboard:write
+      summary: Delete a dashboard
+      tags:
+      - dashboards
+    get:
+      operationId: getDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: default
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: default
+              name: Default
+              schema: |
+                {
+                  "definitions": {},
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "$id": "https://example.com/object1618746510.json",
+                  "title": "Default",
+                  "type": "object",
+                  "required": [
+                    "severity",
+                    "description",
+                    "tlp"
+                  ],
+                  "properties": {
+                    "severity": {
+                      "$id": "#root/severity",
+                      "title": "Severity",
+                      "type": "string",
+                      "default": "Medium",
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "Low",
+                          "title": "Low",
+                          "icon": "mdi-chevron-up"
+                        },
+                        {
+                          "const": "Medium",
+                          "title": "Medium",
+                          "icon": "mdi-chevron-double-up"
+                        },
+                        {
+                          "const": "High",
+                          "title": "High",
+                          "icon": "mdi-chevron-triple-up"
+                        }
+                      ]
+                    },
+                    "tlp": {
+                      "$id": "#root/tlp",
+                      "title": "TLP",
+                      "type": "string",
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "White",
+                          "title": "White",
+                          "icon": "mdi-alpha-w"
+                        },
+                        {
+                          "const": "Green",
+                          "title": "Green",
+                          "icon": "mdi-alpha-g"
+                        },
+                        {
+                          "const": "Amber",
+                          "title": "Amber",
+                          "icon": "mdi-alpha-a"
+                        },
+                        {
+                          "const": "Red",
+                          "title": "Red",
+                          "icon": "mdi-alpha-r"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "$id": "#root/description",
+                      "title": "Description",
+                      "type": "string",
+                      "x-display": "textarea",
+                      "x-class": "pr-2"
+                    }
+                  }
+                }
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:read
+      summary: Get a single dashboard
+      tags:
+      - dashboards
+    put:
+      operationId: updateDashboard
+      parameters:
+      - description: Dashboard ID
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: default
+      - description: Dashboard object that needs to be added
+        in: body
+        name: dashboard
+        required: true
+        schema:
+          $ref: '#/definitions/Dashboard'
+        x-example:
+          name: My Template
+          schema: |
+            {
+              "definitions": {},
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "$id": "https://example.com/object1618746510.json",
+              "title": "Event",
+              "type": "object",
+              "required": [
+                "severity",
+                "description",
+                "tlp"
+              ],
+              "properties": {
+                "severity": {
+                  "$id": "#root/severity",
+                  "title": "Severity",
+                  "type": "string",
+                  "default": "Medium",
+                  "nx-enum": [
+                    "Low",
+                    "Medium",
+                    "High"
+                  ],
+                  "x-cols": 6,
+                  "x-class": "pr-2",
+                  "x-display": "icon",
+                  "x-itemIcon": "icon",
+                  "oneOf": [
+                    {
+                      "const": "Low",
+                      "title": "Low",
+                      "icon": "mdi-chevron-up"
+                    },
+                    {
+                      "const": "Medium",
+                      "title": "Medium",
+                      "icon": "mdi-chevron-double-up"
+                    },
+                    {
+                      "const": "High",
+                      "title": "High",
+                      "icon": "mdi-chevron-triple-up"
+                    }
+                  ]
+                },
+                "tlp": {
+                  "$id": "#root/tlp",
+                  "title": "TLP",
+                  "type": "string",
+                  "nx-enum": [
+                    "White",
+                    "Green",
+                    "Amber",
+                    "Red"
+                  ],
+                  "x-cols": 6,
+                  "x-class": "pr-2",
+                  "x-display": "icon",
+                  "x-itemIcon": "icon",
+                  "oneOf": [
+                    {
+                      "const": "White",
+                      "title": "White",
+                      "icon": "mdi-alpha-w"
+                    },
+                    {
+                      "const": "Green",
+                      "title": "Green",
+                      "icon": "mdi-alpha-g"
+                    },
+                    {
+                      "const": "Amber",
+                      "title": "Amber",
+                      "icon": "mdi-alpha-a"
+                    },
+                    {
+                      "const": "Red",
+                      "title": "Red",
+                      "icon": "mdi-alpha-r"
+                    }
+                  ]
+                },
+                "description": {
+                  "$id": "#root/description",
+                  "title": "Description",
+                  "type": "string",
+                  "x-display": "textarea",
+                  "x-class": "pr-2"
+                }
+              }
+            }
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              id: default
+              name: My Template
+              schema: |
+                {
+                  "definitions": {},
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "$id": "https://example.com/object1618746510.json",
+                  "title": "Event",
+                  "type": "object",
+                  "required": [
+                    "severity",
+                    "description",
+                    "tlp"
+                  ],
+                  "properties": {
+                    "severity": {
+                      "$id": "#root/severity",
+                      "title": "Severity",
+                      "type": "string",
+                      "default": "Medium",
+                      "nx-enum": [
+                        "Low",
+                        "Medium",
+                        "High"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "Low",
+                          "title": "Low",
+                          "icon": "mdi-chevron-up"
+                        },
+                        {
+                          "const": "Medium",
+                          "title": "Medium",
+                          "icon": "mdi-chevron-double-up"
+                        },
+                        {
+                          "const": "High",
+                          "title": "High",
+                          "icon": "mdi-chevron-triple-up"
+                        }
+                      ]
+                    },
+                    "tlp": {
+                      "$id": "#root/tlp",
+                      "title": "TLP",
+                      "type": "string",
+                      "nx-enum": [
+                        "White",
+                        "Green",
+                        "Amber",
+                        "Red"
+                      ],
+                      "x-cols": 6,
+                      "x-class": "pr-2",
+                      "x-display": "icon",
+                      "x-itemIcon": "icon",
+                      "oneOf": [
+                        {
+                          "const": "White",
+                          "title": "White",
+                          "icon": "mdi-alpha-w"
+                        },
+                        {
+                          "const": "Green",
+                          "title": "Green",
+                          "icon": "mdi-alpha-g"
+                        },
+                        {
+                          "const": "Amber",
+                          "title": "Amber",
+                          "icon": "mdi-alpha-a"
+                        },
+                        {
+                          "const": "Red",
+                          "title": "Red",
+                          "icon": "mdi-alpha-r"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "$id": "#root/description",
+                      "title": "Description",
+                      "type": "string",
+                      "x-display": "textarea",
+                      "x-class": "pr-2"
+                    }
+                  }
+                }
+          schema:
+            $ref: '#/definitions/DashboardResponse'
+      security:
+      - roles:
+        - dashboard:write
+      summary: Update an existing dashboard
+      tags:
+      - dashboards
   /graph/{col}/{id}:
     get:
       operationId: graph

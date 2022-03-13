@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex, {ActionContext} from "vuex";
 import {API} from "@/services/api";
-import {UserData, TicketList, Settings, UserResponse, SettingsResponse} from "@/client";
+import {UserData, TicketList, UserResponse, SettingsResponse} from "@/client";
 import {AxiosResponse} from "axios";
 import {Alert} from "@/types/types";
 import {templateStore} from "./modules/templates";
@@ -19,7 +19,7 @@ export default new Vuex.Store({
     counts: {} as Record<string, number>,
     task_count: 0 as number,
 
-    settings: {} as Settings,
+    settings: {} as SettingsResponse,
     userdata: {} as UserData,
 
     alert: {} as Alert,
@@ -46,7 +46,7 @@ export default new Vuex.Store({
     setUserData (state, msg: UserData) {
       state.userdata = msg
     },
-    setSettings (state, msg: Settings) {
+    setSettings (state, msg: SettingsResponse) {
       state.settings = msg
     },
     setAlert (state, msg: Alert) {

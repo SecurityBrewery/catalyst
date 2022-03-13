@@ -41,3 +41,28 @@ func (db *Database) Statistics(ctx context.Context) (*model.Statistics, error) {
 
 	return &statistics, nil
 }
+
+func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *string) (map[string]interface{}, error) {
+	filterQ := ""
+	if filter != nil && *filter != "" {
+		filterQ = "FILTER " + *filter
+	}
+
+	query := `RETURN MERGE(FOR d in tickets
+		` + filterQ + `
+		COLLECT field = ` + aggregation + ` WITH COUNT INTO count
+		RETURN ZIP([field], [count]))`
+
+	cur, _, err := db.Query(ctx, query, nil, busdb.ReadOperation)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close()
+
+	statistics := map[string]interface{}{}
+	if _, err := cur.ReadDocument(ctx, &statistics); err != nil {
+		return nil, err
+	}
+
+	return statistics, nil
+}

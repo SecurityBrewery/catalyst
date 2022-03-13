@@ -307,6 +307,243 @@
         "x-codegen-request-body-name" : "userdata"
       }
     },
+    "/dashboard/data" : {
+      "get" : {
+        "operationId" : "dashboardData",
+        "parameters" : [ {
+          "description" : "Aggregation",
+          "example" : "default",
+          "in" : "query",
+          "name" : "aggregation",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Filter",
+          "example" : "default",
+          "in" : "query",
+          "name" : "filter",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "default",
+                  "name" : "My Template",
+                  "schema" : ""
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "Get widget data",
+        "tags" : [ "dashboards" ]
+      }
+    },
+    "/dashboards" : {
+      "get" : {
+        "operationId" : "listDashboards",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/DashboardResponse"
+                  },
+                  "type" : "array"
+                }
+              },
+              "test" : {
+                "example" : [ {
+                  "id" : "simple",
+                  "name" : "Simple",
+                  "widgets" : [ {
+                    "aggregation" : "d.owner",
+                    "filter" : "d.status == \"open\"",
+                    "name" : "open_tickets_per_user"
+                  }, {
+                    "aggregation" : "CONCAT(DATE_YEAR(d.created), \"-\", DATE_ISOWEEK(d.created) < 10 ? \"0\" : \"\", DATE_ISOWEEK(d.created))",
+                    "name" : "tickets_per_week"
+                  } ]
+                } ]
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "List dashboards",
+        "tags" : [ "dashboards" ]
+      },
+      "post" : {
+        "operationId" : "createDashboard",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Dashboard"
+              }
+            }
+          },
+          "description" : "New template",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "my-template",
+                  "name" : "My Template",
+                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"nx-enum\": [\n        \"Low\",\n        \"Medium\",\n        \"High\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"nx-enum\": [\n        \"White\",\n        \"Green\",\n        \"Amber\",\n        \"Red\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Create a new dashboard",
+        "tags" : [ "dashboards" ],
+        "x-codegen-request-body-name" : "template"
+      }
+    },
+    "/dashboards/{id}" : {
+      "delete" : {
+        "operationId" : "deleteDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "default",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "content" : { },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Delete a dashboard",
+        "tags" : [ "dashboards" ]
+      },
+      "get" : {
+        "operationId" : "getDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "default",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "default",
+                  "name" : "Default",
+                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Default\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:read" ]
+        } ],
+        "summary" : "Get a single dashboard",
+        "tags" : [ "dashboards" ]
+      },
+      "put" : {
+        "operationId" : "updateDashboard",
+        "parameters" : [ {
+          "description" : "Dashboard ID",
+          "example" : "default",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Dashboard"
+              }
+            }
+          },
+          "description" : "Dashboard object that needs to be added",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "id" : "default",
+                  "name" : "My Template",
+                  "schema" : "{\n  \"definitions\": {},\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\": \"https://example.com/object1618746510.json\",\n  \"title\": \"Event\",\n  \"type\": \"object\",\n  \"required\": [\n    \"severity\",\n    \"description\",\n    \"tlp\"\n  ],\n  \"properties\": {\n    \"severity\": {\n      \"$id\": \"#root/severity\",\n      \"title\": \"Severity\",\n      \"type\": \"string\",\n      \"default\": \"Medium\",\n      \"nx-enum\": [\n        \"Low\",\n        \"Medium\",\n        \"High\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"Low\",\n          \"title\": \"Low\",\n          \"icon\": \"mdi-chevron-up\"\n        },\n        {\n          \"const\": \"Medium\",\n          \"title\": \"Medium\",\n          \"icon\": \"mdi-chevron-double-up\"\n        },\n        {\n          \"const\": \"High\",\n          \"title\": \"High\",\n          \"icon\": \"mdi-chevron-triple-up\"\n        }\n      ]\n    },\n    \"tlp\": {\n      \"$id\": \"#root/tlp\",\n      \"title\": \"TLP\",\n      \"type\": \"string\",\n      \"nx-enum\": [\n        \"White\",\n        \"Green\",\n        \"Amber\",\n        \"Red\"\n      ],\n      \"x-cols\": 6,\n      \"x-class\": \"pr-2\",\n      \"x-display\": \"icon\",\n      \"x-itemIcon\": \"icon\",\n      \"oneOf\": [\n        {\n          \"const\": \"White\",\n          \"title\": \"White\",\n          \"icon\": \"mdi-alpha-w\"\n        },\n        {\n          \"const\": \"Green\",\n          \"title\": \"Green\",\n          \"icon\": \"mdi-alpha-g\"\n        },\n        {\n          \"const\": \"Amber\",\n          \"title\": \"Amber\",\n          \"icon\": \"mdi-alpha-a\"\n        },\n        {\n          \"const\": \"Red\",\n          \"title\": \"Red\",\n          \"icon\": \"mdi-alpha-r\"\n        }\n      ]\n    },\n    \"description\": {\n      \"$id\": \"#root/description\",\n      \"title\": \"Description\",\n      \"type\": \"string\",\n      \"x-display\": \"textarea\",\n      \"x-class\": \"pr-2\"\n    }\n  }\n}\n"
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "dashboard:write" ]
+        } ],
+        "summary" : "Update an existing dashboard",
+        "tags" : [ "dashboards" ],
+        "x-codegen-request-body-name" : "dashboard"
+      }
+    },
     "/jobs" : {
       "get" : {
         "operationId" : "listJobs",
@@ -5001,6 +5238,39 @@
         },
         "type" : "object"
       },
+      "Dashboard" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "widgets" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Widget"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "widgets" ],
+        "type" : "object"
+      },
+      "DashboardResponse" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "widgets" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Widget"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "id", "name", "widgets" ],
+        "type" : "object"
+      },
       "Enrichment" : {
         "properties" : {
           "created" : {
@@ -6315,6 +6585,30 @@
           }
         },
         "required" : [ "apikey", "blocked", "id", "roles" ],
+        "type" : "object"
+      },
+      "Widget" : {
+        "properties" : {
+          "aggregation" : {
+            "type" : "string"
+          },
+          "filter" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "type" : {
+            "enum" : [ "bar", "line", "pie" ],
+            "type" : "string"
+          },
+          "width" : {
+            "maximum" : 12,
+            "minimum" : 1,
+            "type" : "integer"
+          }
+        },
+        "required" : [ "aggregation", "name", "type", "width" ],
         "type" : "object"
       }
     }

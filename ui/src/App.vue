@@ -2,7 +2,7 @@
   <v-app class="background">
     <v-navigation-drawer dark permanent :mini-variant="mini" :expand-on-hover="mini" app color="statusbar">
       <v-list>
-        <v-list-item class="px-2" :to="{ name: 'Dashboard' }">
+        <v-list-item class="px-2" :to="{ name: 'Home' }">
           <v-list-item-avatar rounded="0">
             <v-img src="/flask_white.svg" :width="40"></v-img>
           </v-list-item-avatar>

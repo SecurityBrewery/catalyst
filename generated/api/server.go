@@ -19,6 +19,12 @@ type Service interface {
 	CurrentUser(context.Context) (*model.UserResponse, error)
 	CurrentUserData(context.Context) (*model.UserDataResponse, error)
 	UpdateCurrentUserData(context.Context, *model.UserData) (*model.UserDataResponse, error)
+	DashboardData(context.Context, string, *string) (map[string]interface{}, error)
+	ListDashboards(context.Context) ([]*model.DashboardResponse, error)
+	CreateDashboard(context.Context, *model.Dashboard) (*model.DashboardResponse, error)
+	GetDashboard(context.Context, string) (*model.DashboardResponse, error)
+	UpdateDashboard(context.Context, string, *model.Dashboard) (*model.DashboardResponse, error)
+	DeleteDashboard(context.Context, string) error
 	ListJobs(context.Context) ([]*model.JobResponse, error)
 	RunJob(context.Context, *model.JobForm) (*model.JobResponse, error)
 	GetJob(context.Context, string) (*model.JobResponse, error)
@@ -91,6 +97,12 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"currentuser:read"})).Get("/currentuser", s.currentUserHandler)
 	r.With(roleAuth([]string{"currentuserdata:read"})).Get("/currentuserdata", s.currentUserDataHandler)
 	r.With(roleAuth([]string{"currentuserdata:write"})).Put("/currentuserdata", s.updateCurrentUserDataHandler)
+	r.With(roleAuth([]string{"dashboard:read"})).Get("/dashboard/data", s.dashboardDataHandler)
+	r.With(roleAuth([]string{"dashboard:read"})).Get("/dashboards", s.listDashboardsHandler)
+	r.With(roleAuth([]string{"dashboard:write"})).Post("/dashboards", s.createDashboardHandler)
+	r.With(roleAuth([]string{"dashboard:read"})).Get("/dashboards/{id}", s.getDashboardHandler)
+	r.With(roleAuth([]string{"dashboard:write"})).Put("/dashboards/{id}", s.updateDashboardHandler)
+	r.With(roleAuth([]string{"dashboard:write"})).Delete("/dashboards/{id}", s.deleteDashboardHandler)
 	r.With(roleAuth([]string{"job:read"})).Get("/jobs", s.listJobsHandler)
 	r.With(roleAuth([]string{"job:write"})).Post("/jobs", s.runJobHandler)
 	r.With(roleAuth([]string{"job:read"})).Get("/jobs/{id}", s.getJobHandler)
@@ -245,6 +257,77 @@ func (s *server) updateCurrentUserDataHandler(w http.ResponseWriter, r *http.Req
 
 	result, err := s.service.UpdateCurrentUserData(r.Context(), userdataP)
 	response(w, result, err)
+}
+
+func (s *server) dashboardDataHandler(w http.ResponseWriter, r *http.Request) {
+	aggregationP := r.URL.Query().Get("aggregation")
+
+	filterP := r.URL.Query().Get("filter")
+
+	result, err := s.service.DashboardData(r.Context(), aggregationP, &filterP)
+	response(w, result, err)
+}
+
+func (s *server) listDashboardsHandler(w http.ResponseWriter, r *http.Request) {
+	result, err := s.service.ListDashboards(r.Context())
+	response(w, result, err)
+}
+
+func (s *server) createDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	if validateSchema(body, model.DashboardSchema, w) {
+		return
+	}
+
+	var templateP *model.Dashboard
+	if err := parseBody(body, &templateP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.CreateDashboard(r.Context(), templateP)
+	response(w, result, err)
+}
+
+func (s *server) getDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	idP := chi.URLParam(r, "id")
+
+	result, err := s.service.GetDashboard(r.Context(), idP)
+	response(w, result, err)
+}
+
+func (s *server) updateDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	idP := chi.URLParam(r, "id")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	if validateSchema(body, model.DashboardSchema, w) {
+		return
+	}
+
+	var dashboardP *model.Dashboard
+	if err := parseBody(body, &dashboardP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.UpdateDashboard(r.Context(), idP, dashboardP)
+	response(w, result, err)
+}
+
+func (s *server) deleteDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	idP := chi.URLParam(r, "id")
+
+	response(w, nil, s.service.DeleteDashboard(r.Context(), idP))
 }
 
 func (s *server) listJobsHandler(w http.ResponseWriter, r *http.Request) {

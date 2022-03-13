@@ -1,110 +1,67 @@
 <template>
-  <v-main>
+  <div v-if="dashboard">
+    <h2>{{ dashboard.name }}</h2>
+
     <v-row>
-      <v-col v-if="statistics" cols="12" lg="7">
-        <v-row>
-          <v-col cols="4">
-            <v-subheader>Unassigned tickets</v-subheader>
-            <span style="font-size: 60pt; text-align: center; display: block">
-              <router-link :to="{
-                name: 'TicketList',
-                params: { query: 'status == \'open\' AND !owner' }
-              }">
-                {{ statistics.unassigned }}
-              </router-link>
-            </span>
-            <v-subheader>Your tickets</v-subheader>
-            <span style="font-size: 60pt; text-align: center; display: block">
-              <router-link :to="{
-                name: 'TicketList',
-                params: { query: 'status == \'open\' AND owner == \'' + $store.state.user.id + '\'' }
-              }">
-                {{ $store.state.user.id in statistics.open_tickets_per_user ? statistics.open_tickets_per_user[$store.state.user.id] : 0 }}
-              </router-link>
-            </span>
-          </v-col>
-          <v-col cols="8">
-            <v-subheader>Open tickets per owner</v-subheader>
-            <bar-chart
-              v-if="open_tickets_per_user"
-              :chart-data="open_tickets_per_user"
+      <v-col v-for="widget in dashboard.widgets" :key="widget.name" :cols="widget.width">
+        <v-card class="mb-2">
+          <v-card-title>{{ widget.name }}</v-card-title>
+          <line-chart
+              v-if="widget.type === 'line' && data[widget.name]"
+              :chart-data="data[widget.name]"
+              :styles="{ width: '100%', position: 'relative' }"
+              :chart-options="{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: undefined,
+                    scales: { yAxes: [ { ticks: { beginAtZero: true, precision: 0 } } ] }
+                  }"
+          >
+          </line-chart>
+
+          <pie-chart
+              v-if="widget.type === 'pie' && data[widget.name]"
+              :chart-data="data[widget.name]"
+              :styles="{ width: '100%', position: 'relative' }"
+          >
+          </pie-chart>
+
+          <bar-chart
+              v-if="widget.type === 'bar' && data[widget.name]"
+              :chart-data="data[widget.name]"
               :styles="{
-                width: '100%',
-                'max-height': '400px',
-                position: 'relative'
-              }"
+                    width: '100%',
+                    'max-height': '400px',
+                    position: 'relative'
+                  }"
               :chart-options="{
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: undefined,
-                scales: { xAxes: [ { ticks: { beginAtZero: true, precision: 0 } } ] },
-                onClick: clickUser,
-                hover: {
-                  onHover: function(e) {
-                     var point = this.getElementAtEvent(e);
-                     if (point.length) e.target.style.cursor = 'pointer';
-                     else e.target.style.cursor = 'default';
-                  }
-               }
-              }"
-            ></bar-chart>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="7">
-            <v-subheader>Tickets created per week</v-subheader>
-            <line-chart
-              v-if="tickets_per_week"
-              :chart-data="tickets_per_week"
-              :styles="{ width: '100%', position: 'relative' }"
-              :chart-options="{
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: undefined,
-                scales: { yAxes: [ { ticks: { beginAtZero: true, precision: 0 } } ] }
-              }"
-            >
-            </line-chart>
-          </v-col>
-          <v-col cols="5">
-            <v-subheader>Ticket Types</v-subheader>
-            <pie-chart
-              v-if="tickets_per_type"
-              :chart-data="tickets_per_type"
-              :styles="{ width: '100%', position: 'relative' }"
-              :chart-options="{
-                onClick: clickPie,
-                hover: {
-                  onHover: function(e) {
-                     var point = this.getElementAtEvent(e);
-                     if (point.length) e.target.style.cursor = 'pointer';
-                     else e.target.style.cursor = 'default';
-                  }
-               }
-              }"
-            >
-            </pie-chart>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="12" lg="5">
-        <TicketList :type="this.$route.params.type" @click="open"></TicketList>
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: undefined,
+                    scales: { xAxes: [ { ticks: { beginAtZero: true, precision: 0 } } ] },
+                  }"
+          ></bar-chart>
+        </v-card>
       </v-col>
     </v-row>
-  </v-main>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { Dashboard, Widget } from "@/client";
+import { API } from "@/services/api";
+import {createHash} from "crypto";
+import {colors} from "@/plugins/vuetify";
 import LineChart from "../components/charts/Line";
 import BarChart from "../components/charts/Bar";
 import PieChart from "../components/charts/Doughnut";
-import { API } from "@/services/api";
-import {Statistics, TicketResponse} from "@/client";
-import {DateTime} from "luxon";
-import { colors } from "@/plugins/vuetify";
-import TicketList from "@/components/TicketList.vue";
-import { createHash } from "crypto";
+import {ChartData} from "chart.js";
+
+interface State {
+  dashboard?: Dashboard;
+  data: Record<string, any>;
+}
 
 export default Vue.extend({
   name: "Dashboard",
@@ -112,108 +69,51 @@ export default Vue.extend({
     LineChart,
     BarChart,
     PieChart,
-    TicketList
   },
-  data() {
-    return {
-      statistics: (undefined as unknown) as Statistics
-    };
-  },
-  computed: {
-    tickets_per_type: function () {
-      let data = { labels: [] as Array<string>, datasets: [{ backgroundColor: [] as Array<string>, data: [] as Array<number> }] }
-      this.lodash.forEach(this.statistics.tickets_per_type, (count, type) => {
-        data.labels.push(type);
-        data.datasets[0].data.push(count);
-
-        data.datasets[0].backgroundColor.push(this.color(type));
-      })
-      return data
+  data: (): State => ({
+    dashboard: undefined,
+    data: {},
+  }),
+  watch: {
+    $route: function () {
+      this.loadDashboard();
     },
-    open_tickets_per_user: function () {
-      let data = { labels: [] as Array<string>, datasets: [{ backgroundColor: [] as Array<string>, data: [] as Array<number> }] }
-      this.lodash.forEach(this.statistics.open_tickets_per_user, (count, user) => {
-        if (!user) {
-          data.labels.push("unassigned");
-        } else {
-          data.labels.push(user);
-        }
-        data.datasets[0].data.push(count);
-        data.datasets[0].backgroundColor.push(this.color(user));
-      })
-      return data
-    },
-    tickets_per_week: function () {
-      let data = {labels: [] as Array<string>, datasets: [{backgroundColor: [] as Array<string>, data: [] as Array<number> }]}
-      this.lodash.forEach(this.weeks(), (week) => {
-        data.labels.push(week);
-        if (week in this.statistics.tickets_per_week) {
-          data.datasets[0].data.push(this.statistics.tickets_per_week[week]);
-        } else {
-          data.datasets[0].data.push(0);
-        }
-        data.datasets[0].backgroundColor.push("#607d8b");
-      })
-      return data
-    }
   },
   methods: {
-    open: function (ticket: TicketResponse) {
-      if (ticket.id === undefined) {
-        return;
-      }
-
-      this.$router.push({
-        name: "Ticket",
-        params: {type: '-', id: ticket.id.toString()}
+    saveUserData: function(dashboard: Dashboard) {
+      API.updateUserData(this.$route.params.id, dashboard).then(() => {
+        this.$store.dispatch("alertSuccess", { name: "Dashboard saved" });
       });
     },
-    clickUser: function (evt, elem) {
-      let owner = this.open_tickets_per_user.labels[elem[0]._index];
-      let query = 'status == \'open\' AND owner == \'' + owner + '\'';
+    loadDashboard: function () {
+      API.getDashboard(this.$route.params.id).then((response) => {
+        this.lodash.forEach(response.data.widgets, (widget: Widget) => {
+          API.dashboardData(widget.aggregation, widget.filter).then((response) => {
+            let d = { labels: [], datasets: [{data: [], backgroundColor: []}] } as ChartData;
+            this.lodash.forEach(response.data, (v: any, k: string) => {
+              // @ts-expect-error T2532
+              d.labels.push(k)
+              // @ts-expect-error T2532
+              d.datasets[0].data.push(v)
+              // @ts-expect-error T2532
+              d.datasets[0].backgroundColor.push(v);
+            })
 
-      if (owner == 'unassigned') {
-        query = 'status == \'open\' AND !owner';
-      }
+            Vue.set(this.data, widget.name, d);
+            // this.data[widget.name] = d;
+          })
+        })
 
-      this.$router.push({
-        name: "TicketList",
-        params: {query: query}
-      });
-    },
-    clickPie: function (evt, elem) {
-      this.$router.push({
-        name: "TicketList",
-        params: {type: this.tickets_per_type.labels[elem[0]._index]}
+        this.dashboard = response.data;
       });
     },
     color: function (s: string): string {
       let pos = createHash('md5').update(s).digest().readUInt32BE(0) % colors.length;
       return colors[pos];
     },
-    fillData() {
-      API.getStatistics().then(response => {
-        this.statistics = response.data;
-      });
-    },
-    weeks: function () {
-      let w = [] as Array<string>;
-      for (let i = 0; i < 53; i++) {
-        w.push(DateTime.utc().minus({ weeks: i }).toFormat("kkkk-WW"))
-      }
-      this.lodash.reverse(w);
-      return w
-    }
   },
   mounted() {
-    this.fillData();
+    this.loadDashboard();
   }
 });
 </script>
-
-<style>
-canvas {
-  position: relative !important;
-  margin: 0 auto;
-}
-</style>

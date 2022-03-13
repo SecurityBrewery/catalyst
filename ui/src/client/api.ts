@@ -293,6 +293,50 @@ export interface Context {
 /**
  * 
  * @export
+ * @interface Dashboard
+ */
+export interface Dashboard {
+    /**
+     * 
+     * @type {string}
+     * @memberof Dashboard
+     */
+    'name': string;
+    /**
+     * 
+     * @type {Array<Widget>}
+     * @memberof Dashboard
+     */
+    'widgets': Array<Widget>;
+}
+/**
+ * 
+ * @export
+ * @interface DashboardResponse
+ */
+export interface DashboardResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof DashboardResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DashboardResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {Array<Widget>}
+     * @memberof DashboardResponse
+     */
+    'widgets': Array<Widget>;
+}
+/**
+ * 
+ * @export
  * @interface Enrichment
  */
 export interface Enrichment {
@@ -2279,6 +2323,52 @@ export interface UserResponse {
      */
     'roles': Array<string>;
 }
+/**
+ * 
+ * @export
+ * @interface Widget
+ */
+export interface Widget {
+    /**
+     * 
+     * @type {string}
+     * @memberof Widget
+     */
+    'aggregation': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Widget
+     */
+    'filter'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Widget
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Widget
+     */
+    'type': WidgetTypeEnum;
+    /**
+     * 
+     * @type {number}
+     * @memberof Widget
+     */
+    'width': number;
+}
+
+export const WidgetTypeEnum = {
+    Bar: 'bar',
+    Line: 'line',
+    Pie: 'pie'
+} as const;
+
+export type WidgetTypeEnum = typeof WidgetTypeEnum[keyof typeof WidgetTypeEnum];
+
 
 /**
  * AutomationsApi - axios parameter creator
@@ -2653,6 +2743,461 @@ export class AutomationsApi extends BaseAPI {
      */
     public updateAutomation(id: string, automation: AutomationForm, options?: AxiosRequestConfig) {
         return AutomationsApiFp(this.configuration).updateAutomation(id, automation, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * DashboardsApi - axios parameter creator
+ * @export
+ */
+export const DashboardsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Create a new dashboard
+         * @param {Dashboard} template New template
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDashboard: async (template: Dashboard, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'template' is not null or undefined
+            assertParamExists('createDashboard', 'template', template)
+            const localVarPath = `/dashboards`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(template, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get widget data
+         * @param {string} aggregation Aggregation
+         * @param {string} [filter] Filter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        dashboardData: async (aggregation: string, filter?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'aggregation' is not null or undefined
+            assertParamExists('dashboardData', 'aggregation', aggregation)
+            const localVarPath = `/dashboard/data`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (aggregation !== undefined) {
+                localVarQueryParameter['aggregation'] = aggregation;
+            }
+
+            if (filter !== undefined) {
+                localVarQueryParameter['filter'] = filter;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete a dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteDashboard: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteDashboard', 'id', id)
+            const localVarPath = `/dashboards/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get a single dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDashboard: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getDashboard', 'id', id)
+            const localVarPath = `/dashboards/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary List dashboards
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listDashboards: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/dashboards`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Update an existing dashboard
+         * @param {string} id Dashboard ID
+         * @param {Dashboard} dashboard Dashboard object that needs to be added
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateDashboard: async (id: string, dashboard: Dashboard, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateDashboard', 'id', id)
+            // verify required parameter 'dashboard' is not null or undefined
+            assertParamExists('updateDashboard', 'dashboard', dashboard)
+            const localVarPath = `/dashboards/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(dashboard, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * DashboardsApi - functional programming interface
+ * @export
+ */
+export const DashboardsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = DashboardsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new dashboard
+         * @param {Dashboard} template New template
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createDashboard(template: Dashboard, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DashboardResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDashboard(template, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get widget data
+         * @param {string} aggregation Aggregation
+         * @param {string} [filter] Filter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async dashboardData(aggregation: string, filter?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.dashboardData(aggregation, filter, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete a dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteDashboard(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteDashboard(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get a single dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDashboard(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DashboardResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDashboard(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary List dashboards
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listDashboards(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<DashboardResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listDashboards(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Update an existing dashboard
+         * @param {string} id Dashboard ID
+         * @param {Dashboard} dashboard Dashboard object that needs to be added
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateDashboard(id: string, dashboard: Dashboard, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DashboardResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateDashboard(id, dashboard, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * DashboardsApi - factory interface
+ * @export
+ */
+export const DashboardsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = DashboardsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new dashboard
+         * @param {Dashboard} template New template
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDashboard(template: Dashboard, options?: any): AxiosPromise<DashboardResponse> {
+            return localVarFp.createDashboard(template, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get widget data
+         * @param {string} aggregation Aggregation
+         * @param {string} [filter] Filter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        dashboardData(aggregation: string, filter?: string, options?: any): AxiosPromise<object> {
+            return localVarFp.dashboardData(aggregation, filter, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete a dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteDashboard(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteDashboard(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get a single dashboard
+         * @param {string} id Dashboard ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDashboard(id: string, options?: any): AxiosPromise<DashboardResponse> {
+            return localVarFp.getDashboard(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary List dashboards
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listDashboards(options?: any): AxiosPromise<Array<DashboardResponse>> {
+            return localVarFp.listDashboards(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update an existing dashboard
+         * @param {string} id Dashboard ID
+         * @param {Dashboard} dashboard Dashboard object that needs to be added
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateDashboard(id: string, dashboard: Dashboard, options?: any): AxiosPromise<DashboardResponse> {
+            return localVarFp.updateDashboard(id, dashboard, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * DashboardsApi - object-oriented interface
+ * @export
+ * @class DashboardsApi
+ * @extends {BaseAPI}
+ */
+export class DashboardsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Create a new dashboard
+     * @param {Dashboard} template New template
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public createDashboard(template: Dashboard, options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).createDashboard(template, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get widget data
+     * @param {string} aggregation Aggregation
+     * @param {string} [filter] Filter
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public dashboardData(aggregation: string, filter?: string, options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).dashboardData(aggregation, filter, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete a dashboard
+     * @param {string} id Dashboard ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public deleteDashboard(id: string, options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).deleteDashboard(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get a single dashboard
+     * @param {string} id Dashboard ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public getDashboard(id: string, options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).getDashboard(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary List dashboards
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public listDashboards(options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).listDashboards(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update an existing dashboard
+     * @param {string} id Dashboard ID
+     * @param {Dashboard} dashboard Dashboard object that needs to be added
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DashboardsApi
+     */
+    public updateDashboard(id: string, dashboard: Dashboard, options?: AxiosRequestConfig) {
+        return DashboardsApiFp(this.configuration).updateDashboard(id, dashboard, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
