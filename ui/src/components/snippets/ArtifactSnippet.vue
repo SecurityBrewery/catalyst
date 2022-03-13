@@ -9,6 +9,9 @@
         <v-icon small class="mr-1" :color="statusColor">{{ statusIcon }}</v-icon>
         <span :class="statusColor + '--text'">{{ artifact.status | capitalize }}</span>
 
+        <v-icon small class="mx-1" :color="kindColor">{{ kindIcon }}</v-icon>
+        <span :class="kindColor + '--text'">{{ artifact.kind | capitalize }}</span>
+
         <v-spacer></v-spacer>
         <v-icon small class="mr-1">mdi-information</v-icon>
         <span class="mr-1">{{ artifact.enrichments ? lodash.size(artifact.enrichments) : 0 }}</span>
@@ -43,6 +46,24 @@ export default Vue.extend({
       let color = TypeColorEnum.Info as TypeColorEnum;
       this.lodash.forEach(this.$store.state.settings.artifactStates, (state: Type) => {
         if (this.artifact.status === state.id && state.color) {
+          color = state.color;
+        }
+      })
+      return color;
+    },
+    kindIcon: function () {
+      let icon = "mdi-help";
+      this.lodash.forEach(this.$store.state.settings.artifactKinds, (state: Type) => {
+        if (this.artifact.kind === state.id) {
+          icon = state.icon;
+        }
+      })
+      return icon;
+    },
+    kindColor: function () {
+      let color = TypeColorEnum.Info as TypeColorEnum;
+      this.lodash.forEach(this.$store.state.settings.artifactKinds, (state: Type) => {
+        if (this.artifact.kind === state.id && state.color) {
           color = state.color;
         }
       })

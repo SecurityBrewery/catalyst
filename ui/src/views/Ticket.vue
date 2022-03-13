@@ -181,7 +181,7 @@
             <v-jsf
               v-model="ticket.details"
               :schema="schema"
-              :options="{ initialValidation: 'all', formats: { time: timeformat, date: dateformat, 'date-time': datetimeformat } }"
+              :options="{ initialValidation: 'all', formats: { time: timeformat, date: dateformat, 'date-time': datetimeformat }, editMode: 'inline' }"
             />
           </v-form>
           <v-btn small class="float-right mb-2" color="card" @click="saveTicket" outlined>

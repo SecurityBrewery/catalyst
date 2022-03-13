@@ -38,6 +38,12 @@ export interface Artifact {
      * @type {string}
      * @memberof Artifact
      */
+    'kind'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Artifact
+     */
     'name': string;
     /**
      * 
@@ -981,45 +987,76 @@ export interface Settings {
      * @type {Array<Type>}
      * @memberof Settings
      */
+    'artifactKinds': Array<Type>;
+    /**
+     * 
+     * @type {Array<Type>}
+     * @memberof Settings
+     */
     'artifactStates': Array<Type>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof Settings
-     */
-    'roles'?: Array<string>;
-    /**
-     * 
-     * @type {Array<TicketTypeResponse>}
-     * @memberof Settings
-     */
-    'ticketTypes': Array<TicketTypeResponse>;
-    /**
-     * 
-     * @type {string}
-     * @memberof Settings
-     */
-    'tier': SettingsTierEnum;
     /**
      * 
      * @type {string}
      * @memberof Settings
      */
     'timeformat': string;
+}
+/**
+ * 
+ * @export
+ * @interface SettingsResponse
+ */
+export interface SettingsResponse {
+    /**
+     * 
+     * @type {Array<Type>}
+     * @memberof SettingsResponse
+     */
+    'artifactKinds': Array<Type>;
+    /**
+     * 
+     * @type {Array<Type>}
+     * @memberof SettingsResponse
+     */
+    'artifactStates': Array<Type>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof SettingsResponse
+     */
+    'roles'?: Array<string>;
+    /**
+     * 
+     * @type {Array<TicketTypeResponse>}
+     * @memberof SettingsResponse
+     */
+    'ticketTypes': Array<TicketTypeResponse>;
     /**
      * 
      * @type {string}
-     * @memberof Settings
+     * @memberof SettingsResponse
+     */
+    'tier': SettingsResponseTierEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof SettingsResponse
+     */
+    'timeformat': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SettingsResponse
      */
     'version': string;
 }
 
-export const SettingsTierEnum = {
+export const SettingsResponseTierEnum = {
     Community: 'community',
     Enterprise: 'enterprise'
 } as const;
 
-export type SettingsTierEnum = typeof SettingsTierEnum[keyof typeof SettingsTierEnum];
+export type SettingsResponseTierEnum = typeof SettingsResponseTierEnum[keyof typeof SettingsResponseTierEnum];
 
 /**
  * 
@@ -4324,6 +4361,42 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Save settings
+         * @param {Settings} settings Save settings
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveSettings: async (settings: Settings, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'settings' is not null or undefined
+            assertParamExists('saveSettings', 'settings', settings)
+            const localVarPath = `/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(settings, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -4340,8 +4413,19 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSettings(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Settings>> {
+        async getSettings(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSettings(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Save settings
+         * @param {Settings} settings Save settings
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async saveSettings(settings: Settings, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.saveSettings(settings, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -4360,8 +4444,18 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSettings(options?: any): AxiosPromise<Settings> {
+        getSettings(options?: any): AxiosPromise<SettingsResponse> {
             return localVarFp.getSettings(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Save settings
+         * @param {Settings} settings Save settings
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveSettings(settings: Settings, options?: any): AxiosPromise<SettingsResponse> {
+            return localVarFp.saveSettings(settings, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4382,6 +4476,18 @@ export class SettingsApi extends BaseAPI {
      */
     public getSettings(options?: AxiosRequestConfig) {
         return SettingsApiFp(this.configuration).getSettings(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Save settings
+     * @param {Settings} settings Save settings
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public saveSettings(settings: Settings, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).saveSettings(settings, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -29,7 +29,8 @@ type Service interface {
 	GetPlaybook(context.Context, string) (*model.PlaybookTemplateResponse, error)
 	UpdatePlaybook(context.Context, string, *model.PlaybookTemplateForm) (*model.PlaybookTemplateResponse, error)
 	DeletePlaybook(context.Context, string) error
-	GetSettings(context.Context) (*model.Settings, error)
+	GetSettings(context.Context) (*model.SettingsResponse, error)
+	SaveSettings(context.Context, *model.Settings) (*model.SettingsResponse, error)
 	GetStatistics(context.Context) (*model.Statistics, error)
 	ListTasks(context.Context) ([]*model.TaskWithContext, error)
 	ListTemplates(context.Context) ([]*model.TicketTemplateResponse, error)
@@ -101,6 +102,7 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"playbook:write"})).Put("/playbooks/{id}", s.updatePlaybookHandler)
 	r.With(roleAuth([]string{"playbook:write"})).Delete("/playbooks/{id}", s.deletePlaybookHandler)
 	r.With(roleAuth([]string{"settings:read"})).Get("/settings", s.getSettingsHandler)
+	r.With(roleAuth([]string{"settings:write"})).Post("/settings", s.saveSettingsHandler)
 	r.With(roleAuth([]string{"ticket:read"})).Get("/statistics", s.getStatisticsHandler)
 	r.With(roleAuth([]string{"ticket:read"})).Get("/tasks", s.listTasksHandler)
 	r.With(roleAuth([]string{"template:read"})).Get("/templates", s.listTemplatesHandler)
@@ -372,6 +374,27 @@ func (s *server) deletePlaybookHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) getSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	result, err := s.service.GetSettings(r.Context())
+	response(w, result, err)
+}
+
+func (s *server) saveSettingsHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	if validateSchema(body, model.SettingsSchema, w) {
+		return
+	}
+
+	var settingsP *model.Settings
+	if err := parseBody(body, &settingsP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.SaveSettings(r.Context(), settingsP)
 	response(w, result, err)
 }
 

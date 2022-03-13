@@ -20,7 +20,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/index"
 	"github.com/SecurityBrewery/catalyst/service"
@@ -50,22 +49,6 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			Host:   "tcp://localhost:9001",
 			Key:    "A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-",
 			APIUrl: "http://localhost:8002/api",
-		},
-		UISettings: &model.Settings{
-			ArtifactStates: []*model.Type{
-				{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)},
-				{Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)},
-				{Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)},
-			},
-			TicketTypes: []*model.TicketTypeResponse{
-				{ID: "alert", Icon: "mdi-alert", Name: "Alerts"},
-				{ID: "incident", Icon: "mdi-radioactive", Name: "Incidents"},
-				{ID: "investigation", Icon: "mdi-fingerprint", Name: "Forensic Investigations"},
-				{ID: "hunt", Icon: "mdi-target", Name: "Threat Hunting"},
-			},
-			Version:    "0.0.0-test",
-			Tier:       model.SettingsTierCommunity,
-			Timeformat: "YYYY-MM-DDThh:mm:ss",
 		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 		Auth: &catalyst.AuthConfig{
@@ -168,7 +151,7 @@ func Service(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.
 		t.Fatal(err)
 	}
 
-	catalystService, err := service.New(rbus, db, catalystStorage, config.UISettings)
+	catalystService, err := service.New(rbus, db, catalystStorage, "0.0.0-test")
 	if err != nil {
 		t.Fatal(err)
 	}

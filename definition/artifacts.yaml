@@ -10,6 +10,7 @@ definitions:
     properties:
       name: { type: string, example: "2.2.2.2" }
       type: { type: string }
+      kind: { type: string }
       status: { type: string, example: "Unknown" }
       enrichments: { type: object, additionalProperties: { $ref: "#/definitions/Enrichment" } }
 

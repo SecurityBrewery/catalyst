@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex, {ActionContext} from "vuex";
 import {API} from "@/services/api";
-import {UserData, TicketList, Settings, UserResponse} from "@/client";
+import {UserData, TicketList, Settings, UserResponse, SettingsResponse} from "@/client";
 import {AxiosResponse} from "axios";
 import {Alert} from "@/types/types";
 import {templateStore} from "./modules/templates";
@@ -68,7 +68,7 @@ export default new Vuex.Store({
       })
     },
     getSettings (context: ActionContext<any, any>) {
-      API.getSettings().then((response: AxiosResponse<Settings>) => {
+      API.getSettings().then((response: AxiosResponse<SettingsResponse>) => {
         context.commit("setSettings", response.data);
         context.dispatch("fetchCount");
       })
