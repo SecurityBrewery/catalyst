@@ -1461,6 +1461,7 @@ paths:
               - admin:job:read
               - admin:job:write
               - admin:log:read
+              - admin:settings:write
               - admin:ticket:delete
               - admin:user:write
               - admin:userdata:read
@@ -2192,6 +2193,7 @@ paths:
               - admin:job:read
               - admin:job:write
               - admin:log:read
+              - admin:settings:write
               - admin:ticket:delete
               - admin:user:write
               - admin:userdata:read
@@ -2257,6 +2259,13 @@ paths:
         schema:
           $ref: '#/definitions/Settings'
         x-example:
+          artifactKinds:
+          - icon: mdi-server
+            id: asset
+            name: Asset
+          - icon: mdi-bullseye
+            id: ioc
+            name: IOC
           artifactStates:
           - color: info
             icon: mdi-help-circle-outline
@@ -2270,13 +2279,6 @@ paths:
             icon: mdi-check
             id: clean
             name: Clean
-          artifactTypes:
-          - icon: mdi-server
-            id: asset
-            name: Asset
-          - icon: mdi-bullseye
-            id: ioc
-            name: IOC
           timeformat: YYYY-MM-DDThh:mm:ss
       responses:
         "200":
@@ -2310,6 +2312,7 @@ paths:
               - admin:job:read
               - admin:job:write
               - admin:log:read
+              - admin:settings:write
               - admin:ticket:delete
               - admin:user:write
               - admin:userdata:read
@@ -6711,6 +6714,7 @@ paths:
               - admin:job:read
               - admin:job:write
               - admin:log:read
+              - admin:settings:write
               - admin:ticket:delete
               - admin:user:write
               - admin:userdata:read
@@ -6914,6 +6918,7 @@ paths:
               - admin:job:read
               - admin:job:write
               - admin:log:read
+              - admin:settings:write
               - admin:ticket:delete
               - admin:user:write
               - admin:userdata:read

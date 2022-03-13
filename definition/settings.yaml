@@ -30,7 +30,7 @@ paths:
                 - { icon: "mdi-check", id: "clean", name: "Clean", color: "success" }
               roles: [
                 "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write",
-                "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read",
+                "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read",
                 "admin:userdata:write", "analyst:automation:read",
                 "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read",
                 "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read",
@@ -44,7 +44,7 @@ paths:
       summary: "Save settings"
       operationId: "saveSettings"
       parameters:
-        - { name: "settings", in: "body", description: "Save settings", required: true, schema: { $ref: "#/definitions/Settings" }, x-example: { timeformat: "YYYY-MM-DDThh:mm:ss", artifactTypes: [ { icon: "mdi-server", id: "asset", name: "Asset" }, { icon: "mdi-bullseye", id: "ioc", name: "IOC" } ], artifactStates: [ { icon: "mdi-help-circle-outline", id: "unknown", name: "Unknown", color: "info" },{ icon: "mdi-skull", id: "malicious", name: "Malicious", color: "error" },{ icon: "mdi-check", id: "clean", name: "Clean", color: "success" } ] } }
+        - { name: "settings", in: "body", description: "Save settings", required: true, schema: { $ref: "#/definitions/Settings" }, x-example: { timeformat: "YYYY-MM-DDThh:mm:ss", artifactKinds: [ { icon: "mdi-server", id: "asset", name: "Asset" }, { icon: "mdi-bullseye", id: "ioc", name: "IOC" } ], artifactStates: [ { icon: "mdi-help-circle-outline", id: "unknown", name: "Unknown", color: "info" },{ icon: "mdi-skull", id: "malicious", name: "Malicious", color: "error" },{ icon: "mdi-check", id: "clean", name: "Clean", color: "success" } ] } }
       responses:
         "200":
           description: "successful operation"
@@ -68,7 +68,7 @@ paths:
                 - { icon: "mdi-check", id: "clean", name: "Clean", color: "success" }
               roles: [
                 "admin:backup:read", "admin:backup:restore", "admin:group:write", "admin:job:read", "admin:job:write",
-                "admin:log:read", "admin:ticket:delete", "admin:user:write", "admin:userdata:read",
+                "admin:log:read", "admin:settings:write", "admin:ticket:delete", "admin:user:write", "admin:userdata:read",
                 "admin:userdata:write", "analyst:automation:read",
                 "analyst:currentsettings:write", "analyst:currentuser:read", "analyst:currentuserdata:read",
                 "analyst:file", "analyst:group:read", "analyst:playbook:read", "analyst:rule:read",
