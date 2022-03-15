@@ -57,7 +57,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Catalyst",
-    redirect: { name: "Dashboard" },
+    redirect: { name: "Home" },
   },
 
   {
