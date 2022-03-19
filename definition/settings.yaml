@@ -15,7 +15,7 @@ paths:
             test:
               version: "0.0.0-test"
               tier: community
-              timeformat: "YYYY-MM-DDThh:mm:ss"
+              timeformat: "yyyy-MM-dd hh:mm:ss"
               ticketTypes:
                 - { icon: "mdi-alert", id: "alert", name: "Alerts", default_template: "default", default_playbooks: [ ] }
                 - { icon: "mdi-radioactive", id: "incident", name: "Incidents", default_template: "default", default_playbooks: [ ] }
@@ -44,7 +44,7 @@ paths:
       summary: "Save settings"
       operationId: "saveSettings"
       parameters:
-        - { name: "settings", in: "body", description: "Save settings", required: true, schema: { $ref: "#/definitions/Settings" }, x-example: { timeformat: "YYYY-MM-DDThh:mm:ss", artifactKinds: [ { icon: "mdi-server", id: "asset", name: "Asset" }, { icon: "mdi-bullseye", id: "ioc", name: "IOC" } ], artifactStates: [ { icon: "mdi-help-circle-outline", id: "unknown", name: "Unknown", color: "info" },{ icon: "mdi-skull", id: "malicious", name: "Malicious", color: "error" },{ icon: "mdi-check", id: "clean", name: "Clean", color: "success" } ] } }
+        - { name: "settings", in: "body", description: "Save settings", required: true, schema: { $ref: "#/definitions/Settings" }, x-example: { timeformat: "yyyy-MM-dd hh:mm:ss", artifactKinds: [ { icon: "mdi-server", id: "asset", name: "Asset" }, { icon: "mdi-bullseye", id: "ioc", name: "IOC" } ], artifactStates: [ { icon: "mdi-help-circle-outline", id: "unknown", name: "Unknown", color: "info" },{ icon: "mdi-skull", id: "malicious", name: "Malicious", color: "error" },{ icon: "mdi-check", id: "clean", name: "Clean", color: "success" } ] } }
       responses:
         "200":
           description: "successful operation"
@@ -53,7 +53,7 @@ paths:
             test:
               version: "0.0.0-test"
               tier: community
-              timeformat: "YYYY-MM-DDThh:mm:ss"
+              timeformat: "yyyy-MM-dd hh:mm:ss"
               ticketTypes:
                 - { icon: "mdi-alert", id: "alert", name: "Alerts", default_template: "default", default_playbooks: [ ] }
                 - { icon: "mdi-radioactive", id: "incident", name: "Incidents", default_template: "default", default_playbooks: [ ] }

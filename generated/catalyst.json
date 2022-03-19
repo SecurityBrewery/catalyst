@@ -1451,7 +1451,7 @@
                     "name" : "Threat Hunting"
                   } ],
                   "tier" : "community",
-                  "timeformat" : "YYYY-MM-DDThh:mm:ss",
+                  "timeformat" : "yyyy-MM-dd hh:mm:ss",
                   "version" : "0.0.0-test"
                 }
               }
@@ -1540,7 +1540,7 @@
                     "name" : "Threat Hunting"
                   } ],
                   "tier" : "community",
-                  "timeformat" : "YYYY-MM-DDThh:mm:ss",
+                  "timeformat" : "yyyy-MM-dd hh:mm:ss",
                   "version" : "0.0.0-test"
                 }
               }
