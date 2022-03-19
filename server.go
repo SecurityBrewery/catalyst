@@ -3,7 +3,6 @@ package catalyst
 import (
 	"context"
 	"io/fs"
-	"log"
 	"net/http"
 	"time"
 
@@ -116,35 +115,33 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 }
 
 func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
-	// create server
-	allowAll := cors.AllowAll().Handler
-	apiServer := api.NewServer(
-		catalystService,
-		AuthorizeRole,
-		allowAll, Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser(),
-	)
+	middlewares := []func(next http.Handler) http.Handler{Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()}
 
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Head("/files/{ticketID}/tusd/{id}", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Patch("/files/{ticketID}/tusd/{id}", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/{ticketID}/tusd", tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
-	apiServer.With(AuthorizeRole([]string{role.FileReadWrite.String()})).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
+	// create server
+	apiServerMiddleware := []func(next http.Handler) http.Handler{cors.AllowAll().Handler}
+	apiServerMiddleware = append(apiServerMiddleware, middlewares...)
+	apiServer := api.NewServer(catalystService, AuthorizeRole, apiServerMiddleware...)
+
+	fileReadWrite := AuthorizeRole([]string{role.FileReadWrite.String()})
+	tudHandler := tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress)
+	apiServer.With(fileReadWrite).Head("/files/{ticketID}/tusd/{id}", tudHandler)
+	apiServer.With(fileReadWrite).Patch("/files/{ticketID}/tusd/{id}", tudHandler)
+	apiServer.With(fileReadWrite).Post("/files/{ticketID}/tusd", tudHandler)
+	apiServer.With(fileReadWrite).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
+	apiServer.With(fileReadWrite).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
 
 	apiServer.With(AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
 	apiServer.With(AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
-	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, allowAll)
+	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, cors.AllowAll().Handler)
 	server.Mount("/api", apiServer)
 
 	server.Get("/callback", callback(config.Auth))
-	server.With(Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()).Handle("/wss", handleWebSocket(bus))
+	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
 
 	fsys, _ := fs.Sub(ui.UI, "dist")
-	server.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("not found", r.URL.RawPath)
-		Authenticate(catalystDatabase, config.Auth)(AuthorizeBlockedUser()(http.HandlerFunc(api.Static(fsys)))).ServeHTTP(w, r)
-	})
+	server.With(middlewares...).NotFound(api.VueStatic(fsys))
 
 	return server, nil
 }

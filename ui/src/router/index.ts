@@ -29,6 +29,7 @@ import TicketType from '../views/TicketType.vue';
 import TicketTypeList from "@/views/TicketTypeList.vue";
 import TaskList from "@/views/TaskList.vue";
 import Settings from "@/views/Settings.vue";
+import NotFound from "@/views/NotFound.vue";
 
 Vue.use(VueRouter);
 
@@ -229,7 +230,6 @@ const routes: Array<RouteConfig> = [
     ]
   },
 
-
   {
     path: "/dashboards",
     name: "DashboardList",
@@ -264,6 +264,13 @@ const routes: Array<RouteConfig> = [
     component: Graph,
     meta: { title: "Graph" },
   },
+
+  {
+    path: '*',
+    name: "Not Found",
+    component: NotFound,
+    meta: { title: "Not Found" },
+  }
 ];
 
 const router = new VueRouter({
