@@ -2883,7 +2883,7 @@ paths:
                 id: hunt
                 name: Threat Hunting
               tier: community
-              timeformat: YYYY-MM-DDThh:mm:ss
+              timeformat: yyyy-MM-dd hh:mm:ss
               version: 0.0.0-test
           schema:
             $ref: '#/definitions/SettingsResponse'
@@ -2923,7 +2923,7 @@ paths:
             icon: mdi-check
             id: clean
             name: Clean
-          timeformat: YYYY-MM-DDThh:mm:ss
+          timeformat: yyyy-MM-dd hh:mm:ss
       responses:
         "200":
           description: successful operation
@@ -3004,7 +3004,7 @@ paths:
                 id: hunt
                 name: Threat Hunting
               tier: community
-              timeformat: YYYY-MM-DDThh:mm:ss
+              timeformat: yyyy-MM-dd hh:mm:ss
               version: 0.0.0-test
           schema:
             $ref: '#/definitions/SettingsResponse'
