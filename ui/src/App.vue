@@ -4,7 +4,7 @@
       <v-list>
         <v-list-item class="px-2" :to="{ name: 'Home' }">
           <v-list-item-avatar rounded="0">
-            <v-img src="/flask_white.svg" :width="40"></v-img>
+            <v-img src="/static/flask_white.svg" :width="40"></v-img>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="title">
@@ -132,9 +132,7 @@
       </v-btn>
 
     </v-app-bar>
-    <div>
-      <router-view></router-view>
-    </div>
+    <router-view></router-view>
     <v-snackbar v-model="snackbar" :color="$store.state.alert.type" :timeout="$store.state.alert.type === 'error' ? -1 : 5000" outlined>
       <b style="display: block">{{ $store.state.alert.name | capitalize }}</b>
       {{ $store.state.alert.detail }}
@@ -190,6 +188,8 @@ export default Vue.extend({
       return this.$store.state.showAlert
     },
     crumbs: function() {
+      this.$route.name
+
       let pathArray = this.$route.path.split("/")
       pathArray.shift()
 
