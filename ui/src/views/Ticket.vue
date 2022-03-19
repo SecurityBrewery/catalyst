@@ -106,8 +106,7 @@
             <v-menu offset-y class="mr-2">
               <template v-slot:activator="{ on, attrs }">
                 <span v-bind="attrs" v-on="on">
-                  <v-icon small class="mr-1">mdi-account</v-icon>
-                  {{ ticket.owner ? ticket.owner : "unassigned" }}
+                  <User :id="ticket.owner"></User>
                 </span>
               </template>
               <v-list>
@@ -119,14 +118,14 @@
                   @click="setOwner(user.id)"
                 >
                   <v-list-item-title>
-                    Change owner to {{ user.id }}
+                    Change owner to <User :id="user.id"></User>
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
                     v-if="ticket.owner"
                     dense
                     link
-                    @click="setOwner(null)"
+                    @click="setOwner(undefined)"
                 >
                   <v-list-item-title>
                     Unassign ticket
@@ -243,6 +242,63 @@
           >
             <v-icon class="mr-1">mdi-graph</v-icon> open graph
           </v-btn>
+
+          <v-list dense color="background">
+            <v-list-item class="pa-0 ma-0" style="min-height: 32px">
+              <span class="text--disabled" style="width: 50px;">Owner</span>
+              <v-menu offset-y class="mr-2">
+                <template v-slot:activator="{ on, attrs }">
+                  <span v-bind="attrs" v-on="on">
+                    <User :id="ticket.owner" class="ml-3"></User>
+                  </span>
+                </template>
+                <v-list>
+                  <v-list-item
+                      dense
+                      link
+                      v-for="user in otherUsers(ticket.owner)"
+                      :key="user.id"
+                      @click="setOwner(user.id)"
+                  >
+                    <v-list-item-title>
+                      Change owner to <User :id="user.id"></User>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                      v-if="ticket.owner"
+                      dense
+                      link
+                      @click="setOwner(undefined)"
+                  >
+                    <v-list-item-title>
+                      Unassign ticket
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-list-item>
+            <v-list-item class="pa-0 ma-0" style="min-height: 32px">
+              <span class="text--disabled" style="width: 50px;">Editors</span>
+              <span v-for="writer in ticket.write" :key="writer">
+                <User :id="writer" class="ml-3"></User>
+              </span>
+              <v-btn v-if="!ticket.write || ticket.write.length === 0" small text elevation="0" @click="referenceDialog = true">
+                <v-icon small>mdi-plus</v-icon> Add editor
+              </v-btn>
+            </v-list-item>
+            <v-list-item class="pa-0 ma-0" style="min-height: 32px">
+              <span class="text--disabled" style="width: 50px;">Viewers</span>
+              <span v-for="reader in ticket.read" :key="reader">
+                <User :id="reader" class="ml-3"></User>
+              </span>
+              <v-btn v-if="!ticket.read || ticket.read.length === 0" small text elevation="0" @click="referenceDialog = true">
+                <v-icon small>mdi-plus</v-icon> Add viewer
+              </v-btn>
+            </v-list-item>
+          </v-list>
+
+          <v-divider class="mb-5"></v-divider>
+
           <div style="align-items: center" class="d-flex pb-1">
             <span class="text--disabled">Playbooks</span>
             <v-spacer></v-spacer>
@@ -796,19 +852,19 @@ import {alg, Graph} from "graphlib";
 import ArtifactSnippet from "../components/snippets/ArtifactSnippet.vue";
 import TicketSnippet from "../components/snippets/TicketSnippet.vue";
 import TicketList from "../components/TicketList.vue";
+import User from "../components/User.vue";
 import ArtifactPopup from "./ArtifactPopup.vue";
 
 import {
   Ticket,
   TicketResponse,
   TicketTemplate,
-  ModelFile,
   PlaybookTemplate,
   Reference,
   Task,
   Type,
   TypeColorEnum,
-  TaskResponse, PlaybookResponse, UserResponse, TaskTypeEnum, TicketWithTickets,
+  TaskResponse, PlaybookResponse, UserResponse, TicketWithTickets,
 } from "@/client";
 import {API} from "@/services/api";
 
@@ -818,7 +874,7 @@ import Tus from "@uppy/tus";
 import "@uppy/core/dist/style.css";
 import "@uppy/dashboard/dist/style.css";
 
-import {Uppy, UppyFile} from "@uppy/core";
+import {Uppy} from "@uppy/core";
 import {AxiosError, AxiosResponse} from "axios";
 import {DateTime} from "luxon";
 import VueMarkdown from "vue-markdown";
@@ -897,7 +953,8 @@ export default Vue.extend({
     "vue-markdown": VueMarkdown,
     TicketList,
     ArtifactPopup,
-    JSONHTML
+    JSONHTML,
+    User
   },
   data: (): State => ({
     valid: false,
@@ -1447,12 +1504,16 @@ export default Vue.extend({
         this.editName = "";
       });
     },
-    setOwner: function(owner: string) {
+    setOwner: function(owner?: string) {
       if (!this.ticket || !this.ticket.id) {
         return;
       }
 
-      this.ticket.owner = owner;
+      if (owner === undefined) {
+        this.lodash.unset(this.ticket, "owner")
+      } else {
+        this.ticket.owner = owner;
+      }
 
       API.updateTicket(this.ticket.id, this.toTicket(this.ticket)).then(response => {
         this.$store.dispatch("alertSuccess", { name: "Ticket owner changed" });
