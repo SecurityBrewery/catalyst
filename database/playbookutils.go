@@ -33,6 +33,7 @@ func playbookGraph(playbook *model.Playbook) (*dag.Graph, error) {
 			}
 		}
 	}
+
 	return d, nil
 }
 
@@ -109,6 +110,7 @@ func active(playbook *model.Playbook, taskID string, d *dag.Graph, task *model.T
 				return false, nil
 			}
 		}
+
 		return true, nil
 	}
 
@@ -129,10 +131,11 @@ func active(playbook *model.Playbook, taskID string, d *dag.Graph, task *model.T
 			return true, nil
 		}
 	}
+
 	return false, nil
 }
 
-func evalRequirement(aql string, data interface{}) (bool, error) {
+func evalRequirement(aql string, data any) (bool, error) {
 	if aql == "" {
 		return true, nil
 	}
@@ -143,9 +146,9 @@ func evalRequirement(aql string, data interface{}) (bool, error) {
 		return false, err
 	}
 
-	var dataMap map[string]interface{}
+	var dataMap map[string]any
 	if data != nil {
-		if dataMapX, ok := data.(map[string]interface{}); ok {
+		if dataMapX, ok := data.(map[string]any); ok {
 			dataMap = dataMapX
 		} else {
 			log.Println("wrong data type for task data")
@@ -160,6 +163,7 @@ func evalRequirement(aql string, data interface{}) (bool, error) {
 	if b, ok := v.(bool); ok {
 		return b, nil
 	}
+
 	return false, err
 }
 

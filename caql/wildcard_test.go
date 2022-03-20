@@ -7,7 +7,10 @@
 
 package caql
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 type MatchTest struct {
 	pattern, s string
@@ -41,9 +44,11 @@ var matchTests = []MatchTest{
 }
 
 func TestMatch(t *testing.T) {
+	t.Parallel()
+
 	for _, tt := range matchTests {
 		ok, err := match(tt.pattern, tt.s)
-		if ok != tt.match || err != tt.err {
+		if ok != tt.match || !errors.Is(err, tt.err) {
 			t.Errorf("match(%#q, %#q) = %v, %v want %v, %v", tt.pattern, tt.s, ok, err, tt.match, tt.err)
 		}
 	}

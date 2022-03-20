@@ -19,7 +19,7 @@ type Service interface {
 	CurrentUser(context.Context) (*model.UserResponse, error)
 	CurrentUserData(context.Context) (*model.UserDataResponse, error)
 	UpdateCurrentUserData(context.Context, *model.UserData) (*model.UserDataResponse, error)
-	DashboardData(context.Context, string, *string) (map[string]interface{}, error)
+	DashboardData(context.Context, string, *string) (map[string]any, error)
 	ListDashboards(context.Context) ([]*model.DashboardResponse, error)
 	CreateDashboard(context.Context, *model.Dashboard) (*model.DashboardResponse, error)
 	GetDashboard(context.Context, string) (*model.DashboardResponse, error)
@@ -60,8 +60,8 @@ type Service interface {
 	RemoveComment(context.Context, int64, int) (*model.TicketWithTickets, error)
 	AddTicketPlaybook(context.Context, int64, *model.PlaybookTemplateForm) (*model.TicketWithTickets, error)
 	RemoveTicketPlaybook(context.Context, int64, string) (*model.TicketWithTickets, error)
-	SetTaskData(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
-	CompleteTask(context.Context, int64, string, string, map[string]interface{}) (*model.TicketWithTickets, error)
+	SetTaskData(context.Context, int64, string, string, map[string]any) (*model.TicketWithTickets, error)
+	CompleteTask(context.Context, int64, string, string, map[string]any) (*model.TicketWithTickets, error)
 	SetTaskOwner(context.Context, int64, string, string, string) (*model.TicketWithTickets, error)
 	RunTask(context.Context, int64, string, string) error
 	SetReferences(context.Context, int64, *model.ReferenceArray) (*model.TicketWithTickets, error)
@@ -901,7 +901,7 @@ func (s *server) setTaskDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dataP map[string]interface{}
+	var dataP map[string]any
 	if err := parseBody(body, &dataP); err != nil {
 		JSONError(w, err)
 		return
@@ -928,7 +928,7 @@ func (s *server) completeTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dataP map[string]interface{}
+	var dataP map[string]any
 	if err := parseBody(body, &dataP); err != nil {
 		JSONError(w, err)
 		return

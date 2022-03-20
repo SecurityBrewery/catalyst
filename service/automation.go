@@ -14,6 +14,7 @@ func automationResponseID(automation *model.AutomationResponse) []driver.Documen
 	if automation == nil {
 		return nil
 	}
+
 	return automationID(automation.ID)
 }
 
@@ -27,6 +28,7 @@ func (s *Service) ListAutomations(ctx context.Context) ([]*model.AutomationRespo
 
 func (s *Service) CreateAutomation(ctx context.Context, form *model.AutomationForm) (doc *model.AutomationResponse, err error) {
 	defer s.publishRequest(ctx, err, "CreateAutomation", automationResponseID(doc))
+
 	return s.database.AutomationCreate(ctx, form)
 }
 
@@ -36,10 +38,12 @@ func (s *Service) GetAutomation(ctx context.Context, id string) (*model.Automati
 
 func (s *Service) UpdateAutomation(ctx context.Context, id string, form *model.AutomationForm) (doc *model.AutomationResponse, err error) {
 	defer s.publishRequest(ctx, err, "UpdateAutomation", automationResponseID(doc))
+
 	return s.database.AutomationUpdate(ctx, id, form)
 }
 
 func (s *Service) DeleteAutomation(ctx context.Context, id string) (err error) {
 	defer s.publishRequest(ctx, err, "DeleteAutomation", automationID(id))
+
 	return s.database.AutomationDelete(ctx, id)
 }

@@ -14,6 +14,7 @@ func ticketTypeResponseID(ticketType *model.TicketTypeResponse) []driver.Documen
 	if ticketType == nil {
 		return nil
 	}
+
 	return userDataID(ticketType.ID)
 }
 
@@ -27,6 +28,7 @@ func (s *Service) ListTicketTypes(ctx context.Context) ([]*model.TicketTypeRespo
 
 func (s *Service) CreateTicketType(ctx context.Context, form *model.TicketTypeForm) (doc *model.TicketTypeResponse, err error) {
 	defer s.publishRequest(ctx, err, "CreateTicketType", ticketTypeResponseID(doc))
+
 	return s.database.TicketTypeCreate(ctx, form)
 }
 
@@ -36,10 +38,12 @@ func (s *Service) GetTicketType(ctx context.Context, id string) (*model.TicketTy
 
 func (s *Service) UpdateTicketType(ctx context.Context, id string, form *model.TicketTypeForm) (doc *model.TicketTypeResponse, err error) {
 	defer s.publishRequest(ctx, err, "UpdateTicketType", ticketTypeResponseID(doc))
+
 	return s.database.TicketTypeUpdate(ctx, id, form)
 }
 
 func (s *Service) DeleteTicketType(ctx context.Context, id string) (err error) {
 	defer s.publishRequest(ctx, err, "DeleteTicketType", ticketTypeID(id))
+
 	return s.database.TicketTypeDelete(ctx, id)
 }

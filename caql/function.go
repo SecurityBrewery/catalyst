@@ -16,7 +16,6 @@ import (
 
 func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	switch strings.ToUpper(ctx.T_STRING().GetText()) {
-
 	default:
 		s.appendErrors(errors.New("unknown function"))
 
@@ -26,8 +25,8 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		if len(ctx.AllExpression()) == 3 {
 			u = s.pop().(bool)
 		}
-		seen := map[interface{}]bool{}
-		values, anyArray := s.pop().([]interface{}), s.pop().([]interface{})
+		seen := map[any]bool{}
+		values, anyArray := s.pop().([]any), s.pop().([]any)
 
 		if u {
 			for _, e := range anyArray {
@@ -45,18 +44,18 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		s.push(anyArray)
 	case "COUNT_DISTINCT", "COUNT_UNIQUE":
 		count := 0
-		seen := map[interface{}]bool{}
-		array := s.pop().([]interface{})
+		seen := map[any]bool{}
+		array := s.pop().([]any)
 		for _, e := range array {
 			_, ok := seen[e]
 			if !ok {
 				seen[e] = true
-				count += 1
+				count++
 			}
 		}
 		s.push(float64(count))
 	case "FIRST":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		if len(array) == 0 {
 			s.push(nil)
 		} else {
@@ -65,16 +64,16 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	// case "FLATTEN":
 	// case "INTERLEAVE":
 	case "INTERSECTION":
-		iset := New(s.pop().([]interface{})...)
+		iset := NewSet(s.pop().([]any)...)
 
 		for i := 1; i < len(ctx.AllExpression()); i++ {
-			iset = iset.Intersection(New(s.pop().([]interface{})...))
+			iset = iset.Intersection(NewSet(s.pop().([]any)...))
 		}
 
 		s.push(iset.Values())
 	// case "JACCARD":
 	case "LAST":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		if len(array) == 0 {
 			s.push(nil)
 		} else {
@@ -94,9 +93,9 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			s.push(float64(len(fmt.Sprint(v))))
 		case string:
 			s.push(float64(utf8.RuneCountInString(v)))
-		case []interface{}:
+		case []any:
 			s.push(float64(len(v)))
-		case map[string]interface{}:
+		case map[string]any:
 			s.push(float64(len(v)))
 		default:
 			panic("unknown type")
@@ -104,7 +103,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	case "MINUS":
 		var sets []*Set
 		for i := 0; i < len(ctx.AllExpression()); i++ {
-			sets = append(sets, New(s.pop().([]interface{})...))
+			sets = append(sets, NewSet(s.pop().([]any)...))
 		}
 
 		iset := sets[len(sets)-1]
@@ -116,7 +115,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		s.push(iset.Values())
 	case "NTH":
 		pos := s.pop().(float64)
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		if int(pos) >= len(array) || pos < 0 {
 			s.push(nil)
 		} else {
@@ -124,16 +123,16 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 	// case "OUTERSECTION":
 	// 	array := s.pop().([]interface{})
-	// 	union := New(array...)
-	// 	intersection := New(s.pop().([]interface{})...)
+	// 	union := NewSet(array...)
+	// 	intersection := NewSet(s.pop().([]interface{})...)
 	// 	for i := 1; i < len(ctx.AllExpression()); i++ {
 	// 		array = s.pop().([]interface{})
-	// 		union = union.Union(New(array...))
-	// 		intersection = intersection.Intersection(New(array...))
+	// 		union = union.Union(NewSet(array...))
+	// 		intersection = intersection.Intersection(NewSet(array...))
 	// 	}
 	// 	s.push(union.Minus(intersection).Values())
 	case "POP":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		s.push(array[:len(array)-1])
 	case "POSITION", "CONTAINS_ARRAY":
 		returnIndex := false
@@ -141,7 +140,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			returnIndex = s.pop().(bool)
 		}
 		search := s.pop()
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 
 		for idx, e := range array {
 			if e == search {
@@ -164,7 +163,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			u = s.pop().(bool)
 		}
 		element := s.pop()
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 
 		if u && contains(array, element) {
 			s.push(array)
@@ -173,13 +172,13 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 	case "REMOVE_NTH":
 		position := s.pop().(float64)
-		anyArray := s.pop().([]interface{})
+		anyArray := s.pop().([]any)
 
 		if position < 0 {
 			position = float64(len(anyArray) + int(position))
 		}
 
-		result := []interface{}{}
+		result := []any{}
 		for idx, e := range anyArray {
 			if idx != int(position) {
 				result = append(result, e)
@@ -193,7 +192,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 		replaceValue := s.pop().(string)
 		position := s.pop().(float64)
-		anyArray := s.pop().([]interface{})
+		anyArray := s.pop().([]any)
 
 		if position < 0 {
 			position = float64(len(anyArray) + int(position))
@@ -224,8 +223,8 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			limit = s.pop().(float64)
 		}
 		value := s.pop()
-		array := s.pop().([]interface{})
-		result := []interface{}{}
+		array := s.pop().([]any)
+		result := []any{}
 		for idx, e := range array {
 			if e != value || float64(idx) > limit {
 				result = append(result, e)
@@ -233,9 +232,9 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 		s.push(result)
 	case "REMOVE_VALUES":
-		values := s.pop().([]interface{})
-		array := s.pop().([]interface{})
-		result := []interface{}{}
+		values := s.pop().([]any)
+		array := s.pop().([]any)
+		result := []any{}
 		for _, e := range array {
 			if !contains(values, e) {
 				result = append(result, e)
@@ -243,14 +242,14 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 		s.push(result)
 	case "REVERSE":
-		array := s.pop().([]interface{})
-		var reverse []interface{}
+		array := s.pop().([]any)
+		var reverse []any
 		for _, e := range array {
-			reverse = append([]interface{}{e}, reverse...)
+			reverse = append([]any{e}, reverse...)
 		}
 		s.push(reverse)
 	case "SHIFT":
-		s.push(s.pop().([]interface{})[1:])
+		s.push(s.pop().([]any)[1:])
 	case "SLICE":
 		length := float64(-1)
 		full := true
@@ -259,7 +258,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			full = false
 		}
 		start := int64(s.pop().(float64))
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 
 		if start < 0 {
 			start = int64(len(array)) + start
@@ -276,43 +275,43 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 		s.push(array[start:end])
 	case "SORTED":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		sort.Slice(array, func(i, j int) bool { return lt(array[i], array[j]) })
 		s.push(array)
 	case "SORTED_UNIQUE":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		sort.Slice(array, func(i, j int) bool { return lt(array[i], array[j]) })
 		s.push(unique(array))
 	case "UNION":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 
 		for i := 1; i < len(ctx.AllExpression()); i++ {
-			array = append(array, s.pop().([]interface{})...)
+			array = append(array, s.pop().([]any)...)
 		}
 
 		sort.Slice(array, func(i, j int) bool { return lt(array[i], array[j]) })
 		s.push(array)
 	case "UNION_DISTINCT":
-		iset := New(s.pop().([]interface{})...)
+		iset := NewSet(s.pop().([]any)...)
 
 		for i := 1; i < len(ctx.AllExpression()); i++ {
-			iset = iset.Union(New(s.pop().([]interface{})...))
+			iset = iset.Union(NewSet(s.pop().([]any)...))
 		}
 
 		s.push(unique(iset.Values()))
 	case "UNIQUE":
-		s.push(unique(s.pop().([]interface{})))
+		s.push(unique(s.pop().([]any)))
 	case "UNSHIFT":
 		u := false
 		if len(ctx.AllExpression()) == 3 {
 			u = s.pop().(bool)
 		}
 		element := s.pop()
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		if u && contains(array, element) {
 			s.push(array)
 		} else {
-			s.push(append([]interface{}{element}, array...))
+			s.push(append([]any{element}, array...))
 		}
 
 	// Bit https://www.arangodb.com/docs/stable/aql/functions-bit.html
@@ -367,8 +366,8 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		if len(ctx.AllExpression()) >= 2 {
 			removeInternal = s.pop().(bool)
 		}
-		var keys []interface{}
-		for k := range s.pop().(map[string]interface{}) {
+		var keys []any
+		for k := range s.pop().(map[string]any) {
 			isInternalKey := strings.HasPrefix(k, "_")
 			if !removeInternal || !isInternalKey {
 				keys = append(keys, k)
@@ -379,20 +378,20 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	// case "COUNT":
 	case "HAS":
 		right, left := s.pop(), s.pop()
-		_, ok := left.(map[string]interface{})[right.(string)]
+		_, ok := left.(map[string]any)[right.(string)]
 		s.push(ok)
 	// case "KEEP":
 	// case "LENGTH":
 	// case "MATCHES":
 	case "MERGE":
-		var docs []map[string]interface{}
+		var docs []map[string]any
 		if len(ctx.AllExpression()) == 1 {
-			for _, doc := range s.pop().([]interface{}) {
-				docs = append([]map[string]interface{}{doc.(map[string]interface{})}, docs...)
+			for _, doc := range s.pop().([]any) {
+				docs = append([]map[string]any{doc.(map[string]any)}, docs...)
 			}
 		} else {
 			for i := 0; i < len(ctx.AllExpression()); i++ {
-				docs = append(docs, s.pop().(map[string]interface{}))
+				docs = append(docs, s.pop().(map[string]any))
 			}
 		}
 
@@ -404,9 +403,9 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		}
 		s.push(doc)
 	case "MERGE_RECURSIVE":
-		var doc map[string]interface{}
+		var doc map[string]any
 		for i := 0; i < len(ctx.AllExpression()); i++ {
-			err := mergo.Merge(&doc, s.pop().(map[string]interface{}))
+			err := mergo.Merge(&doc, s.pop().(map[string]any))
 			if err != nil {
 				panic(err)
 			}
@@ -421,8 +420,8 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		if len(ctx.AllExpression()) == 2 {
 			removeInternal = s.pop().(bool)
 		}
-		var values []interface{}
-		for k, v := range s.pop().(map[string]interface{}) {
+		var values []any
+		for k, v := range s.pop().(map[string]any) {
 			isInternalKey := strings.HasPrefix(k, "_")
 			if !removeInternal || !isInternalKey {
 				values = append(values, v)
@@ -458,10 +457,10 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	case "AVERAGE", "AVG":
 		count := 0
 		sum := float64(0)
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		for _, element := range array {
 			if element != nil {
-				count += 1
+				count++
 				sum += toNumber(element)
 			}
 		}
@@ -506,7 +505,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	case "MAX":
 		var set bool
 		var max float64
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		for _, element := range array {
 			if element != nil {
 				if !set || toNumber(element) > max {
@@ -521,7 +520,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 			s.push(nil)
 		}
 	case "MEDIAN":
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		var numbers []float64
 		for _, element := range array {
 			if f, ok := element.(float64); ok {
@@ -544,7 +543,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	case "MIN":
 		var set bool
 		var min float64
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		for _, element := range array {
 			if element != nil {
 				if !set || toNumber(element) < min {
@@ -566,7 +565,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		s.push(math.Pow(left.(float64), right.(float64)))
 	case "PRODUCT":
 		product := float64(1)
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		for _, element := range array {
 			if element != nil {
 				product *= toNumber(element)
@@ -578,7 +577,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	case "RAND":
 		s.push(rand.Float64())
 	case "RANGE":
-		var array []interface{}
+		var array []any
 		var start, end, step float64
 		if len(ctx.AllExpression()) == 2 {
 			right, left := s.pop(), s.pop()
@@ -612,7 +611,7 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	// case "STDDEV":
 	case "SUM":
 		sum := float64(0)
-		array := s.pop().([]interface{})
+		array := s.pop().([]any)
 		for _, element := range array {
 			sum += toNumber(element)
 		}
@@ -691,7 +690,6 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 		// case "IS_IPV4":
 		// case "IS_KEY":
 		// case "TYPENAME":
-
 	}
 }
 
@@ -705,6 +703,7 @@ func unique(array []interface{}) []interface{} {
 			filtered = append(filtered, e)
 		}
 	}
+
 	return filtered
 }
 
@@ -714,15 +713,7 @@ func contains(values []interface{}, e interface{}) bool {
 			return true
 		}
 	}
-	return false
-}
 
-func stringSliceContains(values []string, e string) bool {
-	for _, v := range values {
-		if e == v {
-			return true
-		}
-	}
 	return false
 }
 
@@ -747,4 +738,5 @@ var functionNames = []string{
 	"REGEX_REPLACE", "REVERSE", "RIGHT", "RTRIM", "SHA1", "SHA512", "SOUNDEX", "SPLIT", "STARTS_WITH", "SUBSTITUTE",
 	"SUBSTRING", "TOKENS", "TO_BASE64", "TO_HEX", "TRIM", "UPPER", "UUID", "TO_BOOL", "TO_NUMBER", "TO_STRING",
 	"TO_ARRAY", "TO_LIST", "IS_NULL", "IS_BOOL", "IS_NUMBER", "IS_STRING", "IS_ARRAY", "IS_LIST", "IS_OBJECT",
-	"IS_DOCUMENT", "IS_DATESTRING", "IS_IPV4", "IS_KEY", "TYPENAME"}
+	"IS_DOCUMENT", "IS_DATESTRING", "IS_IPV4", "IS_KEY", "TYPENAME",
+}

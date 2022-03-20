@@ -8,7 +8,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/generated/caql/parser"
 )
 
-var TooComplexError = errors.New("unsupported features for index queries, use advanced search instead")
+var ErrTooComplex = errors.New("unsupported features for index queries, use advanced search instead")
 
 type bleveBuilder struct {
 	*parser.BaseCAQLParserListener
@@ -35,8 +35,9 @@ func (s *bleveBuilder) pop() (n string) {
 	return
 }
 
-func (s *bleveBuilder) binaryPop() (interface{}, interface{}) {
+func (s *bleveBuilder) binaryPop() (any, any) {
 	right, left := s.pop(), s.pop()
+
 	return left, right
 }
 
@@ -48,9 +49,7 @@ func (s *bleveBuilder) ExitExpression(ctx *parser.ExpressionContext) {
 	case ctx.Reference() != nil:
 		// pass
 	case ctx.Operator_unary() != nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_PLUS() != nil:
 		fallthrough
 	case ctx.T_MINUS() != nil:
@@ -60,13 +59,9 @@ func (s *bleveBuilder) ExitExpression(ctx *parser.ExpressionContext) {
 	case ctx.T_DIV() != nil:
 		fallthrough
 	case ctx.T_MOD() != nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_RANGE() != nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_LT() != nil && ctx.GetEq_op() == nil:
 		left, right := s.binaryPop()
 		s.push(fmt.Sprintf("%s:<%s", left, right))
@@ -79,64 +74,46 @@ func (s *bleveBuilder) ExitExpression(ctx *parser.ExpressionContext) {
 	case ctx.T_GE() != nil && ctx.GetEq_op() == nil:
 		left, right := s.binaryPop()
 		s.push(fmt.Sprintf("%s:>=%s", left, right))
-
 	case ctx.T_IN() != nil && ctx.GetEq_op() == nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_EQ() != nil && ctx.GetEq_op() == nil:
 		left, right := s.binaryPop()
 		s.push(fmt.Sprintf("%s:%s", left, right))
 	case ctx.T_NE() != nil && ctx.GetEq_op() == nil:
 		left, right := s.binaryPop()
 		s.push(fmt.Sprintf("-%s:%s", left, right))
-
 	case ctx.T_ALL() != nil && ctx.GetEq_op() != nil:
 		fallthrough
 	case ctx.T_ANY() != nil && ctx.GetEq_op() != nil:
 		fallthrough
 	case ctx.T_NONE() != nil && ctx.GetEq_op() != nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_ALL() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
 		fallthrough
 	case ctx.T_ANY() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
 		fallthrough
 	case ctx.T_NONE() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
-		s.err = TooComplexError
-		return
-
+		s.err = ErrTooComplex
 	case ctx.T_LIKE() != nil:
 		s.err = errors.New("index queries are like queries by default")
-		return
-
 	case ctx.T_REGEX_MATCH() != nil:
 		left, right := s.binaryPop()
 		if ctx.T_NOT() != nil {
-			s.err = TooComplexError
-			return
+			s.err = ErrTooComplex
 		} else {
 			s.push(fmt.Sprintf("%s:/%s/", left, right))
 		}
 	case ctx.T_REGEX_NON_MATCH() != nil:
 		s.err = errors.New("index query cannot contain regex non matches, use advanced search instead")
-		return
-
 	case ctx.T_AND() != nil:
 		left, right := s.binaryPop()
 		s.push(fmt.Sprintf("%s %s", left, right))
 	case ctx.T_OR() != nil:
 		s.err = errors.New("index query cannot contain OR, use advanced search instead")
-		return
-
 	case ctx.T_QUESTION() != nil && len(ctx.AllExpression()) == 3:
 		s.err = errors.New("index query cannot contain ternary operations, use advanced search instead")
-		return
 	case ctx.T_QUESTION() != nil && len(ctx.AllExpression()) == 2:
 		s.err = errors.New("index query cannot contain ternary operations, use advanced search instead")
-		return
-
 	default:
 		panic("unknown expression")
 	}
@@ -152,17 +129,13 @@ func (s *bleveBuilder) ExitReference(ctx *parser.ReferenceContext) {
 	case ctx.T_STRING() != nil:
 		s.push(ctx.T_STRING().GetText())
 	case ctx.Compound_value() != nil:
-		s.err = TooComplexError
-		return
+		s.err = ErrTooComplex
 	case ctx.Function_call() != nil:
-		s.err = TooComplexError
-		return
+		s.err = ErrTooComplex
 	case ctx.T_OPEN() != nil:
-		s.err = TooComplexError
-		return
+		s.err = ErrTooComplex
 	case ctx.T_ARRAY_OPEN() != nil:
-		s.err = TooComplexError
-		return
+		s.err = ErrTooComplex
 	default:
 		panic(fmt.Sprintf("unexpected value: %s", ctx.GetText()))
 	}

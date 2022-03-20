@@ -27,7 +27,9 @@ import (
 )
 
 func Test(t *testing.T) {
-	s := New()
+	t.Parallel()
+
+	s := NewSet()
 
 	s.Insert(5)
 
@@ -50,8 +52,8 @@ func Test(t *testing.T) {
 	}
 
 	// Difference
-	s1 := New(1, 2, 3, 4, 5, 6)
-	s2 := New(4, 5, 6)
+	s1 := NewSet(1, 2, 3, 4, 5, 6)
+	s2 := NewSet(4, 5, 6)
 	s3 := s1.Difference(s2)
 
 	if s3.Len() != 3 {
@@ -73,7 +75,7 @@ func Test(t *testing.T) {
 	}
 
 	// Union
-	s4 := New(7, 8, 9)
+	s4 := NewSet(7, 8, 9)
 	s3 = s2.Union(s4)
 
 	if s3.Len() != 6 {
@@ -92,5 +94,4 @@ func Test(t *testing.T) {
 	if s1.ProperSubsetOf(s1) {
 		t.Errorf("set should not be a subset of itself")
 	}
-
 }

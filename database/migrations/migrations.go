@@ -32,34 +32,34 @@ func generateMigrations() ([]Migration, error) {
 
 		&createGraph{ID: "create-ticket-graph", Name: "Graph", EdgeDefinitions: []driver.EdgeDefinition{{Collection: "related", From: []string{"tickets"}, To: []string{"tickets"}}}},
 
-		&createDocument{ID: "create-template-default", Collection: "templates", Document: &busdb.Keyed{Key: "default", Doc: model.TicketTemplate{Schema: DefaultTemplateSchema, Name: "Default"}}},
-		&createDocument{ID: "create-automation-vt.hash", Collection: "automations", Document: &busdb.Keyed{Key: "vt.hash", Doc: model.Automation{Image: "docker.io/python:3", Script: VTHashAutomation}}},
-		&createDocument{ID: "create-automation-comment", Collection: "automations", Document: &busdb.Keyed{Key: "comment", Doc: model.Automation{Image: "docker.io/python:3", Script: CommentAutomation}}},
-		&createDocument{ID: "create-automation-hash.sha1", Collection: "automations", Document: &busdb.Keyed{Key: "hash.sha1", Doc: model.Automation{Image: "docker.io/python:3", Script: SHA1HashAutomation}}},
-		&createDocument{ID: "create-playbook-malware", Collection: "playbooks", Document: &busdb.Keyed{Key: "malware", Doc: model.PlaybookTemplate{Name: "Malware", Yaml: MalwarePlaybook}}},
-		&createDocument{ID: "create-playbook-phishing", Collection: "playbooks", Document: &busdb.Keyed{Key: "phishing", Doc: model.PlaybookTemplate{Name: "Phishing", Yaml: PhishingPlaybook}}},
-		&createDocument{ID: "create-tickettype-alert", Collection: "tickettypes", Document: &busdb.Keyed{Key: "alert", Doc: model.TicketType{Name: "Alerts", Icon: "mdi-alert", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
-		&createDocument{ID: "create-tickettype-incident", Collection: "tickettypes", Document: &busdb.Keyed{Key: "incident", Doc: model.TicketType{Name: "Incidents", Icon: "mdi-radioactive", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
-		&createDocument{ID: "create-tickettype-investigation", Collection: "tickettypes", Document: &busdb.Keyed{Key: "investigation", Doc: model.TicketType{Name: "Forensic Investigations", Icon: "mdi-fingerprint", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
-		&createDocument{ID: "create-tickettype-hunt", Collection: "tickettypes", Document: &busdb.Keyed{Key: "hunt", Doc: model.TicketType{Name: "Threat Hunting", Icon: "mdi-target", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
+		&createDocument[busdb.Keyed[model.TicketTemplate]]{ID: "create-template-default", Collection: "templates", Document: &busdb.Keyed[model.TicketTemplate]{Key: "default", Doc: &model.TicketTemplate{Schema: DefaultTemplateSchema, Name: "Default"}}},
+		&createDocument[busdb.Keyed[model.Automation]]{ID: "create-automation-vt.hash", Collection: "automations", Document: &busdb.Keyed[model.Automation]{Key: "vt.hash", Doc: &model.Automation{Image: "docker.io/python:3", Script: VTHashAutomation}}},
+		&createDocument[busdb.Keyed[model.Automation]]{ID: "create-automation-comment", Collection: "automations", Document: &busdb.Keyed[model.Automation]{Key: "comment", Doc: &model.Automation{Image: "docker.io/python:3", Script: CommentAutomation}}},
+		&createDocument[busdb.Keyed[model.Automation]]{ID: "create-automation-hash.sha1", Collection: "automations", Document: &busdb.Keyed[model.Automation]{Key: "hash.sha1", Doc: &model.Automation{Image: "docker.io/python:3", Script: SHA1HashAutomation}}},
+		&createDocument[busdb.Keyed[model.PlaybookTemplate]]{ID: "create-playbook-malware", Collection: "playbooks", Document: &busdb.Keyed[model.PlaybookTemplate]{Key: "malware", Doc: &model.PlaybookTemplate{Name: "Malware", Yaml: MalwarePlaybook}}},
+		&createDocument[busdb.Keyed[model.PlaybookTemplate]]{ID: "create-playbook-phishing", Collection: "playbooks", Document: &busdb.Keyed[model.PlaybookTemplate]{Key: "phishing", Doc: &model.PlaybookTemplate{Name: "Phishing", Yaml: PhishingPlaybook}}},
+		&createDocument[busdb.Keyed[model.TicketType]]{ID: "create-tickettype-alert", Collection: "tickettypes", Document: &busdb.Keyed[model.TicketType]{Key: "alert", Doc: &model.TicketType{Name: "Alerts", Icon: "mdi-alert", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
+		&createDocument[busdb.Keyed[model.TicketType]]{ID: "create-tickettype-incident", Collection: "tickettypes", Document: &busdb.Keyed[model.TicketType]{Key: "incident", Doc: &model.TicketType{Name: "Incidents", Icon: "mdi-radioactive", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
+		&createDocument[busdb.Keyed[model.TicketType]]{ID: "create-tickettype-investigation", Collection: "tickettypes", Document: &busdb.Keyed[model.TicketType]{Key: "investigation", Doc: &model.TicketType{Name: "Forensic Investigations", Icon: "mdi-fingerprint", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
+		&createDocument[busdb.Keyed[model.TicketType]]{ID: "create-tickettype-hunt", Collection: "tickettypes", Document: &busdb.Keyed[model.TicketType]{Key: "hunt", Doc: &model.TicketType{Name: "Threat Hunting", Icon: "mdi-target", DefaultTemplate: "default", DefaultPlaybooks: []string{}, DefaultGroups: nil}}},
 
 		&updateSchema{ID: "update-automation-collection-1", Name: "automations", DataType: "automation", Schema: `{"properties":{"image":{"type":"string"},"script":{"type":"string"}},"required":["image","script"],"type":"object"}`},
-		&updateDocument{ID: "update-automation-vt.hash-1", Collection: "automations", Key: "vt.hash", Document: model.Automation{Image: "docker.io/python:3", Script: VTHashAutomation, Schema: pointer.String(`{"title":"Input","type":"object","properties":{"default":{"type":"string","title":"Value"}},"required":["default"]}`), Type: []string{"global", "artifact", "playbook"}}},
-		&updateDocument{ID: "update-automation-comment-1", Collection: "automations", Key: "comment", Document: model.Automation{Image: "docker.io/python:3", Script: CommentAutomation, Type: []string{"playbook"}}},
-		&updateDocument{ID: "update-automation-hash.sha1-1", Collection: "automations", Key: "hash.sha1", Document: model.Automation{Image: "docker.io/python:3", Script: SHA1HashAutomation, Schema: pointer.String(`{"title":"Input","type":"object","properties":{"default":{"type":"string","title":"Value"}},"required":["default"]}`), Type: []string{"global", "artifact", "playbook"}}},
+		&updateDocument[model.Automation]{ID: "update-automation-vt.hash-1", Collection: "automations", Key: "vt.hash", Document: &model.Automation{Image: "docker.io/python:3", Script: VTHashAutomation, Schema: pointer.String(`{"title":"Input","type":"object","properties":{"default":{"type":"string","title":"Value"}},"required":["default"]}`), Type: []string{"global", "artifact", "playbook"}}},
+		&updateDocument[model.Automation]{ID: "update-automation-comment-1", Collection: "automations", Key: "comment", Document: &model.Automation{Image: "docker.io/python:3", Script: CommentAutomation, Type: []string{"playbook"}}},
+		&updateDocument[model.Automation]{ID: "update-automation-hash.sha1-1", Collection: "automations", Key: "hash.sha1", Document: &model.Automation{Image: "docker.io/python:3", Script: SHA1HashAutomation, Schema: pointer.String(`{"title":"Input","type":"object","properties":{"default":{"type":"string","title":"Value"}},"required":["default"]}`), Type: []string{"global", "artifact", "playbook"}}},
 
 		&createCollection{ID: "create-job-collection", Name: "jobs", DataType: "job", Schema: `{"properties":{"automation":{"type":"string"},"log":{"type":"string"},"payload":{},"origin":{"properties":{"artifact_origin":{"properties":{"artifact":{"type":"string"},"ticket_id":{"format":"int64","type":"integer"}},"required":["artifact","ticket_id"],"type":"object"},"task_origin":{"properties":{"playbook_id":{"type":"string"},"task_id":{"type":"string"},"ticket_id":{"format":"int64","type":"integer"}},"required":["playbook_id","task_id","ticket_id"],"type":"object"}},"type":"object"},"output":{"properties":{},"type":"object"},"running":{"type":"boolean"},"status":{"type":"string"}},"required":["automation","running","status"],"type":"object"}`},
 
-		&createDocument{ID: "create-playbook-simple", Collection: "playbooks", Document: &busdb.Keyed{Key: "simple", Doc: model.PlaybookTemplate{Name: "Simple", Yaml: SimplePlaybook}}},
+		&createDocument[busdb.Keyed[model.PlaybookTemplate]]{ID: "create-playbook-simple", Collection: "playbooks", Document: &busdb.Keyed[model.PlaybookTemplate]{Key: "simple", Doc: &model.PlaybookTemplate{Name: "Simple", Yaml: SimplePlaybook}}},
 
 		&createCollection{ID: "create-settings-collection", Name: "settings", DataType: "settings", Schema: `{"type":"object","properties":{"artifactStates":{"title":"Artifact States","items":{"type":"object","properties":{"color":{"title":"Color","type":"string","enum":["error","info","success","warning"]},"icon":{"title":"Icon (https://materialdesignicons.com)","type":"string"},"id":{"title":"ID","type":"string"},"name":{"title":"Name","type":"string"}},"required":["id","name","icon"]},"type":"array"},"artifactKinds":{"title":"Artifact Kinds","items":{"type":"object","properties":{"color":{"title":"Color","type":"string","enum":["error","info","success","warning"]},"icon":{"title":"Icon (https://materialdesignicons.com)","type":"string"},"id":{"title":"ID","type":"string"},"name":{"title":"Name","type":"string"}},"required":["id","name","icon"]},"type":"array"},"timeformat":{"title":"Time Format","type":"string"}},"required":["timeformat","artifactKinds","artifactStates"]}`},
-		&createDocument{ID: "create-settings-global", Collection: "settings", Document: &busdb.Keyed{Key: "global", Doc: model.Settings{ArtifactStates: []*model.Type{{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)}, {Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)}, {Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)}}, ArtifactKinds: []*model.Type{{Icon: "mdi-server", ID: "asset", Name: "Asset"}, {Icon: "mdi-bullseye", ID: "ioc", Name: "IOC"}}, Timeformat: "YYYY-MM-DDThh:mm:ss"}}},
+		&createDocument[busdb.Keyed[model.Settings]]{ID: "create-settings-global", Collection: "settings", Document: &busdb.Keyed[model.Settings]{Key: "global", Doc: &model.Settings{ArtifactStates: []*model.Type{{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)}, {Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)}, {Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)}}, ArtifactKinds: []*model.Type{{Icon: "mdi-server", ID: "asset", Name: "Asset"}, {Icon: "mdi-bullseye", ID: "ioc", Name: "IOC"}}, Timeformat: "YYYY-MM-DDThh:mm:ss"}}},
 
 		&updateSchema{ID: "update-ticket-collection", Name: "tickets", DataType: "ticket", Schema: `{"properties":{"artifacts":{"items":{"properties":{"enrichments":{"additionalProperties":{"properties":{"created":{"format":"date-time","type":"string"},"data":{"example":{"hash":"b7a067a742c20d07a7456646de89bc2d408a1153"},"properties":{},"type":"object"},"name":{"example":"hash.sha1","type":"string"}},"required":["created","data","name"],"type":"object"},"type":"object"},"name":{"example":"2.2.2.2","type":"string"},"status":{"example":"Unknown","type":"string"},"type":{"type":"string"},"kind":{"type":"string"}},"required":["name"],"type":"object"},"type":"array"},"comments":{"items":{"properties":{"created":{"format":"date-time","type":"string"},"creator":{"type":"string"},"message":{"type":"string"}},"required":["created","creator","message"],"type":"object"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"example":{"description":"my little incident"},"properties":{},"type":"object"},"files":{"items":{"properties":{"key":{"example":"myfile","type":"string"},"name":{"example":"notes.docx","type":"string"}},"required":["key","name"],"type":"object"},"type":"array"},"modified":{"format":"date-time","type":"string"},"name":{"example":"WannyCry","type":"string"},"owner":{"example":"bob","type":"string"},"playbooks":{"additionalProperties":{"properties":{"name":{"example":"Phishing","type":"string"},"tasks":{"additionalProperties":{"properties":{"automation":{"type":"string"},"closed":{"format":"date-time","type":"string"},"created":{"format":"date-time","type":"string"},"data":{"properties":{},"type":"object"},"done":{"type":"boolean"},"join":{"example":false,"type":"boolean"},"payload":{"additionalProperties":{"type":"string"},"type":"object"},"name":{"example":"Inform user","type":"string"},"next":{"additionalProperties":{"type":"string"},"type":"object"},"owner":{"type":"string"},"schema":{"properties":{},"type":"object"},"type":{"enum":["task","input","automation"],"example":"task","type":"string"}},"required":["created","done","name","type"],"type":"object"},"type":"object"}},"required":["name","tasks"],"type":"object"},"type":"object"},"read":{"example":["bob"],"items":{"type":"string"},"type":"array"},"references":{"items":{"properties":{"href":{"example":"https://cve.mitre.org/cgi-bin/cvename.cgi?name=cve-2017-0144","type":"string"},"name":{"example":"CVE-2017-0144","type":"string"}},"required":["href","name"],"type":"object"},"type":"array"},"schema":{"example":"{}","type":"string"},"status":{"example":"open","type":"string"},"type":{"example":"incident","type":"string"},"write":{"example":["alice"],"items":{"type":"string"},"type":"array"}},"required":["created","modified","name","schema","status","type"],"type":"object"}`},
 
 		&createCollection{ID: "create-dashboard-collection", Name: "dashboards", DataType: "dashboards", Schema: `{"type":"object","properties":{"name":{"type":"string"},"widgets":{"items":{"type":"object","properties":{"aggregation":{"type":"string"},"filter":{"type":"string"},"name":{"type":"string"},"type":{"enum":[ "bar", "line", "pie" ]},"width": { "type": "integer", "minimum": 1, "maximum": 12 }},"required":["name","aggregation", "type", "width"]},"type":"array"}},"required":["name","widgets"]}`},
 
-		&updateDocument{ID: "update-settings-global-1", Collection: "settings", Key: "global", Document: &model.Settings{ArtifactStates: []*model.Type{{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)}, {Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)}, {Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)}}, ArtifactKinds: []*model.Type{{Icon: "mdi-server", ID: "asset", Name: "Asset"}, {Icon: "mdi-bullseye", ID: "ioc", Name: "IOC"}}, Timeformat: "yyyy-MM-dd hh:mm:ss"}},
+		&updateDocument[model.Settings]{ID: "update-settings-global-1", Collection: "settings", Key: "global", Document: &model.Settings{ArtifactStates: []*model.Type{{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)}, {Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)}, {Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)}}, ArtifactKinds: []*model.Type{{Icon: "mdi-server", ID: "asset", Name: "Asset"}, {Icon: "mdi-bullseye", ID: "ioc", Name: "IOC"}}, Timeformat: "yyyy-MM-dd hh:mm:ss"}},
 	}, nil
 }
 
@@ -67,6 +67,7 @@ func loadSchema(dataType, jsonschema string) (*driver.CollectionSchemaOptions, e
 	ticketCollectionSchema := &driver.CollectionSchemaOptions{Level: driver.CollectionSchemaLevelStrict, Message: fmt.Sprintf("Validation of %s failed", dataType)}
 
 	err := ticketCollectionSchema.LoadRule([]byte(jsonschema))
+
 	return ticketCollectionSchema, err
 }
 
@@ -101,6 +102,7 @@ func PerformMigrations(ctx context.Context, db driver.Database) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -171,41 +173,43 @@ func (m *createGraph) Migrate(ctx context.Context, db driver.Database) error {
 	_, err := db.CreateGraph(ctx, m.Name, &driver.CreateGraphOptions{
 		EdgeDefinitions: m.EdgeDefinitions,
 	})
+
 	return err
 }
 
-type createDocument struct {
+type createDocument[T any] struct {
 	ID         string
 	Collection string
-	Document   interface{}
+	Document   *T
 }
 
-func (m *createDocument) MID() string {
+func (m *createDocument[T]) MID() string {
 	return m.ID
 }
 
-func (m *createDocument) Migrate(ctx context.Context, driver driver.Database) error {
+func (m *createDocument[T]) Migrate(ctx context.Context, driver driver.Database) error {
 	collection, err := driver.Collection(ctx, m.Collection)
 	if err != nil {
 		return err
 	}
 
 	_, err = collection.CreateDocument(ctx, m.Document)
+
 	return err
 }
 
-type updateDocument struct {
+type updateDocument[T any] struct {
 	ID         string
 	Collection string
 	Key        string
-	Document   interface{}
+	Document   *T
 }
 
-func (m *updateDocument) MID() string {
+func (m *updateDocument[T]) MID() string {
 	return m.ID
 }
 
-func (m *updateDocument) Migrate(ctx context.Context, driver driver.Database) error {
+func (m *updateDocument[T]) Migrate(ctx context.Context, driver driver.Database) error {
 	collection, err := driver.Collection(ctx, m.Collection)
 	if err != nil {
 		return err
@@ -218,9 +222,11 @@ func (m *updateDocument) Migrate(ctx context.Context, driver driver.Database) er
 
 	if !exists {
 		_, err = collection.CreateDocument(ctx, m.Document)
+
 		return err
 	}
 
 	_, err = collection.ReplaceDocument(ctx, m.Key, m.Document)
+
 	return err
 }

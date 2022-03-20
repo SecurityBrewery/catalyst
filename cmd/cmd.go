@@ -4,6 +4,7 @@ import (
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
+	"golang.org/x/exp/slices"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
@@ -62,7 +63,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 	roles = append(roles, role.Explodes(cli.AuthDefaultRoles)...)
 	roles = role.Explodes(role.Strings(roles))
 
-	scopes := unique(append([]string{oidc.ScopeOpenID, "profile", "email"}, cli.OIDCScopes...))
+	scopes := slices.Compact(append([]string{oidc.ScopeOpenID, "profile", "email"}, cli.OIDCScopes...))
 	config := &catalyst.Config{
 		IndexPath:       cli.IndexPath,
 		Network:         cli.Network,
@@ -83,17 +84,6 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		Bus:           &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
 		InitialAPIKey: cli.InitialAPIKey,
 	}
-	return config, nil
-}
 
-func unique(l []string) []string {
-	keys := make(map[string]bool)
-	var list []string
-	for _, entry := range l {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
-		}
-	}
-	return list
+	return config, nil
 }

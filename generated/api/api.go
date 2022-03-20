@@ -118,7 +118,7 @@ func parseQueryOptionalBoolArray(r *http.Request, key string) ([]bool, error) {
 	return parseQueryBoolArray(r, key)
 }
 
-func parseBody(b []byte, i interface{}) error {
+func parseBody(b []byte, i any) error {
 	dec := json.NewDecoder(bytes.NewBuffer(b))
 	err := dec.Decode(i)
 	if err != nil {
@@ -137,7 +137,7 @@ func JSONErrorStatus(w http.ResponseWriter, status int, err error) {
 	w.Write(b)
 }
 
-func response(w http.ResponseWriter, v interface{}, err error) {
+func response(w http.ResponseWriter, v any, err error) {
 	if err != nil {
 		var httpError *HTTPError
 		if errors.As(err, &httpError) {
@@ -172,7 +172,7 @@ func validateSchema(body []byte, schema *gojsonschema.Schema, w http.ResponseWri
 			validationErrors = append(validationErrors, valdiationError.String())
 		}
 
-		b, _ := json.Marshal(map[string]interface{}{"error": "wrong input", "errors": validationErrors})
+		b, _ := json.Marshal(map[string]any{"error": "wrong input", "errors": validationErrors})
 		w.Write(b)
 		return true
 	}

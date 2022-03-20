@@ -18,6 +18,8 @@ import (
 )
 
 func TestJob(t *testing.T) {
+	t.Parallel()
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	_, _, server, err := Catalyst(t)
@@ -27,7 +29,7 @@ func TestJob(t *testing.T) {
 
 	b, err := json.Marshal(model.JobForm{
 		Automation: "hash.sha1",
-		Payload:    map[string]interface{}{"default": "test"},
+		Payload:    map[string]any{"default": "test"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -52,11 +54,14 @@ func TestJob(t *testing.T) {
 
 		output := gjson.GetBytes(job, "output.hash").String()
 		assert.Equal(t, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", output)
+
 		break
 	}
 }
 
 func request(t *testing.T, server chi.Router, method, url string, data io.Reader) []byte {
+	t.Helper()
+
 	w := httptest.NewRecorder()
 
 	// setup request

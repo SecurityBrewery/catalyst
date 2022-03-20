@@ -20,23 +20,17 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package dag
+package dag_test
 
 import (
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-)
+	"golang.org/x/exp/slices"
 
-func index(s []string, v string) int {
-	for i, s := range s {
-		if s == v {
-			return i
-		}
-	}
-	return -1
-}
+	"github.com/SecurityBrewery/catalyst/dag"
+)
 
 type Edge struct {
 	From string
@@ -44,13 +38,17 @@ type Edge struct {
 }
 
 func TestDuplicatedNode(t *testing.T) {
-	graph := NewGraph()
+	t.Parallel()
+
+	graph := dag.NewGraph()
 	assert.NoError(t, graph.AddNode("a"))
 	assert.Error(t, graph.AddNode("a"))
 }
 
 func TestWikipedia(t *testing.T) {
-	graph := NewGraph()
+	t.Parallel()
+
+	graph := dag.NewGraph()
 	assert.NoError(t, graph.AddNodes("2", "3", "5", "7", "8", "9", "10", "11"))
 
 	edges := []Edge{
@@ -79,27 +77,30 @@ func TestWikipedia(t *testing.T) {
 	}
 
 	for _, e := range edges {
-		if i, j := index(result, e.From), index(result, e.To); i > j {
+		if i, j := slices.Index(result, e.From), slices.Index(result, e.To); i > j {
 			t.Errorf("dependency failed: not satisfy %v(%v) > %v(%v)", e.From, i, e.To, j)
 		}
 	}
 }
 
 func TestCycle(t *testing.T) {
-	graph := NewGraph()
+	t.Parallel()
+
+	graph := dag.NewGraph()
 	assert.NoError(t, graph.AddNodes("1", "2", "3"))
 
 	assert.NoError(t, graph.AddEdge("1", "2"))
 	assert.NoError(t, graph.AddEdge("2", "3"))
 	assert.NoError(t, graph.AddEdge("3", "1"))
 
-	_, err := graph.Toposort()
-	if err == nil {
+	if _, err := graph.Toposort(); err == nil {
 		t.Errorf("closed path not detected in closed pathed graph")
 	}
 }
 
 func TestGraph_GetParents(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
 		nodes []string
 		edges map[string]string
@@ -117,8 +118,11 @@ func TestGraph_GetParents(t *testing.T) {
 		{"parents 3", fields{nodes: []string{"1", "2", "3"}, edges: map[string]string{"1": "3", "2": "3"}}, args{id: "3"}, []string{"1", "2"}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			g := NewGraph()
+			t.Parallel()
+
+			g := dag.NewGraph()
 			for _, node := range tt.fields.nodes {
 				assert.NoError(t, g.AddNode(node))
 			}
@@ -134,7 +138,9 @@ func TestGraph_GetParents(t *testing.T) {
 }
 
 func TestDAG_AddNode(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 
 	v := "1"
 	assert.NoError(t, dag.AddNode(v))
@@ -143,7 +149,9 @@ func TestDAG_AddNode(t *testing.T) {
 }
 
 func TestDAG_AddEdge(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 	assert.NoError(t, dag.AddNode("0"))
 	assert.NoError(t, dag.AddNode("1"))
 	assert.NoError(t, dag.AddNode("2"))
@@ -162,7 +170,9 @@ func TestDAG_AddEdge(t *testing.T) {
 }
 
 func TestDAG_GetParents(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 	assert.NoError(t, dag.AddNode("1"))
 	assert.NoError(t, dag.AddNode("2"))
 	assert.NoError(t, dag.AddNode("3"))
@@ -176,7 +186,9 @@ func TestDAG_GetParents(t *testing.T) {
 }
 
 func TestDAG_GetDescendants(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 	assert.NoError(t, dag.AddNode("1"))
 	assert.NoError(t, dag.AddNode("2"))
 	assert.NoError(t, dag.AddNode("3"))
@@ -188,7 +200,9 @@ func TestDAG_GetDescendants(t *testing.T) {
 }
 
 func TestDAG_Topsort(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 	assert.NoError(t, dag.AddNode("1"))
 	assert.NoError(t, dag.AddNode("2"))
 	assert.NoError(t, dag.AddNode("3"))
@@ -203,7 +217,9 @@ func TestDAG_Topsort(t *testing.T) {
 }
 
 func TestDAG_TopsortStable(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 	assert.NoError(t, dag.AddNode("1"))
 	assert.NoError(t, dag.AddNode("2"))
 	assert.NoError(t, dag.AddNode("3"))
@@ -216,7 +232,9 @@ func TestDAG_TopsortStable(t *testing.T) {
 }
 
 func TestDAG_TopsortStable2(t *testing.T) {
-	dag := NewGraph()
+	t.Parallel()
+
+	dag := dag.NewGraph()
 
 	assert.NoError(t, dag.AddNodes("block-ioc", "block-iocs", "block-sender", "board", "fetch-iocs", "escalate", "extract-iocs", "mail-available", "search-email-gateway"))
 	assert.NoError(t, dag.AddEdge("block-iocs", "block-ioc"))

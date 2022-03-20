@@ -18,7 +18,7 @@ type JobMsg struct {
 	Message    *model.Message `json:"message"`
 }
 
-func (b *Bus) PublishJob(id, automation string, payload interface{}, context *model.Context, origin *model.Origin) error {
+func (b *Bus) PublishJob(id, automation string, payload any, context *model.Context, origin *model.Origin) error {
 	return b.jsonPublish(&JobMsg{
 		ID:         id,
 		Automation: automation,
@@ -35,6 +35,7 @@ func (b *Bus) SubscribeJob(f func(msg *JobMsg)) error {
 		var msg JobMsg
 		if err := json.Unmarshal(m.Payload(), &msg); err != nil {
 			log.Println(err)
+
 			return
 		}
 		go f(&msg)

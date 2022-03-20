@@ -23,7 +23,7 @@ func (db *Database) ArtifactGet(ctx context.Context, id int64, name string) (*mo
 	FOR a in NOT_NULL(d.artifacts, [])
 	FILTER a.name == @name
 	RETURN a`
-	cursor, _, err := db.Query(ctx, query, mergeMaps(ticketFilterVars, map[string]interface{}{
+	cursor, _, err := db.Query(ctx, query, mergeMaps(ticketFilterVars, map[string]any{
 		"@collection": TicketCollectionName,
 		"ID":          fmt.Sprint(id),
 		"name":        name,
@@ -55,7 +55,8 @@ func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, a
 	LET newartifacts = APPEND(REMOVE_VALUE(d.artifacts, a), @artifact)
 	UPDATE d WITH { "artifacts": newartifacts } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"@collection": TicketCollectionName,
 		"ID":          id,
 		"name":        name,
@@ -69,7 +70,7 @@ func (db *Database) ArtifactUpdate(ctx context.Context, id int64, name string, a
 }
 
 func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, enrichmentForm *model.EnrichmentForm) (*model.TicketWithTickets, error) {
-	enrichment := model.Enrichment{time.Now().UTC(), enrichmentForm.Data, enrichmentForm.Name}
+	enrichment := model.Enrichment{Created: time.Now().UTC(), Data: enrichmentForm.Data, Name: enrichmentForm.Name}
 
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
@@ -85,7 +86,8 @@ func (db *Database) EnrichArtifact(ctx context.Context, id int64, name string, e
 	LET newartifacts = APPEND(REMOVE_VALUE(d.artifacts, a), MERGE(a, { "enrichments": newenrichments }))
 	UPDATE d WITH { "artifacts": newartifacts } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"@collection":    TicketCollectionName,
 		"ID":             id,
 		"name":           name,

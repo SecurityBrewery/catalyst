@@ -10,22 +10,23 @@ import (
 
 type aqlInterpreter struct {
 	*parser.BaseCAQLParserListener
-	values map[string]interface{}
-	stack  []interface{}
+	values map[string]any
+	stack  []any
 	errs   []error
 }
 
 // push is a helper function for pushing new node to the listener Stack.
-func (s *aqlInterpreter) push(i interface{}) {
+func (s *aqlInterpreter) push(i any) {
 	s.stack = append(s.stack, i)
 }
 
 // pop is a helper function for poping a node from the listener Stack.
-func (s *aqlInterpreter) pop() (n interface{}) {
+func (s *aqlInterpreter) pop() (n any) {
 	// Check that we have nodes in the stack.
 	size := len(s.stack)
 	if size < 1 {
 		s.appendErrors(ErrStack)
+
 		return
 	}
 
@@ -35,8 +36,9 @@ func (s *aqlInterpreter) pop() (n interface{}) {
 	return
 }
 
-func (s *aqlInterpreter) binaryPop() (interface{}, interface{}) {
+func (s *aqlInterpreter) binaryPop() (any, any) {
 	right, left := s.pop(), s.pop()
+
 	return left, right
 }
 
@@ -54,17 +56,14 @@ func (s *aqlInterpreter) ExitExpression(ctx *parser.ExpressionContext) {
 		s.push(plus(s.binaryPop()))
 	case ctx.T_MINUS() != nil:
 		s.push(minus(s.binaryPop()))
-
 	case ctx.T_TIMES() != nil:
 		s.push(times(s.binaryPop()))
 	case ctx.T_DIV() != nil:
 		s.push(div(s.binaryPop()))
 	case ctx.T_MOD() != nil:
 		s.push(mod(s.binaryPop()))
-
 	case ctx.T_RANGE() != nil:
 		s.push(aqlrange(s.binaryPop()))
-
 	case ctx.T_LT() != nil && ctx.GetEq_op() == nil:
 		s.push(lt(s.binaryPop()))
 	case ctx.T_GT() != nil && ctx.GetEq_op() == nil:
@@ -73,35 +72,30 @@ func (s *aqlInterpreter) ExitExpression(ctx *parser.ExpressionContext) {
 		s.push(le(s.binaryPop()))
 	case ctx.T_GE() != nil && ctx.GetEq_op() == nil:
 		s.push(ge(s.binaryPop()))
-
 	case ctx.T_IN() != nil && ctx.GetEq_op() == nil:
 		s.push(maybeNot(ctx, in(s.binaryPop())))
-
 	case ctx.T_EQ() != nil && ctx.GetEq_op() == nil:
 		s.push(eq(s.binaryPop()))
 	case ctx.T_NE() != nil && ctx.GetEq_op() == nil:
 		s.push(ne(s.binaryPop()))
-
 	case ctx.T_ALL() != nil && ctx.GetEq_op() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(all(left.([]interface{}), getOp(ctx.GetEq_op().GetTokenType()), right))
+		s.push(all(left.([]any), getOp(ctx.GetEq_op().GetTokenType()), right))
 	case ctx.T_ANY() != nil && ctx.GetEq_op() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(any(left.([]interface{}), getOp(ctx.GetEq_op().GetTokenType()), right))
+		s.push(anyElement(left.([]any), getOp(ctx.GetEq_op().GetTokenType()), right))
 	case ctx.T_NONE() != nil && ctx.GetEq_op() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(none(left.([]interface{}), getOp(ctx.GetEq_op().GetTokenType()), right))
-
+		s.push(none(left.([]any), getOp(ctx.GetEq_op().GetTokenType()), right))
 	case ctx.T_ALL() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(all(left.([]interface{}), in, right))
+		s.push(all(left.([]any), in, right))
 	case ctx.T_ANY() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(any(left.([]interface{}), in, right))
+		s.push(anyElement(left.([]any), in, right))
 	case ctx.T_NONE() != nil && ctx.T_NOT() != nil && ctx.T_IN() != nil:
 		right, left := s.pop(), s.pop()
-		s.push(none(left.([]interface{}), in, right))
-
+		s.push(none(left.([]any), in, right))
 	case ctx.T_LIKE() != nil:
 		m, err := like(s.binaryPop())
 		s.appendErrors(err)
@@ -114,21 +108,18 @@ func (s *aqlInterpreter) ExitExpression(ctx *parser.ExpressionContext) {
 		m, err := regexNonMatch(s.binaryPop())
 		s.appendErrors(err)
 		s.push(maybeNot(ctx, m))
-
 	case ctx.T_AND() != nil:
 		s.push(and(s.binaryPop()))
 	case ctx.T_OR() != nil:
 		s.push(or(s.binaryPop()))
-
 	case ctx.T_QUESTION() != nil && len(ctx.AllExpression()) == 3:
 		right, middle, left := s.pop(), s.pop(), s.pop()
 		s.push(ternary(left, middle, right))
 	case ctx.T_QUESTION() != nil && len(ctx.AllExpression()) == 2:
 		right, left := s.pop(), s.pop()
 		s.push(ternary(left, nil, right))
-
 	default:
-		panic("unkown expression")
+		panic("unknown expression")
 	}
 }
 
@@ -159,7 +150,7 @@ func (s *aqlInterpreter) ExitReference(ctx *parser.ReferenceContext) {
 	case ctx.DOT() != nil:
 		reference := s.pop()
 
-		s.push(reference.(map[string]interface{})[ctx.T_STRING().GetText()])
+		s.push(reference.(map[string]any)[ctx.T_STRING().GetText()])
 	case ctx.T_STRING() != nil:
 		s.push(s.getVar(ctx.T_STRING().GetText()))
 	case ctx.Compound_value() != nil:
@@ -175,14 +166,15 @@ func (s *aqlInterpreter) ExitReference(ctx *parser.ReferenceContext) {
 		if f, ok := key.(float64); ok {
 			index := int(f)
 			if index < 0 {
-				index = len(reference.([]interface{})) + index
+				index = len(reference.([]any)) + index
 			}
 
-			s.push(reference.([]interface{})[index])
+			s.push(reference.([]any)[index])
+
 			return
 		}
 
-		s.push(reference.(map[string]interface{})[key.(string)])
+		s.push(reference.(map[string]any)[key.(string)])
 	default:
 		panic(fmt.Sprintf("unexpected value: %s", ctx.GetText()))
 	}
@@ -239,17 +231,17 @@ func (s *aqlInterpreter) ExitValue_literal(ctx *parser.Value_literalContext) {
 
 // ExitArray is called when production array is exited.
 func (s *aqlInterpreter) ExitArray(ctx *parser.ArrayContext) {
-	array := []interface{}{}
+	array := []any{}
 	for range ctx.AllExpression() {
 		// prepend element
-		array = append([]interface{}{s.pop()}, array...)
+		array = append([]any{s.pop()}, array...)
 	}
 	s.push(array)
 }
 
 // ExitObject is called when production object is exited.
 func (s *aqlInterpreter) ExitObject(ctx *parser.ObjectContext) {
-	object := map[string]interface{}{}
+	object := map[string]any{}
 	for range ctx.AllObject_element() {
 		key, value := s.pop(), s.pop()
 
@@ -290,7 +282,7 @@ func (s *aqlInterpreter) ExitObject_element_name(ctx *parser.Object_element_name
 	}
 }
 
-func (s *aqlInterpreter) getVar(identifier string) interface{} {
+func (s *aqlInterpreter) getVar(identifier string) any {
 	v, ok := s.values[identifier]
 	if !ok {
 		s.appendErrors(ErrUndefined)
@@ -303,10 +295,11 @@ func maybeNot(ctx *parser.ExpressionContext, m bool) bool {
 	if ctx.T_NOT() != nil {
 		return !m
 	}
+
 	return m
 }
 
-func getOp(tokenType int) func(left, right interface{}) bool {
+func getOp(tokenType int) func(left, right any) bool {
 	switch tokenType {
 	case parser.CAQLLexerT_EQ:
 		return eq
@@ -323,33 +316,36 @@ func getOp(tokenType int) func(left, right interface{}) bool {
 	case parser.CAQLLexerT_IN:
 		return in
 	default:
-		panic("unkown token type")
+		panic("unknown token type")
 	}
 }
 
-func all(slice []interface{}, op func(interface{}, interface{}) bool, expr interface{}) bool {
+func all(slice []any, op func(any, any) bool, expr any) bool {
 	for _, e := range slice {
 		if !op(e, expr) {
 			return false
 		}
 	}
+
 	return true
 }
 
-func any(slice []interface{}, op func(interface{}, interface{}) bool, expr interface{}) bool {
+func anyElement(slice []any, op func(any, any) bool, expr any) bool {
 	for _, e := range slice {
 		if op(e, expr) {
 			return true
 		}
 	}
+
 	return false
 }
 
-func none(slice []interface{}, op func(interface{}, interface{}) bool, expr interface{}) bool {
+func none(slice []any, op func(any, any) bool, expr any) bool {
 	for _, e := range slice {
 		if op(e, expr) {
 			return false
 		}
 	}
+
 	return true
 }

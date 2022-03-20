@@ -75,6 +75,8 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 }
 
 func Index(t *testing.T) (*index.Index, func(), error) {
+	t.Helper()
+
 	dir, err := os.MkdirTemp("", "catalyst-test-"+cleanName(t))
 	if err != nil {
 		return nil, nil, err
@@ -84,10 +86,13 @@ func Index(t *testing.T) (*index.Index, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return catalystIndex, func() { catalystIndex.Close(); os.RemoveAll(dir) }, nil
 }
 
 func Bus(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, error) {
+	t.Helper()
+
 	ctx := Context()
 
 	config, err := Config(ctx)
@@ -99,10 +104,13 @@ func Bus(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, error) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	return ctx, config, catalystBus, err
 }
 
 func DB(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index, *storage.Storage, *database.Database, func(), error) {
+	t.Helper()
+
 	ctx, config, rbus, err := Bus(t)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
@@ -146,6 +154,8 @@ func DB(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index
 }
 
 func Service(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index, *storage.Storage, *database.Database, *service.Service, func(), error) {
+	t.Helper()
+
 	ctx, config, rbus, catalystIndex, catalystStorage, db, cleanup, err := DB(t)
 	if err != nil {
 		t.Fatal(err)
@@ -160,6 +170,8 @@ func Service(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.
 }
 
 func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.Index, *storage.Storage, *database.Database, *service.Service, chi.Router, func(), error) {
+	t.Helper()
+
 	ctx, config, rbus, catalystIndex, catalystStorage, db, catalystService, cleanup, err := Service(t)
 	if err != nil {
 		t.Fatal(err)
@@ -177,6 +189,8 @@ func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.I
 }
 
 func Catalyst(t *testing.T) (context.Context, *catalyst.Config, *catalyst.Server, error) {
+	t.Helper()
+
 	ctx := Context()
 
 	config, err := Config(ctx)
@@ -189,13 +203,17 @@ func Catalyst(t *testing.T) (context.Context, *catalyst.Config, *catalyst.Server
 	c, err := catalyst.New(&hooks.Hooks{
 		DatabaseAfterConnectFuncs: []func(ctx context.Context, client driver.Client, name string){Clear},
 	}, config)
+
 	return ctx, config, c, err
 }
 
 func cleanName(t *testing.T) string {
+	t.Helper()
+
 	name := t.Name()
 	name = strings.ReplaceAll(name, " ", "")
 	name = strings.ReplaceAll(name, "/", "_")
+
 	return strings.ReplaceAll(name, "#", "_")
 }
 

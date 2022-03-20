@@ -8,26 +8,25 @@
 package caql
 
 import (
+	"errors"
 	"strconv"
 	"testing"
 )
 
 type quoteTest struct {
-	in      string
-	out     string
-	ascii   string
-	graphic string
+	in  string
+	out string
 }
 
 var quotetests = []quoteTest{
-	{in: "\a\b\f\r\n\t\v", out: `"\a\b\f\r\n\t\v"`, ascii: `"\a\b\f\r\n\t\v"`, graphic: `"\a\b\f\r\n\t\v"`},
-	{"\\", `"\\"`, `"\\"`, `"\\"`},
-	{"abc\xffdef", `"abc\xffdef"`, `"abc\xffdef"`, `"abc\xffdef"`},
-	{"\u263a", `"☺"`, `"\u263a"`, `"☺"`},
-	{"\U0010ffff", `"\U0010ffff"`, `"\U0010ffff"`, `"\U0010ffff"`},
-	{"\x04", `"\x04"`, `"\x04"`, `"\x04"`},
+	{in: "\a\b\f\r\n\t\v", out: `"\a\b\f\r\n\t\v"`},
+	{"\\", `"\\"`},
+	{"abc\xffdef", `"abc\xffdef"`},
+	{"\u263a", `"☺"`},
+	{"\U0010ffff", `"\U0010ffff"`},
+	{"\x04", `"\x04"`},
 	// Some non-printable but graphic runes. Final column is double-quoted.
-	{"!\u00a0!\u2000!\u3000!", `"!\u00a0!\u2000!\u3000!"`, `"!\u00a0!\u2000!\u3000!"`, "\"!\u00a0!\u2000!\u3000!\""},
+	{"!\u00a0!\u2000!\u3000!", `"!\u00a0!\u2000!\u3000!"`},
 }
 
 type unQuoteTest struct {
@@ -104,6 +103,8 @@ var misquoted = []string{
 }
 
 func TestUnquote(t *testing.T) {
+	t.Parallel()
+
 	for _, tt := range unquotetests {
 		if out, err := unquote(tt.in); err != nil || out != tt.out {
 			t.Errorf("unquote(%#q) = %q, %v want %q, nil", tt.in, out, err, tt.out)
@@ -118,7 +119,7 @@ func TestUnquote(t *testing.T) {
 	}
 
 	for _, s := range misquoted {
-		if out, err := unquote(s); out != "" || err != strconv.ErrSyntax {
+		if out, err := unquote(s); out != "" || !errors.Is(err, strconv.ErrSyntax) {
 			t.Errorf("unquote(%#q) = %q, %v want %q, %v", s, out, err, "", strconv.ErrSyntax)
 		}
 	}

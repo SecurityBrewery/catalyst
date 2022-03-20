@@ -10,10 +10,10 @@ import (
 )
 
 type playbookResponse struct {
-	PlaybookId   string         `json:"playbook_id"`
+	PlaybookID   string         `json:"playbook_id"`
 	PlaybookName string         `json:"playbook_name"`
 	Playbook     model.Playbook `json:"playbook"`
-	TicketId     int64          `json:"ticket_id"`
+	TicketID     int64          `json:"ticket_id"`
 	TicketName   string         `json:"ticket_name"`
 }
 
@@ -28,7 +28,7 @@ func (db *Database) TaskList(ctx context.Context) ([]*model.TaskWithContext, err
 	FILTER d.status == 'open'
 	FOR playbook IN NOT_NULL(VALUES(d.playbooks), [])
 	RETURN { ticket_id: TO_NUMBER(d._key), ticket_name: d.name, playbook_id: POSITION(d.playbooks, playbook, true), playbook_name: playbook.name, playbook: playbook }`
-	cursor, _, err := db.Query(ctx, query, mergeMaps(ticketFilterVars, map[string]interface{}{
+	cursor, _, err := db.Query(ctx, query, mergeMaps(ticketFilterVars, map[string]any{
 		"@collection": TicketCollectionName,
 	}), busdb.ReadOperation)
 	if err != nil {
@@ -53,10 +53,10 @@ func (db *Database) TaskList(ctx context.Context) ([]*model.TaskWithContext, err
 		for _, task := range playbook.Tasks {
 			if task.Active {
 				docs = append(docs, &model.TaskWithContext{
-					PlaybookId:   doc.PlaybookId,
+					PlaybookId:   doc.PlaybookID,
 					PlaybookName: doc.PlaybookName,
 					Task:         task,
-					TicketId:     doc.TicketId,
+					TicketId:     doc.TicketID,
 					TicketName:   doc.TicketName,
 				})
 			}

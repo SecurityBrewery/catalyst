@@ -48,6 +48,7 @@ Pattern:
 		// using the star
 		if ok && (len(t) == 0 || len(pattern) > 0) {
 			name = t
+
 			continue
 		}
 		if err != nil {
@@ -64,6 +65,7 @@ Pattern:
 						continue
 					}
 					name = t
+
 					continue Pattern
 				}
 				if err != nil {
@@ -79,8 +81,10 @@ Pattern:
 				return false, err
 			}
 		}
+
 		return false, nil
 	}
+
 	return len(name) == 0, nil
 }
 
@@ -104,6 +108,7 @@ Scan:
 			break Scan
 		}
 	}
+
 	return star, pattern[0:i], pattern[i:]
 }
 
@@ -120,7 +125,6 @@ func matchChunk(chunk, s string) (rest string, ok bool, err error) {
 			failed = true
 		}
 		switch chunk[0] {
-
 		case '_':
 			if !failed {
 				if s[0] == '/' {
@@ -130,14 +134,13 @@ func matchChunk(chunk, s string) (rest string, ok bool, err error) {
 				s = s[n:]
 			}
 			chunk = chunk[1:]
-
 		case '\\':
 			chunk = chunk[1:]
 			if len(chunk) == 0 {
 				return "", false, ErrBadPattern
 			}
-			fallthrough
 
+			fallthrough
 		default:
 			if !failed {
 				if chunk[0] != s[0] {
@@ -151,5 +154,6 @@ func matchChunk(chunk, s string) (rest string, ok bool, err error) {
 	if failed {
 		return "", false, nil
 	}
+
 	return s, true, nil
 }

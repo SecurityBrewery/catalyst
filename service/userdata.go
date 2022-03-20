@@ -16,6 +16,7 @@ func userDataResponseID(userData *model.UserDataResponse) []driver.DocumentID {
 	if userData == nil {
 		return nil
 	}
+
 	return userDataID(userData.ID)
 }
 
@@ -33,6 +34,7 @@ func (s *Service) GetUserData(ctx context.Context, id string) (*model.UserDataRe
 
 func (s *Service) UpdateUserData(ctx context.Context, id string, data *model.UserData) (doc *model.UserDataResponse, err error) {
 	defer s.publishRequest(ctx, err, "CreateUser", userDataResponseID(doc))
+
 	return s.database.UserDataUpdate(ctx, id, data)
 }
 
@@ -52,5 +54,6 @@ func (s *Service) UpdateCurrentUserData(ctx context.Context, data *model.UserDat
 	}
 
 	defer s.publishRequest(ctx, err, "UpdateCurrentUserData", userDataResponseID(doc))
+
 	return s.database.UserDataUpdate(ctx, user.ID, data)
 }

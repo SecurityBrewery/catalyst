@@ -39,8 +39,10 @@ func unquote(s string) (string, error) {
 					buf = append(buf, s[i])
 				}
 			}
+
 			return string(buf), nil
 		}
+
 		return s, nil
 	}
 	if quote != '"' && quote != '\'' {
@@ -75,5 +77,6 @@ func unquote(s string) (string, error) {
 			buf = append(buf, runeTmp[:n]...)
 		}
 	}
+
 	return string(buf), nil
 }
