@@ -10,9 +10,11 @@ import (
 	"github.com/SecurityBrewery/catalyst/generated/pointer"
 )
 
-var bobSetting = &model.UserData{Email: pointer.String("bob@example.org"), Name: pointer.String("Bob Bad")}
-var bobForm = &model.UserForm{ID: "bob", Blocked: false, Roles: []string{"admin"}}
-var Bob = &model.UserResponse{ID: "bob", Blocked: false, Roles: []string{"admin"}}
+var (
+	bobSetting = &model.UserData{Email: pointer.String("bob@example.org"), Name: pointer.String("Bob Bad")}
+	bobForm    = &model.UserForm{ID: "bob", Blocked: false, Roles: []string{"admin"}}
+	Bob        = &model.UserResponse{ID: "bob", Blocked: false, Roles: []string{"admin"}}
+)
 
 func SetupTestData(ctx context.Context, db *database.Database) error {
 	if err := db.UserDataCreate(ctx, "bob", bobSetting); err != nil {
@@ -109,5 +111,6 @@ func parse(s string) *time.Time {
 	}
 
 	utc := modified.UTC()
+
 	return &utc
 }

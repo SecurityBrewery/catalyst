@@ -8,9 +8,11 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 )
 
+type contextKey string
+
 const (
-	userContextKey  = "user"
-	groupContextKey = "groups"
+	userContextKey  contextKey = "user"
+	groupContextKey contextKey = "groups"
 )
 
 func SetContext(r *http.Request, user *model.UserResponse) *http.Request {
@@ -25,10 +27,12 @@ func SetGroupContext(r *http.Request, groups []string) *http.Request {
 
 func UserContext(ctx context.Context, user *model.UserResponse) context.Context {
 	user.Roles = role.Strings(role.Explodes(user.Roles))
+
 	return context.WithValue(ctx, userContextKey, user)
 }
 
 func UserFromContext(ctx context.Context) (*model.UserResponse, bool) {
 	u, ok := ctx.Value(userContextKey).(*model.UserResponse)
+
 	return u, ok
 }

@@ -12,11 +12,11 @@ var playbook2 = &model.Playbook{
 	Name: "Phishing",
 	Tasks: map[string]*model.Task{
 		"board": {Next: map[string]string{
-			"escalate":    "boardInvolved == true",
-			"aquire-mail": "boardInvolved == false",
+			"escalate":     "boardInvolved == true",
+			"acquire-mail": "boardInvolved == false",
 		}},
 		"escalate": {},
-		"aquire-mail": {Next: map[string]string{
+		"acquire-mail": {Next: map[string]string{
 			"extract-iocs":         "schemaKey == 'yes'",
 			"block-sender":         "schemaKey == 'yes'",
 			"search-email-gateway": "schemaKey == 'no'",
@@ -34,11 +34,11 @@ var playbook3 = &model.Playbook{
 	Name: "Phishing",
 	Tasks: map[string]*model.Task{
 		"board": {Next: map[string]string{
-			"escalate":    "boardInvolved == true",
-			"aquire-mail": "boardInvolved == false",
-		}, Data: map[string]interface{}{"boardInvolved": true}, Done: true},
+			"escalate":     "boardInvolved == true",
+			"acquire-mail": "boardInvolved == false",
+		}, Data: map[string]any{"boardInvolved": true}, Done: true},
 		"escalate": {},
-		"aquire-mail": {Next: map[string]string{
+		"acquire-mail": {Next: map[string]string{
 			"extract-iocs":         "schemaKey == 'yes'",
 			"block-sender":         "schemaKey == 'yes'",
 			"search-email-gateway": "schemaKey == 'no'",
@@ -71,6 +71,8 @@ var playbook4 = &model.Playbook{
 }
 
 func Test_canBeCompleted(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		playbook *model.Playbook
 		taskID   string
@@ -83,18 +85,22 @@ func Test_canBeCompleted(t *testing.T) {
 	}{
 		{"playbook2 board", args{playbook: playbook2, taskID: "board"}, true, false},
 		{"playbook2 escalate", args{playbook: playbook2, taskID: "escalate"}, false, false},
-		{"playbook2 aquire-mail", args{playbook: playbook2, taskID: "aquire-mail"}, false, false},
+		{"playbook2 acquire-mail", args{playbook: playbook2, taskID: "acquire-mail"}, false, false},
 		{"playbook2 block-ioc", args{playbook: playbook2, taskID: "block-ioc"}, false, false},
 		{"playbook3 board", args{playbook: playbook3, taskID: "board"}, false, false},
 		{"playbook3 escalate", args{playbook: playbook3, taskID: "escalate"}, true, false},
-		{"playbook3 aquire-mail", args{playbook: playbook3, taskID: "aquire-mail"}, false, false},
+		{"playbook3 acquire-mail", args{playbook: playbook3, taskID: "acquire-mail"}, false, false},
 		{"playbook3 block-ioc", args{playbook: playbook3, taskID: "block-ioc"}, false, false},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := activePlaybook(tt.args.playbook, tt.args.taskID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("activePlaybook() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if got != tt.want {
@@ -105,6 +111,8 @@ func Test_canBeCompleted(t *testing.T) {
 }
 
 func Test_playbookOrder(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		playbook *model.Playbook
 	}
@@ -117,10 +125,14 @@ func Test_playbookOrder(t *testing.T) {
 		{"playbook4", args{playbook: playbook4}, []string{"file-or-hash", "enter-hash", "upload", "hash", "virustotal"}, false},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := toPlaybookResponse(tt.args.playbook)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("activePlaybook() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 

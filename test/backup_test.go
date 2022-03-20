@@ -25,6 +25,8 @@ import (
 )
 
 func TestBackupAndRestore(t *testing.T) {
+	t.Parallel()
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	if runtime.GOARCH == "arm64" {
@@ -41,7 +43,10 @@ func TestBackupAndRestore(t *testing.T) {
 		{name: "Backup", want: want{status: http.StatusOK}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx, _, server, err := Catalyst(t)
 			if err != nil {
 				t.Fatal(err)
@@ -75,6 +80,8 @@ func TestBackupAndRestore(t *testing.T) {
 }
 
 func assertBackup(t *testing.T, server *catalyst.Server) []byte {
+	t.Helper()
+
 	// setup request
 	req := httptest.NewRequest(http.MethodGet, "/api/backup/create", nil)
 	req.Header.Set("PRIVATE-TOKEN", "test")
@@ -97,6 +104,8 @@ func assertBackup(t *testing.T, server *catalyst.Server) []byte {
 }
 
 func assertZipFile(t *testing.T, r *zip.Reader) {
+	t.Helper()
+
 	var names []string
 	for _, f := range r.File {
 		names = append(names, f.Name)
@@ -120,9 +129,11 @@ func clearAllDatabases(server *catalyst.Server) {
 }
 
 func deleteAllBuckets(t *testing.T, server *catalyst.Server) {
+	t.Helper()
+
 	buckets, err := server.Storage.S3().ListBuckets(&s3.ListBucketsInput{})
 	for _, bucket := range buckets.Buckets {
-		server.Storage.S3().DeleteBucket(&s3.DeleteBucketInput{
+		_, _ = server.Storage.S3().DeleteBucket(&s3.DeleteBucketInput{
 			Bucket: bucket.Name,
 		})
 	}
@@ -133,6 +144,8 @@ func deleteAllBuckets(t *testing.T, server *catalyst.Server) {
 }
 
 func assertRestore(t *testing.T, zipB []byte, server *catalyst.Server) {
+	t.Helper()
+
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 	fileWriter, err := bodyWriter.CreateFormFile("backup", "backup.zip")
@@ -166,7 +179,7 @@ func assertRestore(t *testing.T, zipB []byte, server *catalyst.Server) {
 func createFile(ctx context.Context, server *catalyst.Server) {
 	buf := bytes.NewBufferString("test text")
 
-	server.Storage.S3().CreateBucket(&s3.CreateBucketInput{Bucket: pointer.String("catalyst-8125")})
+	_, _ = server.Storage.S3().CreateBucket(&s3.CreateBucketInput{Bucket: pointer.String("catalyst-8125")})
 
 	if _, err := server.Storage.Uploader().Upload(&s3manager.UploadInput{Body: buf, Bucket: pointer.String("catalyst-8125"), Key: pointer.String("test.txt")}); err != nil {
 		log.Fatal(err)
@@ -178,6 +191,8 @@ func createFile(ctx context.Context, server *catalyst.Server) {
 }
 
 func assertTicketExists(t *testing.T, server *catalyst.Server) {
+	t.Helper()
+
 	req := httptest.NewRequest(http.MethodGet, "/api/tickets/8125", nil)
 	req.Header.Set("PRIVATE-TOKEN", "test")
 
@@ -202,6 +217,8 @@ func assertTicketExists(t *testing.T, server *catalyst.Server) {
 }
 
 func assertFileExists(t *testing.T, server *catalyst.Server) {
+	t.Helper()
+
 	obj, err := server.Storage.S3().GetObject(&s3.GetObjectInput{
 		Bucket: aws.String("catalyst-8125"),
 		Key:    aws.String("test.txt"),
@@ -215,6 +232,8 @@ func assertFileExists(t *testing.T, server *catalyst.Server) {
 }
 
 func includes(t *testing.T, names []string, s string) bool {
+	t.Helper()
+
 	for _, name := range names {
 		match, err := regexp.MatchString(s, name)
 		if err != nil {
@@ -225,10 +244,13 @@ func includes(t *testing.T, names []string, s string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 func readZipFile(t *testing.T, b []byte) *zip.Reader {
+	t.Helper()
+
 	buf := bytes.NewReader(b)
 
 	zr, err := zip.NewReader(buf, int64(buf.Len()))

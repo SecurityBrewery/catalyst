@@ -29,6 +29,7 @@ func (b *Bus) SubscribeRequest(f func(msg *RequestMsg)) error {
 		msg := &RequestMsg{}
 		if err := json.Unmarshal(m.Payload(), msg); err != nil {
 			log.Println(err)
+
 			return
 		}
 		go f(msg)

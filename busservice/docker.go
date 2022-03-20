@@ -59,13 +59,15 @@ func pullImage(ctx context.Context, cli *client.Client, image string) (string, e
 
 	buf := &bytes.Buffer{}
 	_, err = io.Copy(buf, reader)
+
 	return buf.String(), err
 }
 
 func copyFile(ctx context.Context, cli *client.Client, path string, contentString string, id string) error {
 	tarBuf := &bytes.Buffer{}
 	tw := tar.NewWriter(tarBuf)
-	if err := tw.WriteHeader(&tar.Header{Name: path, Mode: 0755, Size: int64(len(contentString))}); err != nil {
+	header := &tar.Header{Name: path, Mode: 0o755, Size: int64(len(contentString))}
+	if err := tw.WriteHeader(header); err != nil {
 		return err
 	}
 
@@ -90,7 +92,12 @@ func runDocker(ctx context.Context, jobID, containerID string, db *database.Data
 		return nil, nil, err
 	}
 
-	defer cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
+	defer func(cli *client.Client, ctx context.Context, containerID string, options types.ContainerRemoveOptions) {
+		err := cli.ContainerRemove(ctx, containerID, options)
+		if err != nil {
+			log.Println(err)
+		}
+	}(cli, ctx, containerID, types.ContainerRemoveOptions{Force: true})
 
 	if err := cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{}); err != nil {
 		return nil, nil, err
@@ -123,13 +130,16 @@ func streamStdErr(ctx context.Context, cli *client.Client, jobID, containerID st
 		err := scanLines(ctx, jobID, containerLogs, stderrBuf, db)
 		if err != nil {
 			log.Println(err)
+
 			return
 		}
 		if err := containerLogs.Close(); err != nil {
 			log.Println(err)
+
 			return
 		}
 	}()
+
 	return stderrBuf, nil
 }
 
@@ -139,24 +149,28 @@ func scanLines(ctx context.Context, jobID string, input io.ReadCloser, output io
 		_, err := stdcopy.StdCopy(w, w, input)
 		if err != nil {
 			log.Println(err)
+
 			return
 		}
 		if err := w.Close(); err != nil {
 			log.Println(err)
+
 			return
 		}
 	}()
 	s := bufio.NewScanner(r)
 	for s.Scan() {
 		b := s.Bytes()
-		output.Write(b)
-		output.Write([]byte("\n"))
+		_, _ = output.Write(b)
+		_, _ = output.Write([]byte("\n"))
 
 		if err := db.JobLogAppend(ctx, jobID, string(b)+"\n"); err != nil {
 			log.Println(err)
+
 			continue
 		}
 	}
+
 	return s.Err()
 }
 
@@ -172,6 +186,7 @@ func waitForContainer(ctx context.Context, cli *client.Client, containerID strin
 			return fmt.Errorf("container returned status code %d: stderr: %s", exitStatus.StatusCode, stderrBuf.String())
 		}
 	}
+
 	return nil
 }
 

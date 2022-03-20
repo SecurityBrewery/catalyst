@@ -19,17 +19,20 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 	})
 	if err != nil {
 		log.Println(err)
+
 		return
 	}
 
 	automation, err := h.db.AutomationGet(ctx, automationMsg.Automation)
 	if err != nil {
 		log.Println(err)
+
 		return
 	}
 
 	if automation.Script == "" {
 		log.Println("automation is empty")
+
 		return
 	}
 
@@ -39,11 +42,17 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 	automationMsg.Message.Secrets["catalyst_apikey"] = h.apiKey
 	automationMsg.Message.Secrets["catalyst_apiurl"] = h.apiURL
 
-	scriptMessage, _ := json.Marshal(automationMsg.Message)
+	scriptMessage, err := json.Marshal(automationMsg.Message)
+	if err != nil {
+		log.Println(err)
+
+		return
+	}
 
 	containerID, logs, err := createContainer(ctx, automation.Image, automation.Script, string(scriptMessage), h.network)
 	if err != nil {
 		log.Println(err)
+
 		return
 	}
 
@@ -55,18 +64,19 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 		Status:    job.Status,
 	}); err != nil {
 		log.Println(err)
+
 		return
 	}
 
-	var result map[string]interface{}
+	var result map[string]any
 
 	stdout, _, err := runDocker(ctx, automationMsg.ID, containerID, h.db)
 	if err != nil {
-		result = map[string]interface{}{"error": fmt.Sprintf("error running script %s %s", err, string(stdout))}
+		result = map[string]any{"error": fmt.Sprintf("error running script %s %s", err, string(stdout))}
 	} else {
-		var data map[string]interface{}
+		var data map[string]any
 		if err := json.Unmarshal(stdout, &data); err != nil {
-			result = map[string]interface{}{"error": string(stdout)}
+			result = map[string]any{"error": string(stdout)}
 		} else {
 			result = data
 		}
@@ -78,6 +88,7 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 
 	if err := h.db.JobComplete(ctx, automationMsg.ID, result); err != nil {
 		log.Println(err)
+
 		return
 	}
 }

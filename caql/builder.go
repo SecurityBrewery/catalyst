@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/SecurityBrewery/catalyst/generated/caql/parser"
 )
 
@@ -40,6 +42,7 @@ func (s *aqlBuilder) pop() (n string) {
 
 func (s *aqlBuilder) binaryPop() (string, string) {
 	right, left := s.pop(), s.pop()
+
 	return left, right
 }
 
@@ -181,8 +184,10 @@ func (s *aqlBuilder) toBoolString(v string) string {
 		if err != nil {
 			panic("invalid search " + err.Error())
 		}
+
 		return fmt.Sprintf(`d._key IN ["%s"]`, strings.Join(ids, `","`))
 	}
+
 	return v
 }
 
@@ -246,7 +251,7 @@ func (s *aqlBuilder) ExitFunction_call(ctx *parser.Function_callContext) {
 	}
 	parameter := strings.Join(array, ", ")
 
-	if !stringSliceContains(functionNames, strings.ToUpper(ctx.T_STRING().GetText())) {
+	if !slices.Contains(functionNames, strings.ToUpper(ctx.T_STRING().GetText())) {
 		panic("unknown function")
 	}
 

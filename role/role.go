@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -60,23 +62,16 @@ func UserHasRoles(user *model.UserResponse, roles []Role) bool {
 	for _, role := range roles {
 		if !UserHasRole(user, role) {
 			hasRoles = false
+
 			break
 		}
 	}
+
 	return hasRoles
 }
 
 func UserHasRole(user *model.UserResponse, role Role) bool {
-	return ContainsRole(FromStrings(user.Roles), role)
-}
-
-func ContainsRole(roles []Role, role Role) bool {
-	for _, r := range roles {
-		if r.String() == role.String() { //  || strings.HasPrefix(role.String(), r.String()+":")
-			return true
-		}
-	}
-	return false
+	return slices.Contains(FromStrings(user.Roles), role)
 }
 
 func Explodes(s []string) []Role {
@@ -84,10 +79,10 @@ func Explodes(s []string) []Role {
 	for _, e := range s {
 		roles = append(roles, Explode(e)...)
 	}
-	roles = unique(roles)
 	sort.Slice(roles, func(i, j int) bool {
 		return roles[i].String() < roles[j].String()
 	})
+	roles = slices.Compact(roles)
 
 	return roles
 }
@@ -98,12 +93,15 @@ func Explode(s string) []Role {
 	switch s {
 	case Admin:
 		roles = append(roles, listPrefix(Admin)...)
+
 		fallthrough
 	case Engineer:
 		roles = append(roles, listPrefix(Engineer)...)
+
 		fallthrough
 	case Analyst:
 		roles = append(roles, listPrefix(Analyst)...)
+
 		return roles
 	}
 
@@ -126,18 +124,6 @@ func listPrefix(s string) []Role {
 	}
 
 	return roles
-}
-
-func unique(l []Role) []Role {
-	keys := make(map[Role]bool)
-	var list []Role
-	for _, entry := range l {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
-		}
-	}
-	return list
 }
 
 func List() []Role {
@@ -167,6 +153,7 @@ func Strings(roles []Role) []string {
 	for _, role := range roles {
 		s = append(s, role.String())
 	}
+
 	return s
 }
 
@@ -179,5 +166,6 @@ func FromStrings(s []string) []Role {
 		}
 		roles = append(roles, role)
 	}
+
 	return roles
 }

@@ -75,12 +75,13 @@ func (db *Database) TicketTypeUpdate(ctx context.Context, id string, tickettype 
 
 func (db *Database) TicketTypeDelete(ctx context.Context, id string) error {
 	_, err := db.tickettypeCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) TicketTypeList(ctx context.Context) ([]*model.TicketTypeResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": TicketTypeCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": TicketTypeCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

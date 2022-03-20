@@ -12,12 +12,12 @@ import (
 const channelResult = "result"
 
 type ResultMsg struct {
-	Automation string                 `json:"automation"`
-	Data       map[string]interface{} `json:"data,omitempty"`
-	Target     *model.Origin          `json:"target"`
+	Automation string         `json:"automation"`
+	Data       map[string]any `json:"data,omitempty"`
+	Target     *model.Origin  `json:"target"`
 }
 
-func (b *Bus) PublishResult(automation string, data map[string]interface{}, target *model.Origin) error {
+func (b *Bus) PublishResult(automation string, data map[string]any, target *model.Origin) error {
 	return b.jsonPublish(&ResultMsg{Automation: automation, Data: data, Target: target}, channelResult, b.config.resultBusKey)
 }
 
@@ -26,6 +26,7 @@ func (b *Bus) SubscribeResult(f func(msg *ResultMsg)) error {
 		msg := &ResultMsg{}
 		if err := json.Unmarshal(m.Payload(), msg); err != nil {
 			log.Println(err)
+
 			return
 		}
 		go f(msg)

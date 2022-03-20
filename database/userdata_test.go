@@ -22,6 +22,8 @@ var bobResponse = &model.UserDataResponse{
 }
 
 func TestDatabase_UserDataCreate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id      string
 		setting *model.UserData
@@ -37,7 +39,10 @@ func TestDatabase_UserDataCreate(t *testing.T) {
 		{name: "Only settingname", args: args{id: "bob"}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -52,6 +57,8 @@ func TestDatabase_UserDataCreate(t *testing.T) {
 }
 
 func TestDatabase_UserDataGet(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id string
 	}
@@ -65,7 +72,10 @@ func TestDatabase_UserDataGet(t *testing.T) {
 		{name: "Not existing", args: args{id: "foo"}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -79,6 +89,7 @@ func TestDatabase_UserDataGet(t *testing.T) {
 			got, err := db.UserDataGet(test.Context(), tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UserDataGet() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if err != nil {
@@ -91,6 +102,8 @@ func TestDatabase_UserDataGet(t *testing.T) {
 }
 
 func TestDatabase_UserDataList(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		want    []*model.UserDataResponse
@@ -99,7 +112,10 @@ func TestDatabase_UserDataList(t *testing.T) {
 		{name: "Normal list", want: []*model.UserDataResponse{bobResponse}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -113,6 +129,7 @@ func TestDatabase_UserDataList(t *testing.T) {
 			got, err := db.UserDataList(test.Context())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UserDataList() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 
@@ -122,6 +139,8 @@ func TestDatabase_UserDataList(t *testing.T) {
 }
 
 func TestDatabase_UserDataUpdate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id      string
 		setting *model.UserData
@@ -135,7 +154,10 @@ func TestDatabase_UserDataUpdate(t *testing.T) {
 		{name: "Not existing", args: args{id: "foo"}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)

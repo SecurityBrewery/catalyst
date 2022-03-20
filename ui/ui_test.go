@@ -3,15 +3,23 @@ package ui
 import "testing"
 
 func TestUI(t *testing.T) {
-	requiredFiles := []string{
-		"dist/index.html",
-		"dist/favicon.ico",
-		"dist/manifest.json",
-		"dist/img",
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		path string
+	}{
+		{"index.html", "dist/index.html"},
+		{"favicon.ico", "dist/favicon.ico"},
+		{"manifest.json", "dist/manifest.json"},
+		{"img", "dist/img"},
 	}
-	for _, requiredFile := range requiredFiles {
-		t.Run("Require "+requiredFile, func(t *testing.T) {
-			f, err := UI.Open(requiredFile)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			f, err := UI.Open(tt.path)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -28,6 +28,7 @@ func generateKey() string {
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
+
 	return string(b)
 }
 
@@ -78,8 +79,10 @@ func (db *Database) UserGetOrCreate(ctx context.Context, newUser *model.UserForm
 		if err != nil {
 			return nil, err
 		}
+
 		return &model.UserResponse{ID: newUser.ID, Roles: newUser.Roles, Blocked: newUser.Blocked}, nil
 	}
+
 	return user, nil
 }
 
@@ -132,12 +135,13 @@ func (db *Database) UserGet(ctx context.Context, id string) (*model.UserResponse
 
 func (db *Database) UserDelete(ctx context.Context, id string) error {
 	_, err := db.userCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) UserList(ctx context.Context) ([]*model.UserResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": UserCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +167,7 @@ func (db *Database) UserByHash(ctx context.Context, sha256 string) (*model.UserR
 	FILTER d.sha256 == @sha256
 	RETURN d`
 
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": UserCollectionName, "sha256": sha256}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserCollectionName, "sha256": sha256}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

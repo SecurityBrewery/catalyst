@@ -38,7 +38,7 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *model.Jo
 		inspect, err := cli.ContainerInspect(ctx, key)
 		if err != nil || inspect.State == nil {
 			if update {
-				db.JobUpdate(ctx, key, &model.JobUpdate{
+				_, _ = db.JobUpdate(ctx, key, &model.JobUpdate{
 					Status:  doc.Status,
 					Running: false,
 				})
@@ -46,7 +46,7 @@ func (db *Database) toJobResponse(ctx context.Context, key string, doc *model.Jo
 		} else if doc.Status != inspect.State.Status {
 			status = inspect.State.Status
 			if update {
-				db.JobUpdate(ctx, key, &model.JobUpdate{
+				_, _ = db.JobUpdate(ctx, key, &model.JobUpdate{
 					Status:  status,
 					Running: doc.Running,
 				})
@@ -107,7 +107,7 @@ func (db *Database) JobUpdate(ctx context.Context, id string, job *model.JobUpda
 func (db *Database) JobLogAppend(ctx context.Context, id string, logLine string) error {
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	UPDATE d WITH { "log": CONCAT(NOT_NULL(d.log, ""), @logline) } IN @@collection`
-	cur, _, err := db.Query(ctx, query, map[string]interface{}{
+	cur, _, err := db.Query(ctx, query, map[string]any{
 		"@collection": JobCollectionName,
 		"ID":          id,
 		"logline":     logLine,
@@ -125,10 +125,10 @@ func (db *Database) JobLogAppend(ctx context.Context, id string, logLine string)
 	return nil
 }
 
-func (db *Database) JobComplete(ctx context.Context, id string, out interface{}) error {
+func (db *Database) JobComplete(ctx context.Context, id string, out any) error {
 	query := `LET d = DOCUMENT(@@collection, @ID)
 	UPDATE d WITH { "output": @out, "status": "completed", "running": false } IN @@collection`
-	cur, _, err := db.Query(ctx, query, map[string]interface{}{
+	cur, _, err := db.Query(ctx, query, map[string]any{
 		"@collection": JobCollectionName,
 		"ID":          id,
 		"out":         out,
@@ -148,12 +148,13 @@ func (db *Database) JobComplete(ctx context.Context, id string, out interface{})
 
 func (db *Database) JobDelete(ctx context.Context, id string) error {
 	_, err := db.jobCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) JobList(ctx context.Context) ([]*model.JobResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": JobCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": JobCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -188,24 +189,24 @@ func publishJobMapping(id, automation string, contextStructs *model.Context, ori
 	return publishJob(id, automation, contextStructs, origin, msg, db)
 }
 
-func publishJob(id, automation string, contextStructs *model.Context, origin *model.Origin, payload map[string]interface{}, db *Database) error {
+func publishJob(id, automation string, contextStructs *model.Context, origin *model.Origin, payload map[string]any, db *Database) error {
 	return db.bus.PublishJob(id, automation, payload, contextStructs, origin)
 }
 
-func generatePayload(msgMapping map[string]string, contextStructs *model.Context) (map[string]interface{}, error) {
-	contextJson, err := json.Marshal(contextStructs)
+func generatePayload(msgMapping map[string]string, contextStructs *model.Context) (map[string]any, error) {
+	contextJSON, err := json.Marshal(contextStructs)
 	if err != nil {
 		return nil, err
 	}
 
-	automationContext := map[string]interface{}{}
-	err = json.Unmarshal(contextJson, &automationContext)
+	automationContext := map[string]any{}
+	err = json.Unmarshal(contextJSON, &automationContext)
 	if err != nil {
 		return nil, err
 	}
 
 	parser := caql.Parser{}
-	msg := map[string]interface{}{}
+	msg := map[string]any{}
 	for arg, expr := range msgMapping {
 		tree, err := parser.Parse(expr)
 		if err != nil {
@@ -218,5 +219,6 @@ func generatePayload(msgMapping map[string]string, contextStructs *model.Context
 		}
 		msg[arg] = v
 	}
+
 	return msg, nil
 }

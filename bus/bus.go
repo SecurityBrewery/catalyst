@@ -50,7 +50,7 @@ func New(c *Config) (*Bus, error) {
 	return &Bus{config: c, client: client}, err
 }
 
-func (b *Bus) jsonPublish(msg interface{}, channel, key string) error {
+func (b *Bus) jsonPublish(msg any, channel, key string) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -65,5 +65,6 @@ func (b *Bus) safeSubscribe(key, channel string, handler func(c *emitter.Client,
 			log.Printf("Recovered %s in channel %s\n", r, channel)
 		}
 	}()
+
 	return b.client.Subscribe(key, channel, handler)
 }

@@ -29,11 +29,13 @@ func restoreHandler(catalystStorage *storage.Storage, db *database.Database, c *
 		uf, header, err := r.FormFile("backup")
 		if err != nil {
 			api.JSONError(w, err)
+
 			return
 		}
 
 		if err = Restore(r.Context(), catalystStorage, db, c, uf, header.Size); err != nil {
 			api.JSONError(w, err)
+
 			return
 		}
 	}
@@ -52,7 +54,7 @@ func Restore(ctx context.Context, catalystStorage *storage.Storage, db *database
 	}
 
 	if fsys.Comment != GetVersion() {
-		return errors.New(fmt.Sprintf("wrong version, got: %s, want: %s", fsys.Comment, GetVersion()))
+		return fmt.Errorf("wrong version, got: %s, want: %s", fsys.Comment, GetVersion())
 	}
 
 	dir, err := os.MkdirTemp("", "catalyst-restore")
@@ -89,17 +91,19 @@ func restoreS3(catalystStorage *storage.Storage, p string) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func restoreBucket(catalystStorage *storage.Storage, entry fs.DirEntry, minioDir fs.FS) error {
 	_, err := catalystStorage.S3().CreateBucket(&s3.CreateBucketInput{Bucket: pointer.String(entry.Name())})
 	if err != nil {
-		awsError, ok := err.(awserr.Error)
-		if !ok || (awsError.Code() != s3.ErrCodeBucketAlreadyExists && awsError.Code() != s3.ErrCodeBucketAlreadyOwnedByYou) {
-			return err
+		var awsError awserr.Error
+		if errors.As(err, &awsError) && (awsError.Code() == s3.ErrCodeBucketAlreadyExists || awsError.Code() == s3.ErrCodeBucketAlreadyOwnedByYou) {
+			return nil
 		}
-		return nil
+
+		return err
 	}
 
 	uploader := catalystStorage.Uploader()
@@ -115,11 +119,13 @@ func restoreBucket(catalystStorage *storage.Storage, entry fs.DirEntry, minioDir
 			return nil
 		}
 		_, err = uploader.Upload(&s3manager.UploadInput{Body: f, Bucket: pointer.String(entry.Name()), Key: pointer.String(path)})
+
 		return err
 	})
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -131,6 +137,7 @@ func unzip(archive *zip.Reader, dir string) error {
 
 		if d.IsDir() {
 			_ = os.MkdirAll(path.Join(dir, p), os.ModePerm)
+
 			return nil
 		}
 
@@ -163,5 +170,6 @@ func arangorestore(dir string, config *database.Config) error {
 		"--server.database", name,
 	}
 	cmd := exec.Command("arangorestore", args...)
+
 	return cmd.Run()
 }

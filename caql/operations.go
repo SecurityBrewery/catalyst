@@ -10,21 +10,23 @@ import (
 
 // Logical operators https://www.arangodb.com/docs/3.7/aql/operators.html#logical-operators
 
-func or(left, right interface{}) interface{} {
+func or(left, right any) any {
 	if toBool(left) {
 		return left
 	}
+
 	return right
 }
 
-func and(left, right interface{}) interface{} {
+func and(left, right any) any {
 	if !toBool(left) {
 		return left
 	}
+
 	return right
 }
 
-func toBool(i interface{}) bool {
+func toBool(i any) bool {
 	switch v := i.(type) {
 	case nil:
 		return false
@@ -36,9 +38,9 @@ func toBool(i interface{}) bool {
 		return v != 0
 	case string:
 		return v != ""
-	case []interface{}:
+	case []any:
 		return true
-	case map[string]interface{}:
+	case map[string]any:
 		return true
 	default:
 		panic("bool conversion failed")
@@ -47,15 +49,15 @@ func toBool(i interface{}) bool {
 
 // Arithmetic operators https://www.arangodb.com/docs/3.7/aql/operators.html#arithmetic-operators
 
-func plus(left, right interface{}) float64 {
+func plus(left, right any) float64 {
 	return toNumber(left) + toNumber(right)
 }
 
-func minus(left, right interface{}) float64 {
+func minus(left, right any) float64 {
 	return toNumber(left) - toNumber(right)
 }
 
-func times(left, right interface{}) float64 {
+func times(left, right any) float64 {
 	return round(toNumber(left) * toNumber(right))
 }
 
@@ -63,19 +65,20 @@ func round(r float64) float64 {
 	return math.Round(r*100000) / 100000
 }
 
-func div(left, right interface{}) float64 {
+func div(left, right any) float64 {
 	b := toNumber(right)
 	if b == 0 {
 		return 0
 	}
+
 	return round(toNumber(left) / b)
 }
 
-func mod(left, right interface{}) float64 {
+func mod(left, right any) float64 {
 	return math.Mod(toNumber(left), toNumber(right))
 }
 
-func toNumber(i interface{}) float64 {
+func toNumber(i any) float64 {
 	switch v := i.(type) {
 	case nil:
 		return 0
@@ -83,6 +86,7 @@ func toNumber(i interface{}) float64 {
 		if v {
 			return 1
 		}
+
 		return 0
 	case float64:
 		switch {
@@ -91,22 +95,25 @@ func toNumber(i interface{}) float64 {
 		case math.IsInf(v, 0):
 			return 0
 		}
+
 		return v
 	case string:
 		f, err := strconv.ParseFloat(strings.TrimSpace(v), 64)
 		if err != nil {
 			return 0
 		}
+
 		return f
-	case []interface{}:
+	case []any:
 		if len(v) == 0 {
 			return 0
 		}
 		if len(v) == 1 {
 			return toNumber(v[0])
 		}
+
 		return 0
-	case map[string]interface{}:
+	case map[string]any:
 		return 0
 	default:
 		panic("number conversion error")
@@ -116,7 +123,7 @@ func toNumber(i interface{}) float64 {
 // Logical operators https://www.arangodb.com/docs/3.7/aql/operators.html#logical-operators
 // Order https://www.arangodb.com/docs/3.7/aql/fundamentals-type-value-order.html
 
-func eq(left, right interface{}) bool {
+func eq(left, right any) bool {
 	leftV, rightV := typeValue(left), typeValue(right)
 	if leftV != rightV {
 		return false
@@ -126,15 +133,15 @@ func eq(left, right interface{}) bool {
 		return true
 	case bool, float64, string:
 		return left == right
-	case []interface{}:
-		ra := right.([]interface{})
+	case []any:
+		ra := right.([]any)
 		max := len(l)
 		if len(ra) > max {
 			max = len(ra)
 		}
 		for i := 0; i < max; i++ {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if len(l) > i {
 				li = l[i]
 			}
@@ -146,13 +153,14 @@ func eq(left, right interface{}) bool {
 				return false
 			}
 		}
+
 		return true
-	case map[string]interface{}:
-		ro := right.(map[string]interface{})
+	case map[string]any:
+		ro := right.(map[string]any)
 
 		for _, key := range keys(l, ro) {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if lv, ok := l[key]; ok {
 				li = lv
 			}
@@ -164,17 +172,18 @@ func eq(left, right interface{}) bool {
 				return false
 			}
 		}
+
 		return true
 	default:
 		panic("unknown type")
 	}
 }
 
-func ne(left, right interface{}) bool {
+func ne(left, right any) bool {
 	return !eq(left, right)
 }
 
-func lt(left, right interface{}) bool {
+func lt(left, right any) bool {
 	leftV, rightV := typeValue(left), typeValue(right)
 	if leftV != rightV {
 		return leftV < rightV
@@ -190,15 +199,15 @@ func lt(left, right interface{}) bool {
 		return l < right.(float64)
 	case string:
 		return l < right.(string)
-	case []interface{}:
-		ra := right.([]interface{})
+	case []any:
+		ra := right.([]any)
 		max := len(l)
 		if len(ra) > max {
 			max = len(ra)
 		}
 		for i := 0; i < max; i++ {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if len(l) > i {
 				li = l[i]
 			}
@@ -210,13 +219,14 @@ func lt(left, right interface{}) bool {
 				return lt(li, rai)
 			}
 		}
+
 		return false
-	case map[string]interface{}:
-		ro := right.(map[string]interface{})
+	case map[string]any:
+		ro := right.(map[string]any)
 
 		for _, key := range keys(l, ro) {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if lv, ok := l[key]; ok {
 				li = lv
 			}
@@ -228,16 +238,17 @@ func lt(left, right interface{}) bool {
 				return lt(li, rai)
 			}
 		}
+
 		return false
 	default:
 		panic("unknown type")
 	}
 }
 
-func keys(l map[string]interface{}, ro map[string]interface{}) []string {
+func keys(l map[string]any, ro map[string]any) []string {
 	var keys []string
 	seen := map[string]bool{}
-	for _, a := range []map[string]interface{}{l, ro} {
+	for _, a := range []map[string]any{l, ro} {
 		for k := range a {
 			if _, ok := seen[k]; !ok {
 				seen[k] = true
@@ -246,10 +257,11 @@ func keys(l map[string]interface{}, ro map[string]interface{}) []string {
 		}
 	}
 	sort.Strings(keys)
+
 	return keys
 }
 
-func gt(left, right interface{}) bool {
+func gt(left, right any) bool {
 	leftV, rightV := typeValue(left), typeValue(right)
 	if leftV != rightV {
 		return leftV > rightV
@@ -265,15 +277,15 @@ func gt(left, right interface{}) bool {
 		return l > right.(float64)
 	case string:
 		return l > right.(string)
-	case []interface{}:
-		ra := right.([]interface{})
+	case []any:
+		ra := right.([]any)
 		max := len(l)
 		if len(ra) > max {
 			max = len(ra)
 		}
 		for i := 0; i < max; i++ {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if len(l) > i {
 				li = l[i]
 			}
@@ -285,13 +297,14 @@ func gt(left, right interface{}) bool {
 				return gt(li, rai)
 			}
 		}
+
 		return false
-	case map[string]interface{}:
-		ro := right.(map[string]interface{})
+	case map[string]any:
+		ro := right.(map[string]any)
 
 		for _, key := range keys(l, ro) {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if lv, ok := l[key]; ok {
 				li = lv
 			}
@@ -303,13 +316,14 @@ func gt(left, right interface{}) bool {
 				return gt(li, rai)
 			}
 		}
+
 		return false
 	default:
 		panic("unknown type")
 	}
 }
 
-func le(left, right interface{}) bool {
+func le(left, right any) bool {
 	leftV, rightV := typeValue(left), typeValue(right)
 	if leftV != rightV {
 		return leftV <= rightV
@@ -325,15 +339,15 @@ func le(left, right interface{}) bool {
 		return l <= right.(float64)
 	case string:
 		return l <= right.(string)
-	case []interface{}:
-		ra := right.([]interface{})
+	case []any:
+		ra := right.([]any)
 		max := len(l)
 		if len(ra) > max {
 			max = len(ra)
 		}
 		for i := 0; i < max; i++ {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if len(l) > i {
 				li = l[i]
 			}
@@ -345,13 +359,14 @@ func le(left, right interface{}) bool {
 				return le(li, rai)
 			}
 		}
+
 		return true
-	case map[string]interface{}:
-		ro := right.(map[string]interface{})
+	case map[string]any:
+		ro := right.(map[string]any)
 
 		for _, key := range keys(l, ro) {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if lv, ok := l[key]; ok {
 				li = lv
 			}
@@ -363,13 +378,14 @@ func le(left, right interface{}) bool {
 				return lt(li, rai)
 			}
 		}
+
 		return true
 	default:
 		panic("unknown type")
 	}
 }
 
-func ge(left, right interface{}) bool {
+func ge(left, right any) bool {
 	leftV, rightV := typeValue(left), typeValue(right)
 	if leftV != rightV {
 		return leftV >= rightV
@@ -385,15 +401,15 @@ func ge(left, right interface{}) bool {
 		return l >= right.(float64)
 	case string:
 		return l >= right.(string)
-	case []interface{}:
-		ra := right.([]interface{})
+	case []any:
+		ra := right.([]any)
 		max := len(l)
 		if len(ra) > max {
 			max = len(ra)
 		}
 		for i := 0; i < max; i++ {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if len(l) > i {
 				li = l[i]
 			}
@@ -405,13 +421,14 @@ func ge(left, right interface{}) bool {
 				return ge(li, rai)
 			}
 		}
+
 		return true
-	case map[string]interface{}:
-		ro := right.(map[string]interface{})
+	case map[string]any:
+		ro := right.(map[string]any)
 
 		for _, key := range keys(l, ro) {
-			var li interface{} = nil
-			var rai interface{} = nil
+			var li any
+			var rai any
 			if lv, ok := l[key]; ok {
 				li = lv
 			}
@@ -423,14 +440,15 @@ func ge(left, right interface{}) bool {
 				return gt(li, rai)
 			}
 		}
+
 		return true
 	default:
 		panic("unknown type")
 	}
 }
 
-func in(left, right interface{}) bool {
-	a, ok := right.([]interface{})
+func in(left, right any) bool {
+	a, ok := right.([]any)
 	if !ok {
 		return false
 	}
@@ -439,23 +457,25 @@ func in(left, right interface{}) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
-func like(left, right interface{}) (bool, error) {
+func like(left, right any) (bool, error) {
 	return match(right.(string), left.(string))
 }
 
-func regexMatch(left, right interface{}) (bool, error) {
+func regexMatch(left, right any) (bool, error) {
 	return regexp.Match(right.(string), []byte(left.(string)))
 }
 
-func regexNonMatch(left, right interface{}) (bool, error) {
+func regexNonMatch(left, right any) (bool, error) {
 	m, err := regexp.Match(right.(string), []byte(left.(string)))
+
 	return !m, err
 }
 
-func typeValue(v interface{}) int {
+func typeValue(v any) int {
 	switch v.(type) {
 	case nil:
 		return 0
@@ -465,9 +485,9 @@ func typeValue(v interface{}) int {
 		return 2
 	case string:
 		return 3
-	case []interface{}:
+	case []any:
 		return 4
-	case map[string]interface{}:
+	case map[string]any:
 		return 5
 	default:
 		panic("unknown type")
@@ -476,22 +496,25 @@ func typeValue(v interface{}) int {
 
 // Ternary operator https://www.arangodb.com/docs/3.7/aql/operators.html#ternary-operator
 
-func ternary(left, middle, right interface{}) interface{} {
+func ternary(left, middle, right any) any {
 	if toBool(left) {
 		if middle != nil {
 			return middle
 		}
+
 		return left
 	}
+
 	return right
 }
 
 // Range operators https://www.arangodb.com/docs/3.7/aql/operators.html#range-operator
 
-func aqlrange(left, right interface{}) []float64 {
+func aqlrange(left, right any) []float64 {
 	var v []float64
 	for i := int(left.(float64)); i <= int(right.(float64)); i++ {
 		v = append(v, float64(i))
 	}
+
 	return v
 }

@@ -35,6 +35,7 @@ func (b *Bus) SubscribeDatabaseUpdate(f func(msg *DatabaseUpdateMsg)) error {
 		var msg DatabaseUpdateMsg
 		if err := json.Unmarshal(m.Payload(), &msg); err != nil {
 			log.Println(err)
+
 			return
 		}
 		go f(&msg)

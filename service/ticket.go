@@ -18,11 +18,13 @@ func ticketWithTicketsID(ticketResponse *model.TicketWithTickets) []driver.Docum
 	if ticketResponse == nil {
 		return nil
 	}
+
 	return ticketID(ticketResponse.ID)
 }
 
 func ticketID(ticketID int64) []driver.DocumentID {
 	id := fmt.Sprintf("%s/%d", database.TicketCollectionName, ticketID)
+
 	return []driver.DocumentID{driver.DocumentID(id)}
 }
 
@@ -31,6 +33,7 @@ func ticketIDs(ticketResponses []*model.TicketResponse) []driver.DocumentID {
 	for _, ticketResponse := range ticketResponses {
 		ids = append(ids, ticketID(ticketResponse.ID)...)
 	}
+
 	return ids
 }
 
@@ -63,6 +66,7 @@ func (s *Service) CreateTicket(ctx context.Context, form *model.TicketForm) (doc
 	if len(createdTickets) > 0 {
 		return createdTickets[0], err
 	}
+
 	return nil, err
 }
 
@@ -72,6 +76,7 @@ func (s *Service) CreateTicketBatch(ctx context.Context, ticketFormArray *model.
 	}
 	createdTickets, err := s.database.TicketBatchCreate(ctx, *ticketFormArray)
 	defer s.publishRequest(ctx, err, "CreateTicket", ticketIDs(createdTickets))
+
 	return err
 }
 
@@ -81,16 +86,19 @@ func (s *Service) GetTicket(ctx context.Context, i int64) (*model.TicketWithTick
 
 func (s *Service) UpdateTicket(ctx context.Context, i int64, ticket *model.Ticket) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "UpdateTicket", ticketWithTicketsID(doc))
+
 	return s.database.TicketUpdate(ctx, i, ticket)
 }
 
 func (s *Service) DeleteTicket(ctx context.Context, i int64) (err error) {
 	defer s.publishRequest(ctx, err, "DeleteTicket", ticketID(i))
+
 	return s.database.TicketDelete(ctx, i)
 }
 
 func (s *Service) AddArtifact(ctx context.Context, i int64, artifact *model.Artifact) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "AddArtifact", ticketWithTicketsID(doc))
+
 	return s.database.AddArtifact(ctx, i, artifact)
 }
 
@@ -100,16 +108,19 @@ func (s *Service) GetArtifact(ctx context.Context, i int64, s2 string) (*model.A
 
 func (s *Service) SetArtifact(ctx context.Context, i int64, s2 string, artifact *model.Artifact) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetArtifact", ticketWithTicketsID(doc))
+
 	return s.database.ArtifactUpdate(ctx, i, s2, artifact)
 }
 
 func (s *Service) RemoveArtifact(ctx context.Context, i int64, s2 string) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "RemoveArtifact", ticketWithTicketsID(doc))
+
 	return s.database.RemoveArtifact(ctx, i, s2)
 }
 
 func (s *Service) EnrichArtifact(ctx context.Context, i int64, s2 string, form *model.EnrichmentForm) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "EnrichArtifact", ticketWithTicketsID(doc))
+
 	return s.database.EnrichArtifact(ctx, i, s2, form)
 }
 
@@ -123,46 +134,55 @@ func (s *Service) RunArtifact(ctx context.Context, id int64, name string, automa
 
 	jobID := uuid.NewString()
 	origin := &model.Origin{ArtifactOrigin: &model.ArtifactOrigin{TicketId: id, Artifact: name}}
+
 	return s.bus.PublishJob(jobID, automation, map[string]string{"default": name}, &model.Context{Artifact: artifact}, origin)
 }
 
 func (s *Service) AddComment(ctx context.Context, i int64, form *model.CommentForm) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "AddComment", ticketWithTicketsID(doc))
+
 	return s.database.AddComment(ctx, i, form)
 }
 
 func (s *Service) RemoveComment(ctx context.Context, i int64, i2 int) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "RemoveComment", ticketWithTicketsID(doc))
+
 	return s.database.RemoveComment(ctx, i, int64(i2))
 }
 
 func (s *Service) AddTicketPlaybook(ctx context.Context, i int64, form *model.PlaybookTemplateForm) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "AddTicketPlaybook", ticketWithTicketsID(doc))
+
 	return s.database.AddTicketPlaybook(ctx, i, form)
 }
 
 func (s *Service) RemoveTicketPlaybook(ctx context.Context, i int64, s2 string) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "RemoveTicketPlaybook", ticketWithTicketsID(doc))
+
 	return s.database.RemoveTicketPlaybook(ctx, i, s2)
 }
 
-func (s *Service) SetTaskData(ctx context.Context, i int64, s3 string, s2 string, data map[string]interface{}) (doc *model.TicketWithTickets, err error) {
+func (s *Service) SetTaskData(ctx context.Context, i int64, s3 string, s2 string, data map[string]any) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
+
 	return s.database.TaskUpdateData(ctx, i, s3, s2, data)
 }
 
 func (s *Service) SetTaskOwner(ctx context.Context, i int64, s3 string, s2 string, owner string) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetTask", ticketWithTicketsID(doc))
+
 	return s.database.TaskUpdateOwner(ctx, i, s3, s2, owner)
 }
 
-func (s *Service) CompleteTask(ctx context.Context, i int64, s3 string, s2 string, m map[string]interface{}) (doc *model.TicketWithTickets, err error) {
+func (s *Service) CompleteTask(ctx context.Context, i int64, s3 string, s2 string, m map[string]any) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "CompleteTask", ticketWithTicketsID(doc))
+
 	return s.database.TaskComplete(ctx, i, s3, s2, m)
 }
 
 func (s *Service) RunTask(ctx context.Context, i int64, s3 string, s2 string) (err error) {
 	defer s.publishRequest(ctx, err, "RunTask", ticketID(i))
+
 	return s.database.TaskRun(ctx, i, s3, s2)
 }
 
@@ -171,11 +191,13 @@ func (s *Service) SetReferences(ctx context.Context, i int64, references *model.
 		return nil, &api.HTTPError{Status: http.StatusUnprocessableEntity, Internal: errors.New("no references given")}
 	}
 	defer s.publishRequest(ctx, err, "SetReferences", ticketID(i))
+
 	return s.database.SetReferences(ctx, i, *references)
 }
 
 func (s *Service) SetSchema(ctx context.Context, i int64, s2 string) (doc *model.TicketWithTickets, err error) {
 	defer s.publishRequest(ctx, err, "SetSchema", ticketID(i))
+
 	return s.database.SetTemplate(ctx, i, s2)
 }
 

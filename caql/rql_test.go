@@ -1,9 +1,11 @@
-package caql
+package caql_test
 
 import (
 	"encoding/json"
 	"reflect"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/caql"
 )
 
 type MockSearcher struct{}
@@ -13,11 +15,13 @@ func (m MockSearcher) Search(_ string) (ids []string, err error) {
 }
 
 func TestParseSAQLEval(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		saql           string
 		wantRebuild    string
-		wantValue      interface{}
+		wantValue      any
 		wantParseErr   bool
 		wantRebuildErr bool
 		wantEvalErr    bool
@@ -89,15 +93,15 @@ func TestParseSAQLEval(t *testing.T) {
 		// {name: "String 9", saql: `'this is a longer string.'`, wantRebuild: `"this is a longer string."`, wantValue: "this is a longer string."},
 		// {name: "String 10", saql: `'the path separator on Windows is \\'`, wantRebuild: `"the path separator on Windows is \\"`, wantValue: `the path separator on Windows is \`},
 
-		{name: "Array 1", saql: "[]", wantRebuild: "[]", wantValue: []interface{}{}},
-		{name: "Array 2", saql: `[true]`, wantRebuild: `[true]`, wantValue: []interface{}{true}},
-		{name: "Array 3", saql: `[1, 2, 3]`, wantRebuild: `[1, 2, 3]`, wantValue: []interface{}{float64(1), float64(2), float64(3)}},
+		{name: "Array 1", saql: "[]", wantRebuild: "[]", wantValue: []any{}},
+		{name: "Array 2", saql: `[true]`, wantRebuild: `[true]`, wantValue: []any{true}},
+		{name: "Array 3", saql: `[1, 2, 3]`, wantRebuild: `[1, 2, 3]`, wantValue: []any{float64(1), float64(2), float64(3)}},
 		{
 			name: "Array 4", saql: `[-99, "yikes!", [false, ["no"], []], 1]`, wantRebuild: `[-99, "yikes!", [false, ["no"], []], 1]`,
-			wantValue: []interface{}{-99.0, "yikes!", []interface{}{false, []interface{}{"no"}, []interface{}{}}, float64(1)},
+			wantValue: []any{-99.0, "yikes!", []any{false, []any{"no"}, []any{}}, float64(1)},
 		},
-		{name: "Array 5", saql: `[["fox", "marshal"]]`, wantRebuild: `[["fox", "marshal"]]`, wantValue: []interface{}{[]interface{}{"fox", "marshal"}}},
-		{name: "Array 6", saql: `[1, 2, 3,]`, wantRebuild: `[1, 2, 3]`, wantValue: []interface{}{float64(1), float64(2), float64(3)}},
+		{name: "Array 5", saql: `[["fox", "marshal"]]`, wantRebuild: `[["fox", "marshal"]]`, wantValue: []any{[]any{"fox", "marshal"}}},
+		{name: "Array 6", saql: `[1, 2, 3,]`, wantRebuild: `[1, 2, 3]`, wantValue: []any{float64(1), float64(2), float64(3)}},
 
 		{name: "Array Error 1", saql: "(1,2,3)", wantParseErr: true},
 		{name: "Array Access 1", saql: "u.friends[0]", wantRebuild: "u.friends[0]", wantValue: 7, values: `{"u": {"friends": [7,8,9]}}`},
@@ -105,14 +109,14 @@ func TestParseSAQLEval(t *testing.T) {
 		{name: "Array Access 3", saql: "u.friends[-1]", wantRebuild: "u.friends[-1]", wantValue: 9, values: `{"u": {"friends": [7,8,9]}}`},
 		{name: "Array Access 4", saql: "u.friends[-2]", wantRebuild: "u.friends[-2]", wantValue: 8, values: `{"u": {"friends": [7,8,9]}}`},
 
-		{name: "Object 1", saql: "{}", wantRebuild: "{}", wantValue: map[string]interface{}{}},
-		{name: "Object 2", saql: `{a: 1}`, wantRebuild: "{a: 1}", wantValue: map[string]interface{}{"a": float64(1)}},
-		{name: "Object 3", saql: `{'a': 1}`, wantRebuild: `{'a': 1}`, wantValue: map[string]interface{}{"a": float64(1)}},
-		{name: "Object 4", saql: `{"a": 1}`, wantRebuild: `{"a": 1}`, wantValue: map[string]interface{}{"a": float64(1)}},
-		{name: "Object 5", saql: `{'return': 1}`, wantRebuild: `{'return': 1}`, wantValue: map[string]interface{}{"return": float64(1)}},
-		{name: "Object 6", saql: `{"return": 1}`, wantRebuild: `{"return": 1}`, wantValue: map[string]interface{}{"return": float64(1)}},
-		{name: "Object 9", saql: `{a: 1,}`, wantRebuild: "{a: 1}", wantValue: map[string]interface{}{"a": float64(1)}},
-		{name: "Object 10", saql: `{"a": 1,}`, wantRebuild: `{"a": 1}`, wantValue: map[string]interface{}{"a": float64(1)}},
+		{name: "Object 1", saql: "{}", wantRebuild: "{}", wantValue: map[string]any{}},
+		{name: "Object 2", saql: `{a: 1}`, wantRebuild: "{a: 1}", wantValue: map[string]any{"a": float64(1)}},
+		{name: "Object 3", saql: `{'a': 1}`, wantRebuild: `{'a': 1}`, wantValue: map[string]any{"a": float64(1)}},
+		{name: "Object 4", saql: `{"a": 1}`, wantRebuild: `{"a": 1}`, wantValue: map[string]any{"a": float64(1)}},
+		{name: "Object 5", saql: `{'return': 1}`, wantRebuild: `{'return': 1}`, wantValue: map[string]any{"return": float64(1)}},
+		{name: "Object 6", saql: `{"return": 1}`, wantRebuild: `{"return": 1}`, wantValue: map[string]any{"return": float64(1)}},
+		{name: "Object 9", saql: `{a: 1,}`, wantRebuild: "{a: 1}", wantValue: map[string]any{"a": float64(1)}},
+		{name: "Object 10", saql: `{"a": 1,}`, wantRebuild: `{"a": 1}`, wantValue: map[string]any{"a": float64(1)}},
 		// {"Object 8", "{`return`: 1}", `{"return": 1}`, true},
 		// {"Object 7", "{´return´: 1}", `{"return": 1}`, true},
 		{name: "Object Error 1: return is a keyword", saql: `{like: 1}`, wantParseErr: true},
@@ -272,7 +276,7 @@ func TestParseSAQLEval(t *testing.T) {
 		{name: "Arithmetic 17", saql: `23 * {}`, wantRebuild: `23 * {}`, wantValue: 0},
 		{name: "Arithmetic 18", saql: `5 * [7]`, wantRebuild: `5 * [7]`, wantValue: 35},
 		{name: "Arithmetic 19", saql: `24 / "12"`, wantRebuild: `24 / "12"`, wantValue: 2},
-		{name: "Arithmetic Error 1: Divison by zero", saql: `1 / 0`, wantRebuild: `1 / 0`, wantValue: 0},
+		{name: "Arithmetic Error 1: Division by zero", saql: `1 / 0`, wantRebuild: `1 / 0`, wantValue: 0},
 
 		// https://www.arangodb.com/docs/3.7/aql/operators.html#ternary-operator
 		{name: "Ternary 1", saql: `u.age > 15 || u.active == true ? u.userId : null`, wantRebuild: `u.age > 15 OR u.active == true ? u.userId : null`, wantValue: 45, values: `{"u": {"active": true, "age": 2, "userId": 45}}`},
@@ -287,20 +291,24 @@ func TestParseSAQLEval(t *testing.T) {
 		{name: "Security 2", saql: `doc.value == 1 || true INSERT {foo: "bar"} IN collection //`, wantParseErr: true},
 
 		// https://www.arangodb.com/docs/3.7/aql/operators.html#operator-precedence
-		{name: "Precendence", saql: `2 > 15 && "a" != ""`, wantRebuild: `2 > 15 AND "a" != ""`, wantValue: false},
+		{name: "Precedence", saql: `2 > 15 && "a" != ""`, wantRebuild: `2 > 15 AND "a" != ""`, wantValue: false},
 	}
 	for _, tt := range tests {
-		parser := &Parser{
+		tt := tt
+		parser := &caql.Parser{
 			Searcher: &MockSearcher{},
 		}
 
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			expr, err := parser.Parse(tt.saql)
 			if (err != nil) != tt.wantParseErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantParseErr)
 				if expr != nil {
 					t.Error(expr.String())
 				}
+
 				return
 			}
 			if err != nil {
@@ -311,6 +319,7 @@ func TestParseSAQLEval(t *testing.T) {
 			if (err != nil) != tt.wantRebuildErr {
 				t.Error(expr.String())
 				t.Errorf("String() error = %v, wantErr %v", err, tt.wantParseErr)
+
 				return
 			}
 			if err != nil {
@@ -320,18 +329,19 @@ func TestParseSAQLEval(t *testing.T) {
 				t.Errorf("String() got = %v, want %v", got, tt.wantRebuild)
 			}
 
-			var myJson map[string]interface{}
+			var myJSON map[string]any
 			if tt.values != "" {
-				err = json.Unmarshal([]byte(tt.values), &myJson)
+				err = json.Unmarshal([]byte(tt.values), &myJSON)
 				if err != nil {
 					t.Fatal(err)
 				}
 			}
 
-			value, err := expr.Eval(myJson)
+			value, err := expr.Eval(myJSON)
 			if (err != nil) != tt.wantEvalErr {
 				t.Error(expr.String())
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantParseErr)
+
 				return
 			}
 			if err != nil {

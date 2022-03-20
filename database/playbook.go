@@ -22,7 +22,7 @@ type PlaybookYAML struct {
 type TaskYAML struct {
 	Name       string            `yaml:"name"`
 	Type       string            `yaml:"type"`
-	Schema     interface{}       `yaml:"schema"`
+	Schema     any               `yaml:"schema"`
 	Automation string            `yaml:"automation"`
 	Payload    map[string]string `yaml:"payload"`
 	Next       map[string]string `yaml:"next"`
@@ -42,6 +42,7 @@ func toPlaybooks(docs []*model.PlaybookTemplateForm) (map[string]*model.Playbook
 			playbooks[strcase.ToKebab(playbook.Name)] = playbook
 		}
 	}
+
 	return playbooks, nil
 }
 
@@ -53,11 +54,17 @@ func toPlaybook(doc *model.PlaybookTemplateForm) (*model.Playbook, error) {
 	}
 	for idx, task := range ticketPlaybook.Tasks {
 		if task.Schema != nil {
-			task.Schema = dyno.ConvertMapI2MapS(task.Schema).(map[string]interface{})
+			schema, ok := dyno.ConvertMapI2MapS(task.Schema).(map[string]any)
+			if ok {
+				task.Schema = schema
+			} else {
+				return nil, errors.New("could not convert schema")
+			}
 		}
 		task.Created = time.Now().UTC()
 		ticketPlaybook.Tasks[idx] = task
 	}
+
 	return ticketPlaybook, nil
 }
 
@@ -84,7 +91,7 @@ func (db *Database) PlaybookCreate(ctx context.Context, playbook *model.Playbook
 	var doc model.PlaybookTemplate
 	newctx := driver.WithReturnNew(ctx, &doc)
 
-	meta, err := db.playbookCollection.CreateDocument(ctx, newctx, strcase.ToKebab(playbookYAML.Name), p)
+	meta, err := db.playbookCollection.CreateDocument(ctx, newctx, strcase.ToKebab(playbookYAML.Name), &p)
 	if err != nil {
 		return nil, err
 	}
@@ -104,6 +111,7 @@ func (db *Database) PlaybookGet(ctx context.Context, id string) (*model.Playbook
 
 func (db *Database) PlaybookDelete(ctx context.Context, id string) error {
 	_, err := db.playbookCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
@@ -121,7 +129,7 @@ func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *mod
 	var doc model.PlaybookTemplate
 	ctx = driver.WithReturnNew(ctx, &doc)
 
-	meta, err := db.playbookCollection.ReplaceDocument(ctx, id, model.PlaybookTemplate{Name: pb.Name, Yaml: playbook.Yaml})
+	meta, err := db.playbookCollection.ReplaceDocument(ctx, id, &model.PlaybookTemplate{Name: pb.Name, Yaml: playbook.Yaml})
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +139,7 @@ func (db *Database) PlaybookUpdate(ctx context.Context, id string, playbook *mod
 
 func (db *Database) PlaybookList(ctx context.Context) ([]*model.PlaybookTemplateResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": PlaybookCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": PlaybookCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

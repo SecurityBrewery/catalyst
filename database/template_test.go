@@ -10,16 +10,20 @@ import (
 	"github.com/SecurityBrewery/catalyst/test"
 )
 
-var template1 = &model.TicketTemplateForm{
-	Schema: migrations.DefaultTemplateSchema,
-	Name:   "Template 1",
-}
-var default1 = &model.TicketTemplateForm{
-	Schema: migrations.DefaultTemplateSchema,
-	Name:   "Default",
-}
+var (
+	template1 = &model.TicketTemplateForm{
+		Schema: migrations.DefaultTemplateSchema,
+		Name:   "Template 1",
+	}
+	default1 = &model.TicketTemplateForm{
+		Schema: migrations.DefaultTemplateSchema,
+		Name:   "Default",
+	}
+)
 
 func TestDatabase_TemplateCreate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		template *model.TicketTemplateForm
 	}
@@ -35,7 +39,10 @@ func TestDatabase_TemplateCreate(t *testing.T) {
 		{name: "Only name", args: args{template: &model.TicketTemplateForm{Name: "name"}}, wantErr: false},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -50,6 +57,8 @@ func TestDatabase_TemplateCreate(t *testing.T) {
 }
 
 func TestDatabase_TemplateDelete(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id string
 	}
@@ -62,7 +71,10 @@ func TestDatabase_TemplateDelete(t *testing.T) {
 		{name: "Not existing", args: args{"foobar"}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -81,6 +93,8 @@ func TestDatabase_TemplateDelete(t *testing.T) {
 }
 
 func TestDatabase_TemplateGet(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id string
 	}
@@ -94,7 +108,10 @@ func TestDatabase_TemplateGet(t *testing.T) {
 		{name: "Not existing", args: args{id: "foobar"}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -108,6 +125,7 @@ func TestDatabase_TemplateGet(t *testing.T) {
 			got, err := db.TemplateGet(test.Context(), tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TemplateGet() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if err != nil {
@@ -120,6 +138,8 @@ func TestDatabase_TemplateGet(t *testing.T) {
 }
 
 func TestDatabase_TemplateList(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		want    []*model.TicketTemplateResponse
@@ -128,7 +148,10 @@ func TestDatabase_TemplateList(t *testing.T) {
 		{name: "Normal", want: []*model.TicketTemplateResponse{{ID: "default", Name: "Default", Schema: migrations.DefaultTemplateSchema}, {ID: "template-1", Name: template1.Name, Schema: template1.Schema}}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)
@@ -142,6 +165,7 @@ func TestDatabase_TemplateList(t *testing.T) {
 			got, err := db.TemplateList(test.Context())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TemplateList() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			assert.Equal(t, got, tt.want)
@@ -150,6 +174,8 @@ func TestDatabase_TemplateList(t *testing.T) {
 }
 
 func TestDatabase_TemplateUpdate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		id       string
 		template *model.TicketTemplateForm
@@ -163,7 +189,10 @@ func TestDatabase_TemplateUpdate(t *testing.T) {
 		{name: "Not existing", args: args{"foobar", template1}, wantErr: true},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, db, cleanup, err := test.DB(t)
 			if err != nil {
 				t.Fatal(err)

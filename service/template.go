@@ -14,6 +14,7 @@ func templateResponseID(template *model.TicketTemplateResponse) []driver.Documen
 	if template == nil {
 		return nil
 	}
+
 	return templateID(template.ID)
 }
 
@@ -27,6 +28,7 @@ func (s *Service) ListTemplates(ctx context.Context) ([]*model.TicketTemplateRes
 
 func (s *Service) CreateTemplate(ctx context.Context, form *model.TicketTemplateForm) (doc *model.TicketTemplateResponse, err error) {
 	defer s.publishRequest(ctx, err, "CreateTemplate", templateResponseID(doc))
+
 	return s.database.TemplateCreate(ctx, form)
 }
 
@@ -36,10 +38,12 @@ func (s *Service) GetTemplate(ctx context.Context, id string) (*model.TicketTemp
 
 func (s *Service) UpdateTemplate(ctx context.Context, id string, form *model.TicketTemplateForm) (doc *model.TicketTemplateResponse, err error) {
 	defer s.publishRequest(ctx, err, "UpdateTemplate", templateResponseID(doc))
+
 	return s.database.TemplateUpdate(ctx, id, form)
 }
 
 func (s *Service) DeleteTemplate(ctx context.Context, id string) (err error) {
 	defer s.publishRequest(ctx, err, "DeleteTemplate", templateID(id))
+
 	return s.database.TemplateDelete(ctx, id)
 }

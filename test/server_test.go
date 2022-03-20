@@ -25,10 +25,15 @@ func (testClock) Now() time.Time {
 }
 
 func TestServer(t *testing.T) {
+	t.Parallel()
+
 	ctime.DefaultClock = testClock{}
 
 	for _, tt := range api.Tests {
+		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx, _, _, _, _, db, _, server, cleanup, err := Server(t)
 			if err != nil {
 				t.Fatal(err)
@@ -73,8 +78,10 @@ func TestServer(t *testing.T) {
 	}
 }
 
-func jsonEqual(t *testing.T, name string, got io.Reader, want interface{}) {
-	var gotObject, wantObject interface{}
+func jsonEqual(t *testing.T, name string, got io.Reader, want any) {
+	t.Helper()
+
+	var gotObject, wantObject any
 
 	// load bytes
 	wantBytes, err := json.Marshal(want)

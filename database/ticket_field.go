@@ -34,7 +34,8 @@ func (db *Database) AddArtifact(ctx context.Context, id int64, artifact *model.A
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "modified": @now, "artifacts": PUSH(NOT_NULL(d.artifacts, []), @artifact) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"artifact": artifact, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"artifact": artifact, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -57,6 +58,7 @@ func inferType(name string) string {
 	case commonregex.SHA256HexRegex.MatchString(name):
 		return "sha256"
 	}
+
 	return "unknown"
 }
 
@@ -73,7 +75,8 @@ func (db *Database) RemoveArtifact(ctx context.Context, id int64, name string) (
 	LET newartifacts = REMOVE_VALUE(d.artifacts, a)
 	UPDATE d WITH { "modified": @now, "artifacts": newartifacts } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"name": name, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"name": name, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -91,7 +94,8 @@ func (db *Database) SetTemplate(ctx context.Context, id int64, schema string) (*
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "schema": @schema } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"schema": schema}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"schema": schema}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -122,7 +126,8 @@ func (db *Database) AddComment(ctx context.Context, id int64, comment *model.Com
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "modified": @now, "comments": PUSH(NOT_NULL(d.comments, []), @comment) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"comment": comment, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"comment": comment, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -140,7 +145,8 @@ func (db *Database) RemoveComment(ctx context.Context, id int64, commentID int64
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "modified": @now, "comments": REMOVE_NTH(d.comments, @commentID) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"commentID": commentID, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"commentID": commentID, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -158,7 +164,8 @@ func (db *Database) SetReferences(ctx context.Context, id int64, references []*m
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "modified": @now, "references": @references } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"references": references, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"references": references, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -176,7 +183,8 @@ func (db *Database) AddFile(ctx context.Context, id int64, file *model.File) (*m
 	` + ticketFilterQuery + `
 	UPDATE d WITH { "modified": @now, "files": APPEND(NOT_NULL(d.files, []), [@file]) } IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{"file": file, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{"file": file, "now": time.Now().UTC()}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated,
 		Ids: []driver.DocumentID{
 			driver.DocumentID(fmt.Sprintf("%s/%d", TicketCollectionName, id)),
@@ -213,7 +221,7 @@ func (db *Database) AddTicketPlaybook(ctx context.Context, id int64, playbookTem
 	LET newticket = MERGE(d, { "modified": @now, "playbooks": newplaybooks })
 	REPLACE d WITH newticket IN @@collection
 	RETURN NEW`
-	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"playbook":   pb,
 		"playbookID": findName(parentTicket.Playbooks, playbookID),
 		"now":        time.Now().UTC(),
@@ -258,6 +266,7 @@ func runRootTask(ticket *model.TicketResponse, playbookID string, db *Database) 
 	}
 
 	runNextTasks(ticket.ID, playbookID, root.Next, root.Data, ticket, db)
+
 	return nil
 }
 
@@ -273,7 +282,8 @@ func (db *Database) RemoveTicketPlaybook(ctx context.Context, id int64, playbook
 	LET newplaybooks = UNSET(d.playbooks, @playbookID)
 	REPLACE d WITH MERGE(d, { "modified": @now, "playbooks": newplaybooks }) IN @@collection
 	RETURN NEW`
-	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+
+	return db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"playbookID": playbookID,
 		"now":        time.Now().UTC(),
 	}, ticketFilterVars), &busdb.Operation{

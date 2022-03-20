@@ -1,0 +1,116 @@
+run:
+  go: "1.18"
+  skip-dirs:
+    - generated
+linters:
+  enable:
+    - asciicheck
+    - containedctx
+    - decorder
+    - depguard
+    - dogsled
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - gci
+    - gocritic
+    - godot
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - grouper
+    - ifshort
+    - importas
+    - ireturn
+    - misspell
+    - nakedret
+    - nilnil
+    - nlreturn
+    - nolintlint
+    - paralleltest
+    - predeclared
+    - promlinter
+    - revive
+    - tenv
+    - thelper
+    - unconvert
+    - whitespace
+
+  disable:
+    # go 1.18
+    - bodyclose
+    - contextcheck
+    - gosimple
+    - nilerr
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - stylecheck
+    - tparallel
+    - unparam
+    - unused
+    - wastedassign
+
+    # complexity
+    - cyclop
+    - gocognit
+    - gocyclo
+    - maintidx
+    - nestif
+
+    # disable
+    - dupl
+    - exhaustivestruct
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - godox
+    - goerr113
+    - gomnd
+    - gomoddirectives
+    - lll
+    - makezero
+    - prealloc
+    - structcheck
+    - tagliatelle
+    - testpackage
+    - varnamelen
+    - wrapcheck
+    - wsl
+linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/SecurityBrewery/catalyst)
+  ireturn:
+    allow:
+      - error
+      - context.Context
+      - go-driver.Cursor
+      - go-driver.Collection
+      - go-driver.Database
+      - chi.Router
+issues:
+  exclude-rules:
+    - path: caql
+      text: "var-naming: don't use underscores"
+    - path: database/user.go
+      text: "G404"
+      linters: [ gosec ]
+    - path: caql/function.go
+      text: "G404"
+      linters: [ gosec ]
+    - path: caql
+      linters: [ forcetypeassert ]
