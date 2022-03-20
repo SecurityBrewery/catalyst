@@ -2,18 +2,18 @@ package busdb
 
 import "encoding/json"
 
-type Keyed struct {
+type Keyed[T any] struct {
 	Key string
-	Doc interface{}
+	Doc *T
 }
 
-func (p Keyed) MarshalJSON() ([]byte, error) {
+func (p *Keyed[T]) MarshalJSON() ([]byte, error) {
 	b, err := json.Marshal(p.Doc)
 	if err != nil {
 		panic(err)
 	}
 
-	var m map[string]interface{}
+	var m map[string]any
 	err = json.Unmarshal(b, &m)
 	if err != nil {
 		panic(err)

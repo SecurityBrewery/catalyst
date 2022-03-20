@@ -62,12 +62,13 @@ func (db *Database) TemplateUpdate(ctx context.Context, id string, template *mod
 
 func (db *Database) TemplateDelete(ctx context.Context, id string) error {
 	_, err := db.templateCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) TemplateList(ctx context.Context) ([]*model.TicketTemplateResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": TemplateCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": TemplateCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

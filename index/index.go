@@ -36,6 +36,7 @@ func (i *Index) Index(incidents []*model.TicketSimpleResponse) {
 	for _, incident := range incidents {
 		if incident.ID == 0 {
 			log.Println(errors.New("no ID"), incident)
+
 			continue
 		}
 
@@ -44,8 +45,8 @@ func (i *Index) Index(incidents []*model.TicketSimpleResponse) {
 			log.Println(err)
 		}
 	}
-	err := i.internal.Batch(b)
-	if err != nil {
+
+	if err := i.internal.Batch(b); err != nil {
 		log.Println(err)
 	}
 }
@@ -59,6 +60,7 @@ func (i *Index) Search(term string) (ids []string, err error) {
 	for _, match := range result.Hits {
 		ids = append(ids, match.ID)
 	}
+
 	return ids, nil
 }
 
@@ -76,6 +78,7 @@ func (i *Index) Truncate() error {
 		return err
 	}
 	i.internal = index
+
 	return nil
 }
 

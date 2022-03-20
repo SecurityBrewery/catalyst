@@ -21,7 +21,6 @@ type busService struct {
 }
 
 func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Database) error {
-
 	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, network: network, catalystBus: catalystBus}
 
 	if err := catalystBus.SubscribeRequest(h.logRequest); err != nil {
@@ -40,6 +39,7 @@ func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Data
 func busContext() context.Context {
 	// TODO: change roles?
 	bot := &model.UserResponse{ID: "bot", Roles: []string{role.Admin}}
+
 	return busdb.UserContext(context.Background(), bot)
 }
 

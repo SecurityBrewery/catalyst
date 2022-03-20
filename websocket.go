@@ -41,6 +41,7 @@ func (wb *websocketBroker) NewWebsocket() (string, chan []byte) {
 	wb.mu.Lock()
 	wb.clients[id] = channel
 	wb.mu.Unlock()
+
 	return id, channel
 }
 
@@ -49,7 +50,7 @@ func handleWebSocket(catalystBus *bus.Bus) http.HandlerFunc {
 
 	// send all messages from bus to websocket
 	err := catalystBus.SubscribeDatabaseUpdate(func(msg *bus.DatabaseUpdateMsg) {
-		b, err := json.Marshal(map[string]interface{}{
+		b, err := json.Marshal(map[string]any{
 			"action": "update",
 			"ids":    msg.IDs,
 		})
@@ -67,6 +68,7 @@ func handleWebSocket(catalystBus *bus.Bus) http.HandlerFunc {
 		conn, _, _, err := ws.UpgradeHTTP(r, w)
 		if err != nil {
 			api.JSONError(w, errors.New("upgrade failed"))
+
 			return
 		}
 

@@ -9,14 +9,16 @@ import (
 )
 
 func TestUser(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		method string
 		url    string
-		data   interface{}
+		data   any
 	}
 	type want struct {
 		status int
-		body   interface{}
+		body   any
 	}
 	tests := []struct {
 		name string
@@ -27,7 +29,10 @@ func TestUser(t *testing.T) {
 		{name: "ListUsers", args: args{method: http.MethodGet, url: "/users"}, want: want{status: http.StatusOK}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, _, _, _, _, _, server, cleanup, err := Server(t)
 			if err != nil {
 				t.Fatal(err)

@@ -15,6 +15,7 @@ func jobResponseID(job *model.JobResponse) []driver.DocumentID {
 	if job == nil {
 		return nil
 	}
+
 	return jobID(job.ID)
 }
 
@@ -48,5 +49,6 @@ func (s *Service) GetJob(ctx context.Context, id string) (*model.JobResponse, er
 
 func (s *Service) UpdateJob(ctx context.Context, id string, job *model.JobUpdate) (doc *model.JobResponse, err error) {
 	defer s.publishRequest(ctx, err, "UpdateJob", jobResponseID(doc))
+
 	return s.database.JobUpdate(ctx, id, job)
 }

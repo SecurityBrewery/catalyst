@@ -41,7 +41,10 @@ func Backup(catalystStorage *storage.Storage, c *database.Config, writer io.Writ
 	archive := zip.NewWriter(writer)
 	defer archive.Close()
 
-	archive.SetComment(GetVersion())
+	err := archive.SetComment(GetVersion())
+	if err != nil {
+		return err
+	}
 
 	// S3
 	if err := backupS3(catalystStorage, archive); err != nil {
@@ -86,6 +89,7 @@ func backupS3(catalystStorage *storage.Storage, archive *zip.Writer) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -105,6 +109,7 @@ func backupArango(c *database.Config, archive *zip.Writer) error {
 
 func zipDump(dir string, archive *zip.Writer) error {
 	fsys := os.DirFS(dir)
+
 	return fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -127,6 +132,7 @@ func zipDump(dir string, archive *zip.Writer) error {
 		if _, err := io.Copy(a, f); err != nil {
 			return err
 		}
+
 		return nil
 	})
 }
@@ -144,5 +150,6 @@ func arangodump(dir string, config *database.Config) error {
 		"--server.database", name,
 	}
 	cmd := exec.Command("arangodump", args...)
+
 	return cmd.Run()
 }

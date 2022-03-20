@@ -21,7 +21,7 @@ func (p *Parser) Parse(aql string) (t *Tree, err error) {
 			err = fmt.Errorf("%s", r)
 		}
 	}()
-	// Setup the input
+	// Set up the input
 	inputStream := antlr.NewInputStream(aql)
 
 	errorListener := &errorListener{}
@@ -52,7 +52,7 @@ type Tree struct {
 	prefix       string
 }
 
-func (t *Tree) Eval(values map[string]interface{}) (i interface{}, err error) {
+func (t *Tree) Eval(values map[string]any) (i any, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%s", r)
@@ -65,6 +65,7 @@ func (t *Tree) Eval(values map[string]interface{}) (i interface{}, err error) {
 	if interpreter.errs != nil {
 		return nil, interpreter.errs[0]
 	}
+
 	return interpreter.stack[0], nil
 }
 
@@ -103,7 +104,7 @@ type errorListener struct {
 	errs []error
 }
 
-func (el *errorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+func (el *errorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol any, line, column int, msg string, e antlr.RecognitionException) {
 	el.errs = append(el.errs, fmt.Errorf("line "+strconv.Itoa(line)+":"+strconv.Itoa(column)+" "+msg))
 }
 

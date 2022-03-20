@@ -29,6 +29,7 @@ func (db *Database) UserDataCreate(ctx context.Context, id string, userdata *mod
 	}
 
 	_, err := db.userdataCollection.CreateDocument(ctx, ctx, id, userdata)
+
 	return err
 }
 
@@ -37,6 +38,7 @@ func (db *Database) UserDataGetOrCreate(ctx context.Context, id string, newUserD
 	if err != nil {
 		return toUserDataResponse(id, newUserData), db.UserDataCreate(ctx, id, newUserData)
 	}
+
 	return setting, nil
 }
 
@@ -52,7 +54,7 @@ func (db *Database) UserDataGet(ctx context.Context, id string) (*model.UserData
 
 func (db *Database) UserDataList(ctx context.Context) ([]*model.UserDataResponse, error) {
 	query := "FOR d IN @@collection SORT d.username ASC RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": UserDataCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserDataCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

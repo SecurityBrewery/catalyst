@@ -9,6 +9,8 @@ import (
 )
 
 func TestIndex(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		term string
 	}
@@ -22,7 +24,10 @@ func TestIndex(t *testing.T) {
 		{name: "Not exists", args: args{"bar"}},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			i, cleanup, err := test.Index(t)
 			if err != nil {
 				t.Fatal(err)
@@ -37,6 +42,7 @@ func TestIndex(t *testing.T) {
 			gotIds, err := i.Search(tt.args.term)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Search() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if !reflect.DeepEqual(gotIds, tt.wantIds) {
@@ -47,6 +53,8 @@ func TestIndex(t *testing.T) {
 }
 
 func TestIndex_Truncate(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		wantErr bool
@@ -54,7 +62,10 @@ func TestIndex_Truncate(t *testing.T) {
 		{name: "Truncate"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			i, cleanup, err := test.Index(t)
 			if err != nil {
 				t.Fatal(err)

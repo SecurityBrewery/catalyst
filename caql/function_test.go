@@ -1,18 +1,22 @@
-package caql
+package caql_test
 
 import (
 	"encoding/json"
 	"math"
 	"reflect"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/caql"
 )
 
 func TestFunctions(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		saql           string
 		wantRebuild    string
-		wantValue      interface{}
+		wantValue      any
 		wantParseErr   bool
 		wantRebuildErr bool
 		wantEvalErr    bool
@@ -266,13 +270,13 @@ func TestFunctions(t *testing.T) {
 		{name: "RADIANS", saql: `RADIANS(0)`, wantRebuild: `RADIANS(0)`, wantValue: 0},
 		// {name: "RAND", saql: `RAND()`, wantRebuild: `RAND()`, wantValue: 0.3503170117504508},
 		// {name: "RAND", saql: `RAND()`, wantRebuild: `RAND()`, wantValue: 0.6138226173882478},
-		{name: "RANGE", saql: `RANGE(1, 4)`, wantRebuild: `RANGE(1, 4)`, wantValue: []interface{}{float64(1), float64(2), float64(3), float64(4)}},
-		{name: "RANGE", saql: `RANGE(1, 4, 2)`, wantRebuild: `RANGE(1, 4, 2)`, wantValue: []interface{}{float64(1), float64(3)}},
-		{name: "RANGE", saql: `RANGE(1, 4, 3)`, wantRebuild: `RANGE(1, 4, 3)`, wantValue: []interface{}{float64(1), float64(4)}},
-		{name: "RANGE", saql: `RANGE(1.5, 2.5)`, wantRebuild: `RANGE(1.5, 2.5)`, wantValue: []interface{}{float64(1), float64(2)}},
-		{name: "RANGE", saql: `RANGE(1.5, 2.5, 1)`, wantRebuild: `RANGE(1.5, 2.5, 1)`, wantValue: []interface{}{1.5, 2.5}},
-		{name: "RANGE", saql: `RANGE(1.5, 2.5, 0.5)`, wantRebuild: `RANGE(1.5, 2.5, 0.5)`, wantValue: []interface{}{1.5, 2.0, 2.5}},
-		{name: "RANGE", saql: `RANGE(-0.75, 1.1, 0.5)`, wantRebuild: `RANGE(-0.75, 1.1, 0.5)`, wantValue: []interface{}{-0.75, -0.25, 0.25, 0.75}},
+		{name: "RANGE", saql: `RANGE(1, 4)`, wantRebuild: `RANGE(1, 4)`, wantValue: []any{float64(1), float64(2), float64(3), float64(4)}},
+		{name: "RANGE", saql: `RANGE(1, 4, 2)`, wantRebuild: `RANGE(1, 4, 2)`, wantValue: []any{float64(1), float64(3)}},
+		{name: "RANGE", saql: `RANGE(1, 4, 3)`, wantRebuild: `RANGE(1, 4, 3)`, wantValue: []any{float64(1), float64(4)}},
+		{name: "RANGE", saql: `RANGE(1.5, 2.5)`, wantRebuild: `RANGE(1.5, 2.5)`, wantValue: []any{float64(1), float64(2)}},
+		{name: "RANGE", saql: `RANGE(1.5, 2.5, 1)`, wantRebuild: `RANGE(1.5, 2.5, 1)`, wantValue: []any{1.5, 2.5}},
+		{name: "RANGE", saql: `RANGE(1.5, 2.5, 0.5)`, wantRebuild: `RANGE(1.5, 2.5, 0.5)`, wantValue: []any{1.5, 2.0, 2.5}},
+		{name: "RANGE", saql: `RANGE(-0.75, 1.1, 0.5)`, wantRebuild: `RANGE(-0.75, 1.1, 0.5)`, wantValue: []any{-0.75, -0.25, 0.25, 0.75}},
 		{name: "ROUND", saql: `ROUND(2.49)`, wantRebuild: `ROUND(2.49)`, wantValue: 2},
 		{name: "ROUND", saql: `ROUND(2.50)`, wantRebuild: `ROUND(2.50)`, wantValue: 3},
 		{name: "ROUND", saql: `ROUND(-2.50)`, wantRebuild: `ROUND(-2.50)`, wantValue: -2},
@@ -299,15 +303,20 @@ func TestFunctions(t *testing.T) {
 		{name: "Function Error 3", saql: `ABS("abs")`, wantRebuild: `ABS("abs")`, wantEvalErr: true},
 	}
 	for _, tt := range tests {
-		parser := &Parser{}
+		tt := tt
+
+		parser := &caql.Parser{}
 
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			expr, err := parser.Parse(tt.saql)
 			if (err != nil) != tt.wantParseErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantParseErr)
 				if expr != nil {
 					t.Error(expr.String())
 				}
+
 				return
 			}
 			if err != nil {
@@ -318,6 +327,7 @@ func TestFunctions(t *testing.T) {
 			if (err != nil) != tt.wantRebuildErr {
 				t.Error(expr.String())
 				t.Errorf("String() error = %v, wantErr %v", err, tt.wantParseErr)
+
 				return
 			}
 			if err != nil {
@@ -327,18 +337,19 @@ func TestFunctions(t *testing.T) {
 				t.Errorf("String() got = %v, want %v", got, tt.wantRebuild)
 			}
 
-			var myJson map[string]interface{}
+			var myJSON map[string]any
 			if tt.values != "" {
-				err = json.Unmarshal([]byte(tt.values), &myJson)
+				err = json.Unmarshal([]byte(tt.values), &myJSON)
 				if err != nil {
 					t.Fatal(err)
 				}
 			}
 
-			value, err := expr.Eval(myJson)
+			value, err := expr.Eval(myJSON)
 			if (err != nil) != tt.wantEvalErr {
 				t.Error(expr.String())
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantParseErr)
+
 				return
 			}
 			if err != nil {
@@ -367,14 +378,15 @@ func TestFunctions(t *testing.T) {
 	}
 }
 
-func jsonParse(s string) interface{} {
+func jsonParse(s string) any {
 	if s == "" {
 		return nil
 	}
-	var j interface{}
+	var j any
 	err := json.Unmarshal([]byte(s), &j)
 	if err != nil {
 		panic(s + err.Error())
 	}
+
 	return j
 }

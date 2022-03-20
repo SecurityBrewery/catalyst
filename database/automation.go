@@ -10,7 +10,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
-func toAutomation(doc *model.AutomationForm) interface{} {
+func toAutomation(doc *model.AutomationForm) *model.Automation {
 	return &model.Automation{
 		Image:  doc.Image,
 		Script: doc.Script,
@@ -72,12 +72,13 @@ func (db *Database) AutomationUpdate(ctx context.Context, id string, automation 
 
 func (db *Database) AutomationDelete(ctx context.Context, id string) error {
 	_, err := db.automationCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) AutomationList(ctx context.Context) ([]*model.AutomationResponse, error) {
 	query := "FOR d IN @@collection SORT d._key ASC RETURN UNSET(d, 'script')"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": AutomationCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": AutomationCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}

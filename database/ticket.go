@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -21,7 +22,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/index"
 )
 
-func toTicket(ticketForm *model.TicketForm) (interface{}, error) {
+func toTicket(ticketForm *model.TicketForm) (any, error) {
 	playbooks, err := toPlaybooks(ticketForm.Playbooks)
 	if err != nil {
 		return nil, err
@@ -65,8 +66,9 @@ func toTicket(ticketForm *model.TicketForm) (interface{}, error) {
 		ticket.Status = "open"
 	}
 	if ticketForm.ID != nil {
-		return &busdb.Keyed{Key: strconv.FormatInt(*ticketForm.ID, 10), Doc: ticket}, nil
+		return &busdb.Keyed[model.Ticket]{Key: strconv.FormatInt(*ticketForm.ID, 10), Doc: ticket}, nil
 	}
+
 	return ticket, nil
 }
 
@@ -79,6 +81,7 @@ func toTicketResponses(tickets []*model.TicketSimpleResponse) ([]*model.TicketRe
 		}
 		extendedTickets = append(extendedTickets, tr)
 	}
+
 	return extendedTickets, nil
 }
 
@@ -167,6 +170,7 @@ func toPlaybookResponses(playbooks map[string]*model.Playbook) (map[string]*mode
 			return nil, err
 		}
 	}
+
 	return pr, nil
 }
 
@@ -195,6 +199,7 @@ func toPlaybookResponse(playbook *model.Playbook) (*model.PlaybookResponse, erro
 		re.Tasks[taskID] = rootTask
 		i++
 	}
+
 	return re, nil
 }
 
@@ -204,7 +209,7 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*model.
 		return nil, err
 	}
 
-	var dbTickets []interface{}
+	var dbTickets []any
 	for _, ticketForm := range ticketForms {
 		ticket, err := toTicket(ticketForm)
 		if err != nil {
@@ -231,7 +236,7 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*model.
 	LET noiddoc = UNSET(keyeddoc, "id")
 	INSERT noiddoc INTO @@collection
 	RETURN NEW`
-	apiTickets, _, err := db.ticketListQuery(ctx, query, mergeMaps(map[string]interface{}{
+	apiTickets, _, err := db.ticketListQuery(ctx, query, mergeMaps(map[string]any{
 		"tickets": dbTickets,
 	}, ticketFilterVars), busdb.CreateOperation)
 	if err != nil {
@@ -247,7 +252,11 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*model.
 		ids = append(ids, driver.NewDocumentID(TicketCollectionName, fmt.Sprint(apiTicket.ID)))
 	}
 
-	go db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryUpdated)
+	go func() {
+		if err := db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryUpdated); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	ticketResponses, err := toTicketResponses(apiTickets)
 	if err != nil {
@@ -294,6 +303,7 @@ func batchIndex(index *index.Index, tickets []*model.TicketSimpleResponse) error
 		}
 	}
 	wg.Wait()
+
 	return nil
 }
 
@@ -306,9 +316,9 @@ func (db *Database) TicketGet(ctx context.Context, ticketID int64) (*model.Ticke
 	return db.ticketGetQuery(ctx, ticketID, `LET d = DOCUMENT(@@collection, @ID) `+ticketFilterQuery+` RETURN d`, ticketFilterVars, busdb.ReadOperation)
 }
 
-func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query string, bindVars map[string]interface{}, operation *busdb.Operation) (*model.TicketWithTickets, error) {
+func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query string, bindVars map[string]any, operation *busdb.Operation) (*model.TicketWithTickets, error) {
 	if bindVars == nil {
-		bindVars = map[string]interface{}{}
+		bindVars = map[string]any{}
 	}
 	bindVars["@collection"] = TicketCollectionName
 	if ticketID != 0 {
@@ -350,7 +360,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	` + ticketFilterQuery + `
 	RETURN d`
 
-	outTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]interface{}{
+	outTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]any{
 		"ID":       fmt.Sprint(ticketID),
 		"graph":    TicketArtifactsGraphName,
 		"@tickets": TicketCollectionName,
@@ -368,7 +378,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	` + ticketFilterQuery + `
 	RETURN d`
 
-	inTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]interface{}{
+	inTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]any{
 		"ID":       fmt.Sprint(ticketID),
 		"graph":    TicketArtifactsGraphName,
 		"@tickets": TicketCollectionName,
@@ -387,7 +397,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 	FOR a IN NOT_NULL(d.artifacts, [])
 	FILTER POSITION(@artifacts, a.name)
 	RETURN d`
-	sameArtifactTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]interface{}{
+	sameArtifactTickets, _, err := db.ticketListQuery(ctx, ticketsQuery, mergeMaps(map[string]any{
 		"ID":        fmt.Sprint(ticketID),
 		"artifacts": artifactNames,
 	}, ticketFilterVars), busdb.ReadOperation)
@@ -395,7 +405,8 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 		return nil, err
 	}
 
-	tickets := append(outTickets, inTickets...)
+	tickets := outTickets
+	tickets = append(tickets, inTickets...)
 	tickets = append(tickets, sameArtifactTickets...)
 	sort.Slice(tickets, func(i, j int) bool {
 		return tickets[i].ID < tickets[j].ID
@@ -425,7 +436,8 @@ func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *mo
 	REPLACE d WITH @ticket IN @@collection
 	RETURN NEW`
 	ticket.Modified = time.Now().UTC() // TODO make setable?
-	return db.ticketGetQuery(ctx, ticketID, query, mergeMaps(map[string]interface{}{"ticket": ticket}, ticketFilterVars), &busdb.Operation{
+
+	return db.ticketGetQuery(ctx, ticketID, query, mergeMaps(map[string]any{"ticket": ticket}, ticketFilterVars), &busdb.Operation{
 		Type: bus.DatabaseEntryUpdated, Ids: []driver.DocumentID{
 			driver.NewDocumentID(TicketCollectionName, strconv.FormatInt(ticketID, 10)),
 		},
@@ -447,15 +459,15 @@ func (db *Database) TicketDelete(ctx context.Context, ticketID int64) error {
 }
 
 func (db *Database) TicketList(ctx context.Context, ticketType string, query string, sorts []string, desc []bool, offset, count int64) (*model.TicketList, error) {
-	binVars := map[string]interface{}{}
+	binVars := map[string]any{}
 
-	var typeString = ""
+	typeString := ""
 	if ticketType != "" {
 		typeString = "FILTER d.type == @type "
 		binVars["type"] = ticketType
 	}
 
-	var filterString = ""
+	filterString := ""
 	if query != "" {
 		parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
 		queryTree, err := parser.Parse(query)
@@ -493,6 +505,7 @@ func (db *Database) TicketList(ctx context.Context, ticketType string, query str
 		RETURN d`
 	// RETURN KEEP(d, "_key", "id", "name", "type", "created")`
 	ticketList, _, err := db.ticketListQuery(ctx, q, mergeMaps(binVars, ticketFilterVars), busdb.ReadOperation)
+
 	return &model.TicketList{
 		Count:   documentCount,
 		Tickets: ticketList,
@@ -500,9 +513,9 @@ func (db *Database) TicketList(ctx context.Context, ticketType string, query str
 	// return map[string]interface{}{"tickets": ticketList, "count": documentCount}, err
 }
 
-func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars map[string]interface{}, operation *busdb.Operation) ([]*model.TicketSimpleResponse, *model.LogEntry, error) {
+func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars map[string]any, operation *busdb.Operation) ([]*model.TicketSimpleResponse, *model.LogEntry, error) {
 	if bindVars == nil {
-		bindVars = map[string]interface{}{}
+		bindVars = map[string]any{}
 	}
 	bindVars["@collection"] = TicketCollectionName
 
@@ -533,9 +546,9 @@ func (db *Database) ticketListQuery(ctx context.Context, query string, bindVars 
 	return docs, logEntry, nil
 }
 
-func (db *Database) TicketCount(ctx context.Context, typequery, filterquery string, bindVars map[string]interface{}) (int, error) {
+func (db *Database) TicketCount(ctx context.Context, typequery, filterquery string, bindVars map[string]any) (int, error) {
 	if bindVars == nil {
-		bindVars = map[string]interface{}{}
+		bindVars = map[string]any{}
 	}
 	bindVars["@collection"] = TicketCollectionName
 
@@ -555,10 +568,11 @@ func (db *Database) TicketCount(ctx context.Context, typequery, filterquery stri
 		return 0, err
 	}
 	cursor.Close()
+
 	return documentCount, nil
 }
 
-func sortQuery(paramsSort []string, paramsDesc []bool, bindVars map[string]interface{}) string {
+func sortQuery(paramsSort []string, paramsDesc []bool, bindVars map[string]any) string {
 	sort := ""
 	if len(paramsSort) > 0 {
 		var sorts []string
@@ -572,21 +586,23 @@ func sortQuery(paramsSort []string, paramsDesc []bool, bindVars map[string]inter
 		}
 		sort = "SORT " + strings.Join(sorts, ", ")
 	}
+
 	return sort
 }
 
-func mergeMaps(a map[string]interface{}, b map[string]interface{}) map[string]interface{} {
-	merged := map[string]interface{}{}
+func mergeMaps(a map[string]any, b map[string]any) map[string]any {
+	merged := map[string]any{}
 	for k, v := range a {
 		merged[k] = v
 	}
 	for k, v := range b {
 		merged[k] = v
 	}
+
 	return merged
 }
 
-func validate(e interface{}, schema *gojsonschema.Schema) error {
+func validate(e any, schema *gojsonschema.Schema) error {
 	b, err := json.Marshal(e)
 	if err != nil {
 		return err
@@ -602,7 +618,9 @@ func validate(e interface{}, schema *gojsonschema.Schema) error {
 		for _, e := range res.Errors() {
 			l = append(l, e.String())
 		}
+
 		return fmt.Errorf("validation failed: %v", strings.Join(l, ", "))
 	}
+
 	return nil
 }

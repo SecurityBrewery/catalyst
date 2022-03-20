@@ -3,6 +3,7 @@ package busdb
 import (
 	"context"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/arangodb/go-driver"
@@ -45,7 +46,12 @@ func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*model.L
 		}
 	}
 	if ids != nil {
-		go db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
+		go func() {
+			err := db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
+			if err != nil {
+				log.Println(err)
+			}
+		}()
 	}
 
 	_, errs, err := db.logCollection.CreateDocuments(ctx, logentries)
@@ -62,7 +68,7 @@ func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*model.L
 
 func (db *BusDatabase) LogList(ctx context.Context, reference string) ([]*model.LogEntry, error) {
 	query := "FOR d IN @@collection FILTER d.reference == @reference SORT d.created DESC RETURN d"
-	cursor, err := db.internal.Query(ctx, query, map[string]interface{}{
+	cursor, err := db.internal.Query(ctx, query, map[string]any{
 		"@collection": LogCollectionName,
 		"reference":   reference,
 	})

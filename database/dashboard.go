@@ -72,12 +72,13 @@ func (db *Database) DashboardUpdate(ctx context.Context, id string, dashboard *m
 
 func (db *Database) DashboardDelete(ctx context.Context, id string) error {
 	_, err := db.dashboardCollection.RemoveDocument(ctx, id)
+
 	return err
 }
 
 func (db *Database) DashboardList(ctx context.Context) ([]*model.DashboardResponse, error) {
 	query := "FOR d IN @@collection RETURN d"
-	cursor, _, err := db.Query(ctx, query, map[string]interface{}{"@collection": DashboardCollectionName}, busdb.ReadOperation)
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": DashboardCollectionName}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -103,15 +104,16 @@ func (db *Database) parseWidgets(dashboard *model.Dashboard) error {
 
 		_, err := parser.Parse(widget.Aggregation)
 		if err != nil {
-			return fmt.Errorf("invalid aggregation query (%s): syntax error\n", widget.Aggregation)
+			return fmt.Errorf("invalid aggregation query (%s): syntax error", widget.Aggregation)
 		}
 
 		if widget.Filter != nil {
 			_, err := parser.Parse(*widget.Filter)
 			if err != nil {
-				return fmt.Errorf("invalid filter query (%s): syntax error\n", *widget.Filter)
+				return fmt.Errorf("invalid filter query (%s): syntax error", *widget.Filter)
 			}
 		}
 	}
+
 	return nil
 }

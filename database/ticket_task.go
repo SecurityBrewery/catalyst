@@ -41,7 +41,7 @@ func (db *Database) TaskGet(ctx context.Context, id int64, playbookID string, ta
 	}, nil
 }
 
-func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID string, taskID string, data interface{}) (*model.TicketWithTickets, error) {
+func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID string, taskID string, data any) (*model.TicketWithTickets, error) {
 	inc, err := db.TicketGet(ctx, id)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (db *Database) TaskComplete(ctx context.Context, id int64, playbookID strin
 	
 	UPDATE d WITH { "modified": @now, "playbooks": newplaybooks } IN @@collection
 	RETURN NEW`
-	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"playbookID": playbookID,
 		"taskID":     taskID,
 		"data":       data,
@@ -130,7 +130,7 @@ func (db *Database) TaskUpdateOwner(ctx context.Context, id int64, playbookID st
 	
 	UPDATE d WITH { "modified": @now, "playbooks": newplaybooks } IN @@collection
 	RETURN NEW`
-	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"playbookID": playbookID,
 		"taskID":     taskID,
 		"owner":      owner,
@@ -148,7 +148,7 @@ func (db *Database) TaskUpdateOwner(ctx context.Context, id int64, playbookID st
 	return ticket, nil
 }
 
-func (db *Database) TaskUpdateData(ctx context.Context, id int64, playbookID string, taskID string, data map[string]interface{}) (*model.TicketWithTickets, error) {
+func (db *Database) TaskUpdateData(ctx context.Context, id int64, playbookID string, taskID string, data map[string]any) (*model.TicketWithTickets, error) {
 	ticketFilterQuery, ticketFilterVars, err := db.Hooks.TicketWriteFilter(ctx)
 	if err != nil {
 		return nil, err
@@ -165,7 +165,7 @@ func (db *Database) TaskUpdateData(ctx context.Context, id int64, playbookID str
 	
 	UPDATE d WITH { "modified": @now, "playbooks": newplaybooks } IN @@collection
 	RETURN NEW`
-	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]interface{}{
+	ticket, err := db.ticketGetQuery(ctx, id, query, mergeMaps(map[string]any{
 		"playbookID": playbookID,
 		"taskID":     taskID,
 		"data":       data,
@@ -198,7 +198,7 @@ func (db *Database) TaskRun(ctx context.Context, id int64, playbookID string, ta
 	return nil
 }
 
-func runNextTasks(id int64, playbookID string, next map[string]string, data interface{}, ticket *model.TicketResponse, db *Database) {
+func runNextTasks(id int64, playbookID string, next map[string]string, data any, ticket *model.TicketResponse, db *Database) {
 	for nextTaskID, requirement := range next {
 		nextTask := ticket.Playbooks[playbookID].Tasks[nextTaskID]
 		if nextTask.Type == model.TaskTypeAutomation {
@@ -220,5 +220,6 @@ func runTask(ticketID int64, playbookID string, taskID string, task *model.TaskR
 	msgContext := &model.Context{Playbook: playbook, Task: task, Ticket: ticket}
 	origin := &model.Origin{TaskOrigin: &model.TaskOrigin{TaskId: taskID, PlaybookId: playbookID, TicketId: ticketID}}
 	jobID := uuid.NewString()
+
 	return publishJobMapping(jobID, *task.Automation, msgContext, origin, task.Payload, db)
 }

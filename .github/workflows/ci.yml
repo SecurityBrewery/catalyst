@@ -9,16 +9,60 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.18' }
+
+      - id: goenv
+        run: |
+          echo "::set-output name=gocache::$(go env GOCACHE)"
+          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gocache }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gomodcache }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+
+      - run: |
+          mkdir -p ui/dist/img
+          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
+      - uses: golangci/golangci-lint-action@v3
+
   test:
     name: Test
     runs-on: ubuntu-latest
     env: { GIN_MODE: test }
     steps:
-      - uses: actions/setup-go@v2
-        with: { go-version: '1.17' }
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.18' }
       - uses: actions/setup-node@v2
         with: { node-version: '14' }
+
+      - id: goenv
+        run: |
+          echo "::set-output name=gocache::$(go env GOCACHE)"
+          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
+
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gocache }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gomodcache }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
@@ -40,6 +84,12 @@ jobs:
       - uses: actions/setup-node@v2
         with: { node-version: '14' }
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - run: yarn install && yarn build
         working-directory: ui
       - uses: actions/upload-artifact@v2
@@ -51,9 +101,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-npm, test ]
     steps:
-      - uses: actions/setup-go@v2
-        with: { go-version: '1.17' }
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.18' }
+
+      - id: goenv
+        run: |
+          echo "::set-output name=gocache::$(go env GOCACHE)"
+          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
+
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gocache }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.goenv.outputs.gomodcache }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+
       - uses: actions/download-artifact@v2
         with: { name: ui, path: ui/dist }
       - run: go build -o catalyst ./cmd/catalyst/.

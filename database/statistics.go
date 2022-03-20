@@ -44,12 +44,12 @@ func (db *Database) Statistics(ctx context.Context) (*model.Statistics, error) {
 	return &statistics, nil
 }
 
-func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *string) (map[string]interface{}, error) {
+func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *string) (map[string]any, error) {
 	parser := &caql.Parser{Searcher: db.Index, Prefix: "d."}
 
 	queryTree, err := parser.Parse(aggregation)
 	if err != nil {
-		return nil, fmt.Errorf("invalid aggregation query (%s): syntax error\n", aggregation)
+		return nil, fmt.Errorf("invalid aggregation query (%s): syntax error", aggregation)
 	}
 	aggregationString, err := queryTree.String()
 	if err != nil {
@@ -61,7 +61,7 @@ func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *
 	if filter != nil && *filter != "" {
 		queryTree, err := parser.Parse(*filter)
 		if err != nil {
-			return nil, fmt.Errorf("invalid filter query (%s): syntax error\n", *filter)
+			return nil, fmt.Errorf("invalid filter query (%s): syntax error", *filter)
 		}
 		filterString, err := queryTree.String()
 		if err != nil {
@@ -82,7 +82,7 @@ func (db *Database) WidgetData(ctx context.Context, aggregation string, filter *
 	}
 	defer cur.Close()
 
-	statistics := map[string]interface{}{}
+	statistics := map[string]any{}
 	if _, err := cur.ReadDocument(ctx, &statistics); err != nil {
 		return nil, err
 	}

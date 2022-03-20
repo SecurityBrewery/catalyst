@@ -25,6 +25,9 @@ package dag
 import (
 	"errors"
 	"sort"
+
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 )
 
 type Graph struct {
@@ -52,6 +55,7 @@ func (g *Graph) AddNode(name string) error {
 	}
 	g.outputs[name] = make(map[string]struct{})
 	g.inputs[name] = 0
+
 	return nil
 }
 
@@ -61,6 +65,7 @@ func (g *Graph) AddNodes(names ...string) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -101,7 +106,9 @@ func (g *Graph) Toposort() ([]string, error) {
 		L = append(L, n)
 
 		ms := make([]string, len(outputs[n]))
-		for _, k := range keys(outputs[n]) {
+		keys := maps.Keys(outputs[n])
+		slices.Sort(keys)
+		for _, k := range keys {
 			m := k
 			// i := outputs[n][m]
 			// ms[i-1] = m
@@ -130,15 +137,6 @@ func (g *Graph) Toposort() ([]string, error) {
 	return L, nil
 }
 
-func keys(m map[string]struct{}) []string {
-	var keys []string
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
 func (g *Graph) GetParents(id string) []string {
 	var parents []string
 	for node, targets := range g.outputs {
@@ -147,6 +145,7 @@ func (g *Graph) GetParents(id string) []string {
 		}
 	}
 	sort.Strings(parents)
+
 	return parents
 }
 
@@ -160,5 +159,6 @@ func (g *Graph) GetRoot() (string, error) {
 	if len(roots) != 1 {
 		return "", errors.New("more than one root")
 	}
+
 	return roots[0], nil
 }

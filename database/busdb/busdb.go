@@ -40,10 +40,12 @@ type Operation struct {
 	Ids  []driver.DocumentID
 }
 
-var CreateOperation = &Operation{Type: bus.DatabaseEntryCreated}
-var ReadOperation = &Operation{Type: bus.DatabaseEntryRead}
+var (
+	CreateOperation = &Operation{Type: bus.DatabaseEntryCreated}
+	ReadOperation   = &Operation{Type: bus.DatabaseEntryRead}
+)
 
-func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]interface{}, operation *Operation) (cur driver.Cursor, logs *model.LogEntry, err error) {
+func (db *BusDatabase) Query(ctx context.Context, query string, vars map[string]any, operation *Operation) (cur driver.Cursor, logs *model.LogEntry, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	cur, err = db.internal.Query(ctx, query, vars)
@@ -61,31 +63,31 @@ func (db BusDatabase) Query(ctx context.Context, query string, vars map[string]i
 	return cur, logs, err
 }
 
-func (db BusDatabase) Remove(ctx context.Context) (err error) {
+func (db *BusDatabase) Remove(ctx context.Context) (err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	return db.internal.Remove(ctx)
 }
 
-func (db BusDatabase) Collection(ctx context.Context, name string) (col driver.Collection, err error) {
+func (db *BusDatabase) Collection(ctx context.Context, name string) (col driver.Collection, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	return db.internal.Collection(ctx, name)
 }
 
-type Collection struct {
+type Collection[T any] struct {
 	internal driver.Collection
 	db       *BusDatabase
 }
 
-func NewCollection(internal driver.Collection, db *BusDatabase) *Collection {
-	return &Collection{internal: internal, db: db}
+func NewCollection[T any](internal driver.Collection, db *BusDatabase) *Collection[T] {
+	return &Collection[T]{internal: internal, db: db}
 }
 
-func (c Collection) CreateDocument(ctx, newctx context.Context, key string, document interface{}) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) CreateDocument(ctx, newctx context.Context, key string, document *T) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
-	meta, err = c.internal.CreateDocument(newctx, &Keyed{Key: key, Doc: document})
+	meta, err = c.internal.CreateDocument(newctx, &Keyed[T]{Key: key, Doc: document})
 	if err != nil {
 		return meta, err
 	}
@@ -94,10 +96,11 @@ func (c Collection) CreateDocument(ctx, newctx context.Context, key string, docu
 	if err != nil {
 		return meta, err
 	}
+
 	return meta, nil
 }
 
-func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDocument) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDocument) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.CreateDocument(newctx, edge)
@@ -109,10 +112,11 @@ func (c Collection) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDoc
 	if err != nil {
 		return meta, err
 	}
+
 	return meta, nil
 }
 
-func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocument) (meta driver.DocumentMetaSlice, err error) {
+func (c *Collection[T]) CreateEdges(ctx context.Context, edges []*driver.EdgeDocument) (meta driver.DocumentMetaSlice, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	metas, errs, err := c.internal.CreateDocuments(ctx, edges)
@@ -136,13 +140,13 @@ func (c Collection) CreateEdges(ctx context.Context, edges []*driver.EdgeDocumen
 	return metas, nil
 }
 
-func (c Collection) DocumentExists(ctx context.Context, id string) (exists bool, err error) {
+func (c *Collection[T]) DocumentExists(ctx context.Context, id string) (exists bool, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	return c.internal.DocumentExists(ctx, id)
 }
 
-func (c Collection) ReadDocument(ctx context.Context, key string, result interface{}) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) ReadDocument(ctx context.Context, key string, result *T) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.ReadDocument(ctx, key, result)
@@ -150,7 +154,7 @@ func (c Collection) ReadDocument(ctx context.Context, key string, result interfa
 	return
 }
 
-func (c Collection) UpdateDocument(ctx context.Context, key string, update interface{}) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) UpdateDocument(ctx context.Context, key string, update any) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.UpdateDocument(ctx, key, update)
@@ -161,7 +165,7 @@ func (c Collection) UpdateDocument(ctx context.Context, key string, update inter
 	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
-func (c Collection) ReplaceDocument(ctx context.Context, key string, document interface{}) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) ReplaceDocument(ctx context.Context, key string, document *T) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.ReplaceDocument(ctx, key, document)
@@ -172,13 +176,13 @@ func (c Collection) ReplaceDocument(ctx context.Context, key string, document in
 	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
 }
 
-func (c Collection) RemoveDocument(ctx context.Context, formatInt string) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) RemoveDocument(ctx context.Context, formatInt string) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	return c.internal.RemoveDocument(ctx, formatInt)
 }
 
-func (c Collection) Truncate(ctx context.Context) (err error) {
+func (c *Collection[T]) Truncate(ctx context.Context) (err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	return c.internal.Truncate(ctx)
@@ -190,7 +194,9 @@ func toHTTPErr(err error) error {
 		if errors.As(err, &ae) {
 			return &api.HTTPError{Status: ae.Code, Internal: err}
 		}
+
 		return err
 	}
+
 	return nil
 }

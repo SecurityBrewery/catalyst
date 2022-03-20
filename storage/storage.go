@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -29,6 +31,7 @@ func New(config *Config) (*Storage, error) {
 		DisableSSL:       aws.Bool(true),
 		S3ForcePathStyle: aws.Bool(true),
 	})
+
 	return &Storage{s}, err
 }
 
@@ -39,17 +42,20 @@ func (s *Storage) S3() *s3.S3 {
 func (s *Storage) Downloader() *s3manager.Downloader {
 	d := s3manager.NewDownloader(s.session)
 	d.Concurrency = 1
+
 	return d
 }
 
 func (s *Storage) Uploader() *s3manager.Uploader {
 	d := s3manager.NewUploader(s.session)
 	d.Concurrency = 1
+
 	return d
 }
 
 func (s *Storage) DeleteBucket(name string) error {
 	_, err := s.S3().DeleteBucket(&s3.DeleteBucketInput{Bucket: pointer.String("catalyst-" + name)})
+
 	return err
 }
 
@@ -61,11 +67,13 @@ func CreateBucket(client *s3.S3, ticketID string) error {
 			return err
 		}
 	} else {
-		awsError, ok := err.(awserr.Error)
-		if !ok || (awsError.Code() != s3.ErrCodeBucketAlreadyExists && awsError.Code() != s3.ErrCodeBucketAlreadyOwnedByYou) {
-			return err
+		var awsError awserr.Error
+		if errors.As(err, &awsError) && (awsError.Code() == s3.ErrCodeBucketAlreadyExists || awsError.Code() == s3.ErrCodeBucketAlreadyOwnedByYou) {
+			return nil
 		}
-		return nil
+
+		return err
 	}
+
 	return err
 }

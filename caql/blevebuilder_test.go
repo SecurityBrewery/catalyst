@@ -1,10 +1,14 @@
-package caql
+package caql_test
 
 import (
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/caql"
 )
 
 func TestBleveBuilder(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		saql           string
@@ -18,15 +22,20 @@ func TestBleveBuilder(t *testing.T) {
 		{name: "Search 4", saql: `title == 'malware' AND 'wannacry'`, wantBleve: `title:"malware" "wannacry"`},
 	}
 	for _, tt := range tests {
-		parser := &Parser{}
+		tt := tt
+
+		parser := &caql.Parser{}
 
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			expr, err := parser.Parse(tt.saql)
 			if (err != nil) != tt.wantParseErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantParseErr)
 				if expr != nil {
 					t.Error(expr.String())
 				}
+
 				return
 			}
 			if err != nil {
@@ -37,6 +46,7 @@ func TestBleveBuilder(t *testing.T) {
 			if (err != nil) != tt.wantRebuildErr {
 				t.Error(expr.String())
 				t.Errorf("String() error = %v, wantErr %v", err, tt.wantParseErr)
+
 				return
 			}
 			if err != nil {

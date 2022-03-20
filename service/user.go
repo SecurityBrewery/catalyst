@@ -16,6 +16,7 @@ func newUserResponseID(user *model.NewUserResponse) []driver.DocumentID {
 	if user == nil {
 		return nil
 	}
+
 	return userID(user.ID)
 }
 
@@ -23,6 +24,7 @@ func userResponseID(user *model.UserResponse) []driver.DocumentID {
 	if user == nil {
 		return nil
 	}
+
 	return userID(user.ID)
 }
 
@@ -36,6 +38,7 @@ func (s *Service) ListUsers(ctx context.Context) ([]*model.UserResponse, error) 
 
 func (s *Service) CreateUser(ctx context.Context, form *model.UserForm) (doc *model.NewUserResponse, err error) {
 	defer s.publishRequest(ctx, err, "CreateUser", newUserResponseID(doc))
+
 	return s.database.UserCreate(ctx, form)
 }
 
@@ -45,11 +48,13 @@ func (s *Service) GetUser(ctx context.Context, s2 string) (*model.UserResponse, 
 
 func (s *Service) UpdateUser(ctx context.Context, s2 string, form *model.UserForm) (doc *model.UserResponse, err error) {
 	defer s.publishRequest(ctx, err, "UpdateUser", userID(s2))
+
 	return s.database.UserUpdate(ctx, s2, form)
 }
 
 func (s *Service) DeleteUser(ctx context.Context, s2 string) (err error) {
 	defer s.publishRequest(ctx, err, "DeleteUser", userID(s2))
+
 	return s.database.UserDelete(ctx, s2)
 }
 
@@ -59,5 +64,6 @@ func (s *Service) CurrentUser(ctx context.Context) (*model.UserResponse, error) 
 		return nil, errors.New("no user in context")
 	}
 	s.publishRequest(ctx, nil, "CurrentUser", userResponseID(user))
+
 	return user, nil
 }
