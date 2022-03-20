@@ -12,8 +12,7 @@
         <v-icon small class="mr-1" :color="statusColor">{{ statusIcon }}</v-icon>
         <span :class="statusColor + '--text'">{{ ticket.status | capitalize }}</span>
 
-        <v-icon small class="mx-1">mdi-account</v-icon>
-        {{ ticket.owner ? ticket.owner : 'unassigned' }}
+        <User :id="ticket.owner" :size="16" class="mx-2"></User>
         <v-spacer></v-spacer>
         <v-icon small class="mr-1">mdi-source-branch</v-icon>
         <span class="mr-1">{{ ticket.playbooks ? lodash.size(ticket.playbooks) : 0 }}</span>
@@ -38,10 +37,14 @@
 <script lang="ts">
 import Vue from "vue";
 import {Playbook, Task, Type, TypeColorEnum} from "@/client";
+import User from "@/components/User.vue";
 
 export default Vue.extend({
   name: "TicketSnippet",
   props: ["ticket", "to", "action"],
+  components: {
+    User
+  },
   computed: {
     opentaskcount: function() {
       let count = 0;
