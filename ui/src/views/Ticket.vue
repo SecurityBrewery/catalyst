@@ -103,37 +103,6 @@
               </v-list>
             </v-menu>
             &middot;
-            <v-menu offset-y class="mr-2">
-              <template v-slot:activator="{ on, attrs }">
-                <span v-bind="attrs" v-on="on">
-                  <User :id="ticket.owner"></User>
-                </span>
-              </template>
-              <v-list>
-                <v-list-item
-                  dense
-                  link
-                  v-for="user in otherUsers(ticket.owner)"
-                  :key="user.id"
-                  @click="setOwner(user.id)"
-                >
-                  <v-list-item-title>
-                    Change owner to <User :id="user.id"></User>
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                    v-if="ticket.owner"
-                    dense
-                    link
-                    @click="setOwner(undefined)"
-                >
-                  <v-list-item-title>
-                    Unassign ticket
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            &middot;
             <v-icon small class="mr-1">mdi-calendar-plus</v-icon>
             {{ ticket.created | formatdate($store.state.settings.timeformat) }}
             &middot;
@@ -277,7 +246,7 @@
                 </v-list>
               </v-menu>
             </v-list-item>
-            <v-list-item class="pa-0 ma-0" style="min-height: 32px">
+            <!--v-list-item class="pa-0 ma-0" style="min-height: 32px">
               <span class="text--disabled" style="width: 50px;">Editors</span>
               <span v-for="writer in ticket.write" :key="writer">
                 <User :id="writer" class="ml-3"></User>
@@ -295,7 +264,7 @@
                 <v-icon small>mdi-plus</v-icon> Add viewer
               </v-btn>
             </v-list-item>
-          </v-list>
+          </v-list-->
 
           <v-divider class="mb-5"></v-divider>
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"log"
 	"net/http"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
+	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/test"
