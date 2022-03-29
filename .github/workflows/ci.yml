@@ -21,7 +21,7 @@ jobs:
           echo "::set-output name=gocache::$(go env GOCACHE)"
           echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
@@ -52,7 +52,7 @@ jobs:
           echo "::set-output name=gocache::$(go env GOCACHE)"
           echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
@@ -84,7 +84,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with: { node-version: '14' }
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
@@ -110,7 +110,7 @@ jobs:
           echo "::set-output name=gocache::$(go env GOCACHE)"
           echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
