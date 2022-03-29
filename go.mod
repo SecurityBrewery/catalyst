@@ -3,7 +3,7 @@ module github.com/SecurityBrewery/catalyst
 go 1.18
 
 require (
-	github.com/alecthomas/kong v0.2.17
+	github.com/alecthomas/kong v0.5.0
 	github.com/alecthomas/kong-yaml v0.1.1
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220314183648-97c793e446ba
 	github.com/arangodb/go-driver v1.2.1
