@@ -76,6 +76,7 @@ jobs:
           sudo apt-get update -y && sudo apt-get -y install arangodb3
       - run: go test -coverprofile=cover.out -coverpkg=./... ./...
       - run: go tool cover -func=cover.out
+      - uses: codecov/codecov-action@v2
 
   build-npm:
     name: Build npm
