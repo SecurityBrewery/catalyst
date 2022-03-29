@@ -121,7 +121,7 @@ jobs:
           path: ${{ steps.goenv.outputs.gomodcache }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with: { name: ui, path: ui/dist }
       - run: go build -o catalyst ./cmd/catalyst/.
       - uses: docker/login-action@v1
