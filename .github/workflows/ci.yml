@@ -93,7 +93,7 @@ jobs:
 
       - run: yarn install && yarn build
         working-directory: ui
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with: { name: ui, path: ui/dist, retention-days: 1 }
 
   build:
