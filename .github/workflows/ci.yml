@@ -78,6 +78,21 @@ jobs:
       - run: go tool cover -func=cover.out
       - uses: codecov/codecov-action@v2
 
+  gocap:
+    name: gocap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.18' }
+      - uses: actions/checkout@v3
+      - run: go mod download
+      - run: go install github.com/cugu/gocap@main
+      - run: |
+          mkdir -p ui/dist/img
+          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
+      - run: go list --json ./cmd/catalyst
+      - run: gocap check ./cmd/catalyst
+
   build-npm:
     name: Build npm
     runs-on: ubuntu-latest
