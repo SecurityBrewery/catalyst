@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/alecthomas/kong v0.5.0
 	github.com/alecthomas/kong-yaml v0.1.1
-	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220314183648-97c793e446ba
+	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220411234842-3e3fecf10672
 	github.com/arangodb/go-driver v1.3.1
 	github.com/aws/aws-sdk-go v1.43.36
 	github.com/blevesearch/bleve/v2 v2.3.2
