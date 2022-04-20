@@ -21,7 +21,7 @@ require (
 	github.com/imdario/mergo v0.3.12
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.7.1
-	github.com/tidwall/gjson v1.14.0
+	github.com/tidwall/gjson v1.14.1
 	github.com/tidwall/sjson v1.2.4
 	github.com/tus/tusd v1.9.0
 	github.com/xeipuuv/gojsonschema v1.2.0
