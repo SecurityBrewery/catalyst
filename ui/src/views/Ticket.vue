@@ -194,7 +194,7 @@
                 </span>
                 </v-card-subtitle>
                 <v-card-text class="mb-0 mt-2">
-                  <vue-markdown>{{ replacelinks(comment.message) }}</vue-markdown>
+                  <vue-markdown :source="replacelinks(comment.message)"></vue-markdown>
                 </v-card-text>
               </v-card>
             </div>
@@ -263,8 +263,8 @@
               <v-btn v-if="!ticket.read || ticket.read.length === 0" small text elevation="0" @click="referenceDialog = true">
                 <v-icon small>mdi-plus</v-icon> Add viewer
               </v-btn>
-            </v-list-item>
-          </v-list-->
+            </v-list-item-->
+          </v-list>
 
           <v-divider class="mb-5"></v-divider>
 
