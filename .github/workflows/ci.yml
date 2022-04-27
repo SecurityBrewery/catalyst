@@ -115,17 +115,19 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - uses: nev7n/wait_for_response@v1
+      - uses: cugu/wait_for_response@v1.1.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
+          verbose: true
       - run: |
           go mod download
           bash start_dev.sh &
-      - uses: nev7n/wait_for_response@v1
+      - uses: cugu/wait_for_response@v1.1.0
         with:
           url: 'http://localhost:8000'
           responseCode: 302
+          verbose: true
       - run: curl http://localhost
       - run: curl http://localhost:8080
       - run: curl http://localhost:8000
