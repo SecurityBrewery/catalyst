@@ -1,13 +1,13 @@
 describe('user', () => {
 
-    beforeEach(function () {
-        cy.fixture('user_demo.json').then((user_demo) => {
-            this.user_demo = user_demo
-        })
-        cy.fixture('userdata_demo.json').then((userdata_demo) => {
-            this.userdata_demo = userdata_demo
-        })
-    })
+    // beforeEach(function () {
+    //     cy.fixture('user_demo.json').then((user_demo) => {
+    //         this.user_demo = user_demo
+    //     })
+    //     cy.fixture('userdata_demo.json').then((userdata_demo) => {
+    //         this.userdata_demo = userdata_demo
+    //     })
+    // })
 
     it('open ticket', () => {
         cy.visit('/');
@@ -17,8 +17,8 @@ describe('user', () => {
         cy.get("#password").type("bob");
         cy.get("#kc-login").click();
 
-        cy.intercept('GET', '/api/userdata/demo', { statusCode: 200, body: this.userdata_demo })
-        cy.intercept('GET', '/api/users/demo', { statusCode: 200, body: this.user_demo })
+        cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
+        cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })
 
         cy.origin('http://localhost', () => {
             cy.visit('/tickets');
