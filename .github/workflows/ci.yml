@@ -108,11 +108,14 @@ jobs:
           tar -C /usr/local -xf go1.18.1.linux-amd64.tar.gz
           export PATH=$PATH:/usr/local/go/bin
           
+          curl -O https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/containerd.io_1.4.3-1_amd64.deb
+          apt install ./containerd.io_1.4.3-1_amd64.deb
+          
           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
           add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
           apt update
           apt-cache policy docker-ce
-          apt install docker-ce
+          apt-get install -y docker-ce
           
           curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
