@@ -130,7 +130,8 @@ jobs:
           interval: 10000
       - run: |
           go mod download
-          bash start_dev.sh &
+          bash start_dev.sh
+        shell: bash
       - uses: cugu/wait_for_response@v1.3.0
         with:
           url: 'http://localhost:8000'
