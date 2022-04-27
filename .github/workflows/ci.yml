@@ -120,6 +120,7 @@ jobs:
           url: 'http://localhost:8080'
           responseCode: 200
       - run: docker ps
+      - run: docker logs dev_keycloak_1
       - uses: cugu/wait_for_response@v1.3.0
         with:
           url: 'http://localhost:9200'
