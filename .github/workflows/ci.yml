@@ -105,6 +105,9 @@ jobs:
       - uses: actions/setup-node@v3
         with: { node-version: '14' }
 
+      - run: |
+          mkdir -p ui/dist/img
+          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
@@ -118,8 +121,8 @@ jobs:
           bash start_dev.sh &
       - run: sleep 20
       - run: curl http://localhost
-      - run: curl http://localhost:8000
       - run: curl http://localhost:8080
+      - run: curl http://localhost:8000
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
