@@ -124,7 +124,8 @@ jobs:
 
       - run: |
           cat nginx.conf
-          docker-compose up -d
+          docker volume rm $(docker volume ls -q)
+          docker-compose up --quiet-pull --detach
         working-directory: dev
       - run: |
           yarn install
