@@ -110,6 +110,8 @@ jobs:
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - run: sed -i 's/## //g' dev/docker-compose.yml
         shell: bash
+      - run : docker version
+      - run: cat dev/docker-compose.yml
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
