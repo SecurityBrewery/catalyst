@@ -133,7 +133,7 @@ jobs:
           url: 'http://localhost:8000'
           responseCode: 302
           verbose: true
-          timeout: 300000
+          timeout: 200000
           interval: 10000
       - run: curl http://localhost
       - run: curl http://localhost:8080
