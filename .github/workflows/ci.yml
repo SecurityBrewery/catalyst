@@ -115,6 +115,9 @@ jobs:
       - run: sleep 30
       - run: bash start_dev.sh &
       - run: sleep 20
+      - run: curl http://localhost
+      - run: curl http://localhost:8000
+      - run: curl http://localhost:8080
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
