@@ -115,11 +115,17 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - run: sleep 30
+      - uses: nev7n/wait_for_response@v1
+        with:
+          url: 'http://localhost:8080'
+          responseCode: 200
       - run: |
           go mod download
           bash start_dev.sh &
-      - run: sleep 20
+      - uses: nev7n/wait_for_response@v1
+        with:
+          url: 'http://localhost:8000'
+          responseCode: 200
       - run: curl http://localhost
       - run: curl http://localhost:8080
       - run: curl http://localhost:8000
