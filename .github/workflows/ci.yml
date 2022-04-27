@@ -115,7 +115,7 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - uses: cugu/wait_for_response@v1.2.0
+      - uses: cugu/wait_for_response@v1.3.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
@@ -123,7 +123,7 @@ jobs:
       - run: |
           go mod download
           bash start_dev.sh &
-      - uses: cugu/wait_for_response@v1.2.0
+      - uses: cugu/wait_for_response@v1.3.0
         with:
           url: 'http://localhost:8000'
           responseCode: 302
