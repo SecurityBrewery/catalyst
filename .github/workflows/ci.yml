@@ -94,7 +94,7 @@ jobs:
       - run: gocap check ./cmd/catalyst
 
   cypress-run:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: cypress/browsers:node12.18.3-chrome87-ff82
     steps:
       - name: Checkout
@@ -109,8 +109,8 @@ jobs:
           tar -C /usr/local -xf go1.18.1.linux-amd64.tar.gz
           export PATH=$PATH:/usr/local/go/bin
           
-          curl -O https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/containerd.io_1.4.3-1_amd64.deb
-          apt install ./containerd.io_1.4.3-1_amd64.deb
+          curl -O https://download.docker.com/linux/debian/dists/bullseye/pool/stable/amd64/containerd.io_1.5.11-1_amd64.deb
+          apt install ./containerd.io_1.5.11-1_amd64.deb
           
           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
           add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
@@ -122,7 +122,9 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
         shell: bash
 
-      - run: docker-compose up -d
+      - run: |
+          cat nginx.conf
+          docker-compose up -d
         working-directory: dev
       - run: |
           yarn install
