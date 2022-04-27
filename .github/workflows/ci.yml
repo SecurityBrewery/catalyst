@@ -100,7 +100,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - run: |
+      - name: Install curl, go, docker and docker-compose
+        run: |
           apt-get --allow-releaseinfo-change update
           apt-get install -y apt-transport-https ca-certificates curl software-properties-common
           
@@ -117,7 +118,7 @@ jobs:
           apt-cache policy docker-ce
           apt-get install -y docker-ce
           
-          curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          curl -L "https://github.com/docker/compose/releases/download/2.4.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
         shell: bash
 
