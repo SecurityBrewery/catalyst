@@ -95,7 +95,7 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-20.04
-    container: cypress/browsers:node12.18.3-chrome87-ff82
+    # container: cypress/browsers:node12.18.3-chrome87-ff82
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -132,12 +132,13 @@ jobs:
           yarn serve &
         working-directory: ui
       - run: bash start_dev.sh &
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          working-directory: ui
-          wait-on: 'http://localhost'
+      - run: ./node_modules/.bin/cypress run
+        working-directory: ui
+      #- name: Cypress run
+      #  uses: cypress-io/github-action@v2
+      #  with:
+      #    working-directory: ui
+      #    wait-on: 'http://localhost'
 
   build-npm:
     name: Build npm
