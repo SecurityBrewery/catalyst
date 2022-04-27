@@ -135,8 +135,8 @@ jobs:
           url: 'http://localhost:8000'
           responseCode: 302
           verbose: true
-          timeout: 180000 # 3 minutes
-          interval: 10000 # every 10 seconds
+          timeout: 3m # 3 minutes
+          interval: 10s # every 10 seconds
 
       # run cypress
       - run: ./node_modules/.bin/cypress run
