@@ -1,10 +1,10 @@
 describe('user', () => {
 
     beforeEach(function () {
-        cy.fixture('user_demos.json').then((user_demo) => {
+        cy.fixture('user_demo.json').then((user_demo) => {
             this.user_demo = user_demo
         })
-        cy.fixture('userdata_demos.json').then((userdata_demo) => {
+        cy.fixture('userdata_demo.json').then((userdata_demo) => {
             this.userdata_demo = userdata_demo
         })
     })
