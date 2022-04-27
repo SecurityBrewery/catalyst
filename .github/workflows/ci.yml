@@ -93,6 +93,61 @@ jobs:
       - run: go list --json ./cmd/catalyst
       - run: gocap check ./cmd/catalyst
 
+  cypress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.18' }
+      - uses: actions/setup-node@v3
+        with: { node-version: '14' }
+
+      # run UI
+      - run: |
+          yarn install
+          yarn serve &
+        working-directory: ui
+      - uses: cugu/wait_for_response@v1.8.0
+        with:
+          url: 'http://localhost:8080'
+          responseCode: 200
+
+      # run containers
+      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+        shell: bash
+      - run: docker-compose up --quiet-pull --detach
+        working-directory: dev
+        shell: bash
+      - uses: cugu/wait_for_response@v1.8.0
+        with:
+          url: 'http://localhost:9002/auth/realms/catalyst'
+          responseCode: 200
+
+      # run catalyst
+      - run: |
+          mkdir -p ui/dist/img
+          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
+      - run: go mod download
+      - run: bash start_dev.sh &
+      - uses: cugu/wait_for_response@v1.8.0
+        with:
+          url: 'http://localhost:8000'
+          responseCode: 302
+          verbose: true
+          timeout: 3m # 3 minutes
+          interval: 10s # every 10 seconds
+
+      # run cypress
+      - run: ./node_modules/.bin/cypress run
+        working-directory: ui
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: ui/cypress/videos
+          retention-days: 1
+
   build-npm:
     name: Build npm
     runs-on: ubuntu-latest
