@@ -105,9 +105,7 @@ jobs:
       - uses: actions/setup-node@v3
         with: { node-version: '14' }
 
-      - run: |
-          cat nginx.conf
-          docker-compose up --quiet-pull --detach
+      - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
       - run: |
@@ -115,6 +113,7 @@ jobs:
           yarn serve &
         working-directory: ui
       - run: bash start_dev.sh &
+      - run: sleep 10
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
