@@ -112,8 +112,9 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - run: bash start_dev.sh &
       - run: sleep 30
+      - run: bash start_dev.sh &
+      - run: sleep 20
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
