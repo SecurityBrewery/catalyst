@@ -93,30 +93,17 @@ jobs:
       - run: go list --json ./cmd/catalyst
       - run: gocap check ./cmd/catalyst
 
-  cypress-run:
-    runs-on: ubuntu-20.04
-    # container: cypress/browsers:node12.18.3-chrome87-ff82
+  cypress:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - uses: actions/setup-go@v3
         with: { go-version: '1.18' }
       - uses: actions/setup-node@v3
         with: { node-version: '14' }
 
-      - run: |
-          mkdir -p ui/dist/img
-          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      # - run: sed -i 's/## //g' dev/docker-compose.yml
-      #   shell: bash
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
-        shell: bash
-      - run : docker version
-      - run: cat dev/nginx.conf
-      - run: docker-compose up --quiet-pull --detach
-        working-directory: dev
-        shell: bash
+      # run UI
       - run: |
           yarn install
           yarn serve &
@@ -125,13 +112,22 @@ jobs:
         with:
           url: 'http://localhost:8080'
           responseCode: 200
-      - run: docker ps
-      - run: docker logs dev_keycloak_1
+
+      # run containers
+      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+        shell: bash
+      - run: docker-compose up --quiet-pull --detach
+        working-directory: dev
+        shell: bash
       - uses: cugu/wait_for_response@v1.4.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
-          verbose: true
+
+      # run catalyst
+      - run: |
+          mkdir -p ui/dist/img
+          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - run: go mod download
       - run: bash start_dev.sh &
       - uses: cugu/wait_for_response@v1.4.0
@@ -139,11 +135,10 @@ jobs:
           url: 'http://localhost:8000'
           responseCode: 302
           verbose: true
-          timeout: 200000
-          interval: 10000
-      - run: curl http://localhost
-      - run: curl http://localhost:8080
-      - run: curl http://localhost:8000
+          timeout: 180000 # 3 minutes
+          interval: 10000 # every 10 seconds
+
+      # run cypress
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
