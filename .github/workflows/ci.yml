@@ -93,6 +93,27 @@ jobs:
       - run: go list --json ./cmd/catalyst
       - run: gocap check ./cmd/catalyst
 
+  cypress-run:
+    runs-on: ubuntu-latest
+    container: cypress/browsers:node12.18.3-chrome87-ff82
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - run: docker-compose up -d
+        working-directory: dev
+      - run: |
+          yarn install
+          yarn serve &
+        working-directory: ui
+      - run: bash start_dev.sh &
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: ui
+          wait-on: 'http://localhost'
+
   build-npm:
     name: Build npm
     runs-on: ubuntu-latest
