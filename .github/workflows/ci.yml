@@ -119,6 +119,10 @@ jobs:
         with:
           url: 'http://localhost:8080'
           responseCode: 200
+      - uses: cugu/wait_for_response@v1.3.0
+        with:
+          url: 'http://localhost:9200'
+          responseCode: 200
           verbose: true
       - run: |
           go mod download
