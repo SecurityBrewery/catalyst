@@ -128,10 +128,8 @@ jobs:
           verbose: true
           timeout: 300000
           interval: 10000
-      - run: |
-          go mod download
-          bash start_dev.sh
-        shell: bash
+      - run: go mod download
+      - run: bash start_dev.sh &
       - uses: cugu/wait_for_response@v1.3.0
         with:
           url: 'http://localhost:8000'
