@@ -113,7 +113,9 @@ jobs:
           yarn serve &
         working-directory: ui
       - run: sleep 30
-      - run: bash start_dev.sh &
+      - run: |
+          go mod download
+          bash start_dev.sh &
       - run: sleep 20
       - run: curl http://localhost
       - run: curl http://localhost:8000
