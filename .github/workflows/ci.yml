@@ -113,7 +113,7 @@ jobs:
           yarn serve &
         working-directory: ui
       - run: bash start_dev.sh &
-      - run: sleep 10
+      - run: sleep 30
       - run: ./node_modules/.bin/cypress run
         working-directory: ui
 
