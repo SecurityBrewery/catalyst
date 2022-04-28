@@ -21,7 +21,11 @@
             "datasources": [
                 "npm"
             ],
-            "groupName": "npm",
+            "extends": [
+                ":automergeDigest",
+                ":automergeMinor",
+                ":automergePr"
+            ],
             "schedule": ["after 9pm on sunday"]
         }
     ],
