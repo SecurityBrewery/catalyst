@@ -11699,10 +11699,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
-splitpanes@2.3.8:
-  version "2.3.8"
-  resolved "https://registry.yarnpkg.com/splitpanes/-/splitpanes-2.3.8.tgz#371655e5c8c6356d76bbf2f6f22d5564927b5bb4"
-  integrity sha512-eM/qZ1v7U5BMV8FQR7oeqVlllz3sTGTm0//g/eJMa0hZ4s+A1VK68j26FWzcaVlw2P5+dCXk7/X6ZRjjwcbrgw==
+splitpanes@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/splitpanes/-/splitpanes-2.4.1.tgz#c165db8b1ed307b81831e890ce96912670cb6d02"
+  integrity sha512-kpEo1WuMXuc6QfdQdO2V/fl/trONlkUKp+pputsLTiW9RMtwEvjb4/aYGm2m3+KAzjmb+zLwr4A4SYZu74+pgQ==
 
 sprintf-js@~1.0.2:
   version "1.0.3"
