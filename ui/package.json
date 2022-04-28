@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@koumoul/vjsf": "2.11.3",
-    "@mdi/font": "5.9.55",
+    "@mdi/font": "6.6.96",
     "@mdi/util": "0.3.2",
     "@types/luxon": "1.27.1",
     "@types/prismjs": "1.26.0",
