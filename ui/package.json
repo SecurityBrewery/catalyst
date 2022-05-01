@@ -24,7 +24,7 @@
     "chart.js": "2.9.4",
     "core-js": "3.22.3",
     "graphlib": "2.1.8",
-    "json-schema-editor-vue": "1.2.5",
+    "json-schema-editor-vue": "2.0.2",
     "just-kebab-case": "1.1.0",
     "less": "3.13.1",
     "less-loader": "5.0.0",
