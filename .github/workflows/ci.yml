@@ -194,7 +194,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with: { name: ui, path: ui/dist }
       - run: go build -o catalyst ./cmd/catalyst/.
-      - uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
