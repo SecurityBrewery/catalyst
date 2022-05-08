@@ -25,7 +25,7 @@
     "core-js": "3.22.4",
     "graphlib": "2.1.8",
     "json-schema-editor-vue": "2.0.2",
-    "just-kebab-case": "4.0.1",
+    "just-kebab-case": "4.0.2",
     "less": "4.1.2",
     "less-loader": "10.2.0",
     "lodash": "4.17.21",
