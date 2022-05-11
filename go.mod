@@ -9,7 +9,7 @@ require (
 	github.com/arangodb/go-driver v1.3.1
 	github.com/aws/aws-sdk-go v1.44.12
 	github.com/blevesearch/bleve/v2 v2.3.2
-	github.com/coreos/go-oidc/v3 v3.1.0
+	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
 	github.com/emitter-io/go/v2 v2.0.9
 	github.com/go-chi/chi v1.5.4
