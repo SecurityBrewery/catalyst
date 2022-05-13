@@ -55,9 +55,7 @@ func (db *BusDatabase) Query(ctx context.Context, query string, vars map[string]
 
 	switch {
 	case operation.Type == bus.DatabaseEntryCreated, operation.Type == bus.DatabaseEntryUpdated:
-		if err := db.bus.PublishDatabaseUpdate(operation.Ids, operation.Type); err != nil {
-			return nil, nil, err
-		}
+		db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: operation.Ids, Type: operation.Type})
 	}
 
 	return cur, logs, err
@@ -92,10 +90,7 @@ func (c *Collection[T]) CreateDocument(ctx, newctx context.Context, key string, 
 		return meta, err
 	}
 
-	err = c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryCreated)
-	if err != nil {
-		return meta, err
-	}
+	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryCreated})
 
 	return meta, nil
 }
@@ -108,10 +103,7 @@ func (c *Collection[T]) CreateEdge(ctx, newctx context.Context, edge *driver.Edg
 		return meta, err
 	}
 
-	err = c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryCreated)
-	if err != nil {
-		return meta, err
-	}
+	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryCreated})
 
 	return meta, nil
 }
@@ -132,10 +124,7 @@ func (c *Collection[T]) CreateEdges(ctx context.Context, edges []*driver.EdgeDoc
 		ids = append(ids, meta.ID)
 	}
 
-	err = c.db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
-	if err != nil {
-		return metas, err
-	}
+	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: ids, Type: bus.DatabaseEntryCreated})
 
 	return metas, nil
 }
@@ -162,7 +151,9 @@ func (c *Collection[T]) UpdateDocument(ctx context.Context, key string, update a
 		return meta, err
 	}
 
-	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
+	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryUpdated})
+
+	return meta, nil
 }
 
 func (c *Collection[T]) ReplaceDocument(ctx context.Context, key string, document *T) (meta driver.DocumentMeta, err error) {
@@ -173,7 +164,9 @@ func (c *Collection[T]) ReplaceDocument(ctx context.Context, key string, documen
 		return meta, err
 	}
 
-	return meta, c.db.bus.PublishDatabaseUpdate([]driver.DocumentID{meta.ID}, bus.DatabaseEntryUpdated)
+	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryUpdated})
+
+	return meta, nil
 }
 
 func (c *Collection[T]) RemoveDocument(ctx context.Context, formatInt string) (meta driver.DocumentMeta, err error) {

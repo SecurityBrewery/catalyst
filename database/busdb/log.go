@@ -3,7 +3,6 @@ package busdb
 import (
 	"context"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/arangodb/go-driver"
@@ -46,12 +45,10 @@ func (db *BusDatabase) LogBatchCreate(ctx context.Context, logentries []*model.L
 		}
 	}
 	if ids != nil {
-		go func() {
-			err := db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryCreated)
-			if err != nil {
-				log.Println(err)
-			}
-		}()
+		go db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{
+			IDs:  ids,
+			Type: bus.DatabaseEntryCreated,
+		})
 	}
 
 	_, errs, err := db.logCollection.CreateDocuments(ctx, logentries)

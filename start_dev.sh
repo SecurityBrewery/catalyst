@@ -7,8 +7,6 @@ export ARANGO_DB_HOST=http://localhost:8529
 export ARANGO_DB_PASSWORD=foobar
 export S3_HOST=http://localhost:9000
 export S3_PASSWORD=minio123
-export EMITTER_IO_HOST=tcp://localhost:9001
-export EMITTER_IO_KEY=A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-
 
 export AUTH_BLOCK_NEW=false
 export AUTH_DEFAULT_ROLES=analyst,admin

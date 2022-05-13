@@ -7,6 +7,7 @@ import (
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
@@ -32,7 +33,15 @@ func (s *Service) RunJob(ctx context.Context, form *model.JobForm) (doc *model.J
 	newJobID := uuid.NewString()
 
 	defer s.publishRequest(ctx, err, "RunJob", jobID(newJobID))
-	err = s.bus.PublishJob(newJobID, form.Automation, form.Payload, msgContext, form.Origin)
+	s.bus.JobChannel.Publish(&bus.JobMsg{
+		ID:         newJobID,
+		Automation: form.Automation,
+		Origin:     form.Origin,
+		Message: &model.Message{
+			Context: msgContext,
+			Payload: form.Payload,
+		},
+	})
 
 	return &model.JobResponse{
 		Automation: form.Automation,
@@ -40,7 +49,7 @@ func (s *Service) RunJob(ctx context.Context, form *model.JobForm) (doc *model.J
 		Origin:     form.Origin,
 		Payload:    form.Payload,
 		Status:     "published",
-	}, err
+	}, nil
 }
 
 func (s *Service) GetJob(ctx context.Context, id string) (*model.JobResponse, error) {

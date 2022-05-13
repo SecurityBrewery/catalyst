@@ -20,20 +20,12 @@ type busService struct {
 	network     string
 }
 
-func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Database) error {
+func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Database) {
 	h := &busService{db: db, apiURL: apiURL, apiKey: apikey, network: network, catalystBus: catalystBus}
 
-	if err := catalystBus.SubscribeRequest(h.logRequest); err != nil {
-		return err
-	}
-	if err := catalystBus.SubscribeResult(h.handleResult); err != nil {
-		return err
-	}
-	if err := catalystBus.SubscribeJob(h.handleJob); err != nil {
-		return err
-	}
-
-	return nil
+	catalystBus.RequestChannel.Subscribe(h.logRequest)
+	catalystBus.ResultChannel.Subscribe(h.handleResult)
+	catalystBus.JobChannel.Subscribe(h.handleJob)
 }
 
 func busContext() context.Context {
@@ -47,7 +39,7 @@ func (h *busService) logRequest(msg *bus.RequestMsg) {
 	var logEntries []*model.LogEntry
 	for _, i := range msg.IDs {
 		logEntries = append(logEntries, &model.LogEntry{
-			Type:      bus.ChannelRequest,
+			Type:      "request",
 			Reference: i.String(),
 			Creator:   msg.User,
 			Message:   msg.Function,

@@ -1,70 +1,69 @@
 package bus
 
 import (
-	"encoding/json"
-	"log"
+	"github.com/arangodb/go-driver"
 
-	emitter "github.com/emitter-io/go/v2"
+	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
+type ResultMsg struct {
+	Automation string         `json:"automation"`
+	Data       map[string]any `json:"data,omitempty"`
+	Target     *model.Origin  `json:"target"`
+}
+
+type RequestMsg struct {
+	IDs      []driver.DocumentID `json:"ids"`
+	Function string              `json:"function"`
+	User     string              `json:"user"`
+}
+
+type JobMsg struct {
+	ID         string         `json:"id"`
+	Automation string         `json:"automation"`
+	Origin     *model.Origin  `json:"origin"`
+	Message    *model.Message `json:"message"`
+}
+
+type DatabaseUpdateType string
+
+const (
+	DatabaseEntryRead    DatabaseUpdateType = "read"
+	DatabaseEntryCreated DatabaseUpdateType = "created"
+	DatabaseEntryUpdated DatabaseUpdateType = "updated"
+)
+
+type DatabaseUpdateMsg struct {
+	IDs  []driver.DocumentID `json:"ids"`
+	Type DatabaseUpdateType  `json:"type"`
+}
+
 type Bus struct {
-	config *Config
-	client *emitter.Client
+	ResultChannel   *Channel[*ResultMsg]
+	RequestChannel  *Channel[*RequestMsg]
+	JobChannel      *Channel[*JobMsg]
+	DatabaseChannel *Channel[*DatabaseUpdateMsg]
 }
 
-type Config struct {
-	Host                 string
-	Key                  string
-	databaseUpdateBusKey string
-	jobBusKey            string
-	resultBusKey         string
-	requestKey           string
-	APIUrl               string
+func New() *Bus {
+	return &Bus{
+		ResultChannel:   &Channel[*ResultMsg]{},
+		RequestChannel:  &Channel[*RequestMsg]{},
+		JobChannel:      &Channel[*JobMsg]{},
+		DatabaseChannel: &Channel[*DatabaseUpdateMsg]{},
+	}
 }
 
-func New(c *Config) (*Bus, error) {
-	client, err := emitter.Connect(c.Host, func(_ *emitter.Client, msg emitter.Message) {
-		log.Printf("received: '%s' topic: '%s'\n", msg.Payload(), msg.Topic())
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	c.databaseUpdateBusKey, err = client.GenerateKey(c.Key, channelDatabaseUpdate+"/", "rwls", 0)
-	if err != nil {
-		return nil, err
-	}
-	c.jobBusKey, err = client.GenerateKey(c.Key, channelJob+"/", "rwls", 0)
-	if err != nil {
-		return nil, err
-	}
-	c.resultBusKey, err = client.GenerateKey(c.Key, channelResult+"/", "rwls", 0)
-	if err != nil {
-		return nil, err
-	}
-	c.requestKey, err = client.GenerateKey(c.Key, ChannelRequest+"/", "rwls", 0)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Bus{config: c, client: client}, err
+type Channel[T any] struct {
+	Subscriber []func(T)
 }
 
-func (b *Bus) jsonPublish(msg any, channel, key string) error {
-	payload, err := json.Marshal(msg)
-	if err != nil {
-		return err
+func (c *Channel[T]) Publish(msg T) {
+	for _, s := range c.Subscriber {
+		go s(msg)
 	}
-
-	return b.client.Publish(key, channel, payload)
 }
 
-func (b *Bus) safeSubscribe(key, channel string, handler func(c *emitter.Client, m emitter.Message)) error {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("Recovered %s in channel %s\n", r, channel)
-		}
-	}()
-
-	return b.client.Subscribe(key, channel, handler)
+func (c *Channel[T]) Subscribe(handler func(T)) {
+	c.Subscriber = append(c.Subscriber, handler)
 }

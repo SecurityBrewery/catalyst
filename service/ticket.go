@@ -9,6 +9,7 @@ import (
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
@@ -135,7 +136,17 @@ func (s *Service) RunArtifact(ctx context.Context, id int64, name string, automa
 	jobID := uuid.NewString()
 	origin := &model.Origin{ArtifactOrigin: &model.ArtifactOrigin{TicketId: id, Artifact: name}}
 
-	return s.bus.PublishJob(jobID, automation, map[string]string{"default": name}, &model.Context{Artifact: artifact}, origin)
+	s.bus.JobChannel.Publish(&bus.JobMsg{
+		ID:         jobID,
+		Automation: automation,
+		Origin:     origin,
+		Message: &model.Message{
+			Context: &model.Context{Artifact: artifact},
+			Payload: map[string]string{"default": name},
+		},
+	})
+
+	return nil
 }
 
 func (s *Service) AddComment(ctx context.Context, i int64, form *model.CommentForm) (doc *model.TicketWithTickets, err error) {

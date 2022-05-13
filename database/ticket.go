@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -252,11 +251,10 @@ func (db *Database) TicketBatchCreate(ctx context.Context, ticketForms []*model.
 		ids = append(ids, driver.NewDocumentID(TicketCollectionName, fmt.Sprint(apiTicket.ID)))
 	}
 
-	go func() {
-		if err := db.bus.PublishDatabaseUpdate(ids, bus.DatabaseEntryUpdated); err != nil {
-			log.Println(err)
-		}
-	}()
+	db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{
+		IDs:  ids,
+		Type: bus.DatabaseEntryCreated,
+	})
 
 	ticketResponses, err := toTicketResponses(apiTickets)
 	if err != nil {

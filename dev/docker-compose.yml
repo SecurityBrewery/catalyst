@@ -13,13 +13,6 @@ services:
       ARANGO_ROOT_PASSWORD: foobar
     networks: [ catalyst ]
 
-  emitter:
-    image: emitter/server
-    environment:
-      - EMITTER_LICENSE=PfA8ID8izeSlDUlNZgNXo77DQV9QzlNtxTk64WreCXKfDZsREAVXUXwh20UKOZdkALbLTmOytO_iC6mc_twKAQ:3
-      # A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-
-    networks: [ catalyst ]
-
   minio:
     image: minio/minio:RELEASE.2021-12-10T23-03-39Z
     environment:
