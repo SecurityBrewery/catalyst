@@ -1,10 +1,6 @@
 import "@mdi/font/css/materialdesignicons.css";
 import Vue from "vue";
 import Vuetify from "vuetify/lib";
-import MinioIcon from "../components/icons/MinioIcon.vue";
-import NodeRedIcon from "../components/icons/NodeRedIcon.vue";
-import ArangoIcon from "../components/icons/ArangoIcon.vue";
-import EmitterIcon from "../components/icons/EmitterIcon.vue";
 
 Vue.use(Vuetify);
 
@@ -73,18 +69,6 @@ export default new Vuetify({
   },
   icons: {
     values: {
-      minio: {
-        component: MinioIcon,
-      },
-      nodered: {
-        component: NodeRedIcon,
-      },
-      arango: {
-        component: ArangoIcon,
-      },
-      emitter: {
-        component: EmitterIcon,
-      },
     },
   },
 });

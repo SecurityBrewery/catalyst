@@ -28,11 +28,11 @@ type Config struct {
 	IndexPath string
 	DB        *database.Config
 	Storage   *storage.Config
-	Bus       *bus.Config
 
 	Secret          []byte
 	Auth            *AuthConfig
 	ExternalAddress string
+	InternalAddress string
 	InitialAPIKey   string
 	Network         string
 }
@@ -65,20 +65,14 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	catalystBus, err := bus.New(config.Bus)
-	if err != nil {
-		return nil, err
-	}
+	catalystBus := bus.New()
 
 	catalystDatabase, err := database.New(ctx, catalystIndex, catalystBus, hooks, config.DB)
 	if err != nil {
 		return nil, err
 	}
 
-	err = busservice.New(config.Bus.APIUrl, config.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
-	if err != nil {
-		return nil, err
-	}
+	busservice.New(config.InternalAddress+"/api", config.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {

@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"log"
-
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/bus"
@@ -34,10 +32,10 @@ func (s *Service) publishRequest(ctx context.Context, err error, function string
 			userID = user.ID
 		}
 
-		go func() {
-			if err := s.bus.PublishRequest(userID, function, ids); err != nil {
-				log.Println(err)
-			}
-		}()
+		s.bus.RequestChannel.Publish(&bus.RequestMsg{
+			User:     userID,
+			Function: function,
+			IDs:      ids,
+		})
 	}
 }

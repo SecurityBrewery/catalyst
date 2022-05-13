@@ -82,9 +82,7 @@ func (h *busService) handleJob(automationMsg *bus.JobMsg) {
 		}
 	}
 
-	if err := h.catalystBus.PublishResult(automationMsg.Automation, result, automationMsg.Origin); err != nil {
-		log.Println(err)
-	}
+	h.catalystBus.ResultChannel.Publish(&bus.ResultMsg{Automation: automationMsg.Automation, Data: result, Target: automationMsg.Origin})
 
 	if err := h.db.JobComplete(ctx, automationMsg.ID, result); err != nil {
 		log.Println(err)

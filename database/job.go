@@ -186,11 +186,16 @@ func publishJobMapping(id, automation string, contextStructs *model.Context, ori
 		return fmt.Errorf("message generation failed: %w", err)
 	}
 
-	return publishJob(id, automation, contextStructs, origin, msg, db)
-}
-
-func publishJob(id, automation string, contextStructs *model.Context, origin *model.Origin, payload map[string]any, db *Database) error {
-	return db.bus.PublishJob(id, automation, payload, contextStructs, origin)
+	db.bus.JobChannel.Publish(&bus.JobMsg{
+		ID:         id,
+		Automation: automation,
+		Origin:     origin,
+		Message: &model.Message{
+			Context: contextStructs,
+			Payload: msg,
+		},
+	})
+	return nil
 }
 
 func generatePayload(msgMapping map[string]string, contextStructs *model.Context) (map[string]any, error) {

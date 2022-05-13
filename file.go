@@ -25,7 +25,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
-func tusdUpload(db *database.Database, bus *bus.Bus, client *s3.S3, external string) http.HandlerFunc {
+func tusdUpload(db *database.Database, catalystBus *bus.Bus, client *s3.S3, external string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ticketID := chi.URLParam(r, "ticketID")
 		if ticketID == "" {
@@ -80,10 +80,11 @@ func tusdUpload(db *database.Database, bus *bus.Bus, client *s3.S3, external str
 				return
 			}
 
-			err = bus.PublishRequest(userID, "LinkFiles", []driver.DocumentID{driver.DocumentID(fmt.Sprintf("tickets/%d", doc.ID))})
-			if err != nil {
-				log.Println(err)
-			}
+			catalystBus.RequestChannel.Publish(&bus.RequestMsg{
+				User:     userID,
+				Function: "LinkFiles",
+				IDs:      []driver.DocumentID{driver.DocumentID(fmt.Sprintf("tickets/%d", doc.ID))},
+			})
 		}()
 
 		switch r.Method {

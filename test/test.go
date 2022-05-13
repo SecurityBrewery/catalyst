@@ -45,11 +45,6 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			User:     "minio",
 			Password: "minio123",
 		},
-		Bus: &bus.Config{
-			Host:   "tcp://localhost:9001",
-			Key:    "A9RysEsPJni8RaHeg_K0FKXQNfBrUyw-",
-			APIUrl: "http://localhost:8002/api",
-		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 		Auth: &catalyst.AuthConfig{
 			OIDCIssuer: "http://localhost:9002/auth/realms/catalyst",
@@ -100,10 +95,7 @@ func Bus(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, error) {
 		t.Fatal(err)
 	}
 
-	catalystBus, err := bus.New(config.Bus)
-	if err != nil {
-		t.Fatal(err)
-	}
+	catalystBus := bus.New()
 
 	return ctx, config, catalystBus, err
 }

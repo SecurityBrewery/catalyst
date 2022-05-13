@@ -8,7 +8,6 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
-	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -41,9 +40,6 @@ type CLI struct {
 	S3User     string `env:"S3_USER"     default:"minio"             name:"s3-user"`
 	S3Password string `env:"S3_PASSWORD" required:""                 name:"s3-password"`
 
-	EmitterIOHost string `env:"EMITTER_IO_HOST" default:"tcp://emitter:8080"`
-	EmitterIORKey string `env:"EMITTER_IO_KEY"  required:""`
-
 	InitialAPIKey string `env:"INITIAL_API_KEY"`
 }
 
@@ -71,6 +67,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		Storage:         &storage.Config{Host: cli.S3Host, User: cli.S3User, Password: cli.S3Password},
 		Secret:          []byte(cli.Secret),
 		ExternalAddress: cli.ExternalAddress,
+		InternalAddress: cli.CatalystAddress,
 		Auth: &catalyst.AuthConfig{
 			OIDCIssuer:        cli.OIDCIssuer,
 			OAuth2:            &oauth2.Config{ClientID: cli.OIDCClientID, ClientSecret: cli.OIDCClientSecret, RedirectURL: cli.ExternalAddress + "/callback", Scopes: scopes},
@@ -81,7 +78,6 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			AuthDefaultRoles:  roles,
 			AuthAdminUsers:    cli.AuthAdminUsers,
 		},
-		Bus:           &bus.Config{Host: cli.EmitterIOHost, Key: cli.EmitterIORKey, APIUrl: cli.CatalystAddress + "/api"},
 		InitialAPIKey: cli.InitialAPIKey,
 	}
 

@@ -3,7 +3,6 @@ package catalyst
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"sync"
 
@@ -49,7 +48,7 @@ func handleWebSocket(catalystBus *bus.Bus) http.HandlerFunc {
 	broker := websocketBroker{clients: map[string]chan []byte{}}
 
 	// send all messages from bus to websocket
-	err := catalystBus.SubscribeDatabaseUpdate(func(msg *bus.DatabaseUpdateMsg) {
+	catalystBus.DatabaseChannel.Subscribe(func(msg *bus.DatabaseUpdateMsg) {
 		b, err := json.Marshal(map[string]any{
 			"action": "update",
 			"ids":    msg.IDs,
@@ -60,9 +59,6 @@ func handleWebSocket(catalystBus *bus.Bus) http.HandlerFunc {
 
 		broker.Publish(b)
 	})
-	if err != nil {
-		log.Println(err)
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, _, _, err := ws.UpgradeHTTP(r, w)
