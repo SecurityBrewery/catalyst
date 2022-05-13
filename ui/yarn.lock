@@ -1235,22 +1235,24 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@koumoul/vjsf@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.11.3.tgz#06c3e8330f1766bceba471323f6b755d4f4dcc17"
-  integrity sha512-mDQQs5YQGi6zN7tgH+Wkx0R2ce33eaQXRKLxNEUQETeASklC379Xuon8xQnLsUmG/iC03dt8yIYfv1pgCQ1+kA==
+"@koumoul/vjsf@2.12.0":
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.12.0.tgz#1f51dd4035a024a7c03641628e73ecb5c38dc0e5"
+  integrity sha512-Wz0LcHBb4odmb4VooIpPgC/DvC7XYmBUI53yc9tAlHb7mfjIUe/9oZimnUs2KyfV4nAEAxecpI4aIi+4aTBYTQ==
   dependencies:
-    "@mdi/js" "^6.5.95"
-    ajv "^8.9.0"
-    ajv-formats "^2.1.1"
-    ajv-i18n "^4.2.0"
     debounce "^1.2.1"
     debug "^4.3.3"
     fast-copy "^2.1.1"
     fast-equals "^2.0.4"
-    markdown-it "^12.3.2"
     match-all "^1.2.6"
-    object-hash "^2.2.0"
+  optionalDependencies:
+    "@mdi/font" "^6.5.95"
+    "@mdi/js" "^6.5.95"
+    ajv "^8.11.0"
+    ajv-formats "^2.1.1"
+    ajv-i18n "^4.2.0"
+    expr-eval "^2.0.2"
+    markdown-it "^12.3.2"
     property-expr "^2.0.5"
     vuedraggable "^2.24.3"
 
@@ -1266,7 +1268,7 @@
   dependencies:
     stream "^0.0.2"
 
-"@mdi/font@6.6.96":
+"@mdi/font@6.6.96", "@mdi/font@^6.5.95":
   version "6.6.96"
   resolved "https://registry.yarnpkg.com/@mdi/font/-/font-6.6.96.tgz#4eee6faee5f44d3ec401d354fb95775cd6699575"
   integrity sha512-FbcvG9z17hwZ7IwX5XeOR1UYGoLq+gTKq6XNPvJFuCpn599GdiPCJbAmmDBJb+jMYXjKYr0lCxfouWGxDA82sA==
@@ -2663,7 +2665,7 @@ ajv-keywords@^3.1.0, ajv-keywords@^3.4.1, ajv-keywords@^3.5.2:
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.5.2.tgz#31f29da5ab6e00d1c2d329acf7b5929614d5014d"
   integrity "sha1-MfKdpatuANHC0yms97WSlhTVAU0= sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ=="
 
-ajv@8.11.0, ajv@^8.0.0, ajv@^8.9.0:
+ajv@8.11.0, ajv@^8.0.0, ajv@^8.11.0:
   version "8.11.0"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.11.0.tgz#977e91dd96ca669f54a11e23e378e33b884a565f"
   integrity sha512-wGgprdCvMalC0BztXvitD2hC04YffAvtsUn93JbGXYLAtCUO4xd17mCCZQxUOItiBwZvJScWo8NIvQMQ71rdpg==
@@ -5790,6 +5792,11 @@ expect@^24.9.0:
     jest-matcher-utils "^24.9.0"
     jest-message-util "^24.9.0"
     jest-regex-util "^24.9.0"
+
+expr-eval@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/expr-eval/-/expr-eval-2.0.2.tgz#fa6f044a7b0c93fde830954eb9c5b0f7fbc7e201"
+  integrity sha512-4EMSHGOPSwAfBiibw3ndnP0AvjDWLsMvGOvWEZ2F96IGk0bIVdjQisOHxReSkE13mHcfbuCiXw+G4y0zv6N8Eg==
 
 express@^4.16.3, express@^4.17.1:
   version "4.17.1"
@@ -9559,11 +9566,6 @@ object-hash@^1.1.4:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.3.1.tgz#fde452098a951cb145f039bb7d455449ddc126df"
   integrity "sha1-/eRSCYqVHLFF8Dm7fUVUSd3BJt8= sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA=="
-
-object-hash@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-2.2.0.tgz#5ad518581eefc443bd763472b8ff2e9c2c0d54a5"
-  integrity sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==
 
 object-inspect@^1.11.0, object-inspect@^1.9.0:
   version "1.11.0"
