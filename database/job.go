@@ -195,6 +195,7 @@ func publishJobMapping(id, automation string, contextStructs *model.Context, ori
 			Payload: msg,
 		},
 	})
+
 	return nil
 }
 
