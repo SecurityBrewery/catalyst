@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/bus"
 	"net/http"
 
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
@@ -145,6 +145,7 @@ func (s *Service) RunArtifact(ctx context.Context, id int64, name string, automa
 			Payload: map[string]string{"default": name},
 		},
 	})
+
 	return nil
 }
 

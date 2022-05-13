@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/arangodb/go-driver"
 
 	"github.com/SecurityBrewery/catalyst/bus"

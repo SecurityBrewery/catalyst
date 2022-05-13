@@ -152,6 +152,7 @@ func (c *Collection[T]) UpdateDocument(ctx context.Context, key string, update a
 	}
 
 	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryUpdated})
+
 	return meta, nil
 }
 
@@ -164,6 +165,7 @@ func (c *Collection[T]) ReplaceDocument(ctx context.Context, key string, documen
 	}
 
 	c.db.bus.DatabaseChannel.Publish(&bus.DatabaseUpdateMsg{IDs: []driver.DocumentID{meta.ID}, Type: bus.DatabaseEntryUpdated})
+
 	return meta, nil
 }
 

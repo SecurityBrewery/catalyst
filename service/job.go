@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/bus"
 
 	"github.com/arangodb/go-driver"
 	"github.com/google/uuid"
 
+	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
