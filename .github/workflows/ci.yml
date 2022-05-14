@@ -140,7 +140,8 @@ jobs:
           timeout: 3m # 3 minutes
           interval: 10s # every 10 seconds
         continue-on-error: true
-      - run: curl -v http://localhost --fail-with-body
+      - run: curl -v http://localhost
+      - run: false
 
       # run cypress
       - run: ./node_modules/.bin/cypress run
