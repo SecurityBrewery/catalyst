@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/arangodb/go-driver"
 
@@ -54,19 +53,29 @@ func main() {
 		Image: &avatarKevin,
 	})
 
+	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "tom", Roles: []string{"admin"}, Password: pointer.String("tom")})
+	_ = theCatalyst.DB.UserDataCreate(context.Background(), "tom", &model.UserData{
+		Name:  pointer.String("tom"),
+		Email: pointer.String("tom@example.com"),
+		Image: &avatarKevin,
+	})
+
 	// proxy static requests
 	middlewares := []func(next http.Handler) http.Handler{
 		catalyst.Authenticate(theCatalyst.DB, config.Auth),
 		catalyst.AuthorizeBlockedUser(),
 	}
-	theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
-		var handler http.Handler = http.HandlerFunc(api.Proxy("http://localhost:8080/static/"))
+	theCatalyst.Server.With(middlewares...).Get("/ui/*", func(writer http.ResponseWriter, request *http.Request) {
+	// theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
+		log.Println("proxy request", request.URL.Path)
 
-		if strings.HasPrefix(request.URL.Path, "/static/") {
-			handler = http.StripPrefix("/static/", handler)
-		} else {
-			request.URL.Path = "/"
-		}
+		var handler http.Handler = http.HandlerFunc(api.Proxy("http://localhost:8080/"))
+
+		// if strings.HasPrefix(request.URL.Path, "/ui/") {
+		// 	handler = http.StripPrefix("/ui/", handler)
+		// } else {
+		// 	request.URL.Path = "/"
+		// }
 
 		handler.ServeHTTP(writer, request)
 	})

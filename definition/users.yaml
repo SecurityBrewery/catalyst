@@ -90,6 +90,7 @@ definitions:
     required: [ id, blocked, roles, apikey ]
     properties:
       id: { type: string }
+      password: { type: string }
       blocked: { type: boolean }
       apikey: { type: boolean }
       roles: { type: array, items: { type: string } }

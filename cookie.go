@@ -37,6 +37,10 @@ func setClaimsCookie(w http.ResponseWriter, claims map[string]any) {
 	http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: base64.StdEncoding.EncodeToString(b)})
 }
 
+func deleteClaimsCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: "", MaxAge: -1})
+}
+
 func claimsCookie(r *http.Request) (map[string]any, bool, error) {
 	userCookie, err := r.Cookie(userSessionCookie)
 	if err != nil {

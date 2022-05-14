@@ -19,6 +19,14 @@ type CLI struct {
 	CatalystAddress string `env:"CATALYST_ADDRESS" default:"http://catalyst:8000"`
 	Network         string `env:"CATALYST_NETWORK" default:"catalyst"`
 
+	AuthBlockNew     bool     `env:"AUTH_BLOCK_NEW"     default:"true" help:"Block newly created users"`
+	AuthDefaultRoles []string `env:"AUTH_DEFAULT_ROLES"               help:"Default roles for new users"`
+	AuthAdminUsers   []string `env:"AUTH_ADMIN_USERS"                 help:"Username of admins"`
+	InitialAPIKey    string   `env:"INITIAL_API_KEY"`
+
+	SimpleAuthEnable bool `env:"SIMPLE_AUTH_ENABLE" default:"true"`
+
+	OIDCEnable        bool     `env:"OIDC_ENABLE"         default:"false"`
 	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
 	OIDCClientID      string   `env:"OIDC_CLIENT_ID"      default:"catalyst"`
 	OIDCClientSecret  string   `env:"OIDC_CLIENT_SECRET"  required:""`
@@ -26,9 +34,6 @@ type CLI struct {
 	OIDCClaimUsername string   `env:"OIDC_CLAIM_USERNAME" default:"preferred_username" help:"username field in the OIDC claim"`
 	OIDCClaimEmail    string   `env:"OIDC_CLAIM_EMAIL"    default:"email"              help:"email field in the OIDC claim"`
 	OIDCClaimName     string   `env:"OIDC_CLAIM_NAME"     default:"name"               help:"name field in the OIDC claim"`
-	AuthBlockNew      bool     `env:"AUTH_BLOCK_NEW"      default:"true"               help:"Block newly created users"`
-	AuthDefaultRoles  []string `env:"AUTH_DEFAULT_ROLES"                               help:"Default roles for new users"`
-	AuthAdminUsers    []string `env:"AUTH_ADMIN_USERS"                                 help:"Username of admins"`
 
 	IndexPath string `env:"INDEX_PATH" default:"index.bleve" help:"Path for the bleve index"`
 
@@ -39,8 +44,6 @@ type CLI struct {
 	S3Host     string `env:"S3_HOST"     default:"http://minio:9000" name:"s3-host"`
 	S3User     string `env:"S3_USER"     default:"minio"             name:"s3-user"`
 	S3Password string `env:"S3_PASSWORD" required:""                 name:"s3-password"`
-
-	InitialAPIKey string `env:"INITIAL_API_KEY"`
 }
 
 func ParseCatalystConfig() (*catalyst.Config, error) {
@@ -69,14 +72,16 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		ExternalAddress: cli.ExternalAddress,
 		InternalAddress: cli.CatalystAddress,
 		Auth: &catalyst.AuthConfig{
+			SimpleAuthEnable:  cli.SimpleAuthEnable,
+			AuthBlockNew:      cli.AuthBlockNew,
+			AuthDefaultRoles:  roles,
+			AuthAdminUsers:    cli.AuthAdminUsers,
+			OIDCEnable:        cli.OIDCEnable,
 			OIDCIssuer:        cli.OIDCIssuer,
 			OAuth2:            &oauth2.Config{ClientID: cli.OIDCClientID, ClientSecret: cli.OIDCClientSecret, RedirectURL: cli.ExternalAddress + "/callback", Scopes: scopes},
 			OIDCClaimUsername: cli.OIDCClaimUsername,
 			OIDCClaimEmail:    cli.OIDCClaimEmail,
 			OIDCClaimName:     cli.OIDCClaimName,
-			AuthBlockNew:      cli.AuthBlockNew,
-			AuthDefaultRoles:  roles,
-			AuthAdminUsers:    cli.AuthAdminUsers,
 		},
 		InitialAPIKey: cli.InitialAPIKey,
 	}

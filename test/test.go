@@ -61,12 +61,12 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			// AuthDefaultRoles:  nil,
 		},
 	}
-	err := config.Auth.Load(ctx)
-	if err != nil {
+
+	if err := config.Auth.Load(ctx); err != nil {
 		return nil, err
 	}
 
-	return config, err
+	return config, nil
 }
 
 func Index(t *testing.T) (*index.Index, func(), error) {

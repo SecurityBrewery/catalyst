@@ -23,24 +23,29 @@ import (
 )
 
 type AuthConfig struct {
-	OIDCIssuer string
-	OAuth2     *oauth2.Config
+	OAuth2 *oauth2.Config
 
-	OIDCClaimUsername string
-	OIDCClaimEmail    string
-	// OIDCClaimGroups   string
-	OIDCClaimName    string
+	AuthProvider     string
 	AuthBlockNew     bool
 	AuthDefaultRoles []role.Role
 	AuthAdminUsers   []string
+
+	SimpleAuthEnable bool
+	APIKeyAuthEnable bool
+
+	OIDCEnable        bool
+	OIDCIssuer        string
+	OIDCClaimUsername string
+	OIDCClaimEmail    string
+	OIDCClaimName     string
+	// OIDCClaimGroups   string
 
 	provider *oidc.Provider
 }
 
 func (c *AuthConfig) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
 	if c.provider == nil {
-		err := c.Load(ctx)
-		if err != nil {
+		if err := c.Load(ctx); err != nil {
 			return nil, err
 		}
 	}
@@ -63,14 +68,22 @@ func Authenticate(db *database.Database, config *AuthConfig) func(next http.Hand
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			keyHeader := r.Header.Get("PRIVATE-TOKEN")
-			authHeader := r.Header.Get("User")
+			authHeader := r.Header.Get("Authorization")
 
 			switch {
 			case keyHeader != "":
-				keyAuth(db, keyHeader)(next).ServeHTTP(w, r)
+				if config.APIKeyAuthEnable {
+					keyAuth(db, keyHeader)(next).ServeHTTP(w, r)
+				} else {
+					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("API Key authentication not enabled"))
+				}
 			case authHeader != "":
-				iss := config.OIDCIssuer
-				bearerAuth(db, authHeader, iss, config)(next).ServeHTTP(w, r)
+				if config.OIDCEnable {
+					iss := config.OIDCIssuer
+					bearerAuth(db, authHeader, iss, config)(next).ServeHTTP(w, r)
+				} else {
+					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("OIDC authentication not enabled"))
+				}
 			default:
 				sessionAuth(db, config)(next).ServeHTTP(w, r)
 			}
@@ -174,8 +187,7 @@ func setContextClaims(r *http.Request, db *database.Database, claims map[string]
 		return nil, err
 	}
 
-	_, err = db.UserDataGetOrCreate(r.Context(), newUser.ID, newSetting)
-	if err != nil {
+	if _, err = db.UserDataGetOrCreate(r.Context(), newUser.ID, newSetting); err != nil {
 		return nil, err
 	}
 
@@ -207,6 +219,7 @@ func mapUserAndSettings(claims map[string]any, config *AuthConfig) (*model.UserF
 	if err != nil {
 		return nil, nil, err
 	}
+
 	email, err := getString(claims, config.OIDCClaimEmail)
 	if err != nil {
 		email = ""
@@ -301,6 +314,45 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 	}
 }
 
+func login(db *database.Database) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		username := r.Form.Get("username")
+		password := r.Form.Get("password")
+
+		passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
+		user, err := db.UserByIDAndHash(r.Context(), username, passwordHash)
+		if err != nil {
+			http.Redirect(w, r, "/login?error=wrong", http.StatusFound)
+
+			return
+		}
+
+		userdata, err := db.UserDataGet(r.Context(), user.ID)
+		if err != nil {
+			http.Redirect(w, r, "/login?error=wrong", http.StatusFound)
+
+			return
+		}
+
+		setClaimsCookie(w, map[string]any{
+			"preferred_username": user.ID,
+			"name":               userdata.Name,
+			"email":              userdata.Email,
+		})
+
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
+
+func logout() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		deleteClaimsCookie(w)
+
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
+
 func callback(config *AuthConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		state, err := stateCookie(r)
@@ -358,6 +410,7 @@ func verifyClaims(r *http.Request, config *AuthConfig, rawIDToken string) (map[s
 	if err != nil {
 		return nil, &api.HTTPError{Status: http.StatusUnauthorized, Internal: fmt.Errorf("could not verify: %w", err)}
 	}
+
 	authToken, err := verifier.Verify(r.Context(), rawIDToken)
 	if err != nil {
 		return nil, &api.HTTPError{Status: http.StatusInternalServerError, Internal: fmt.Errorf("could not verify bearer token: %w", err)}

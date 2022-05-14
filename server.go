@@ -2,7 +2,7 @@ package catalyst
 
 import (
 	"context"
-	"io/fs"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,7 +21,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/service"
 	"github.com/SecurityBrewery/catalyst/storage"
-	"github.com/SecurityBrewery/catalyst/ui"
 )
 
 type Config struct {
@@ -50,8 +49,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
 	defer cancel()
 
-	err := config.Auth.Load(ctx)
-	if err != nil {
+	if err := config.Auth.Load(ctx); err != nil {
 		return nil, err
 	}
 
@@ -130,12 +128,52 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, cors.AllowAll().Handler)
 	server.Mount("/api", apiServer)
-
-	server.Get("/callback", callback(config.Auth))
 	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
 
-	fsys, _ := fs.Sub(ui.UI, "dist")
-	server.With(middlewares...).NotFound(api.VueStatic(fsys))
+	if config.Auth.OIDCEnable {
+		server.Get("/callback", callback(config.Auth))
+	}
+
+	if config.Auth.SimpleAuthEnable {
+		server.Get("/login", func(writer http.ResponseWriter, request *http.Request) {
+			if request.FormValue("action") == "submit" {
+				login(catalystDatabase).ServeHTTP(writer, request)
+				return
+			}
+
+			writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+			if request.FormValue("error") == "wrong" {
+				fmt.Fprintf(writer, temp, "Wrong username or password.")
+			} else {
+				fmt.Fprintf(writer, temp, "")
+			}
+		})
+	}
+
+	server.Get("/logout", logout())
+
+	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		_, noCookie, err := claimsCookie(r)
+		if err != nil {
+			api.JSONError(w, err)
+
+			return
+		}
+		if noCookie {
+			if config.Auth.OIDCEnable {
+				redirectToLogin(w, r, config.Auth.OAuth2)
+
+				return
+			} else if config.Auth.SimpleAuthEnable {
+				http.Redirect(w, r, "/login", http.StatusFound)
+
+				return
+			}
+		}
+
+		http.Redirect(w, r, "/ui/", http.StatusFound)
+	})
 
 	return server, nil
 }

@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
@@ -92,6 +93,8 @@ func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*m
 	if newUser.Apikey {
 		key = generateKey()
 		hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
+	} else if newUser.Password != nil {
+		hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(*newUser.Password))))
 	}
 
 	var doc model.User
@@ -164,10 +167,31 @@ func (db *Database) UserList(ctx context.Context) ([]*model.UserResponse, error)
 
 func (db *Database) UserByHash(ctx context.Context, sha256 string) (*model.UserResponse, error) {
 	query := `FOR d in @@collection
-	FILTER d.sha256 == @sha256
+	FILTER d.apikey && d.sha256 == @sha256
 	RETURN d`
 
 	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserCollectionName, "sha256": sha256}, busdb.ReadOperation)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close()
+
+	var doc model.User
+	meta, err := cursor.ReadDocument(ctx, &doc)
+	if err != nil {
+		return nil, err
+	}
+
+	return toUserResponse(meta.Key, &doc), err
+}
+
+func (db *Database) UserByIDAndHash(ctx context.Context, id, sha256 string) (*model.UserResponse, error) {
+	log.Println("UserByIDAndHash", id, sha256)
+	query := `FOR d in @@collection
+	FILTER d._key == @id && !d.apikey && d.sha256 == @sha256
+	RETURN d`
+
+	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserCollectionName, "id": id, "sha256": sha256}, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +213,7 @@ func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserF
 		return nil, err
 	}
 
-	if doc.Sha256 != nil {
+	if doc.Apikey {
 		return nil, errors.New("cannot update an API key")
 	}
 

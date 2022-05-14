@@ -2287,6 +2287,12 @@ export interface UserForm {
     'id': string;
     /**
      * 
+     * @type {string}
+     * @memberof UserForm
+     */
+    'password'?: string;
+    /**
+     * 
      * @type {Array<string>}
      * @memberof UserForm
      */

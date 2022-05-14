@@ -4,7 +4,7 @@
       <v-list>
         <v-list-item class="px-2" :to="{ name: 'Home' }">
           <v-list-item-avatar rounded="0">
-            <v-img src="/static/flask_white.svg" :width="40"></v-img>
+            <v-img src="/ui/flask_white.svg" :width="40"></v-img>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="title">
@@ -124,12 +124,31 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn :to="{ name: 'Profile' }" icon>
-        <v-avatar v-if="$store.state.userdata.image" size="32">
-          <v-img :src="$store.state.userdata.image"></v-img>
-        </v-avatar>
-        <v-icon v-else>mdi-account-circle</v-icon>
-      </v-btn>
+      <v-menu left bottom :offset-y="10">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+              icon
+              v-bind="attrs"
+              v-on="on"
+          >
+            <v-avatar v-if="$store.state.userdata.image" size="32">
+              <v-img :src="$store.state.userdata.image"></v-img>
+            </v-avatar>
+            <v-icon v-else>mdi-account-circle</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item :to="{ name: 'Profile' }">
+            <v-list-item-title>Account</v-list-item-title>
+            <v-list-item-icon><v-icon>mdi-account-circle</v-icon></v-list-item-icon>
+          </v-list-item>
+          <v-list-item href="/logout">
+            <v-list-item-title>Logout</v-list-item-title>
+            <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
     </v-app-bar>
     <router-view></router-view>
