@@ -47,7 +47,10 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 		Auth: &catalyst.AuthConfig{
-			OIDCIssuer: "http://localhost:9002/auth/realms/catalyst",
+			SimpleAuthEnable: true,
+			APIKeyAuthEnable: true,
+			OIDCEnable:       true,
+			OIDCIssuer:       "http://localhost:9002/auth/realms/catalyst",
 			OAuth2: &oauth2.Config{
 				ClientID:     "catalyst",
 				ClientSecret: "13d4a081-7395-4f71-a911-bc098d8d3c45",

@@ -66,7 +66,7 @@ func main() {
 		catalyst.AuthorizeBlockedUser(),
 	}
 	theCatalyst.Server.With(middlewares...).Get("/ui/*", func(writer http.ResponseWriter, request *http.Request) {
-	// theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
+		// theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
 		log.Println("proxy request", request.URL.Path)
 
 		var handler http.Handler = http.HandlerFunc(api.Proxy("http://localhost:8080/"))

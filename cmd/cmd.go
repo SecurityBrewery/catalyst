@@ -25,6 +25,7 @@ type CLI struct {
 	InitialAPIKey    string   `env:"INITIAL_API_KEY"`
 
 	SimpleAuthEnable bool `env:"SIMPLE_AUTH_ENABLE" default:"true"`
+	APIKeyAuthEnable bool `env:"API_KEY_AUTH_ENABLE" default:"true"`
 
 	OIDCEnable        bool     `env:"OIDC_ENABLE"         default:"false"`
 	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
@@ -73,6 +74,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		InternalAddress: cli.CatalystAddress,
 		Auth: &catalyst.AuthConfig{
 			SimpleAuthEnable:  cli.SimpleAuthEnable,
+			APIKeyAuthEnable:  cli.APIKeyAuthEnable,
 			AuthBlockNew:      cli.AuthBlockNew,
 			AuthDefaultRoles:  roles,
 			AuthAdminUsers:    cli.AuthAdminUsers,

@@ -113,7 +113,7 @@ jobs:
           url: 'http://localhost:8080'
           responseCode: 200
 
-      # run containers
+      # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
         shell: bash
       - run: docker-compose up --quiet-pull --detach
@@ -129,7 +129,8 @@ jobs:
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - run: go mod download
-      - run: bash start_dev.sh &
+      - run: bash start_dev_with_keycloak.sh &
+        working-directory: dev
       - uses: cugu/wait_for_response@v1.8.0
         with:
           url: 'http://localhost:8000'

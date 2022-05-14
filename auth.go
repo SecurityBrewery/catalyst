@@ -316,7 +316,7 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 
 func login(db *database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
+		_ = r.ParseForm()
 		username := r.Form.Get("username")
 		password := r.Form.Get("password")
 

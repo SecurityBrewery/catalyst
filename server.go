@@ -138,6 +138,7 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 		server.Get("/login", func(writer http.ResponseWriter, request *http.Request) {
 			if request.FormValue("action") == "submit" {
 				login(catalystDatabase).ServeHTTP(writer, request)
+
 				return
 			}
 
