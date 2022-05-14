@@ -143,7 +143,7 @@
             <v-list-item-title>Account</v-list-item-title>
             <v-list-item-icon><v-icon>mdi-account-circle</v-icon></v-list-item-icon>
           </v-list-item>
-          <v-list-item href="/logout">
+          <v-list-item @click="logout">
             <v-list-item-title>Logout</v-list-item-title>
             <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
           </v-list-item>
@@ -248,6 +248,11 @@ export default Vue.extend({
         return this.lodash.includes(this.$store.state.user.roles, s);
       }
       return false;
+    },
+    logout: function () {
+      this.axios.post("/logout").then(() => {
+          window.location.href = "/";
+      })
     }
   },
   mounted() {

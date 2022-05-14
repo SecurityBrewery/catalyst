@@ -133,7 +133,7 @@ jobs:
         working-directory: dev
       - uses: cugu/wait_for_response@v1.8.0
         with:
-          url: 'http://localhost:8000'
+          url: 'http://localhost'
           responseCode: 302
           verbose: true
           timeout: 3m # 3 minutes

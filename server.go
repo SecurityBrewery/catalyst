@@ -2,6 +2,7 @@ package catalyst
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -152,7 +153,7 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 		})
 	}
 
-	server.Get("/logout", logout())
+	server.Post("/logout", logout())
 
 	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, noCookie, err := claimsCookie(r)
@@ -161,19 +162,17 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 
 			return
 		}
-		if noCookie {
-			if config.Auth.OIDCEnable {
-				redirectToLogin(w, r, config.Auth.OAuth2)
 
-				return
-			} else if config.Auth.SimpleAuthEnable {
-				http.Redirect(w, r, "/login", http.StatusFound)
-
-				return
-			}
+		switch {
+		case noCookie && config.Auth.SimpleAuthEnable:
+			http.Redirect(w, r, "/login", http.StatusFound)
+		case noCookie && config.Auth.OIDCEnable:
+			redirectToOIDCLogin(w, r, config.Auth.OAuth2)
+		case noCookie:
+			api.JSONError(w, errors.New("user authentication disabled"))
+		default:
+			http.Redirect(w, r, "/ui/", http.StatusFound)
 		}
-
-		http.Redirect(w, r, "/ui/", http.StatusFound)
 	})
 
 	return server, nil
