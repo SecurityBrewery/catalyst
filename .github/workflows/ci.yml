@@ -131,7 +131,7 @@ jobs:
       - run: go mod download
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-      - uses: cugu/wait_for_response@v1.9.0
+      - uses: cugu/wait_for_response@v1.10.0
         with:
           url: 'http://localhost'
           method: GET
