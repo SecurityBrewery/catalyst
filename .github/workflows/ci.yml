@@ -108,7 +108,7 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - uses: cugu/wait_for_response@v1.11.0
+      - uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
@@ -119,7 +119,7 @@ jobs:
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
-      - uses: cugu/wait_for_response@v1.11.0
+      - uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
@@ -131,7 +131,7 @@ jobs:
       - run: go mod download
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-      - uses: cugu/wait_for_response@v1.11.0
+      - uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost'
           method: GET
