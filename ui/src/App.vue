@@ -124,7 +124,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-menu left bottom :offset-y="10">
+      <v-menu left bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
               icon

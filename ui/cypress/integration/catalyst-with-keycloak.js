@@ -3,11 +3,9 @@ describe('user', () => {
         cy.visit('/');
 
         // login
-        cy.get("body > div > div > div > form > div:nth-child(1) > label").click();
-        cy.get("#username").type("tom");
-        cy.get("body > div > div > div > form > div:nth-child(2) > label").click();
-        cy.get("#password").type("tom");
-        cy.get("#submit").click();
+        cy.get("#username").type("bob");
+        cy.get("#password").type("bob");
+        cy.get("#kc-login").click();
 
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })

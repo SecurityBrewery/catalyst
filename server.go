@@ -50,8 +50,10 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
 	defer cancel()
 
-	if err := config.Auth.Load(ctx); err != nil {
-		return nil, err
+	if config.Auth.OIDCEnable {
+		if err := config.Auth.Load(ctx); err != nil {
+			return nil, err
+		}
 	}
 
 	catalystStorage, err := storage.New(config.Storage)

@@ -29,7 +29,7 @@ const temp = `
 							<label for="password">Password</label>
 						</div>
 						
-						<button type="submit" name="action" value="submit" class="waves-effect waves-light btn">Submit</button>
+						<button id="submit" type="submit" name="action" value="submit" class="waves-effect waves-light btn">Submit</button>
 					</form>
 				</div>
 			</div>

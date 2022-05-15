@@ -21,32 +21,6 @@ services:
     command: server /data -console-address ":9003"
     networks: [ catalyst ]
 
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-    networks: [ catalyst ]
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:14.0.0
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: /tmp/realm.json
-      PROXY_ADDRESS_FORWARDING: "true"
-    volumes:
-      - ./keycloak/realm.json:/tmp/realm.json
-    depends_on: [ postgres ]
-    networks: [ catalyst ]
-
 networks:
   catalyst:
     name: catalyst
