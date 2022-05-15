@@ -10,7 +10,7 @@ describe('user', () => {
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })
 
-        cy.origin('http://localhost', () => {
+        cy.origin('http://localhost/ui/', () => {
             cy.visit('/tickets');
 
             // clear caql
@@ -22,7 +22,7 @@ describe('user', () => {
                 .click()
 
             // assert url
-            cy.url().should('eq', "http://localhost/tickets/8123")
+            cy.url().should('eq', "http://localhost/ui/tickets/8123")
 
             // assert title
             cy.get("#\\38 123 > div > div > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div > div.col-lg-8.col-12 > h1")

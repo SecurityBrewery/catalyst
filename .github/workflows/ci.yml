@@ -108,7 +108,8 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - uses: cugu/wait_for_response@v1.12.0
+      - name: Wait for frontend
+        uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
@@ -119,7 +120,8 @@ jobs:
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
-      - uses: cugu/wait_for_response@v1.12.0
+      - name: Wait for keycloak
+        uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
@@ -131,7 +133,8 @@ jobs:
       - run: go mod download
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-      - uses: cugu/wait_for_response@v1.12.0
+      - name: Wait for catalyst
+        uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost'
           method: GET
@@ -140,8 +143,6 @@ jobs:
           timeout: 3m # 3 minutes
           interval: 10s # every 10 seconds
         continue-on-error: true
-      - run: curl -v http://localhost
-      - run: curl -vI http://localhost
 
       # run cypress
       - run: ./node_modules/.bin/cypress run
