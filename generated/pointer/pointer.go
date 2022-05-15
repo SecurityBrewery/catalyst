@@ -2,10 +2,6 @@ package pointer
 
 import "time"
 
-func Pointer[T](x T) *T {
-	return &x
-}
-
 func String(v string) *string {
 	return &v
 }

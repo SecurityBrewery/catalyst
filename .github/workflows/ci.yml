@@ -120,11 +120,6 @@ jobs:
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
-      - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:9002/auth/realms/catalyst'
-          responseCode: 200
 
       # run catalyst
       - run: |
@@ -178,7 +173,7 @@ jobs:
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
         shell: bash
-      - run: docker-compose up --quiet-pull --detach -f docker-compose-with-keycloak.yml
+      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
         shell: bash
       - name: Wait for keycloak

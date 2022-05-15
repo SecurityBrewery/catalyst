@@ -40,20 +40,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "eve", Roles: []string{"admin"}, Password: pointer.Pointer("eve")})
+	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "eve", Roles: []string{"admin"}, Password: pointer.String("eve")})
 	_ = theCatalyst.DB.UserDataCreate(context.Background(), "eve", &model.UserData{
 		Name:  pointer.String("Eve"),
 		Email: pointer.String("eve@example.com"),
 		Image: &avatarEve,
 	})
-	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "kevin", Roles: []string{"admin"}, Password: pointer.Pointer("kevin")})
+	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "kevin", Roles: []string{"admin"}, Password: pointer.String("kevin")})
 	_ = theCatalyst.DB.UserDataCreate(context.Background(), "kevin", &model.UserData{
 		Name:  pointer.String("Kevin"),
 		Email: pointer.String("kevin@example.com"),
 		Image: &avatarKevin,
 	})
 
-	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "tom", Roles: []string{"admin"}, Password: pointer.Pointer("tom")})
+	_, _ = theCatalyst.DB.UserCreate(context.Background(), &model.UserForm{ID: "tom", Roles: []string{"admin"}, Password: pointer.String("tom")})
 	_ = theCatalyst.DB.UserDataCreate(context.Background(), "tom", &model.UserData{
 		Name:  pointer.String("tom"),
 		Email: pointer.String("tom@example.com"),
