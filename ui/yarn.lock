@@ -1268,7 +1268,12 @@
   dependencies:
     stream "^0.0.2"
 
-"@mdi/font@6.6.96", "@mdi/font@^6.5.95":
+"@mdi/font@6.7.96":
+  version "6.7.96"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-6.7.96.tgz#1686425ba291b90ea02a87292a565c6d0c854afe"
+  integrity sha512-M68vlRhtmA/SpDjo2dV3SUZus20jrU9Zp2ggslfzh0cbFpygPukcVpBIA3pErwsukhYt4RfbgXpFi74SjixOrQ==
+
+"@mdi/font@^6.5.95":
   version "6.6.96"
   resolved "https://registry.yarnpkg.com/@mdi/font/-/font-6.6.96.tgz#4eee6faee5f44d3ec401d354fb95775cd6699575"
   integrity sha512-FbcvG9z17hwZ7IwX5XeOR1UYGoLq+gTKq6XNPvJFuCpn599GdiPCJbAmmDBJb+jMYXjKYr0lCxfouWGxDA82sA==
