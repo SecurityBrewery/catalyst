@@ -155,7 +155,7 @@ func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handl
 				return
 			}
 			if noCookie {
-				redirectToOIDCLogin(w, r, config.OAuth2)
+				redirectToLogin(w, r, config)
 
 				return
 			}
@@ -257,7 +257,13 @@ func getString(m map[string]any, key string) (string, error) {
 	return "", fmt.Errorf("mapping of %s failed, missing value", key)
 }
 
-func redirectToOIDCLogin(w http.ResponseWriter, r *http.Request, oauth2Config *oauth2.Config) {
+func redirectToLogin(w http.ResponseWriter, r *http.Request, config *AuthConfig) {
+	if config.SimpleAuthEnable {
+		http.Redirect(w, r, "/login", http.StatusFound)
+
+		return
+	}
+
 	state, err := state()
 	if err != nil {
 		api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
@@ -267,7 +273,7 @@ func redirectToOIDCLogin(w http.ResponseWriter, r *http.Request, oauth2Config *o
 
 	setStateCookie(w, state)
 
-	http.Redirect(w, r, oauth2Config.AuthCodeURL(state), http.StatusFound)
+	http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
 
 	return
 }

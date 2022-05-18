@@ -4,7 +4,7 @@ services:
     image: nginx:1.21
     volumes:
       - ./nginx-with-keycloak.conf:/etc/nginx/nginx.conf:ro
-    ports: [ "80:80", "8529:8529", "9000:9000", "9001:9001", "9002:9002", "9003:9003" ]
+    ports: [ "80:80", "8529:8529", "9000:9000", "9002:9002", "9003:9003" ]
     networks: [ catalyst ]
 
   arangodb:

@@ -2,7 +2,6 @@ package catalyst
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -166,12 +165,8 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 		}
 
 		switch {
-		case noCookie && config.Auth.SimpleAuthEnable:
-			http.Redirect(w, r, "/login", http.StatusFound)
-		case noCookie && config.Auth.OIDCEnable:
-			redirectToOIDCLogin(w, r, config.Auth.OAuth2)
 		case noCookie:
-			api.JSONError(w, errors.New("user authentication disabled"))
+			redirectToLogin(w, r, config.Auth)
 		default:
 			http.Redirect(w, r, "/ui/", http.StatusFound)
 		}

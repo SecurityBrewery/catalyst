@@ -1,34 +1,25 @@
 describe('user', () => {
     it('open ticket', () => {
-        cy.visit('/');
-
-        // login
-        cy.get("body > div > div > div > form > div:nth-child(1) > label").click();
-        cy.get("#username").type("tom");
-        cy.get("body > div > div > div > form > div:nth-child(2) > label").click();
-        cy.get("#password").type("tom");
-        cy.get("#submit").click();
+        cy.login();
 
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })
 
-        cy.origin('http://localhost/ui', () => {
-            cy.visit('/tickets');
+        cy.visit('http://localhost/ui/tickets');
 
-            // clear caql
-            cy.get("#app > div > main > div > div > div > div > header > div > div.v-input.v-input--hide-details.v-input--is-label-active.v-input--is-dirty.v-input--dense.theme--light.v-text-field.v-text-field--single-line.v-text-field--solo.v-text-field--solo-flat.v-text-field--is-booted.v-text-field--enclosed.v-text-field--placeholder > div > div > div:nth-child(2) > div > button")
-                .click();
+        // clear caql
+        cy.get("#app > div > main > div > div > div > div > header > div > div.v-input.v-input--hide-details.v-input--is-label-active.v-input--is-dirty.v-input--dense.theme--light.v-text-field.v-text-field--single-line.v-text-field--solo.v-text-field--solo-flat.v-text-field--is-booted.v-text-field--enclosed.v-text-field--placeholder > div > div > div:nth-child(2) > div > button")
+            .click();
 
-            // open ticket
-            cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1) > td > a")
-                .click()
+        // open ticket
+        cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1) > td > a")
+            .click()
 
-            // assert url
-            cy.url().should('eq', "http://localhost/ui/tickets/8123")
+        // assert url
+        cy.url().should('eq', "http://localhost/ui/tickets/8123")
 
-            // assert title
-            cy.get("#\\38 123 > div > div > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div > div.col-lg-8.col-12 > h1")
-                .should("have.text", " Incident  #8123:  live zebra ")
-        })
+        // assert title
+        cy.get("#\\38 123 > div > div > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div > div.col-lg-8.col-12 > h1")
+            .should("have.text", " Incident  #8123:  live zebra ")
     })
 })
