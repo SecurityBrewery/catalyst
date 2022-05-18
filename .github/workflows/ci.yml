@@ -171,7 +171,7 @@ jobs:
           responseCode: 200
 
       # run containers
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
         shell: bash
       - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
