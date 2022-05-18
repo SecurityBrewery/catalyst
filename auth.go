@@ -398,7 +398,7 @@ func callback(config *AuthConfig) http.HandlerFunc {
 
 		setClaimsCookie(w, claims)
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/ui/", http.StatusFound)
 	}
 }
 

@@ -10,7 +10,7 @@ describe('user', () => {
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })
 
-        cy.origin('http://localhost/ui', () => {
+        cy.origin('http://localhost/ui/', () => {
             cy.visit('/tickets');
 
             // clear caql
