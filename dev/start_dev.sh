@@ -1,5 +1,6 @@
 export SECRET=4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd
 
+export OIDC_ENABLE=true
 export OIDC_ISSUER=http://localhost:9002/auth/realms/catalyst
 export OIDC_CLIENT_SECRET=d3ec0d91-b6ea-482d-8a4e-2f5a7ca0b4cb
 
