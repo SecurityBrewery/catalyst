@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -155,7 +156,7 @@ func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handl
 				return
 			}
 			if noCookie {
-				redirectToLogin(w, r, config)
+				redirectToLogin(config)(w, r)
 
 				return
 			}
@@ -257,25 +258,29 @@ func getString(m map[string]any, key string) (string, error) {
 	return "", fmt.Errorf("mapping of %s failed, missing value", key)
 }
 
-func redirectToLogin(w http.ResponseWriter, r *http.Request, config *AuthConfig) {
+func redirectToLogin(config *AuthConfig) func(http.ResponseWriter, *http.Request) {
 	if config.SimpleAuthEnable {
-		http.Redirect(w, r, "/login", http.StatusFound)
-
-		return
+		return func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+		}
 	}
 
-	state, err := state()
-	if err != nil {
-		api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
+	return redirectToOIDCLogin(config)
+}
 
-		return
+func redirectToOIDCLogin(config *AuthConfig) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state, err := state()
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
+
+			return
+		}
+
+		setStateCookie(w, state)
+
+		http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
 	}
-
-	setStateCookie(w, state)
-
-	http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
-
-	return
 }
 
 func AuthorizeBlockedUser() func(http.Handler) http.Handler {
@@ -322,21 +327,29 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 
 func login(db *database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r.ParseForm()
-		username := r.Form.Get("username")
-		password := r.Form.Get("password")
+		type credentials struct {
+			Username string
+			Password string
+		}
 
-		passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
-		user, err := db.UserByIDAndHash(r.Context(), username, passwordHash)
+		var cr credentials
+		if err := json.NewDecoder(r.Body).Decode(&cr); err != nil {
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
+
+			return
+		}
+
+		passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(cr.Password)))
+		user, err := db.UserByIDAndHash(r.Context(), cr.Username, passwordHash)
 		if err != nil {
-			http.Redirect(w, r, "/login?error=wrong", http.StatusFound)
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
 
 			return
 		}
 
 		userdata, err := db.UserDataGet(r.Context(), user.ID)
 		if err != nil {
-			http.Redirect(w, r, "/login?error=wrong", http.StatusFound)
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
 
 			return
 		}

@@ -2,7 +2,6 @@ package catalyst
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -137,39 +136,18 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 	}
 
 	if config.Auth.SimpleAuthEnable {
-		server.Get("/login", func(writer http.ResponseWriter, request *http.Request) {
-			if request.FormValue("action") == "submit" {
-				login(catalystDatabase).ServeHTTP(writer, request)
+		server.Post("/login", login(catalystDatabase))
+	}
 
-				return
-			}
-
-			writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-			if request.FormValue("error") == "wrong" {
-				fmt.Fprintf(writer, temp, "Wrong username or password.")
-			} else {
-				fmt.Fprintf(writer, temp, "")
-			}
-		})
+	if config.Auth.SimpleAuthEnable && config.Auth.OIDCEnable {
+		server.Get("/hasoidc", func(writer http.ResponseWriter, request *http.Request) {})
+		server.Get("/oidclogin", redirectToOIDCLogin(config.Auth))
 	}
 
 	server.Post("/logout", logout())
 
 	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		_, noCookie, err := claimsCookie(r)
-		if err != nil {
-			api.JSONError(w, err)
-
-			return
-		}
-
-		switch {
-		case noCookie:
-			redirectToLogin(w, r, config.Auth)
-		default:
-			http.Redirect(w, r, "/ui/", http.StatusFound)
-		}
+		http.Redirect(w, r, "/ui/", http.StatusFound)
 	})
 
 	return server, nil

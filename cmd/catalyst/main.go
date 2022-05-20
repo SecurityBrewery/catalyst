@@ -25,12 +25,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	middlewares := []func(next http.Handler) http.Handler{
-		catalyst.Authenticate(theCatalyst.DB, config.Auth),
-		catalyst.AuthorizeBlockedUser(),
-	}
 	fsys, _ := fs.Sub(ui.UI, "dist")
-	theCatalyst.Server.With(middlewares...).Get("/ui/*", api.Static(fsys))
+	theCatalyst.Server.Get("/ui/*", api.Static(fsys))
 
 	if err := http.ListenAndServe(":8000", theCatalyst.Server); err != nil {
 		log.Fatal(err)

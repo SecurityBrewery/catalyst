@@ -61,11 +61,7 @@ func main() {
 	})
 
 	// proxy static requests
-	middlewares := []func(next http.Handler) http.Handler{
-		catalyst.Authenticate(theCatalyst.DB, config.Auth),
-		catalyst.AuthorizeBlockedUser(),
-	}
-	theCatalyst.Server.With(middlewares...).Get("/ui/*", func(writer http.ResponseWriter, request *http.Request) {
+	theCatalyst.Server.Get("/ui/*", func(writer http.ResponseWriter, request *http.Request) {
 		// theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
 		log.Println("proxy request", request.URL.Path)
 
