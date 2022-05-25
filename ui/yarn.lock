@@ -1243,10 +1243,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@koumoul/vjsf@2.13.0":
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.13.0.tgz#9fa0df73a221e708a38cf00eebadcf4e70e802b3"
-  integrity sha512-/aLRB3CPgzv25bO3QI3ot2JTcgeQwomNTv35A01D+dwck5cxrosKAt4bNRT67j16I3m3qMmAwUKK229cOLtwGw==
+"@koumoul/vjsf@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.13.1.tgz#b03366a661b1679788922401691acd830213f930"
+  integrity sha512-OHBK6a7Hp8MZax6UX9qSdc0hK2PxM42pIxqvTrWbTjk9uRPnnFvrs6AfP07PNDmCJLqI2dOe2KZ+DXCGJ/yb+A==
   dependencies:
     debounce "^1.2.1"
     debug "^4.3.3"
