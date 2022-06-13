@@ -39,7 +39,8 @@ func (j *Jar) setStateCookie(w http.ResponseWriter, state string) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{Name: stateSessionCookie, Value: encoded, Path: "/", Expires: time.Now().AddDate(0, 0, 1)})
+	tomorrow := time.Now().AddDate(0, 0, 1)
+	http.SetCookie(w, &http.Cookie{Name: stateSessionCookie, Value: encoded, Path: "/", Expires: tomorrow})
 }
 
 func (j *Jar) stateCookie(r *http.Request) (string, error) {
@@ -62,7 +63,8 @@ func (j *Jar) setClaimsCookie(w http.ResponseWriter, claims map[string]any) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: encoded, Path: "/", Expires: time.Now().AddDate(0, 0, 1)})
+	tomorrow := time.Now().AddDate(0, 0, 1)
+	http.SetCookie(w, &http.Cookie{Name: userSessionCookie, Value: encoded, Path: "/", Expires: tomorrow})
 }
 
 func deleteClaimsCookie(w http.ResponseWriter) {
@@ -77,8 +79,6 @@ func (j *Jar) claimsCookie(r *http.Request) (map[string]any, bool, error) {
 
 	var claims map[string]any
 	err = j.store.Decode(userSessionCookie, userCookie.Value, &claims)
-
-	log.Println("claims:", claims)
 
 	return claims, false, err
 }

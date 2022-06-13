@@ -14,10 +14,18 @@
               <v-text-field id="username" name="username" label="Name" v-model="username" :rules="[
                 v => !!v || 'Name is required',
               ]"></v-text-field>
-              <v-text-field id="password" name="password" label="Password" type="password" v-model="password" :rules="[
-                v => !!v || 'Password is required',
-                // v => (v && v.length > 8) || 'Password must be more than 8 characters',
-              ]"></v-text-field>
+              <v-text-field
+                  id="password"
+                  name="password"
+                  label="Password"
+                  :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="show ? 'text' : 'password'"
+                  @click:append="show = !show"
+                  v-model="password"
+                  :rules="[
+                    v => !!v || 'Password is required',
+                    // v => (v && v.length > 8) || 'Password must be more than 8 characters',
+                  ]"></v-text-field>
             </v-card-text>
             <v-card-actions class="justify-center">
               <v-btn v-if="hasoidc" text href="/auth/oidclogin">
@@ -192,6 +200,7 @@ export default Vue.extend({
   name: "App",
   components: {AppLink},
   data: () => ({
+    show: false,
     hassimple: false,
     hasoidc: false,
     username: "",

@@ -46,10 +46,10 @@ type Server struct {
 
 func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute*10)
 	defer cancel()
 
-	if config.Auth.OIDCEnable {
+	if config.Auth.OIDCAuthEnable {
 		if err := config.Auth.Load(ctx); err != nil {
 			return nil, err
 		}
@@ -111,7 +111,10 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
 	secureJar := auth.NewJar(config.Secret)
 
-	middlewares := []func(next http.Handler) http.Handler{auth.Authenticate(catalystDatabase, config.Auth, secureJar), auth.AuthorizeBlockedUser()}
+	middlewares := []func(next http.Handler) http.Handler{
+		auth.Authenticate(catalystDatabase, config.Auth, secureJar),
+		auth.AuthorizeBlockedUser(),
+	}
 
 	// create server
 	apiServer := api.NewServer(catalystService, auth.AuthorizeRole, middlewares...)

@@ -2191,7 +2191,19 @@ export interface User {
      * @type {string}
      * @memberof User
      */
+    'salt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
     'sha256'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    'sha512'?: string;
 }
 /**
  * 

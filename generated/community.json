@@ -6510,7 +6510,13 @@
             },
             "type" : "array"
           },
+          "salt" : {
+            "type" : "string"
+          },
           "sha256" : {
+            "type" : "string"
+          },
+          "sha512" : {
             "type" : "string"
           }
         },

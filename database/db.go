@@ -2,8 +2,10 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
@@ -67,17 +69,25 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 		name = Name
 	}
 
-	conn, err := http.NewConnection(http.ConnectionConfig{Endpoints: []string{config.Host}})
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	var client driver.Client
+	for {
+		deadline, ok := ctx.Deadline()
+		if ok && time.Until(deadline) < 0 {
+			return nil, context.DeadlineExceeded
+		}
 
-	client, err := driver.NewClient(driver.ClientConfig{
-		Connection:     conn,
-		Authentication: driver.BasicAuthentication(config.User, config.Password),
-	})
-	if err != nil {
-		return nil, err
+		client, err = getClient(ctx, config)
+		if err == nil {
+			break
+		}
+
+		if errors.Is(err, context.DeadlineExceeded) {
+			return nil, errors.New("could not load database, connection timed out")
+		}
+
+		log.Printf("could not connect to database: %s, retrying in 10 seconds\n", err)
+		time.Sleep(time.Second * 10)
 	}
 
 	hooks.DatabaseAfterConnect(ctx, client, name)
@@ -162,10 +172,31 @@ func New(ctx context.Context, index *index.Index, bus *bus.Bus, hooks *hooks.Hoo
 	return db, nil
 }
 
+func getClient(ctx context.Context, config *Config) (driver.Client, error) {
+	conn, err := http.NewConnection(http.ConnectionConfig{Endpoints: []string{config.Host}})
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := driver.NewClient(driver.ClientConfig{
+		Connection:     conn,
+		Authentication: driver.BasicAuthentication(config.User, config.Password),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := client.Version(ctx); err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
 func SetupDB(ctx context.Context, client driver.Client, dbName string) (driver.Database, error) {
 	databaseExists, err := client.DatabaseExists(ctx, dbName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not check if database exists: %w", err)
 	}
 
 	var db driver.Database
@@ -175,12 +206,12 @@ func SetupDB(ctx context.Context, client driver.Client, dbName string) (driver.D
 		db, err = client.Database(ctx, dbName)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not create database: %w", err)
 	}
 
 	collectionExists, err := db.CollectionExists(ctx, migrations.MigrationCollection)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not check if collection exists: %w", err)
 	}
 
 	if !collectionExists {

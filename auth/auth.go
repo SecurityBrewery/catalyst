@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/exp/slices"
@@ -24,24 +26,26 @@ import (
 )
 
 type Config struct {
-	OAuth2 *oauth2.Config
+	SimpleAuthEnable bool
+	APIKeyAuthEnable bool
+	OIDCAuthEnable   bool
 
-	AuthProvider     string
+	OIDCIssuer       string
+	OAuth2           *oauth2.Config
+	UserCreateConfig *UserCreateConfig
+
+	provider *oidc.Provider
+}
+
+type UserCreateConfig struct {
 	AuthBlockNew     bool
 	AuthDefaultRoles []role.Role
 	AuthAdminUsers   []string
 
-	SimpleAuthEnable bool
-	APIKeyAuthEnable bool
-
-	OIDCEnable        bool
-	OIDCIssuer        string
 	OIDCClaimUsername string
 	OIDCClaimEmail    string
 	OIDCClaimName     string
 	// OIDCClaimGroups   string
-
-	provider *oidc.Provider
 }
 
 func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
@@ -55,12 +59,22 @@ func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
 }
 
 func (c *Config) Load(ctx context.Context) error {
-	provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
-	if err != nil {
-		return err
+	for {
+		provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
+		if err == nil {
+			c.provider = provider
+			c.OAuth2.Endpoint = provider.Endpoint()
+
+			break
+		}
+
+		if errors.Is(err, context.DeadlineExceeded) {
+			return errors.New("could not load provider")
+		}
+
+		log.Printf("could not load oidc provider: %s, retrying in 10 seconds\n", err)
+		time.Sleep(time.Second * 10)
 	}
-	c.provider = provider
-	c.OAuth2.Endpoint = provider.Endpoint()
 
 	return nil
 }
@@ -79,7 +93,7 @@ func Authenticate(db *database.Database, config *Config, jar *Jar) func(next htt
 					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("API Key authentication not enabled"))
 				}
 			case authHeader != "":
-				if config.OIDCEnable {
+				if config.OIDCAuthEnable {
 					iss := config.OIDCIssuer
 					bearerAuth(db, authHeader, iss, config, jar)(next).ServeHTTP(w, r)
 				} else {
@@ -132,7 +146,7 @@ func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) ht
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			h := fmt.Sprintf("%x", sha256.Sum256([]byte(keyHeader)))
 
-			key, err := db.UserByHash(r.Context(), h)
+			key, err := db.UserAPIKeyByHash(r.Context(), h)
 			if err != nil {
 				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not verify private token: %w", err))
 
@@ -176,7 +190,7 @@ func sessionAuth(db *database.Database, config *Config, jar *Jar) func(next http
 }
 
 func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *Config) (*http.Request, error) {
-	newUser, newSetting, err := mapUserAndSettings(claims, config)
+	newUser, newSetting, err := mapUserAndSettings(claims, config.UserCreateConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +220,7 @@ func setContextUser(r *http.Request, user *model.UserResponse, hooks *hooks.Hook
 	return busdb.SetContext(r, user)
 }
 
-func mapUserAndSettings(claims map[string]any, config *Config) (*model.UserForm, *model.UserData, error) {
+func mapUserAndSettings(claims map[string]any, config *UserCreateConfig) (*model.UserForm, *model.UserData, error) {
 	// handle Bearer tokens
 	// if typ, ok := claims["typ"]; ok && typ == "Bearer" {
 	// 	return &model.User{
@@ -267,7 +281,7 @@ func redirectToLogin(config *Config, jar *Jar) func(http.ResponseWriter, *http.R
 		}
 	}
 
-	if config.OIDCEnable {
+	if config.OIDCAuthEnable {
 		return redirectToOIDCLogin(config, jar)
 	}
 
@@ -347,8 +361,7 @@ func login(db *database.Database, jar *Jar) http.HandlerFunc {
 			return
 		}
 
-		passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(cr.Password)))
-		user, err := db.UserByIDAndHash(r.Context(), cr.Username, passwordHash)
+		user, err := db.UserByIDAndPassword(r.Context(), cr.Username, cr.Password)
 		if err != nil {
 			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
 

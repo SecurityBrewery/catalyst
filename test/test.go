@@ -50,7 +50,7 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 		Auth: &auth.Config{
 			SimpleAuthEnable: true,
 			APIKeyAuthEnable: true,
-			OIDCEnable:       true,
+			OIDCAuthEnable:   true,
 			OIDCIssuer:       "http://localhost:9002/auth/realms/catalyst",
 			OAuth2: &oauth2.Config{
 				ClientID:     "catalyst",

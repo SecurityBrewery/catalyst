@@ -14,7 +14,7 @@ func Server(config *Config, catalystDatabase *database.Database, jar *Jar) *chi.
 
 	server.Get("/config", hasOIDC(config))
 
-	if config.OIDCEnable {
+	if config.OIDCAuthEnable {
 		server.Get("/callback", callback(config, jar))
 		server.Get("/oidclogin", redirectToOIDCLogin(config, jar))
 	}
@@ -30,7 +30,7 @@ func hasOIDC(config *Config) func(writer http.ResponseWriter, request *http.Requ
 	return func(writer http.ResponseWriter, request *http.Request) {
 		b, err := json.Marshal(map[string]any{
 			"simple": config.SimpleAuthEnable,
-			"oidc":   config.OIDCEnable,
+			"oidc":   config.OIDCAuthEnable,
 		})
 		if err != nil {
 			writer.WriteHeader(http.StatusInternalServerError)
