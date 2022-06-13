@@ -20,6 +20,4 @@ Cypress.Commands.add('login', (options = {}) => {
     cy.contains("Password").click({force: true});
     cy.get("#password").type("tom");
     cy.get("button").contains("Login").click();
-
-    cy.getCookie('user').should('exist');
 })

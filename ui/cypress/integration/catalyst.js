@@ -10,6 +10,8 @@ describe('user', () => {
             cy.get("#kc-login").click();
         }
 
+        cy.getCookie('user').should('exist');
+
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })
 

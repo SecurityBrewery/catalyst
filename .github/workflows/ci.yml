@@ -123,17 +123,17 @@ jobs:
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
-        if: ${{ matrix.auth }} == simple
+        if: ${{ matrix.auth == 'simple' }}
       - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
         shell: bash
-        if: ${{ matrix.auth }} == keycloak
+        if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for keycloak
         uses: cugu/wait_for_response@v1.12.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
-        if: ${{ matrix.auth }} == keycloak
+        if: ${{ matrix.auth == 'keycloak' }}
 
       # run catalyst
       - run: |
@@ -142,10 +142,10 @@ jobs:
       - run: go mod download
       - run: bash start_dev.sh &
         working-directory: dev
-        if: ${{ matrix.auth }} == simple
+        if: ${{ matrix.auth == 'simple' }}
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-        if: ${{ matrix.auth }} == keycloak
+        if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for catalyst
         uses: cugu/wait_for_response@v1.12.0
         with:
@@ -162,10 +162,10 @@ jobs:
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
         working-directory: ui
-        if: ${{ matrix.auth }} == simple
+        if: ${{ matrix.auth == 'simple' }}
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst-with-keycloak.js"
         working-directory: ui
-        if: ${{ matrix.auth }} == keycloak
+        if: ${{ matrix.auth == 'keycloak' }}
 
       - uses: actions/upload-artifact@v3
         with:
