@@ -6,8 +6,8 @@ require (
 	github.com/alecthomas/kong v0.5.0
 	github.com/alecthomas/kong-yaml v0.1.1
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220314183648-97c793e446ba
-	github.com/arangodb/go-driver v1.3.1
-	github.com/aws/aws-sdk-go v1.44.14
+	github.com/arangodb/go-driver v1.3.2
+	github.com/aws/aws-sdk-go v1.44.24
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
@@ -17,7 +17,7 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
-	github.com/imdario/mergo v0.3.12
+	github.com/imdario/mergo v0.3.13
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tidwall/gjson v1.14.1
@@ -25,9 +25,9 @@ require (
 	github.com/tus/tusd v1.9.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/exp v0.0.0-20220428152302-39d4317da171
-	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf
+	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
