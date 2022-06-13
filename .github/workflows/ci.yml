@@ -95,6 +95,9 @@ jobs:
 
   cypress:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        auth: [simple, keycloak]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -120,6 +123,17 @@ jobs:
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
+        if: ${{ matrix.auth }} == simple
+      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+        working-directory: dev
+        shell: bash
+        if: ${{ matrix.auth }} == keycloak
+      - name: Wait for keycloak
+        uses: cugu/wait_for_response@v1.12.0
+        with:
+          url: 'http://localhost:9002/auth/realms/catalyst'
+          responseCode: 200
+        if: ${{ matrix.auth }} == keycloak
 
       # run catalyst
       - run: |
@@ -128,6 +142,10 @@ jobs:
       - run: go mod download
       - run: bash start_dev.sh &
         working-directory: dev
+        if: ${{ matrix.auth }} == simple
+      - run: bash start_dev_with_keycloak.sh &
+        working-directory: dev
+        if: ${{ matrix.auth }} == keycloak
       - name: Wait for catalyst
         uses: cugu/wait_for_response@v1.12.0
         with:
@@ -135,80 +153,24 @@ jobs:
           method: GET
           responseCode: 302
           verbose: true
-          timeout: 3m # 3 minutes
-          interval: 10s # every 10 seconds
+          timeout: 3m
+          interval: 10s
         continue-on-error: true
 
       # run cypress
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
+        env: { CYPRESS_AUTH: ${{ matrix.auth }} }
         working-directory: ui
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: cypress-videos
-          path: ui/cypress/videos
-          retention-days: 1
-
-  cypress-with-keycloak:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with: { go-version: '1.18' }
-      - uses: actions/setup-node@v3
-        with: { node-version: '14' }
-
-      # run UI
-      - run: |
-          yarn install
-          yarn serve &
-        working-directory: ui
-      - name: Wait for frontend
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:8080'
-          responseCode: 200
-
-      # run containers
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
-        shell: bash
-      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
-        working-directory: dev
-        shell: bash
-      - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:9002/auth/realms/catalyst'
-          responseCode: 200
-
-      # run catalyst
-      - run: |
-          mkdir -p ui/dist/img
-          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - run: go mod download
-      - run: bash start_dev_with_keycloak.sh &
-        working-directory: dev
-      - name: Wait for catalyst
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:8000'
-          method: GET
-          responseCode: 302
-          verbose: true
-          timeout: 3m # 3 minutes
-          interval: 10s # every 10 seconds
-
-      # run cypress
+        if: ${{ matrix.auth }} == simple
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst-with-keycloak.js"
         working-directory: ui
+        if: ${{ matrix.auth }} == keycloak
 
       - uses: actions/upload-artifact@v3
         with:
           name: cypress-videos
           path: ui/cypress/videos
           retention-days: 1
-
 
   build-npm:
     name: Build npm

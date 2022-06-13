@@ -243,6 +243,7 @@ func (db *Database) UserByIDAndPassword(ctx context.Context, id, password string
 func generateAPIKey() (key, sha256Hash *string) {
 	newKey := generateKey()
 	sha256Hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(newKey))))
+
 	return &newKey, sha256Hash
 }
 
@@ -252,5 +253,6 @@ func hashUserPassword(newUser *model.UserForm) (salt, sha512Hash *string) {
 		salt = &saltKey
 		sha512Hash = pointer.String(fmt.Sprintf("%x", sha512.Sum512([]byte(saltKey+*newUser.Password))))
 	}
+
 	return salt, sha512Hash
 }

@@ -1,6 +1,14 @@
 describe('user', () => {
     it('open ticket', () => {
-        cy.login();
+        cy.visit('/');
+
+        if (Cypress.env('CYPRESS_AUTH') === 'simple') {
+            cy.login();
+        } else if (Cypress.env('CYPRESS_AUTH') === 'keycloak') {
+            cy.get("#username").type("bob");
+            cy.get("#password").type("bob");
+            cy.get("#kc-login").click();
+        }
 
         cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
         cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })

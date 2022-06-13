@@ -101,6 +101,7 @@ linters-settings:
       - go-driver.Cursor
       - go-driver.Collection
       - go-driver.Database
+      - go-driver.Client
       - chi.Router
 issues:
   exclude-rules:

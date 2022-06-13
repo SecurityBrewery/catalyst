@@ -14,8 +14,6 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 })
 
 Cypress.Commands.add('login', (options = {}) => {
-    cy.visit('/');
-
     // login
     cy.contains("Name").click({force: true});
     cy.get("#username").type("tom");
