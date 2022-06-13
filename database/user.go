@@ -3,8 +3,10 @@ package database
 import (
 	"context"
 	"crypto/sha256"
+	"crypto/sha512"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
@@ -32,13 +34,15 @@ func generateKey() string {
 	return string(b)
 }
 
-func toUser(user *model.UserForm, sha256 *string) *model.User {
+func toUser(user *model.UserForm, salt, sha256, sha512 *string) *model.User {
 	roles := []string{}
 	roles = append(roles, role.Strings(role.Explodes(user.Roles))...)
 	u := &model.User{
 		Blocked: user.Blocked,
 		Roles:   roles,
+		Salt:    salt,
 		Sha256:  sha256,
+		Sha512:  sha512,
 		Apikey:  user.Apikey,
 	}
 
@@ -87,21 +91,21 @@ func (db *Database) UserGetOrCreate(ctx context.Context, newUser *model.UserForm
 }
 
 func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*model.NewUserResponse, error) {
-	var key string
-	var hash *string
+	var key, salt, sha256Hash, sha512Hash *string
 	if newUser.Apikey {
-		key = generateKey()
-		hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
+		key, sha256Hash = generateAPIKey()
+	} else {
+		salt, sha512Hash = hashUserPassword(newUser)
 	}
 
 	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
-	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, hash))
+	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, salt, sha256Hash, sha512Hash))
 	if err != nil {
 		return nil, err
 	}
 
-	return toNewUserResponse(meta.Key, &doc, pointer.String(key)), nil
+	return toNewUserResponse(meta.Key, &doc, key), nil
 }
 
 func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*model.UserResponse, error) {
@@ -111,11 +115,42 @@ func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*mod
 		Apikey:  true,
 		Blocked: false,
 	}
-	hash := pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
+	sha256Hash := pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(key))))
 
 	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
-	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, hash))
+	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, nil, sha256Hash, nil))
+	if err != nil {
+		return nil, err
+	}
+
+	return toUserResponse(meta.Key, &doc), nil
+}
+
+func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserForm) (*model.UserResponse, error) {
+	var doc model.User
+	_, err := db.userCollection.ReadDocument(ctx, id, &doc)
+	if err != nil {
+		return nil, err
+	}
+
+	if doc.Apikey {
+		return nil, errors.New("cannot update an API key")
+	}
+
+	var salt, sha512Hash *string
+	if user.Password != nil {
+		salt, sha512Hash = hashUserPassword(user)
+	} else {
+		salt = doc.Salt
+		sha512Hash = doc.Sha512
+	}
+
+	ctx = driver.WithReturnNew(ctx, &doc)
+
+	user.ID = id
+
+	meta, err := db.userCollection.ReplaceDocument(ctx, id, toUser(user, salt, nil, sha512Hash))
 	if err != nil {
 		return nil, err
 	}
@@ -162,12 +197,13 @@ func (db *Database) UserList(ctx context.Context) ([]*model.UserResponse, error)
 	return docs, err
 }
 
-func (db *Database) UserByHash(ctx context.Context, sha256 string) (*model.UserResponse, error) {
+func (db *Database) UserAPIKeyByHash(ctx context.Context, sha256 string) (*model.UserResponse, error) {
 	query := `FOR d in @@collection
-	FILTER d.sha256 == @sha256
+	FILTER d.apikey && d.sha256 == @sha256
 	RETURN d`
 
-	cursor, _, err := db.Query(ctx, query, map[string]any{"@collection": UserCollectionName, "sha256": sha256}, busdb.ReadOperation)
+	vars := map[string]any{"@collection": UserCollectionName, "sha256": sha256}
+	cursor, _, err := db.Query(ctx, query, vars, busdb.ReadOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -182,25 +218,41 @@ func (db *Database) UserByHash(ctx context.Context, sha256 string) (*model.UserR
 	return toUserResponse(meta.Key, &doc), err
 }
 
-func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserForm) (*model.UserResponse, error) {
+func (db *Database) UserByIDAndPassword(ctx context.Context, id, password string) (*model.UserResponse, error) {
+	log.Println("UserByIDAndPassword", id, password)
+	query := `FOR d in @@collection
+	FILTER d._key == @id && !d.apikey && d.sha512 == SHA512(CONCAT(d.salt, @password))
+	RETURN d`
+
+	vars := map[string]any{"@collection": UserCollectionName, "id": id, "password": password}
+	cursor, _, err := db.Query(ctx, query, vars, busdb.ReadOperation)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close()
+
 	var doc model.User
-	_, err := db.userCollection.ReadDocument(ctx, id, &doc)
+	meta, err := cursor.ReadDocument(ctx, &doc)
 	if err != nil {
 		return nil, err
 	}
 
-	if doc.Sha256 != nil {
-		return nil, errors.New("cannot update an API key")
+	return toUserResponse(meta.Key, &doc), err
+}
+
+func generateAPIKey() (key, sha256Hash *string) {
+	newKey := generateKey()
+	sha256Hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(newKey))))
+
+	return &newKey, sha256Hash
+}
+
+func hashUserPassword(newUser *model.UserForm) (salt, sha512Hash *string) {
+	if newUser.Password != nil {
+		saltKey := generateKey()
+		salt = &saltKey
+		sha512Hash = pointer.String(fmt.Sprintf("%x", sha512.Sum512([]byte(saltKey+*newUser.Password))))
 	}
 
-	ctx = driver.WithReturnNew(ctx, &doc)
-
-	user.ID = id
-
-	meta, err := db.userCollection.ReplaceDocument(ctx, id, toUser(user, nil))
-	if err != nil {
-		return nil, err
-	}
-
-	return toUserResponse(meta.Key, &doc), nil
+	return salt, sha512Hash
 }

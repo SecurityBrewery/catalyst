@@ -1,14 +1,17 @@
-package catalyst
+package auth
 
 import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/exp/slices"
@@ -22,25 +25,32 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 )
 
-type AuthConfig struct {
-	OIDCIssuer string
-	OAuth2     *oauth2.Config
+type Config struct {
+	SimpleAuthEnable bool
+	APIKeyAuthEnable bool
+	OIDCAuthEnable   bool
 
-	OIDCClaimUsername string
-	OIDCClaimEmail    string
-	// OIDCClaimGroups   string
-	OIDCClaimName    string
-	AuthBlockNew     bool
-	AuthDefaultRoles []role.Role
-	AuthAdminUsers   []string
+	OIDCIssuer       string
+	OAuth2           *oauth2.Config
+	UserCreateConfig *UserCreateConfig
 
 	provider *oidc.Provider
 }
 
-func (c *AuthConfig) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
+type UserCreateConfig struct {
+	AuthBlockNew     bool
+	AuthDefaultRoles []role.Role
+	AuthAdminUsers   []string
+
+	OIDCClaimUsername string
+	OIDCClaimEmail    string
+	OIDCClaimName     string
+	// OIDCClaimGroups   string
+}
+
+func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
 	if c.provider == nil {
-		err := c.Load(ctx)
-		if err != nil {
+		if err := c.Load(ctx); err != nil {
 			return nil, err
 		}
 	}
@@ -48,37 +58,55 @@ func (c *AuthConfig) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error
 	return c.provider.Verifier(&oidc.Config{SkipClientIDCheck: true}), nil
 }
 
-func (c *AuthConfig) Load(ctx context.Context) error {
-	provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
-	if err != nil {
-		return err
+func (c *Config) Load(ctx context.Context) error {
+	for {
+		provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
+		if err == nil {
+			c.provider = provider
+			c.OAuth2.Endpoint = provider.Endpoint()
+
+			break
+		}
+
+		if errors.Is(err, context.DeadlineExceeded) {
+			return errors.New("could not load provider")
+		}
+
+		log.Printf("could not load oidc provider: %s, retrying in 10 seconds\n", err)
+		time.Sleep(time.Second * 10)
 	}
-	c.provider = provider
-	c.OAuth2.Endpoint = provider.Endpoint()
 
 	return nil
 }
 
-func Authenticate(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+func Authenticate(db *database.Database, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			keyHeader := r.Header.Get("PRIVATE-TOKEN")
-			authHeader := r.Header.Get("User")
+			authHeader := r.Header.Get("Authorization")
 
 			switch {
 			case keyHeader != "":
-				keyAuth(db, keyHeader)(next).ServeHTTP(w, r)
+				if config.APIKeyAuthEnable {
+					keyAuth(db, keyHeader)(next).ServeHTTP(w, r)
+				} else {
+					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("API Key authentication not enabled"))
+				}
 			case authHeader != "":
-				iss := config.OIDCIssuer
-				bearerAuth(db, authHeader, iss, config)(next).ServeHTTP(w, r)
+				if config.OIDCAuthEnable {
+					iss := config.OIDCIssuer
+					bearerAuth(db, authHeader, iss, config, jar)(next).ServeHTTP(w, r)
+				} else {
+					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("OIDC authentication not enabled"))
+				}
 			default:
-				sessionAuth(db, config)(next).ServeHTTP(w, r)
+				sessionAuth(db, config, jar)(next).ServeHTTP(w, r)
 			}
 		})
 	}
 }
 
-func bearerAuth(db *database.Database, authHeader string, iss string, config *AuthConfig) func(next http.Handler) http.Handler {
+func bearerAuth(db *database.Database, authHeader string, iss string, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !strings.HasPrefix(authHeader, "Bearer ") {
@@ -99,7 +127,7 @@ func bearerAuth(db *database.Database, authHeader string, iss string, config *Au
 			// 	return
 			// }
 
-			setClaimsCookie(w, claims)
+			jar.setClaimsCookie(w, claims)
 
 			r, err := setContextClaims(r, db, claims, config)
 			if err != nil {
@@ -118,7 +146,7 @@ func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) ht
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			h := fmt.Sprintf("%x", sha256.Sum256([]byte(keyHeader)))
 
-			key, err := db.UserByHash(r.Context(), h)
+			key, err := db.UserAPIKeyByHash(r.Context(), h)
 			if err != nil {
 				api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("could not verify private token: %w", err))
 
@@ -132,17 +160,19 @@ func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) ht
 	}
 }
 
-func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+func sessionAuth(db *database.Database, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			claims, noCookie, err := claimsCookie(r)
+			claims, noCookie, err := jar.claimsCookie(r)
 			if err != nil {
+				deleteClaimsCookie(w)
+
 				api.JSONError(w, err)
 
 				return
 			}
 			if noCookie {
-				redirectToLogin(w, r, config.OAuth2)
+				redirectToLogin(config, jar)(w, r)
 
 				return
 			}
@@ -159,8 +189,8 @@ func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handl
 	}
 }
 
-func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *AuthConfig) (*http.Request, error) {
-	newUser, newSetting, err := mapUserAndSettings(claims, config)
+func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *Config) (*http.Request, error) {
+	newUser, newSetting, err := mapUserAndSettings(claims, config.UserCreateConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -174,8 +204,7 @@ func setContextClaims(r *http.Request, db *database.Database, claims map[string]
 		return nil, err
 	}
 
-	_, err = db.UserDataGetOrCreate(r.Context(), newUser.ID, newSetting)
-	if err != nil {
+	if _, err = db.UserDataGetOrCreate(r.Context(), newUser.ID, newSetting); err != nil {
 		return nil, err
 	}
 
@@ -191,7 +220,7 @@ func setContextUser(r *http.Request, user *model.UserResponse, hooks *hooks.Hook
 	return busdb.SetContext(r, user)
 }
 
-func mapUserAndSettings(claims map[string]any, config *AuthConfig) (*model.UserForm, *model.UserData, error) {
+func mapUserAndSettings(claims map[string]any, config *UserCreateConfig) (*model.UserForm, *model.UserData, error) {
 	// handle Bearer tokens
 	// if typ, ok := claims["typ"]; ok && typ == "Bearer" {
 	// 	return &model.User{
@@ -207,6 +236,7 @@ func mapUserAndSettings(claims map[string]any, config *AuthConfig) (*model.UserF
 	if err != nil {
 		return nil, nil, err
 	}
+
 	email, err := getString(claims, config.OIDCClaimEmail)
 	if err != nil {
 		email = ""
@@ -244,19 +274,35 @@ func getString(m map[string]any, key string) (string, error) {
 	return "", fmt.Errorf("mapping of %s failed, missing value", key)
 }
 
-func redirectToLogin(w http.ResponseWriter, r *http.Request, oauth2Config *oauth2.Config) {
-	state, err := state()
-	if err != nil {
-		api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
-
-		return
+func redirectToLogin(config *Config, jar *Jar) func(http.ResponseWriter, *http.Request) {
+	if config.SimpleAuthEnable {
+		return func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/", http.StatusFound)
+		}
 	}
 
-	setStateCookie(w, state)
+	if config.OIDCAuthEnable {
+		return redirectToOIDCLogin(config, jar)
+	}
 
-	http.Redirect(w, r, oauth2Config.AuthCodeURL(state), http.StatusFound)
+	return func(writer http.ResponseWriter, request *http.Request) {
+		api.JSONErrorStatus(writer, http.StatusForbidden, errors.New("unauthenticated"))
+	}
+}
 
-	return
+func redirectToOIDCLogin(config *Config, jar *Jar) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state, err := state()
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("generating state failed"))
+
+			return
+		}
+
+		jar.setStateCookie(w, state)
+
+		http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
+	}
 }
 
 func AuthorizeBlockedUser() func(http.Handler) http.Handler {
@@ -301,9 +347,56 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 	}
 }
 
-func callback(config *AuthConfig) http.HandlerFunc {
+func login(db *database.Database, jar *Jar) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		state, err := stateCookie(r)
+		type credentials struct {
+			Username string
+			Password string
+		}
+		cr := credentials{}
+
+		if err := json.NewDecoder(r.Body).Decode(&cr); err != nil {
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
+
+			return
+		}
+
+		user, err := db.UserByIDAndPassword(r.Context(), cr.Username, cr.Password)
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
+
+			return
+		}
+
+		userdata, err := db.UserDataGet(r.Context(), user.ID)
+		if err != nil {
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("no userdata"))
+
+			return
+		}
+
+		jar.setClaimsCookie(w, map[string]any{
+			"preferred_username": user.ID,
+			"name":               userdata.Name,
+			"email":              userdata.Email,
+		})
+
+		b, _ := json.Marshal(map[string]string{"login": "successful"})
+		_, _ = w.Write(b)
+	}
+}
+
+func logout() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		deleteClaimsCookie(w)
+
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
+
+func callback(config *Config, jar *Jar) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state, err := jar.stateCookie(r)
 		if err != nil || state == "" {
 			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state missing"))
 
@@ -338,9 +431,9 @@ func callback(config *AuthConfig) http.HandlerFunc {
 			return
 		}
 
-		setClaimsCookie(w, claims)
+		jar.setClaimsCookie(w, claims)
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/ui/", http.StatusFound)
 	}
 }
 
@@ -353,11 +446,12 @@ func state() (string, error) {
 	return base64.URLEncoding.EncodeToString(rnd), nil
 }
 
-func verifyClaims(r *http.Request, config *AuthConfig, rawIDToken string) (map[string]any, *api.HTTPError) {
+func verifyClaims(r *http.Request, config *Config, rawIDToken string) (map[string]any, *api.HTTPError) {
 	verifier, err := config.Verifier(r.Context())
 	if err != nil {
 		return nil, &api.HTTPError{Status: http.StatusUnauthorized, Internal: fmt.Errorf("could not verify: %w", err)}
 	}
+
 	authToken, err := verifier.Verify(r.Context(), rawIDToken)
 	if err != nil {
 		return nil, &api.HTTPError{Status: http.StatusInternalServerError, Internal: fmt.Errorf("could not verify bearer token: %w", err)}

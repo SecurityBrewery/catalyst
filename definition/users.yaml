@@ -90,6 +90,7 @@ definitions:
     required: [ id, blocked, roles, apikey ]
     properties:
       id: { type: string }
+      password: { type: string }
       blocked: { type: boolean }
       apikey: { type: boolean }
       roles: { type: array, items: { type: string } }
@@ -101,7 +102,9 @@ definitions:
       blocked: { type: boolean }
       apikey: { type: boolean }
       roles: { type: array, items: { type: string } }
+      salt: { type: string }
       sha256: { type: string } # for api keys
+      sha512: { type: string } # for users
 
   UserResponse:
     type: object

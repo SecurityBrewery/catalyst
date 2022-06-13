@@ -4,7 +4,7 @@ services:
     image: nginx:1.21
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    ports: [ "80:80", "8529:8529", "9000:9000", "9001:9001", "9002:9002", "9003:9003" ]
+    ports: [ "80:80", "8529:8529", "9000:9000", "9003:9003" ]
     networks: [ catalyst ]
 
   arangodb:
@@ -19,32 +19,6 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     command: server /data -console-address ":9003"
-    networks: [ catalyst ]
-
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-    networks: [ catalyst ]
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:14.0.0
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: /tmp/realm.json
-      PROXY_ADDRESS_FORWARDING: "true"
-    volumes:
-      - ./keycloak/realm.json:/tmp/realm.json
-    depends_on: [ postgres ]
     networks: [ catalyst ]
 
 networks:

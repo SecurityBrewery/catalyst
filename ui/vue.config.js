@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: "/static/",
+  publicPath: "/ui/",
   transpileDependencies: ["vuetify", "@koumoul/vjsf"],
   pwa: {
     name: "Catalyst",

@@ -15,6 +15,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
+	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
@@ -46,8 +47,11 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			Password: "minio123",
 		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
-		Auth: &catalyst.AuthConfig{
-			OIDCIssuer: "http://localhost:9002/auth/realms/catalyst",
+		Auth: &auth.Config{
+			SimpleAuthEnable: true,
+			APIKeyAuthEnable: true,
+			OIDCAuthEnable:   true,
+			OIDCIssuer:       "http://localhost:9002/auth/realms/catalyst",
 			OAuth2: &oauth2.Config{
 				ClientID:     "catalyst",
 				ClientSecret: "13d4a081-7395-4f71-a911-bc098d8d3c45",
@@ -61,12 +65,12 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			// AuthDefaultRoles:  nil,
 		},
 	}
-	err := config.Auth.Load(ctx)
-	if err != nil {
+
+	if err := config.Auth.Load(ctx); err != nil {
 		return nil, err
 	}
 
-	return config, err
+	return config, nil
 }
 
 func Index(t *testing.T) (*index.Index, func(), error) {

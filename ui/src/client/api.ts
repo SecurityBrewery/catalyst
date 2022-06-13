@@ -2191,7 +2191,19 @@ export interface User {
      * @type {string}
      * @memberof User
      */
+    'salt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
     'sha256'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    'sha512'?: string;
 }
 /**
  * 
@@ -2285,6 +2297,12 @@ export interface UserForm {
      * @memberof UserForm
      */
     'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserForm
+     */
+    'password'?: string;
     /**
      * 
      * @type {Array<string>}
