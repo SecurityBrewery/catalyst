@@ -24,6 +24,7 @@
     </v-row>
 
     <v-toolbar
+        id="caqlbar"
         rounded
         filled
         dense

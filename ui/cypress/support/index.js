@@ -17,13 +17,11 @@ Cypress.Commands.add('login', (options = {}) => {
     cy.visit('/');
 
     // login
-    cy.get("#app > div > div > form > div > div.v-card__text.text-center > div:nth-child(1) > div > div.v-input__slot > div > label")
-        .click({force: true});
-    cy.get("#input-7").type("tom");
-    cy.get("#app > div > div > form > div > div.v-card__text.text-center > div:nth-child(2) > div > div.v-input__slot > div > label")
-        .click({force: true});
-    cy.get("#input-10").type("tom");
-    cy.get("#app > div > div > form > div > div.v-card__actions > button").click();
+    cy.contains("Name").click({force: true});
+    cy.get("#username").type("tom");
+    cy.contains("Password").click({force: true});
+    cy.get("#password").type("tom");
+    cy.get("button").contains("Login").click();
 
     cy.getCookie('user').should('exist');
 })

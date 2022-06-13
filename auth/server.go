@@ -39,6 +39,6 @@ func hasOIDC(oidcEnable bool) func(writer http.ResponseWriter, request *http.Req
 			return
 		}
 
-		writer.Write(b)
+		_, _ = writer.Write(b)
 	}
 }

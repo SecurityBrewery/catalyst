@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+
 	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
@@ -17,8 +20,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/service"
 	"github.com/SecurityBrewery/catalyst/storage"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 )
 
 type Config struct {

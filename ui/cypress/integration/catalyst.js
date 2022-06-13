@@ -8,18 +8,15 @@ describe('user', () => {
         cy.visit('http://localhost/ui/tickets');
 
         // clear caql
-        cy.get("#app > div > main > div > div > div > div > header > div > div.v-input.v-input--hide-details.v-input--is-label-active.v-input--is-dirty.v-input--dense.theme--light.v-text-field.v-text-field--single-line.v-text-field--solo.v-text-field--solo-flat.v-text-field--is-booted.v-text-field--enclosed.v-text-field--placeholder > div > div > div:nth-child(2) > div > button")
-            .click();
+        cy.get("#caqlbar > div > div > div > div > div:nth-child(2) > div > button").click();
 
         // open ticket
-        cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1) > td > a")
-            .click()
+        cy.contains("live zebra").click()
 
         // assert url
         cy.url().should('eq', "http://localhost/ui/tickets/8123")
 
         // assert title
-        cy.get("#\\38 123 > div > div > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div > div.col-lg-8.col-12 > h1")
-            .should("have.text", " Incident  #8123:  live zebra ")
+        cy.get("h1").should("have.text", " Incident  #8123:  live zebra ")
     })
 })

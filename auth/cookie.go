@@ -50,6 +50,7 @@ func (j *Jar) stateCookie(r *http.Request) (string, error) {
 
 	var state string
 	err = j.store.Decode(userSessionCookie, stateCookie.Value, &state)
+
 	return state, err
 }
 
@@ -76,5 +77,6 @@ func (j *Jar) claimsCookie(r *http.Request) (map[string]any, bool, error) {
 
 	var claims map[string]any
 	err = j.store.Decode(userSessionCookie, userCookie.Value, &claims)
+
 	return claims, false, err
 }
