@@ -135,6 +135,9 @@ jobs:
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
+          verbose: true
+          timeout: 3m
+          interval: 10s
         if: ${{ matrix.auth == 'keycloak' }}
 
       # run catalyst
