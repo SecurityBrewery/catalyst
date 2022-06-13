@@ -8271,10 +8271,10 @@ jsprim@^2.0.2:
     json-schema "0.4.0"
     verror "1.10.0"
 
-just-kebab-case@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/just-kebab-case/-/just-kebab-case-4.0.2.tgz#ed9f0f12be4c78a27ab0230c8db0898bec299497"
-  integrity sha512-UTSsdfPXU6S3DX1kO8a8Jm/lUZ0oRB9Qej1jUVecCZihIi1jgNeU4XzUOtqnURZ21mKLHKTTGWjbscO42r6R6Q==
+just-kebab-case@4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/just-kebab-case/-/just-kebab-case-4.0.3.tgz#e69186bc9de484372c6831eb8a3fafdc8cb8b189"
+  integrity sha512-T1afsOXLXs1ezkWq02qrJwJLh6eib5ISr8/jkh56k5YnDhDuOvyd++QlMO9YUofwVbAi9JRTEms2yTs+WZ8TLQ==
 
 katex@^0.6.0:
   version "0.6.0"
