@@ -120,6 +120,8 @@ jobs:
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
         shell: bash
+      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
+        shell: bash
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
@@ -155,7 +157,6 @@ jobs:
           verbose: true
           timeout: 3m
           interval: 10s
-        continue-on-error: true
 
       # run cypress
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
