@@ -83,7 +83,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			AuthAdminUsers:    cli.AuthAdminUsers,
 			OIDCEnable:        cli.OIDCEnable,
 			OIDCIssuer:        cli.OIDCIssuer,
-			OAuth2:            &oauth2.Config{ClientID: cli.OIDCClientID, ClientSecret: cli.OIDCClientSecret, RedirectURL: cli.ExternalAddress + "/callback", Scopes: scopes},
+			OAuth2:            &oauth2.Config{ClientID: cli.OIDCClientID, ClientSecret: cli.OIDCClientSecret, RedirectURL: cli.ExternalAddress + "/auth/callback", Scopes: scopes},
 			OIDCClaimUsername: cli.OIDCClaimUsername,
 			OIDCClaimEmail:    cli.OIDCClaimEmail,
 			OIDCClaimName:     cli.OIDCClaimName,

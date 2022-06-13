@@ -10,7 +10,7 @@
             <v-card-title class="text-center justify-center">
               Catalyst Login
             </v-card-title>
-            <v-card-text class="text-center">
+            <v-card-text v-if="hassimple" class="text-center">
               <v-text-field id="username" name="username" label="Name" v-model="username" :rules="[
                 v => !!v || 'Name is required',
               ]"></v-text-field>
@@ -19,12 +19,12 @@
                 // v => (v && v.length > 8) || 'Password must be more than 8 characters',
               ]"></v-text-field>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="justify-center">
               <v-btn v-if="hasoidc" text href="/auth/oidclogin">
                 Login with OIDC
               </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn type="submit" color="primary" elevation="0" :disabled="!valid">
+              <v-spacer v-if="hassimple"></v-spacer>
+              <v-btn v-if="hassimple" type="submit" color="primary" elevation="0" :disabled="!valid">
                 Login
               </v-btn>
             </v-card-actions>
@@ -125,7 +125,7 @@
       </v-navigation-drawer>
       <v-app-bar app dense flat absolute color="transparent">
         <v-btn icon @click="mini = !mini">
-          <v-icon color="primary">mdi-menu</v-icon>
+          <v-icon id="toggle_menu" color="primary">mdi-menu</v-icon>
         </v-btn>
 
         <v-breadcrumbs :items="crumbs">
@@ -192,6 +192,7 @@ export default Vue.extend({
   name: "App",
   components: {AppLink},
   data: () => ({
+    hassimple: false,
     hasoidc: false,
     username: "",
     password: "",
@@ -280,6 +281,7 @@ export default Vue.extend({
           "/auth/login",
           {username: this.username, password: this.password},
       ).then((response) => {
+        console.log(response.data);
         if (!this.lodash.isObject(response.data)) {
           return
         }
@@ -300,21 +302,28 @@ export default Vue.extend({
     }
   },
   mounted() {
-    this.axios.get("/auth/hasoidc").then((response) => {
-      this.hasoidc = response.data.hasoidc;
+    this.axios.get("/auth/config").then((response) => {
+      this.hassimple = response.data.simple;
+      this.hasoidc = response.data.oidc;
+
+      API.currentUser().then((response) => {
+        if (!this.lodash.isObject(response.data)) {
+          if (!this.hassimple && this.hasoidc) {
+            window.location.href = "/auth/oidclogin";
+          }
+
+          return
+        }
+
+        this.authenticated = true;
+
+        this.$store.dispatch("getUser");
+        this.$store.dispatch("getUserData");
+        this.$store.dispatch("getSettings");
+      })
     }).catch(() => {
+      this.hassimple = false;
       this.hasoidc = false;
-    })
-    API.currentUser().then((response) => {
-      if (!this.lodash.isObject(response.data)) {
-        return
-      }
-
-      this.authenticated = true;
-
-      this.$store.dispatch("getUser");
-      this.$store.dispatch("getUserData");
-      this.$store.dispatch("getSettings");
     })
   },
 });

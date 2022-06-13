@@ -455,8 +455,8 @@
       "secret": "d3ec0d91-b6ea-482d-8a4e-2f5a7ca0b4cb",
       "redirectUris": [
         "http://catalyst.internal.com/*",
-        "http://localhost:8000/callback",
-        "http://localhost/callback"
+        "http://localhost:8000/auth/callback",
+        "http://localhost/auth/callback"
       ],
       "webOrigins": [
         "http://catalyst.internal.com",

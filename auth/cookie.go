@@ -78,5 +78,7 @@ func (j *Jar) claimsCookie(r *http.Request) (map[string]any, bool, error) {
 	var claims map[string]any
 	err = j.store.Decode(userSessionCookie, userCookie.Value, &claims)
 
+	log.Println("claims:", claims)
+
 	return claims, false, err
 }
