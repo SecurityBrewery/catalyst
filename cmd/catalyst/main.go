@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ func main() {
 	fsys, _ := fs.Sub(ui.UI, "dist")
 	theCatalyst.Server.Get("/ui/*", api.Static(fsys))
 
-	if err := http.ListenAndServe(":8000", theCatalyst.Server); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), theCatalyst.Server); err != nil {
 		log.Fatal(err)
 	}
 }

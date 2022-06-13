@@ -5,10 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/cors"
-
+	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
 	"github.com/SecurityBrewery/catalyst/database"
@@ -20,6 +17,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/service"
 	"github.com/SecurityBrewery/catalyst/storage"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 type Config struct {
@@ -28,11 +27,12 @@ type Config struct {
 	Storage   *storage.Config
 
 	Secret          []byte
-	Auth            *AuthConfig
+	Auth            *auth.Config
 	ExternalAddress string
 	InternalAddress string
 	InitialAPIKey   string
 	Network         string
+	Port            int
 }
 
 type Server struct {
@@ -108,14 +108,13 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 }
 
 func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
-	middlewares := []func(next http.Handler) http.Handler{Authenticate(catalystDatabase, config.Auth), AuthorizeBlockedUser()}
+	secureJar := auth.NewJar(config.Secret)
+
+	middlewares := []func(next http.Handler) http.Handler{auth.Authenticate(catalystDatabase, config.Auth, secureJar), auth.AuthorizeBlockedUser()}
 
 	// create server
-	apiServerMiddleware := []func(next http.Handler) http.Handler{cors.AllowAll().Handler}
-	apiServerMiddleware = append(apiServerMiddleware, middlewares...)
-	apiServer := api.NewServer(catalystService, AuthorizeRole, apiServerMiddleware...)
-
-	fileReadWrite := AuthorizeRole([]string{role.FileReadWrite.String()})
+	apiServer := api.NewServer(catalystService, auth.AuthorizeRole, middlewares...)
+	fileReadWrite := auth.AuthorizeRole([]string{role.FileReadWrite.String()})
 	tudHandler := tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress)
 	apiServer.With(fileReadWrite).Head("/files/{ticketID}/tusd/{id}", tudHandler)
 	apiServer.With(fileReadWrite).Patch("/files/{ticketID}/tusd/{id}", tudHandler)
@@ -123,28 +122,14 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 	apiServer.With(fileReadWrite).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
 	apiServer.With(fileReadWrite).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
 
-	apiServer.With(AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
-	apiServer.With(AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	apiServer.With(auth.AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
+	apiServer.With(auth.AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
-	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer, cors.AllowAll().Handler)
+	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
 	server.Mount("/api", apiServer)
 	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
-
-	if config.Auth.OIDCEnable {
-		server.Get("/callback", callback(config.Auth))
-	}
-
-	if config.Auth.SimpleAuthEnable {
-		server.Post("/login", login(catalystDatabase))
-	}
-
-	if config.Auth.SimpleAuthEnable && config.Auth.OIDCEnable {
-		server.Get("/hasoidc", func(writer http.ResponseWriter, request *http.Request) {})
-		server.Get("/oidclogin", redirectToOIDCLogin(config.Auth))
-	}
-
-	server.Post("/logout", logout())
+	server.Mount("/auth", auth.Server(config.Auth, catalystDatabase, secureJar))
 
 	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/ui/", http.StatusFound)

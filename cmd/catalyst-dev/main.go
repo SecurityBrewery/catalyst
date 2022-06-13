@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -62,21 +63,12 @@ func main() {
 
 	// proxy static requests
 	theCatalyst.Server.Get("/ui/*", func(writer http.ResponseWriter, request *http.Request) {
-		// theCatalyst.Server.With(middlewares...).NotFound(func(writer http.ResponseWriter, request *http.Request) {
 		log.Println("proxy request", request.URL.Path)
 
-		var handler http.Handler = http.HandlerFunc(api.Proxy("http://localhost:8080/"))
-
-		// if strings.HasPrefix(request.URL.Path, "/ui/") {
-		// 	handler = http.StripPrefix("/ui/", handler)
-		// } else {
-		// 	request.URL.Path = "/"
-		// }
-
-		handler.ServeHTTP(writer, request)
+		api.Proxy("http://localhost:8080/")(writer, request)
 	})
 
-	if err := http.ListenAndServe(":8000", theCatalyst.Server); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), theCatalyst.Server); err != nil {
 		log.Fatal(err)
 	}
 }

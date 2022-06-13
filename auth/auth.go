@@ -1,4 +1,4 @@
-package catalyst
+package auth
 
 import (
 	"context"
@@ -23,7 +23,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/role"
 )
 
-type AuthConfig struct {
+type Config struct {
 	OAuth2 *oauth2.Config
 
 	AuthProvider     string
@@ -44,7 +44,7 @@ type AuthConfig struct {
 	provider *oidc.Provider
 }
 
-func (c *AuthConfig) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
+func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
 	if c.provider == nil {
 		if err := c.Load(ctx); err != nil {
 			return nil, err
@@ -54,7 +54,7 @@ func (c *AuthConfig) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error
 	return c.provider.Verifier(&oidc.Config{SkipClientIDCheck: true}), nil
 }
 
-func (c *AuthConfig) Load(ctx context.Context) error {
+func (c *Config) Load(ctx context.Context) error {
 	provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (c *AuthConfig) Load(ctx context.Context) error {
 	return nil
 }
 
-func Authenticate(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+func Authenticate(db *database.Database, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			keyHeader := r.Header.Get("PRIVATE-TOKEN")
@@ -81,18 +81,18 @@ func Authenticate(db *database.Database, config *AuthConfig) func(next http.Hand
 			case authHeader != "":
 				if config.OIDCEnable {
 					iss := config.OIDCIssuer
-					bearerAuth(db, authHeader, iss, config)(next).ServeHTTP(w, r)
+					bearerAuth(db, authHeader, iss, config, jar)(next).ServeHTTP(w, r)
 				} else {
 					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("OIDC authentication not enabled"))
 				}
 			default:
-				sessionAuth(db, config)(next).ServeHTTP(w, r)
+				sessionAuth(db, config, jar)(next).ServeHTTP(w, r)
 			}
 		})
 	}
 }
 
-func bearerAuth(db *database.Database, authHeader string, iss string, config *AuthConfig) func(next http.Handler) http.Handler {
+func bearerAuth(db *database.Database, authHeader string, iss string, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !strings.HasPrefix(authHeader, "Bearer ") {
@@ -113,7 +113,7 @@ func bearerAuth(db *database.Database, authHeader string, iss string, config *Au
 			// 	return
 			// }
 
-			setClaimsCookie(w, claims)
+			jar.setClaimsCookie(w, claims)
 
 			r, err := setContextClaims(r, db, claims, config)
 			if err != nil {
@@ -146,17 +146,19 @@ func keyAuth(db *database.Database, keyHeader string) func(next http.Handler) ht
 	}
 }
 
-func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handler) http.Handler {
+func sessionAuth(db *database.Database, config *Config, jar *Jar) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			claims, noCookie, err := claimsCookie(r)
+			claims, noCookie, err := jar.claimsCookie(r)
 			if err != nil {
+				deleteClaimsCookie(w)
+
 				api.JSONError(w, err)
 
 				return
 			}
 			if noCookie {
-				redirectToLogin(config)(w, r)
+				redirectToLogin(config, jar)(w, r)
 
 				return
 			}
@@ -173,7 +175,7 @@ func sessionAuth(db *database.Database, config *AuthConfig) func(next http.Handl
 	}
 }
 
-func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *AuthConfig) (*http.Request, error) {
+func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *Config) (*http.Request, error) {
 	newUser, newSetting, err := mapUserAndSettings(claims, config)
 	if err != nil {
 		return nil, err
@@ -204,7 +206,7 @@ func setContextUser(r *http.Request, user *model.UserResponse, hooks *hooks.Hook
 	return busdb.SetContext(r, user)
 }
 
-func mapUserAndSettings(claims map[string]any, config *AuthConfig) (*model.UserForm, *model.UserData, error) {
+func mapUserAndSettings(claims map[string]any, config *Config) (*model.UserForm, *model.UserData, error) {
 	// handle Bearer tokens
 	// if typ, ok := claims["typ"]; ok && typ == "Bearer" {
 	// 	return &model.User{
@@ -258,17 +260,23 @@ func getString(m map[string]any, key string) (string, error) {
 	return "", fmt.Errorf("mapping of %s failed, missing value", key)
 }
 
-func redirectToLogin(config *AuthConfig) func(http.ResponseWriter, *http.Request) {
+func redirectToLogin(config *Config, jar *Jar) func(http.ResponseWriter, *http.Request) {
 	if config.SimpleAuthEnable {
 		return func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/", http.StatusFound)
 		}
 	}
 
-	return redirectToOIDCLogin(config)
+	if config.OIDCEnable {
+		return redirectToOIDCLogin(config, jar)
+	}
+
+	return func(writer http.ResponseWriter, request *http.Request) {
+		api.JSONErrorStatus(writer, http.StatusForbidden, errors.New("unauthenticated"))
+	}
 }
 
-func redirectToOIDCLogin(config *AuthConfig) func(http.ResponseWriter, *http.Request) {
+func redirectToOIDCLogin(config *Config, jar *Jar) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		state, err := state()
 		if err != nil {
@@ -277,7 +285,7 @@ func redirectToOIDCLogin(config *AuthConfig) func(http.ResponseWriter, *http.Req
 			return
 		}
 
-		setStateCookie(w, state)
+		jar.setStateCookie(w, state)
 
 		http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
 	}
@@ -325,14 +333,14 @@ func AuthorizeRole(roles []string) func(http.Handler) http.Handler {
 	}
 }
 
-func login(db *database.Database) http.HandlerFunc {
+func login(db *database.Database, jar *Jar) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		type credentials struct {
 			Username string
 			Password string
 		}
+		cr := credentials{}
 
-		var cr credentials
 		if err := json.NewDecoder(r.Body).Decode(&cr); err != nil {
 			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
 
@@ -349,18 +357,19 @@ func login(db *database.Database) http.HandlerFunc {
 
 		userdata, err := db.UserDataGet(r.Context(), user.ID)
 		if err != nil {
-			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("wrong username or password"))
+			api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("no userdata"))
 
 			return
 		}
 
-		setClaimsCookie(w, map[string]any{
+		jar.setClaimsCookie(w, map[string]any{
 			"preferred_username": user.ID,
 			"name":               userdata.Name,
 			"email":              userdata.Email,
 		})
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		b, _ := json.Marshal(map[string]string{"login": "successful"})
+		_, _ = w.Write(b)
 	}
 }
 
@@ -372,9 +381,9 @@ func logout() http.HandlerFunc {
 	}
 }
 
-func callback(config *AuthConfig) http.HandlerFunc {
+func callback(config *Config, jar *Jar) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		state, err := stateCookie(r)
+		state, err := jar.stateCookie(r)
 		if err != nil || state == "" {
 			api.JSONErrorStatus(w, http.StatusInternalServerError, errors.New("state missing"))
 
@@ -409,7 +418,7 @@ func callback(config *AuthConfig) http.HandlerFunc {
 			return
 		}
 
-		setClaimsCookie(w, claims)
+		jar.setClaimsCookie(w, claims)
 
 		http.Redirect(w, r, "/ui/", http.StatusFound)
 	}
@@ -424,7 +433,7 @@ func state() (string, error) {
 	return base64.URLEncoding.EncodeToString(rnd), nil
 }
 
-func verifyClaims(r *http.Request, config *AuthConfig, rawIDToken string) (map[string]any, *api.HTTPError) {
+func verifyClaims(r *http.Request, config *Config, rawIDToken string) (map[string]any, *api.HTTPError) {
 	verifier, err := config.Verifier(r.Context())
 	if err != nil {
 		return nil, &api.HTTPError{Status: http.StatusUnauthorized, Internal: fmt.Errorf("could not verify: %w", err)}

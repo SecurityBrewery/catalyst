@@ -12,9 +12,9 @@ require (
 	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
 	github.com/go-chi/chi v1.5.4
-	github.com/go-chi/cors v1.2.1
 	github.com/gobwas/ws v1.1.0
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/securecookie v1.1.1
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
 	github.com/imdario/mergo v0.3.12
@@ -24,6 +24,7 @@ require (
 	github.com/tidwall/sjson v1.2.4
 	github.com/tus/tusd v1.9.0
 	github.com/xeipuuv/gojsonschema v1.2.0
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/exp v0.0.0-20220428152302-39d4317da171
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
@@ -76,7 +77,6 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
 	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

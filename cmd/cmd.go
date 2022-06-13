@@ -8,6 +8,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
+	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -18,6 +19,7 @@ type CLI struct {
 	ExternalAddress string `env:"EXTERNAL_ADDRESS" required:""`
 	CatalystAddress string `env:"CATALYST_ADDRESS" default:"http://catalyst:8000"`
 	Network         string `env:"CATALYST_NETWORK" default:"catalyst"`
+	Port            int    `env:"PORT"             default:"8000"`
 
 	AuthBlockNew     bool     `env:"AUTH_BLOCK_NEW"     default:"true" help:"Block newly created users"`
 	AuthDefaultRoles []string `env:"AUTH_DEFAULT_ROLES"               help:"Default roles for new users"`
@@ -72,7 +74,8 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		Secret:          []byte(cli.Secret),
 		ExternalAddress: cli.ExternalAddress,
 		InternalAddress: cli.CatalystAddress,
-		Auth: &catalyst.AuthConfig{
+		Port:            cli.Port,
+		Auth: &auth.Config{
 			SimpleAuthEnable:  cli.SimpleAuthEnable,
 			APIKeyAuthEnable:  cli.APIKeyAuthEnable,
 			AuthBlockNew:      cli.AuthBlockNew,

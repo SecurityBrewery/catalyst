@@ -15,6 +15,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
+	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/busdb"
@@ -46,7 +47,7 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			Password: "minio123",
 		},
 		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
-		Auth: &catalyst.AuthConfig{
+		Auth: &auth.Config{
 			SimpleAuthEnable: true,
 			APIKeyAuthEnable: true,
 			OIDCEnable:       true,

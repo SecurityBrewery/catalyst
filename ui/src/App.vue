@@ -4,18 +4,23 @@
       <v-container class="login d-flex flex-column justify-center">
         <v-form ref="form" v-model="valid" @submit.prevent="login">
           <v-card class="pa-4">
-            <v-card-title>Login</v-card-title>
+            <div class="d-flex justify-center">
+              <v-img src="/ui/flask.svg" height="100" width="100" class="flex-grow-0"></v-img>
+            </div>
+            <v-card-title class="text-center justify-center">
+              Catalyst Login
+            </v-card-title>
             <v-card-text class="text-center">
-              <v-text-field label="Name" v-model="username" :rules="[
+              <v-text-field id="username" name="username" label="Name" v-model="username" :rules="[
                 v => !!v || 'Name is required',
               ]"></v-text-field>
-              <v-text-field label="Password" type="password" v-model="password" :rules="[
+              <v-text-field id="password" name="password" label="Password" type="password" v-model="password" :rules="[
                 v => !!v || 'Password is required',
                 // v => (v && v.length > 8) || 'Password must be more than 8 characters',
               ]"></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <v-btn v-if="hasoidc" text href="/oidclogin">
+              <v-btn v-if="hasoidc" text href="/auth/oidclogin">
                 Login with OIDC
               </v-btn>
               <v-spacer></v-spacer>
@@ -41,19 +46,6 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-
-        <!--v-list dense nav>
-          <v-list-item class="px-0" dense :to="{ name: 'Profile' }">
-            <v-list-item-avatar>
-              <v-img v-if="$store.state.userdata.image" :src="$store.state.userdata.image"></v-img>
-              <v-icon v-else>mdi-account-circle</v-icon>
-            </v-list-item-avatar>
-            <div v-if="$store.state.user">
-              {{ $store.state.userdata.name }}
-            </div>
-          </v-list-item>
-        </v-list>
-        <v-divider></v-divider-->
 
         <v-list nav dense>
           <v-list-item>
@@ -284,24 +276,40 @@ export default Vue.extend({
       return false;
     },
     login: function () {
-      this.axios.post("/login", {username: this.username, password: this.password}).then(() => {
-        window.location.href = "/";
+      this.axios.post(
+          "/auth/login",
+          {username: this.username, password: this.password},
+      ).then((response) => {
+        if (!this.lodash.isObject(response.data)) {
+          return
+        }
+
+        this.$store.dispatch("getUser");
+        this.$store.dispatch("getUserData");
+        this.$store.dispatch("getSettings");
+
+        this.authenticated = true;
       }).catch(() => {
         this.valid = false;
       })
     },
     logout: function () {
-      this.axios.post("/logout").then(() => {
-        window.location.href = "/";
+      this.axios.post("/auth/logout").then(() => {
         this.authenticated = false;
       })
     }
   },
   mounted() {
-    this.axios.get("/hasoidc").then(() => {
-      this.hasoidc = true;
+    this.axios.get("/auth/hasoidc").then((response) => {
+      this.hasoidc = response.data.hasoidc;
+    }).catch(() => {
+      this.hasoidc = false;
     })
     API.currentUser().then((response) => {
+      if (!this.lodash.isObject(response.data)) {
+        return
+      }
+
       this.authenticated = true;
 
       this.$store.dispatch("getUser");
