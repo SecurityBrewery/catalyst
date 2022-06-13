@@ -162,10 +162,6 @@ jobs:
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
         working-directory: ui
-        if: ${{ matrix.auth == 'simple' }}
-      - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst-with-keycloak.js"
-        working-directory: ui
-        if: ${{ matrix.auth == 'keycloak' }}
 
       - uses: actions/upload-artifact@v3
         with:

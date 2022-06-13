@@ -2,9 +2,9 @@ describe('user', () => {
     it('open ticket', () => {
         cy.visit('/');
 
-        if (Cypress.env('CYPRESS_AUTH') === 'simple') {
+        if (Cypress.env('AUTH') === 'simple') {
             cy.login();
-        } else if (Cypress.env('CYPRESS_AUTH') === 'keycloak') {
+        } else if (Cypress.env('AUTH') === 'keycloak') {
             cy.get("#username").type("bob");
             cy.get("#password").type("bob");
             cy.get("#kc-login").click();
