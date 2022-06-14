@@ -161,7 +161,7 @@ jobs:
           interval: 10s
 
       # run cypress
-      - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
+      - run: ./node_modules/.bin/cypress run
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
         working-directory: ui
