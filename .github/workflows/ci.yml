@@ -148,7 +148,7 @@ jobs:
         working-directory: dev
         if: ${{ matrix.auth == 'simple' }}
       - run: bash start_dev_with_keycloak.sh &
-        working-directory: dev^
+        working-directory: dev
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for catalyst
         uses: cugu/wait_for_response@v1.13.0
