@@ -112,7 +112,7 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - run: go install github.com/cugu/wait_for_response/main@latest
+      - run: go install github.com/cugu/wait_for_response@latest
       - name: Wait for frontend
         run: |
           hostip=$(ip route show | awk '/default/ {print $3}')
