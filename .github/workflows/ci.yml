@@ -116,7 +116,7 @@ jobs:
       - name: Wait for frontend
         run: |
           hostip=$(ip route show | awk '/default/ {print $3}')
-          wait_for_response -url="http://localhost:8080" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
+          wait_for_response -url="http://localhost:8080" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost="${hostip}"
 
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
@@ -134,7 +134,7 @@ jobs:
       - name: Wait for keycloak
         run: |
           hostip=$(ip route show | awk '/default/ {print $3}')
-          wait_for_response -url="http://localhost:9002/auth/realms/catalyst" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
+          wait_for_response -url="http://localhost:9002/auth/realms/catalyst" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost="${hostip}"
         if: ${{ matrix.auth == 'keycloak' }}
 
       # run catalyst
@@ -151,7 +151,7 @@ jobs:
       - name: Wait for catalyst
         run: |
           hostip=$(ip route show | awk '/default/ {print $3}')
-          wait_for_response -url="http://localhost:8000" -code="302" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
+          wait_for_response -url="http://localhost:8000" -code="302" -timeout="3m" -interval="10s" -verbose="true" -localhost="${hostip}"
 
       # run cypress
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
