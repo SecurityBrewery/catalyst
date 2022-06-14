@@ -119,8 +119,17 @@ jobs:
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
         shell: bash
+        if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
         shell: bash
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: sed -i '' 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+        shell: bash
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: sed -i '' 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
+        shell: bash
+        if: ${{ matrix.os == 'macos-latest' }}
+
       - run: docker-compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
