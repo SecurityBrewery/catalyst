@@ -66,7 +66,7 @@ jobs:
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
       - name: Install ArangoDB
         run: |
@@ -130,11 +130,11 @@ jobs:
         shell: bash
         if: ${{ matrix.os == 'macos-latest' }}
 
-      - run: docker-compose up --quiet-pull --detach
+      - run: docker compose up --quiet-pull --detach
         working-directory: dev
         shell: bash
         if: ${{ matrix.auth == 'simple' }}
-      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
         shell: bash
         if: ${{ matrix.auth == 'keycloak' }}
