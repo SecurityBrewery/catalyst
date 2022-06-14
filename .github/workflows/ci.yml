@@ -112,11 +112,11 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
+      - run: go install github.com/cugu/wait_for_response/main@latest
       - name: Wait for frontend
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:8080'
-          responseCode: 200
+        run: |
+          hostip=$(ip route show | awk '/default/ {print $3}')
+          wait_for_response -url="http://localhost:8080" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
 
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
@@ -132,13 +132,9 @@ jobs:
         shell: bash
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:9002/auth/realms/catalyst'
-          responseCode: 200
-          verbose: true
-          timeout: 3m
-          interval: 10s
+        run: |
+          hostip=$(ip route show | awk '/default/ {print $3}')
+          wait_for_response -url="http://localhost:9002/auth/realms/catalyst" -code="200" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
         if: ${{ matrix.auth == 'keycloak' }}
 
       # run catalyst
@@ -153,14 +149,9 @@ jobs:
         working-directory: dev
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for catalyst
-        uses: cugu/wait_for_response@v1.12.0
-        with:
-          url: 'http://localhost:8000'
-          method: GET
-          responseCode: 302
-          verbose: true
-          timeout: 3m
-          interval: 10s
+        run: |
+          hostip=$(ip route show | awk '/default/ {print $3}')
+          wait_for_response -url="http://localhost:8000" -code="302" -timeout="3m" -interval="10s" -verbose="true" -localhost=${hostip}"
 
       # run cypress
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
