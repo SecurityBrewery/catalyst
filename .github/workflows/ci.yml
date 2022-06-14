@@ -125,10 +125,10 @@ jobs:
 
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
-        if: ${{ matrix.auth == 'simple' }}
+        if: matrix.auth == 'simple'
       - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
       - name: Wait for keycloak
         uses: cugu/wait_for_response@v1.13.0
         with:
@@ -137,7 +137,7 @@ jobs:
           verbose: true
           timeout: 3m
           interval: 10s
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
 
       # run catalyst
       - run: |
@@ -146,10 +146,10 @@ jobs:
       - run: go mod download
       - run: bash start_dev.sh &
         working-directory: dev
-        if: ${{ matrix.auth == 'simple' }}
+        if: matrix.auth == 'simple'
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
       - name: Wait for catalyst
         uses: cugu/wait_for_response@v1.13.0
         with:
@@ -161,12 +161,14 @@ jobs:
           interval: 10s
 
       # run cypress
-      - run: ./node_modules/.bin/cypress run
+      - uses: cypress-io/github-action@v4
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
-        working-directory: ui
-
+        with:
+          browser: chrome
+          working-directory: ui
       - uses: actions/upload-artifact@v3
+        if: always() && matrix.auth == 'simple'
         with:
           name: cypress-videos
           path: ui/cypress/videos
@@ -224,7 +226,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Version
-        if: ${{ github.ref != '' }}
+        if: github.ref != ''
         run: |
           echo ${{ github.ref_name }}
           echo ${{ github.ref_name }} > VERSION
