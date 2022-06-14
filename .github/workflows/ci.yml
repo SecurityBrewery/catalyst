@@ -112,7 +112,7 @@ jobs:
           yarn serve &
         working-directory: ui
       - name: Wait for frontend
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
@@ -131,7 +131,7 @@ jobs:
         shell: bash
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
@@ -152,7 +152,7 @@ jobs:
         working-directory: dev
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for catalyst
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:8000'
           method: GET
