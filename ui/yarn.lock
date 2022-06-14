@@ -12877,10 +12877,10 @@ vue-class-component@7.2.6:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.2.6.tgz#8471e037b8e4762f5a464686e19e5afc708502e4"
   integrity sha512-+eaQXVrAm/LldalI272PpDe3+i4mPis0ORiMYxF6Ae4hyuCh15W8Idet7wPUEs4N4YptgFHGys4UrgNQOMyO6w==
 
-vue-cli-plugin-vuetify@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-2.5.0.tgz#2d51b81c6d7da9e1393a0eab5d6baa107fbe1578"
-  integrity sha512-wc8/dTJp+C5ik+xi9DdakOT4n14sRPb4Xb+L8ukpsb4r7K6lzgPriLF7JrnIi9cYJwqU29UaT0f7xx5ixDdUdg==
+vue-cli-plugin-vuetify@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-2.5.1.tgz#6a3ee80c6e8d09b634ec7705422573f2ee0bc7e7"
+  integrity sha512-OcZ8/bqf84yTbQN+PyRf+8Wvr8czg+u5J4JGVx+Lq5ytsBxTgIUIZ/oMO7j+bd9WCjiKid2l9gZbQYjZABw2+g==
   dependencies:
     null-loader "^4.0.1"
     semver "^7.1.2"
