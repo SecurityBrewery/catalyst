@@ -96,9 +96,8 @@ jobs:
   cypress:
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
         auth: [ simple, keycloak ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -114,32 +113,30 @@ jobs:
         working-directory: ui
       - run: go install github.com/cugu/wait_for_response@latest
       - name: Wait for frontend
-        run: wait_for_response -url="http://localhost:8080" -code="200" -timeout="3m" -interval="10s" -verbose="true"
+        uses: cugu/wait_for_response@v1.13.0
+        with:
+          url: 'http://localhost:8080'
+          responseCode: 200
 
       # run containers
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
-        shell: bash
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
-        shell: bash
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: sed -i '' 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
-        shell: bash
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: sed -i '' 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
-        shell: bash
-        if: ${{ matrix.os == 'macos-latest' }}
+      - run: | 
+          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
 
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
-        shell: bash
         if: ${{ matrix.auth == 'simple' }}
       - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
-        shell: bash
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for keycloak
-        run: wait_for_response -url="http://localhost:9002/auth/realms/catalyst" -code="200" -timeout="3m" -interval="10s" -verbose="true"
+        uses: cugu/wait_for_response@v1.13.0
+        with:
+          url: 'http://localhost:9002/auth/realms/catalyst'
+          responseCode: 200
+          verbose: true
+          timeout: 3m
+          interval: 10s
         if: ${{ matrix.auth == 'keycloak' }}
 
       # run catalyst
@@ -151,10 +148,17 @@ jobs:
         working-directory: dev
         if: ${{ matrix.auth == 'simple' }}
       - run: bash start_dev_with_keycloak.sh &
-        working-directory: dev
+        working-directory: dev^
         if: ${{ matrix.auth == 'keycloak' }}
       - name: Wait for catalyst
-        run: wait_for_response -url="http://localhost:8000" -code="302" -timeout="3m" -interval="10s" -verbose="true"
+        uses: cugu/wait_for_response@v1.13.0
+        with:
+          url: 'http://localhost:8000'
+          method: GET
+          responseCode: 302
+          verbose: true
+          timeout: 3m
+          interval: 10s
 
       # run cypress
       - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
