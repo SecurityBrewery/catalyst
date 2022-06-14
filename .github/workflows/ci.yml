@@ -66,7 +66,7 @@ jobs:
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
       - name: Install ArangoDB
         run: |
@@ -94,10 +94,10 @@ jobs:
       - run: gocap check ./cmd/catalyst
 
   cypress:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         auth: [ simple, keycloak ]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -111,34 +111,33 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
+      - run: go install github.com/cugu/wait_for_response@latest
       - name: Wait for frontend
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:8080'
           responseCode: 200
 
       # run containers
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
-        shell: bash
-      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
-        shell: bash
-      - run: docker-compose up --quiet-pull --detach
+      - run: | 
+          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
+          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
+
+      - run: docker compose up --quiet-pull --detach
         working-directory: dev
-        shell: bash
-        if: ${{ matrix.auth == 'simple' }}
-      - run: docker-compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+        if: matrix.auth == 'simple'
+      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
-        shell: bash
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
       - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:9002/auth/realms/catalyst'
           responseCode: 200
           verbose: true
           timeout: 3m
           interval: 10s
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
 
       # run catalyst
       - run: |
@@ -147,12 +146,12 @@ jobs:
       - run: go mod download
       - run: bash start_dev.sh &
         working-directory: dev
-        if: ${{ matrix.auth == 'simple' }}
+        if: matrix.auth == 'simple'
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
-        if: ${{ matrix.auth == 'keycloak' }}
+        if: matrix.auth == 'keycloak'
       - name: Wait for catalyst
-        uses: cugu/wait_for_response@v1.12.0
+        uses: cugu/wait_for_response@v1.13.0
         with:
           url: 'http://localhost:8000'
           method: GET
@@ -162,12 +161,14 @@ jobs:
           interval: 10s
 
       # run cypress
-      - run: ./node_modules/.bin/cypress run --spec "cypress/integration/catalyst.js"
+      - uses: cypress-io/github-action@v4
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
-        working-directory: ui
-
+        with:
+          browser: chrome
+          working-directory: ui
       - uses: actions/upload-artifact@v3
+        if: always() && matrix.auth == 'simple'
         with:
           name: cypress-videos
           path: ui/cypress/videos
@@ -225,7 +226,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Version
-        if: ${{ github.ref != '' }}
+        if: github.ref != ''
         run: |
           echo ${{ github.ref_name }}
           echo ${{ github.ref_name }} > VERSION
