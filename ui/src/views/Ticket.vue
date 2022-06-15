@@ -278,7 +278,7 @@
           <div
             v-for="(playbook, playbookid) in ticket.playbooks"
             :key="playbookid"
-            class="mb-2"
+            :class="'playbook-'+playbookid + ' mb-2'"
           >
             <v-card color="cards" flat>
               <v-card-subtitle class="d-flex pa-2 pb-1 mb-0" style="line-height: 28px;">
@@ -310,7 +310,7 @@
                   class="mx-4"
                 />
               </div>
-              <v-list dense color="cards" class="py-0">
+              <v-list dense color="cards" class="tasks py-0">
                 <v-list-item
                   v-for="taskwithid in stasks(playbookid)"
                   :key="taskwithid.id"

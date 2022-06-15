@@ -43,8 +43,8 @@
         <v-card-title> Delete {{ singular }} {{ deleteName }} ? </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="error" text @click="dialog = false">Cancel</v-btn>
-          <v-btn color="success" outlined @click="deleteItem(deleteName)">Delete</v-btn>
+          <v-btn id="cancel-button" color="error" text @click="dialog = false">Cancel</v-btn>
+          <v-btn id="delete-button" color="success" outlined @click="deleteItem(deleteName)">Delete</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

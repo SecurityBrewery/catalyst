@@ -17,9 +17,9 @@
       <h2 v-else>Edit Template: {{ template.name }}</h2>
     </div>
 
-    <v-text-field label="Name" v-model="template.name" class="flex-grow-0 flex-shrink-0" :readonly="readonly"></v-text-field>
+    <v-text-field id="name-edit" label="Name" v-model="template.name" class="flex-grow-0 flex-shrink-0" :readonly="readonly"></v-text-field>
 
-    <AdvancedJSONSchemaEditor v-if="schema" @save="save" :schema="schema" :readonly="readonly" :hidepreview="false"></AdvancedJSONSchemaEditor>
+    <AdvancedJSONSchemaEditor id="template-edit" v-if="schema" @save="save" :schema="schema" :readonly="readonly" :hidepreview="false"></AdvancedJSONSchemaEditor>
   </div>
 </template>
 

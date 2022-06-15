@@ -179,7 +179,7 @@
 
       </v-app-bar>
       <router-view></router-view>
-      <v-snackbar v-model="snackbar" :color="$store.state.alert.type" :timeout="$store.state.alert.type === 'error' ? -1 : 5000" outlined>
+      <v-snackbar id="alert" v-model="snackbar" :color="$store.state.alert.type" :timeout="$store.state.alert.type === 'error' ? -1 : 5000" outlined>
         <b style="display: block">{{ $store.state.alert.name | capitalize }}</b>
         {{ $store.state.alert.detail }}
         <template v-slot:action="{ attrs }">
