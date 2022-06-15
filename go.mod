@@ -3,11 +3,11 @@ module github.com/SecurityBrewery/catalyst
 go 1.18
 
 require (
-	github.com/alecthomas/kong v0.5.0
+	github.com/alecthomas/kong v0.6.0
 	github.com/alecthomas/kong-yaml v0.1.1
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220314183648-97c793e446ba
 	github.com/arangodb/go-driver v1.3.2
-	github.com/aws/aws-sdk-go v1.44.24
+	github.com/aws/aws-sdk-go v1.44.33
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
@@ -19,7 +19,7 @@ require (
 	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
 	github.com/imdario/mergo v0.3.13
 	github.com/mingrammer/commonregex v1.0.1
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/tidwall/gjson v1.14.1
 	github.com/tidwall/sjson v1.2.4
 	github.com/tus/tusd v1.9.0
