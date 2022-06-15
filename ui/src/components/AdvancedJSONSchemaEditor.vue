@@ -3,6 +3,7 @@
     <div class="d-flex" >
       <v-spacer></v-spacer>
       <v-switch
+          id="advanced"
           v-model="advanced"
           label="Advanced"
           class="float-right mt-0"

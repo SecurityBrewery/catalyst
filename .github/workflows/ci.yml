@@ -96,6 +96,7 @@ jobs:
   cypress:
     strategy:
       matrix:
+        test: [ tickets, templates, playbooks ]
         auth: [ simple, keycloak ]
     runs-on: ubuntu-latest
     steps:
@@ -164,6 +165,7 @@ jobs:
       - uses: cypress-io/github-action@v4
         env:
           CYPRESS_AUTH: ${{ matrix.auth }}
+          CYPRESS_TEST: ${{ matrix.test }}
         with:
           browser: chrome
           working-directory: ui

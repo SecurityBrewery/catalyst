@@ -1,7 +1,7 @@
 <template>
   <prism-editor
       v-if="showEditor"
-      class="my-editor"
+      class="editor"
       v-model="code"
       :highlight="highlighter"
       line-numbers

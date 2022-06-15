@@ -2,24 +2,28 @@
   <div class="mt-8">
     <h2>New {{ $route.params.type | capitalize }}</h2>
     <v-form class="create clearfix">
-      <v-text-field label="Title" v-model="name"></v-text-field>
+      <v-text-field id="title-edit" label="Title" v-model="name"></v-text-field>
 
-      <v-select
-          label="Playbooks"
-          :items="playbooks"
-          item-text="name"
-          return-object
-          multiple
-          v-model="selectedPlaybooks"
-      ></v-select>
+      <div id="playbooks-edit">
+        <v-select
+            label="Playbooks"
+            :items="playbooks"
+            item-text="name"
+            return-object
+            multiple
+            v-model="selectedPlaybooks"
+        ></v-select>
+      </div>
 
-      <v-select
-        label="Template"
-        :items="templates"
-        item-text="name"
-        return-object
-        v-model="selectedTemplate"
-      ></v-select>
+      <div id="templates-edit">
+        <v-select
+            label="Template"
+            :items="templates"
+            item-text="name"
+            return-object
+            v-model="selectedTemplate"
+        ></v-select>
+      </div>
 
       <v-subheader class="pl-0 mt-4" style="height: 20px">Details</v-subheader>
       <div v-if="selectedTemplate !== undefined" class="details">
