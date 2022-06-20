@@ -19,7 +19,7 @@ require (
 	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
 	github.com/imdario/mergo v0.3.13
 	github.com/mingrammer/commonregex v1.0.1
-	github.com/stretchr/testify v1.7.3
+	github.com/stretchr/testify v1.7.4
 	github.com/tidwall/gjson v1.14.1
 	github.com/tidwall/sjson v1.2.4
 	github.com/tus/tusd v1.9.0
