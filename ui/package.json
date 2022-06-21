@@ -79,6 +79,6 @@
     "typescript": "4.7.4",
     "vue-cli-plugin-vuetify": "2.5.1",
     "vue-template-compiler": "2.6.14",
-    "vuetify-loader": "1.7.3"
+    "vuetify-loader": "1.8.0"
   }
 }
