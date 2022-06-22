@@ -1250,10 +1250,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@koumoul/vjsf@2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.14.0.tgz#e2da9f316bad06a511e7f94c18667d0bf8e1e20c"
-  integrity sha512-Y2Jw7x7ZB/cLn97CuxUSxCGlbyNz4V9Hu4R4zthQ4O17yhpQS4+LZNYgYRjLep+rmFDeWmI0HiA9f4r0WHu7rA==
+"@koumoul/vjsf@2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.15.0.tgz#84967023f6cd603c12dd5604613bccb8d04ea589"
+  integrity sha512-gPYRyXKKCKoC07P1Ib064OUdYpbth1ThV6uiAk3EftwP5aDrUNCBF5R7gREaOqPuKMxKEsvUsXsCpDeWZJ7rQw==
   dependencies:
     debounce "^1.2.1"
     debug "^4.3.3"

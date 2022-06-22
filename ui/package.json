@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@koumoul/vjsf": "2.14.0",
+    "@koumoul/vjsf": "2.15.0",
     "@mdi/font": "6.7.96",
     "@mdi/util": "0.3.2",
     "@types/luxon": "2.3.2",
