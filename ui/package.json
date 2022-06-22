@@ -70,7 +70,7 @@
     "@vue/eslint-config-typescript": "10.0.0",
     "@vue/test-utils": "2.0.1",
     "babel-eslint": "10.1.0",
-    "cypress": "10.1.0",
+    "cypress": "10.2.0",
     "eslint": "7.32.0",
     "eslint-plugin-jest": "26.5.3",
     "eslint-plugin-vue": "7.20.0",
