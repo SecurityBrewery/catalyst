@@ -73,7 +73,7 @@
     "cypress": "10.2.0",
     "eslint": "7.32.0",
     "eslint-plugin-jest": "26.5.3",
-    "eslint-plugin-vue": "7.20.0",
+    "eslint-plugin-vue": "9.1.1",
     "sass": "1.53.0",
     "sass-loader": "^10",
     "typescript": "4.7.4",
