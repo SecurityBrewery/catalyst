@@ -16,7 +16,7 @@
     "@types/prismjs": "1.26.0",
     "@uppy/core": "1.20.1",
     "@uppy/tus": "1.9.2",
-    "@uppy/vue": "0.2.7",
+    "@uppy/vue": "0.4.8",
     "ajv": "8.11.0",
     "ant-design-vue": "1.7.8",
     "antlr4": "4.10.1",
