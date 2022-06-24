@@ -571,7 +571,7 @@ func (db *Database) TicketCount(ctx context.Context, typequery, filterquery stri
 }
 
 func sortQuery(paramsSort []string, paramsDesc []bool, bindVars map[string]any) string {
-	sort := ""
+	sortQuery := ""
 	if len(paramsSort) > 0 {
 		var sorts []string
 		for i, column := range paramsSort {
@@ -582,10 +582,10 @@ func sortQuery(paramsSort []string, paramsDesc []bool, bindVars map[string]any) 
 			sorts = append(sorts, colsort)
 			bindVars[fmt.Sprintf("column%d", i)] = column
 		}
-		sort = "SORT " + strings.Join(sorts, ", ")
+		sortQuery = "SORT " + strings.Join(sorts, ", ")
 	}
 
-	return sort
+	return sortQuery
 }
 
 func mergeMaps(a map[string]any, b map[string]any) map[string]any {

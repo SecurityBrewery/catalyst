@@ -38,27 +38,27 @@ func ticketIDs(ticketResponses []*model.TicketResponse) []driver.DocumentID {
 	return ids
 }
 
-func (s *Service) ListTickets(ctx context.Context, s3 *string, i *int, i2 *int, strings []string, bools []bool, s2 *string) (*model.TicketList, error) {
+func (s *Service) ListTickets(ctx context.Context, ticketType *string, offsetP, countP *int, sort []string, descending []bool, queryP *string) (*model.TicketList, error) {
 	q := ""
-	if s2 != nil && *s2 != "" {
-		q = *s2
+	if queryP != nil && *queryP != "" {
+		q = *queryP
 	}
 	t := ""
-	if s3 != nil && *s3 != "" {
-		t = *s3
+	if ticketType != nil && *ticketType != "" {
+		t = *ticketType
 	}
 
 	offset := int64(0)
-	if i != nil {
-		offset = int64(*i)
+	if offsetP != nil {
+		offset = int64(*offsetP)
 	}
 
 	count := int64(25)
-	if i2 != nil {
-		count = int64(*i2)
+	if countP != nil {
+		count = int64(*countP)
 	}
 
-	return s.database.TicketList(ctx, t, q, strings, bools, offset, count)
+	return s.database.TicketList(ctx, t, q, sort, descending, offset, count)
 }
 
 func (s *Service) CreateTicket(ctx context.Context, form *model.TicketForm) (doc *model.TicketResponse, err error) {
