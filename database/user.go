@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
@@ -15,24 +14,9 @@ import (
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/generated/pointer"
-	"github.com/SecurityBrewery/catalyst/generated/time"
+	"github.com/SecurityBrewery/catalyst/key"
 	"github.com/SecurityBrewery/catalyst/role"
 )
-
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func generateKey() string {
-	b := make([]rune, 32)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-
-	return string(b)
-}
 
 func toUser(user *model.UserForm, salt, sha256, sha512 *string) *model.User {
 	roles := []string{}
@@ -240,8 +224,8 @@ func (db *Database) UserByIDAndPassword(ctx context.Context, id, password string
 	return toUserResponse(meta.Key, &doc), err
 }
 
-func generateAPIKey() (key, sha256Hash *string) {
-	newKey := generateKey()
+func generateAPIKey() (k, sha256Hash *string) {
+	newKey := key.Generate()
 	sha256Hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(newKey))))
 
 	return &newKey, sha256Hash
@@ -249,7 +233,7 @@ func generateAPIKey() (key, sha256Hash *string) {
 
 func hashUserPassword(newUser *model.UserForm) (salt, sha512Hash *string) {
 	if newUser.Password != nil {
-		saltKey := generateKey()
+		saltKey := key.Generate()
 		salt = &saltKey
 		sha512Hash = pointer.String(fmt.Sprintf("%x", sha512.Sum512([]byte(saltKey+*newUser.Password))))
 	}

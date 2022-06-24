@@ -30,40 +30,42 @@ type Config struct {
 	APIKeyAuthEnable bool
 	OIDCAuthEnable   bool
 
-	OIDCIssuer       string
-	OAuth2           *oauth2.Config
-	UserCreateConfig *UserCreateConfig
-
-	provider *oidc.Provider
+	OIDC *OIDCConfig
 }
 
-type UserCreateConfig struct {
+type OIDCConfig struct {
+	Issuer string
+
 	AuthBlockNew     bool
 	AuthDefaultRoles []role.Role
 	AuthAdminUsers   []string
 
-	OIDCClaimUsername string
-	OIDCClaimEmail    string
-	OIDCClaimName     string
-	// OIDCClaimGroups   string
+	ClaimUsername string
+	ClaimEmail    string
+	ClaimName     string
+	// ClaimGroups   string
+
+	OAuth2 *oauth2.Config
+
+	provider *oidc.Provider
 }
 
 func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
-	if c.provider == nil {
+	if c.OIDC.provider == nil {
 		if err := c.Load(ctx); err != nil {
 			return nil, err
 		}
 	}
 
-	return c.provider.Verifier(&oidc.Config{SkipClientIDCheck: true}), nil
+	return c.OIDC.provider.Verifier(&oidc.Config{SkipClientIDCheck: true}), nil
 }
 
 func (c *Config) Load(ctx context.Context) error {
 	for {
-		provider, err := oidc.NewProvider(ctx, c.OIDCIssuer)
+		provider, err := oidc.NewProvider(ctx, c.OIDC.Issuer)
 		if err == nil {
-			c.provider = provider
-			c.OAuth2.Endpoint = provider.Endpoint()
+			c.OIDC.provider = provider
+			c.OIDC.OAuth2.Endpoint = provider.Endpoint()
 
 			break
 		}
@@ -94,7 +96,7 @@ func Authenticate(db *database.Database, config *Config, jar *Jar) func(next htt
 				}
 			case authHeader != "":
 				if config.OIDCAuthEnable {
-					iss := config.OIDCIssuer
+					iss := config.OIDC.Issuer
 					bearerAuth(db, authHeader, iss, config, jar)(next).ServeHTTP(w, r)
 				} else {
 					api.JSONErrorStatus(w, http.StatusUnauthorized, errors.New("OIDC authentication not enabled"))
@@ -190,7 +192,7 @@ func sessionAuth(db *database.Database, config *Config, jar *Jar) func(next http
 }
 
 func setContextClaims(r *http.Request, db *database.Database, claims map[string]any, config *Config) (*http.Request, error) {
-	newUser, newSetting, err := mapUserAndSettings(claims, config.UserCreateConfig)
+	newUser, newSetting, err := mapUserAndSettings(claims, config.OIDC)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +222,7 @@ func setContextUser(r *http.Request, user *model.UserResponse, hooks *hooks.Hook
 	return busdb.SetContext(r, user)
 }
 
-func mapUserAndSettings(claims map[string]any, config *UserCreateConfig) (*model.UserForm, *model.UserData, error) {
+func mapUserAndSettings(claims map[string]any, config *OIDCConfig) (*model.UserForm, *model.UserData, error) {
 	// handle Bearer tokens
 	// if typ, ok := claims["typ"]; ok && typ == "Bearer" {
 	// 	return &model.User{
@@ -232,17 +234,17 @@ func mapUserAndSettings(claims map[string]any, config *UserCreateConfig) (*model
 	// 	}, nil
 	// }
 
-	username, err := getString(claims, config.OIDCClaimUsername)
+	username, err := getString(claims, config.ClaimUsername)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	email, err := getString(claims, config.OIDCClaimEmail)
+	email, err := getString(claims, config.ClaimEmail)
 	if err != nil {
 		email = ""
 	}
 
-	name, err := getString(claims, config.OIDCClaimName)
+	name, err := getString(claims, config.ClaimName)
 	if err != nil {
 		name = ""
 	}
@@ -301,7 +303,7 @@ func redirectToOIDCLogin(config *Config, jar *Jar) func(http.ResponseWriter, *ht
 
 		jar.setStateCookie(w, state)
 
-		http.Redirect(w, r, config.OAuth2.AuthCodeURL(state), http.StatusFound)
+		http.Redirect(w, r, config.OIDC.OAuth2.AuthCodeURL(state), http.StatusFound)
 	}
 }
 
@@ -409,7 +411,7 @@ func callback(config *Config, jar *Jar) http.HandlerFunc {
 			return
 		}
 
-		oauth2Token, err := config.OAuth2.Exchange(r.Context(), r.URL.Query().Get("code"))
+		oauth2Token, err := config.OIDC.OAuth2.Exchange(r.Context(), r.URL.Query().Get("code"))
 		if err != nil {
 			api.JSONErrorStatus(w, http.StatusInternalServerError, fmt.Errorf("oauth2 exchange failed: %w", err))
 
