@@ -8,11 +8,13 @@ spruce merge definition/*.yaml definition/enterprise/*.yaml >generated/catalyst.
 
 echo generate caql parser and lexer
 cd definition || exit
+# antlr 4.10.1
 antlr -Dlanguage=Go -o ../generated/caql/parser CAQLParser.g4 CAQLLexer.g4
 antlr -Dlanguage=JavaScript -o ../ui/src/suggestions/grammar CAQLParser.g4 CAQLLexer.g4
 cd ..
 
 echo generate json
+# openapi-generator 6.0.0
 openapi-generator generate -i generated/community.yml -o generated -g openapi
 mv generated/openapi.json generated/community.json
 openapi-generator generate -i generated/catalyst.yml -o generated -g openapi
