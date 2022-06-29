@@ -1250,12 +1250,13 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@koumoul/vjsf@2.15.0":
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.15.0.tgz#84967023f6cd603c12dd5604613bccb8d04ea589"
-  integrity sha512-gPYRyXKKCKoC07P1Ib064OUdYpbth1ThV6uiAk3EftwP5aDrUNCBF5R7gREaOqPuKMxKEsvUsXsCpDeWZJ7rQw==
+"@koumoul/vjsf@2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.16.0.tgz#2fa29cf808f26428ed3faadbe539b992b9086d78"
+  integrity sha512-w/wv+/xkOMkAJl25vZl8g8RMuUGSy4N7xx+TxlOqx9hfNhfjJHwH/mlrKWHrT0BM+wnpypZwbwGpOI32HYLpBg==
   dependencies:
     debounce "^1.2.1"
+    debounce-promise "^3.1.2"
     debug "^4.3.3"
     fast-copy "^2.1.1"
     fast-equals "^2.0.4"
@@ -4824,6 +4825,11 @@ deasync@^0.1.15:
   dependencies:
     bindings "^1.5.0"
     node-addon-api "^1.7.1"
+
+debounce-promise@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/debounce-promise/-/debounce-promise-3.1.2.tgz#320fb8c7d15a344455cd33cee5ab63530b6dc7c5"
+  integrity sha512-rZHcgBkbYavBeD9ej6sP56XfG53d51CD4dnaw989YX/nZ/ZJfgRx/9ePKmTNiUiyQvh4mtrMoS3OAWW+yoYtpg==
 
 debounce@^1.2.1:
   version "1.2.1"
