@@ -1272,10 +1272,10 @@
     property-expr "^2.0.5"
     vuedraggable "^2.24.3"
 
-"@mdi/font@6.8.96":
-  version "6.8.96"
-  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-6.8.96.tgz#e8e2f2eebdaec769c2c41cde6912d1066f81df78"
-  integrity sha512-SXNgfE9BdaaKZOJjb9vDhXbJOWJD8Zjqjf352dcFzOkPnBR9piVAvIH7ZtG08B2DI1l4swe7m9F2aPGmH1X20g==
+"@mdi/font@6.9.96":
+  version "6.9.96"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-6.9.96.tgz#c68da7e0895885dd09e60dc08c5ecc0d77f67efb"
+  integrity sha512-z3QVZStyHVwkDsFR7A7F2PIvZJPWgdSFw4BEEy2Gc9HUN5NfK9mGbjgaYClRcbMWiYEV45srmiYtczmBtCqR8w==
 
 "@mdi/font@^6.5.95":
   version "6.6.96"
