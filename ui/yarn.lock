@@ -2650,6 +2650,11 @@ acorn-walk@^7.1.1:
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-7.2.0.tgz#0de889a601203909b0fbe07b8938dc21d2e967bc"
   integrity "sha1-DeiJpgEgOQmw++B7iTjcIdLpZ7w= sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA=="
 
+acorn-walk@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
+  integrity sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
+
 acorn@^5.5.3:
   version "5.7.4"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.4.tgz#3e8d8a9947d0599a1796d10225d7432f4a4acf5e"
@@ -2665,7 +2670,7 @@ acorn@^7.1.0, acorn@^7.1.1, acorn@^7.4.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity "sha1-/q7SVZc9LndVW4PbwIhRpsY1IPo= sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A=="
 
-acorn@^8.7.0:
+acorn@^8.4.1, acorn@^8.7.0:
   version "8.7.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.7.1.tgz#0197122c843d1bf6d0a5e83220a788f278f63c30"
   integrity sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A==
@@ -13105,11 +13110,13 @@ vuedraggable@^2.24.3:
   dependencies:
     sortablejs "1.10.2"
 
-vuetify-loader@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.8.0.tgz#15f4923fd8aca92d3ffaa748afef17a2e065a33d"
-  integrity sha512-qzhKX6xZRax9q91A16cxZ43Ld+6kZDceko3a+6h6II/N9YVUgtXace3iFxOZD6ZAYpw4Tj6U6rfxfymOS+9dwQ==
+vuetify-loader@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.9.0.tgz#958ff51a13a024a2b98618a77e4ae16b9af34c09"
+  integrity sha512-qJGm35Ds7wgycdZxAUJPlwekNJ50OeO3/OL2fi1AtRwD94F00uXud7PIT0E/Svh6l8uP0JWiC01INS1N7vde+w==
   dependencies:
+    acorn "^8.4.1"
+    acorn-walk "^8.2.0"
     decache "^4.6.0"
     file-loader "^6.2.0"
     loader-utils "^2.0.0"
