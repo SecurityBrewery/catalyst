@@ -52,7 +52,7 @@
     "yaml": "2.0.1"
   },
   "devDependencies": {
-    "@testing-library/vue": "6.6.0",
+    "@testing-library/vue": "6.6.1",
     "@types/jest": "28.1.6",
     "@types/lodash": "4.14.182",
     "@types/vue-markdown": "2.2.1",
