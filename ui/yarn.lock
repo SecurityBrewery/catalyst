@@ -1255,10 +1255,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@koumoul/vjsf@2.17.0":
-  version "2.17.0"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.17.0.tgz#7a26e83661b8bb0e5dab57671e630e2f7b2706dd"
-  integrity sha512-ROh9AhMRNdXqCFXowZTHJCqwdgPKkVnoB7dQlNJG2WQ9MTiweesfZ8AZYItxsRMx+Cnf5oX85LRYH0ul9+sHww==
+"@koumoul/vjsf@2.18.0":
+  version "2.18.0"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.18.0.tgz#d361b45c56fd5eb24b8b05deb0fe78532b6c0b1f"
+  integrity sha512-+jrLuDu9A/H7yyqxfdI9Lh4nZZEfENRcbrobPFfvCYnJOXhyNdjC3MMcj+e/Kg6BdloJ9PuNcoYelWwjVp6sWw==
   dependencies:
     debounce "^1.2.1"
     debounce-promise "^3.1.2"
