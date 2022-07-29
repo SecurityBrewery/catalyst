@@ -13152,10 +13152,10 @@ vuetify-loader@1.9.2:
     file-loader "^6.2.0"
     loader-utils "^2.0.0"
 
-vuetify@2.6.7:
-  version "2.6.7"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.7.tgz#9c6fb7d20e1c4b07417084cbe5996c2dadf099df"
-  integrity sha512-1XxCv6mt1UsKaW7rqow0hF/jOw1ijT/fHH9euWLHgSVIcPAx8D2AY5ihTCBbMmV53Hj/YD0DUvzyk6cM/OGHvw==
+vuetify@2.6.8:
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.8.tgz#3f4cfa56b7eff4bad1818cd1812b47f6754e140a"
+  integrity sha512-CbJsIGfye++an5/I5ypmYgf74vxt5j0NJ/7UUIDXRYXZsM9YuEpnqo97Ob4LD6QEli1gJa6WXWS8pXLWk0ArPQ==
 
 vuex@3.6.2:
   version "3.6.2"
