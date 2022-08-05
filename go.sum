@@ -118,8 +118,8 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/alexflint/go-filemutex v0.0.0-20171022225611-72bdc8eae2ae/go.mod h1:CgnQgUtFrFz9mxFNtED3jI5tLDjKlOM+oUF/sTk6ps0=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
-github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220722194653-14703f21b580 h1:rfAZfq1LjIhVCFsBp2MoXxVvgtCyZUOtzsV8azhR1Jk=
-github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220722194653-14703f21b580/go.mod h1:F7bn7fEU90QkQ3tnmaTx3LTKLEDqnwWODIYppRQ5hnY=
+github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220804214150-8b0cc382067f h1:X02zleesrf1JEbRsNR+hmuCEijGXhcJboylwQ+6IeTw=
+github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220804214150-8b0cc382067f/go.mod h1:F7bn7fEU90QkQ3tnmaTx3LTKLEDqnwWODIYppRQ5hnY=
 github.com/arangodb/go-driver v1.3.3 h1:UEV74zLYvvAvQgQgNHORdvaADtDX2uTVZH+1H7WAFAQ=
 github.com/arangodb/go-driver v1.3.3/go.mod h1:5GAx3XvK72DJPhJgyjZOtYAGc4SpY7rZDb3LyhCvLcQ=
 github.com/arangodb/go-velocypack v0.0.0-20200318135517-5af53c29c67e h1:Xg+hGrY2LcQBbxd0ZFdbGSyRKTYMZCfBbw/pMJFOk1g=
