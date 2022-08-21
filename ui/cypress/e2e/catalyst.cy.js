@@ -10,7 +10,7 @@ beforeEach(() => {
 })
 
 if (Cypress.env('TEST') === 'tickets') {
-    describe('tickets', () => {
+    describe('tickets', {"retries": 3}, () => {
         it('open ticket', () => {
             cy.visit('http://localhost/ui/tickets');
 
@@ -34,7 +34,7 @@ if (Cypress.env('TEST') === 'tickets') {
 }
 
 if (Cypress.env('TEST') === 'templates') {
-    describe('templates', () => {
+    describe('templates', {"retries": 3}, () => {
         it('create template', () => {
             cy.get("#toggle_menu").click();
             cy.contains('Templates').click();
@@ -73,7 +73,7 @@ if (Cypress.env('TEST') === 'templates') {
 }
 
 if (Cypress.env('TEST') === 'playbooks') {
-    describe('playbooks', () => {
+    describe('playbooks', {"retries": 3}, () => {
         it('create playbook', () => {
             cy.get("#toggle_menu").click();
             cy.contains('Playbooks').click();
