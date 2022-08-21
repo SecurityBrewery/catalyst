@@ -26,7 +26,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
-	golang.org/x/oauth2 v0.0.0-20220722155238-128564f6959c
+	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7
 	gopkg.in/yaml.v3 v3.0.1
 )
 
