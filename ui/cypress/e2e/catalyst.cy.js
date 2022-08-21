@@ -19,6 +19,7 @@ if (Cypress.env('TEST') === 'tickets') {
 
             // wait for results to load
             cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1)").should('exist');
+            cy.wait(1000);
 
             // open ticket
             cy.contains("live zebra").click();
