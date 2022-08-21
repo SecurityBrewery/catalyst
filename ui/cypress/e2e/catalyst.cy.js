@@ -17,8 +17,12 @@ if (Cypress.env('TEST') === 'tickets') {
             // clear caql
             cy.get("#caqlbar > div > div > div > div > div:nth-child(2) > div > button").click();
 
+            // wait for results to load
+            cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1)").should('exist');
+            cy.wait(1000);
+
             // open ticket
-            cy.contains("live zebra").click()
+            cy.contains("live zebra").click();
 
             // assert url
             cy.url().should('eq', "http://localhost/ui/tickets/8123")
@@ -60,7 +64,7 @@ if (Cypress.env('TEST') === 'templates') {
             cy.get("#templates-edit .v-input__slot").click();
             cy.contains("DescriptionOnly").click();
             cy.contains("Create").click();
-            cy.wait(1000);
+            cy.url().should('match', /http:\/\/localhost\/ui\/tickets\/\d+/);
 
             cy.get("#description").type("Lorem Ipsum");
             cy.contains("Save Details").click();
@@ -134,7 +138,7 @@ if (Cypress.env('TEST') === 'playbooks') {
             cy.get("#playbooks-edit .v-input__slot").click();
             cy.contains("Test").click();
             cy.contains("Create").click();
-            cy.wait(1000);
+            cy.url().should('match', /http:\/\/localhost\/ui\/tickets\/\d+/);
 
             cy.scrollTo('bottom');
             cy.get(".playbook-test .tasks").contains("Enter something to hash").click();
