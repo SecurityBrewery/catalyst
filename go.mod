@@ -16,7 +16,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/iancoleman/strcase v0.2.0
-	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
+	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/imdario/mergo v0.3.13
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.8.0
