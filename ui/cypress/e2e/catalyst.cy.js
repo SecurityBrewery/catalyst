@@ -63,7 +63,7 @@ if (Cypress.env('TEST') === 'templates') {
             cy.get("#templates-edit .v-input__slot").click();
             cy.contains("DescriptionOnly").click();
             cy.contains("Create").click();
-            cy.wait(1000);
+            cy.url().should('match', /http:\/\/localhost\/ui\/tickets\/\d+/);
 
             cy.get("#description").type("Lorem Ipsum");
             cy.contains("Save Details").click();
@@ -137,7 +137,7 @@ if (Cypress.env('TEST') === 'playbooks') {
             cy.get("#playbooks-edit .v-input__slot").click();
             cy.contains("Test").click();
             cy.contains("Create").click();
-            cy.wait(1000);
+            cy.url().should('match', /http:\/\/localhost\/ui\/tickets\/\d+/);
 
             cy.scrollTo('bottom');
             cy.get(".playbook-test .tasks").contains("Enter something to hash").click();
