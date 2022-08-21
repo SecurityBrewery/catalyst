@@ -30,7 +30,6 @@ var ErrBadPattern = errors.New("syntax error in pattern")
 // match requires pattern to match all of name, not just a substring.
 // The only possible returned error is ErrBadPattern, when pattern
 // is malformed.
-//
 func match(pattern, name string) (matched bool, err error) {
 Pattern:
 	for len(pattern) > 0 {
