@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/alecthomas/kong v0.6.1
 	github.com/alecthomas/kong-yaml v0.1.1
-	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220722194653-14703f21b580
+	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d
 	github.com/arangodb/go-driver v1.3.3
 	github.com/aws/aws-sdk-go v1.44.70
 	github.com/blevesearch/bleve/v2 v2.3.2
