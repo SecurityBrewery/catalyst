@@ -1,13 +1,13 @@
 module github.com/SecurityBrewery/catalyst
 
-go 1.18
+go 1.19
 
 require (
 	github.com/alecthomas/kong v0.6.1
 	github.com/alecthomas/kong-yaml v0.1.1
-	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220314183648-97c793e446ba
-	github.com/arangodb/go-driver v1.3.2
-	github.com/aws/aws-sdk-go v1.44.34
+	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d
+	github.com/arangodb/go-driver v1.3.3
+	github.com/aws/aws-sdk-go v1.44.81
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
@@ -16,17 +16,17 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/iancoleman/strcase v0.2.0
-	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
+	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/imdario/mergo v0.3.13
 	github.com/mingrammer/commonregex v1.0.1
-	github.com/stretchr/testify v1.7.2
-	github.com/tidwall/gjson v1.14.1
-	github.com/tidwall/sjson v1.2.4
-	github.com/tus/tusd v1.9.0
+	github.com/stretchr/testify v1.8.0
+	github.com/tidwall/gjson v1.14.3
+	github.com/tidwall/sjson v1.2.5
+	github.com/tus/tusd v1.9.1
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
-	golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
-	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
+	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
+	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -77,12 +77,12 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
-	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
+	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20220324131243-acbaeb5b85eb // indirect
-	google.golang.org/grpc v1.45.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f // indirect
+	google.golang.org/grpc v1.48.0 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

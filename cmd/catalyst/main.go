@@ -27,7 +27,8 @@ func main() {
 	}
 
 	fsys, _ := fs.Sub(ui.UI, "dist")
-	theCatalyst.Server.Get("/ui/*", api.Static(fsys))
+	staticHandlerFunc := http.HandlerFunc(api.VueStatic(fsys))
+	theCatalyst.Server.Get("/ui/*", http.StripPrefix("/ui", staticHandlerFunc).ServeHTTP)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), theCatalyst.Server); err != nil {
 		log.Fatal(err)
