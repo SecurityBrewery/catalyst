@@ -115,3 +115,6 @@ issues:
       linters: [ gosec ]
     - path: caql
       linters: [ forcetypeassert ]
+    - path: key/key.go
+      text: "G404"
+      linters: [ gosec ]

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/key"
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
@@ -13,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/database"
+	"github.com/SecurityBrewery/catalyst/key"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
