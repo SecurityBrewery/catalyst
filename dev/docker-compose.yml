@@ -8,7 +8,7 @@ services:
     networks: [ catalyst ]
 
   arangodb:
-    image: arangodb/arangodb:3.8.1
+    image: arangodb/arangodb:3.9.2
     environment:
       ARANGO_ROOT_PASSWORD: foobar
     networks: [ catalyst ]
