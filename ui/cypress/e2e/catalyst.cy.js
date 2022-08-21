@@ -17,8 +17,11 @@ if (Cypress.env('TEST') === 'tickets') {
             // clear caql
             cy.get("#caqlbar > div > div > div > div > div:nth-child(2) > div > button").click();
 
+            // wait for results to load
+            cy.get("#app > div > main > div > div > div > div > div > div.v-data-table__wrapper > table > tbody > tr:nth-child(1)").should('exist');
+
             // open ticket
-            cy.contains("live zebra").click()
+            cy.contains("live zebra").click();
 
             // assert url
             cy.url().should('eq', "http://localhost/ui/tickets/8123")
