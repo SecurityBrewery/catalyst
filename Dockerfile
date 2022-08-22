@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 RUN apt-get update -y && apt-get -y install curl gnupg2 software-properties-common
 RUN curl -OL https://download.arangodb.com/arangodb34/DEBIAN/Release.key
