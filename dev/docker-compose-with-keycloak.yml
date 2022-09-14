@@ -30,7 +30,7 @@ services:
     networks: [ catalyst ]
 
   keycloak:
-    image: quay.io/keycloak/keycloak:14.0.0
+    image: quay.io/keycloak/keycloak:19.0.2
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
