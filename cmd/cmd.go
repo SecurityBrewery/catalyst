@@ -29,7 +29,7 @@ type CLI struct {
 	SimpleAuthEnable bool `env:"SIMPLE_AUTH_ENABLE" default:"true"`
 	APIKeyAuthEnable bool `env:"API_KEY_AUTH_ENABLE" default:"true"`
 
-	OIDCEnable        bool     `env:"OIDC_ENABLE"         default:"false"`
+	OIDCEnable        bool     `env:"OIDC_ENABLE"         default:"true"`
 	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
 	OIDCClientID      string   `env:"OIDC_CLIENT_ID"      default:"catalyst"`
 	OIDCClientSecret  string   `env:"OIDC_CLIENT_SECRET"  required:""`
