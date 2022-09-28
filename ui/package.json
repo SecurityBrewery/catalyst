@@ -33,7 +33,7 @@
     "register-service-worker": "1.7.2",
     "splitpanes": "2.4.1",
     "swagger-ui": "4.13.0",
-    "vue": "2.7.10",
+    "vue": "3.2.40",
     "vue-axios": "3.4.1",
     "vue-chartjs": "3.5.1",
     "vue-class-component": "7.2.6",
@@ -48,7 +48,7 @@
     "vue-property-decorator": "9.1.2",
     "vue-router": "3.6.0",
     "vuetify": "2.6.9",
-    "vuex": "3.6.2",
+    "vuex": "4.0.2",
     "yaml": "2.0.1"
   },
   "devDependencies": {
