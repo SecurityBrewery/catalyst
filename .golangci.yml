@@ -28,7 +28,6 @@ linters:
     - goprintffuncname
     - gosec
     - grouper
-    - ifshort
     - importas
     - ireturn
     - misspell
@@ -50,6 +49,7 @@ linters:
     - bodyclose
     - contextcheck
     - gosimple
+    - ifshort
     - nilerr
     - noctx
     - rowserrcheck

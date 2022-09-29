@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/arangodb/go-driver"
 
@@ -68,7 +69,12 @@ func main() {
 		api.Proxy("http://localhost:8080/")(writer, request)
 	})
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), theCatalyst.Server); err != nil {
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%d", config.Port),
+		ReadHeaderTimeout: 3 * time.Second,
+		Handler:           theCatalyst.Server,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }

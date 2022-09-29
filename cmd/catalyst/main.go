@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/cmd"
@@ -30,7 +31,12 @@ func main() {
 	staticHandlerFunc := http.HandlerFunc(api.VueStatic(fsys))
 	theCatalyst.Server.Get("/ui/*", http.StripPrefix("/ui", staticHandlerFunc).ServeHTTP)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), theCatalyst.Server); err != nil {
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%d", config.Port),
+		ReadHeaderTimeout: 3 * time.Second,
+		Handler:           theCatalyst.Server,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }
