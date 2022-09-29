@@ -32,7 +32,7 @@
     "luxon": "3.0.1",
     "register-service-worker": "1.7.2",
     "splitpanes": "2.4.1",
-    "swagger-ui": "4.13.0",
+    "swagger-ui": "4.14.2",
     "vue": "2.7.10",
     "vue-axios": "3.4.1",
     "vue-chartjs": "3.5.1",
