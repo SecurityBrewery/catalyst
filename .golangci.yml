@@ -29,7 +29,6 @@ linters:
     - goprintffuncname
     - gosec
     - grouper
-    - ifshort
     - importas
     - ireturn
     - misspell
@@ -51,6 +50,7 @@ linters:
     - bodyclose
     - contextcheck
     - gosimple
+    - ifshort
     - nilerr
     - noctx
     - rowserrcheck
@@ -116,3 +116,5 @@ issues:
       linters: [ gosec ]
     - path: caql
       linters: [ forcetypeassert ]
+    - text: github.com/go-chi/chi/v5.Router
+      linters: [ ireturn ]
