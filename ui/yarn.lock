@@ -1302,10 +1302,10 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
-"@koumoul/vjsf@2.18.2":
-  version "2.18.2"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.18.2.tgz#dd05fc55cfe8a91168b50e70ec316ca8fc37d730"
-  integrity sha512-0Bp+/XlSmjWn8L1uFOHERzwiaui1VZB7LsMgjsgDxftLne/oLqDCwHXD3ZDKgv2v3DRTLDO/OXf4UyLdEbLatw==
+"@koumoul/vjsf@2.20.2":
+  version "2.20.2"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.20.2.tgz#d57756a4872d0ff6da9380951e7bd39021be6990"
+  integrity sha512-qPhBadY2pF4l0ozvl/p+bba0bilOIvPWjAQbv2H+XnPWrOpR11r+NFyFdZOMbMHYXbLDvRWRz3Fc6PQJg9UxXQ==
   dependencies:
     debounce "^1.2.1"
     debounce-promise "^3.1.2"
