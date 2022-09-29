@@ -7,11 +7,11 @@ require (
 	github.com/alecthomas/kong-yaml v0.1.1
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d
 	github.com/arangodb/go-driver v1.3.3
-	github.com/aws/aws-sdk-go v1.44.82
+	github.com/aws/aws-sdk-go v1.44.108
 	github.com/blevesearch/bleve/v2 v2.3.2
-	github.com/coreos/go-oidc/v3 v3.2.0
+	github.com/coreos/go-oidc/v3 v3.4.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gobwas/ws v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
@@ -22,11 +22,11 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.14.3
 	github.com/tidwall/sjson v1.2.5
-	github.com/tus/tusd v1.9.1
+	github.com/tus/tusd v1.9.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
-	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
+	golang.org/x/exp v0.0.0-20220929160808-de9c53c655b9
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -51,7 +51,7 @@ require (
 	github.com/blevesearch/zapx/v14 v14.3.3 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.3 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
-	github.com/containerd/containerd v1.5.8 // indirect
+	github.com/containerd/containerd v1.6.8 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -67,7 +67,7 @@ require (
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.0.2 // indirect
+	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
@@ -77,14 +77,15 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
-	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f // indirect
-	google.golang.org/grpc v1.48.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/genproto v0.0.0-20220810155839-1856144b1d9c // indirect
+	google.golang.org/grpc v1.49.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gotest.tools v2.2.0+incompatible // indirect
 )
 
 replace github.com/xeipuuv/gojsonschema => github.com/warjiang/gojsonschema v1.2.1-0.20210329105853-aa9f9a8cfec7
