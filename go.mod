@@ -11,7 +11,7 @@ require (
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/coreos/go-oidc/v3 v3.2.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi/v4 v4.1.2+incompatible
 	github.com/gobwas/ws v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
