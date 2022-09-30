@@ -228,7 +228,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Version
-        if: github.ref != ''
+        if: github.ref_type == 'tag' && github.ref_name != ''
         run: |
           echo ${{ github.ref_name }}
           echo ${{ github.ref_name }} > VERSION
