@@ -1295,10 +1295,10 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
-"@koumoul/vjsf@2.20.2":
-  version "2.20.2"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.20.2.tgz#d57756a4872d0ff6da9380951e7bd39021be6990"
-  integrity sha512-qPhBadY2pF4l0ozvl/p+bba0bilOIvPWjAQbv2H+XnPWrOpR11r+NFyFdZOMbMHYXbLDvRWRz3Fc6PQJg9UxXQ==
+"@koumoul/vjsf@2.20.3":
+  version "2.20.3"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.20.3.tgz#107538b8cf7823971915753a30b17ef732f9576b"
+  integrity sha512-pKXfJaRju+sO5JlW4/iJbXAZz4iKcE9N4T2G0Mu2ZpbRzkR2q/cExwCWnSKh0UZR9LCmNbuuu89QhuQP2WClxA==
   dependencies:
     debounce "^1.2.1"
     debounce-promise "^3.1.2"
