@@ -22,7 +22,7 @@
     "antlr4": "4.11.0",
     "axios": "0.21.4",
     "chart.js": "2.9.4",
-    "core-js": "3.24.1",
+    "core-js": "3.25.3",
     "graphlib": "2.1.8",
     "json-schema-editor-vue": "2.0.4",
     "just-kebab-case": "4.1.1",
