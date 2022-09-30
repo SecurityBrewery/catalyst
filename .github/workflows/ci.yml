@@ -97,7 +97,7 @@ jobs:
     strategy:
       matrix:
         test: [ tickets, templates, playbooks ]
-        auth: [ simple, keycloak ]
+        auth: [ keycloak ] # simple
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
