@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -30,9 +31,10 @@ type CLI struct {
 	APIKeyAuthEnable bool `env:"API_KEY_AUTH_ENABLE" default:"true"`
 
 	OIDCEnable        bool     `env:"OIDC_ENABLE"         default:"true"`
-	OIDCIssuer        string   `env:"OIDC_ISSUER"         required:""`
+	OIDCIssuer        string   `env:"OIDC_ISSUER"`
+	AuthURL           string   `env:"OIDC_AUTH_URL"`
 	OIDCClientID      string   `env:"OIDC_CLIENT_ID"      default:"catalyst"`
-	OIDCClientSecret  string   `env:"OIDC_CLIENT_SECRET"  required:""`
+	OIDCClientSecret  string   `env:"OIDC_CLIENT_SECRET"`
 	OIDCScopes        []string `env:"OIDC_SCOPES"                                      help:"Additional scopes, ['oidc', 'profile', 'email'] are always added." placeholder:"customscopes"`
 	OIDCClaimUsername string   `env:"OIDC_CLAIM_USERNAME" default:"preferred_username" help:"username field in the OIDC claim"`
 	OIDCClaimEmail    string   `env:"OIDC_CLAIM_EMAIL"    default:"email"              help:"email field in the OIDC claim"`
@@ -56,6 +58,15 @@ func ParseCatalystConfig() (*catalyst.Config, error) {
 		kong.Configuration(kong.JSON, "/etc/catalyst.json", ".catalyst.json"),
 		kong.Configuration(kongyaml.Loader, "/etc/catalyst.yaml", ".catalyst.yaml"),
 	)
+
+	if cli.OIDCEnable {
+		if cli.OIDCIssuer == "" {
+			return nil, fmt.Errorf("OIDC issuer not set")
+		}
+		if cli.OIDCClientSecret == "" {
+			return nil, fmt.Errorf("OIDC client secret is required")
+		}
+	}
 
 	return MapConfig(cli)
 }
@@ -84,6 +95,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			APIKeyAuthEnable: cli.APIKeyAuthEnable,
 			OIDCAuthEnable:   cli.OIDCEnable,
 			OIDCIssuer:       cli.OIDCIssuer,
+			AuthURL:          cli.AuthURL,
 			OAuth2: &oauth2.Config{
 				ClientID:     cli.OIDCClientID,
 				ClientSecret: cli.OIDCClientSecret,

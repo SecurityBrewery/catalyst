@@ -31,6 +31,7 @@ type Config struct {
 	OIDCAuthEnable   bool
 
 	OIDCIssuer       string
+	AuthURL          string
 	OAuth2           *oauth2.Config
 	UserCreateConfig *UserCreateConfig
 
@@ -64,6 +65,9 @@ func (c *Config) Load(ctx context.Context) error {
 		if err == nil {
 			c.provider = provider
 			c.OAuth2.Endpoint = provider.Endpoint()
+			if c.AuthURL == "" {
+				c.OAuth2.Endpoint.AuthURL = c.AuthURL
+			}
 
 			break
 		}
