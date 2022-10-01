@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/arangodb/go-driver"
-	maut "github.com/cugu/maut/auth"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/cmd"

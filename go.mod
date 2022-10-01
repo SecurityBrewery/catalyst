@@ -4,8 +4,6 @@ go 1.19
 
 replace github.com/xeipuuv/gojsonschema => github.com/warjiang/gojsonschema v1.2.1-0.20210329105853-aa9f9a8cfec7
 
-replace github.com/cugu/maut => ./internal/maut
-
 require (
 	github.com/alecthomas/kong v0.6.1
 	github.com/alecthomas/kong-yaml v0.1.1
@@ -14,7 +12,6 @@ require (
 	github.com/aws/aws-sdk-go v1.44.109
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/coreos/go-oidc/v3 v3.4.0
-	github.com/cugu/maut v0.0.0-00010101000000-000000000000
 	github.com/docker/docker v17.12.0-ce-rc1.0.20201201034508-7d75c1d40d88+incompatible
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gobwas/ws v1.1.0
@@ -22,6 +19,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/imdario/mergo v0.3.13
+	github.com/jonas-plum/maut v0.0.0-20221001191853-1856efe6da0b
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.14.3

@@ -6,7 +6,7 @@ import (
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
-	maut "github.com/cugu/maut/auth"
+	maut "github.com/jonas-plum/maut/auth"
 	"golang.org/x/exp/slices"
 	"golang.org/x/oauth2"
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/arangodb/go-driver"
-	maut "github.com/cugu/maut/auth"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/generated/model"

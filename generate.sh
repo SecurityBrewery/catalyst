@@ -36,5 +36,5 @@ rm -rf ui/src/client/.openapi-generator ui/src/client/git_push.sh ui/src/client/
 go mod tidy
 gci write --Section Standard --Section Default --Section "Prefix(github.com/SecurityBrewery/catalyst)" .
 cd internal/maut
-gci write --Section Standard --Section Default --Section "Prefix(github.com/cugu/maut)" .
+gci write --Section Standard --Section Default --Section "Prefix(github.com/jonas-plum/maut)" .
 cd ../..

@@ -10,8 +10,8 @@ import (
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
-	maut "github.com/cugu/maut/auth"
 	"github.com/iancoleman/strcase"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"

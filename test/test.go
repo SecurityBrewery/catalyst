@@ -11,8 +11,8 @@ import (
 
 	"github.com/arangodb/go-driver"
 	"github.com/coreos/go-oidc/v3/oidc"
-	maut "github.com/cugu/maut/auth"
 	"github.com/go-chi/chi/v5"
+	maut "github.com/jonas-plum/maut/auth"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"

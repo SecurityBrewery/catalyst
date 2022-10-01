@@ -1,6 +1,6 @@
 package catalyst
 
-import maut "github.com/cugu/maut/auth"
+import maut "github.com/jonas-plum/maut/auth"
 
 var Admin = &maut.Role{
 	Name: "admin",

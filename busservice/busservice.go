@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	maut "github.com/cugu/maut/auth"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
