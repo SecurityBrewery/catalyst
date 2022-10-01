@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
@@ -62,10 +62,10 @@ func ParseCatalystConfig() (*catalyst.Config, error) {
 
 	if cli.OIDCEnable {
 		if cli.OIDCIssuer == "" {
-			return nil, fmt.Errorf("OIDC issuer not set")
+			return nil, errors.New("OIDC issuer not set")
 		}
 		if cli.OIDCClientSecret == "" {
-			return nil, fmt.Errorf("OIDC client secret is required")
+			return nil, errors.New("OIDC client secret is required")
 		}
 	}
 

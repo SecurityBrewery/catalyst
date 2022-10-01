@@ -65,7 +65,7 @@ func (c *Config) Load(ctx context.Context) error {
 		if err == nil {
 			c.provider = provider
 			c.OAuth2.Endpoint = provider.Endpoint()
-			if c.AuthURL == "" {
+			if c.AuthURL != "" {
 				c.OAuth2.Endpoint.AuthURL = c.AuthURL
 			}
 
