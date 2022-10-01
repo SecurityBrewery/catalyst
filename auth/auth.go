@@ -56,7 +56,12 @@ func (c *Config) Verifier(ctx context.Context) (*oidc.IDTokenVerifier, error) {
 		}
 	}
 
-	return c.provider.Verifier(&oidc.Config{SkipClientIDCheck: true}), nil
+	config := &oidc.Config{ClientID: c.OAuth2.ClientID}
+	if c.AuthURL != "" {
+		config.SkipIssuerCheck = true
+	}
+
+	return c.provider.Verifier(config), nil
 }
 
 func (c *Config) Load(ctx context.Context) error {
