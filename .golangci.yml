@@ -3,6 +3,7 @@ run:
   timeout: 5m
   skip-dirs:
     - generated
+    - internal
 linters:
   enable:
     - asciicheck

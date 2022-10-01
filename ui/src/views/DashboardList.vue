@@ -7,7 +7,7 @@
         itemname="name"
         singular="Dashboard"
         plural="Dashboards"
-        writepermission="admin:dashboard:write"
+        writepermission="dashboard:write"
         @delete="deleteDashboard"
     ></List>
   </v-main>

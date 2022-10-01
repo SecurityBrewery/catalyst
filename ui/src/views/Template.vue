@@ -47,7 +47,7 @@ export default Vue.extend({
   },
   computed: {
     readonly: function (): boolean {
-      return !this.hasRole("engineer:template:write");
+      return !this.hasRole("template:write");
     },
   },
   methods: {
@@ -81,8 +81,8 @@ export default Vue.extend({
       }
     },
     hasRole: function (s: string): boolean {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     }

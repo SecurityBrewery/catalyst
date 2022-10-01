@@ -12,13 +12,12 @@ import (
 	"github.com/arangodb/go-driver"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/go-chi/chi/v5"
+	maut "github.com/jonas-plum/maut/auth"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
-	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
@@ -28,14 +27,13 @@ import (
 )
 
 func Context() context.Context {
-	return busdb.UserContext(context.Background(), Bob)
+	return maut.UserContext(context.Background(), Bob, nil) // TODO add permissions ?
 }
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
 	config := &catalyst.Config{
-		InitialAPIKey: "test",
-		IndexPath:     "index.bleve",
-		Network:       "catalyst",
+		IndexPath: "index.bleve",
+		Network:   "catalyst",
 		DB: &database.Config{
 			Host:     "http://localhost:8529",
 			User:     "root",
@@ -46,8 +44,9 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			User:     "minio",
 			Password: "minio123",
 		},
-		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
-		Auth: &auth.Config{
+		Auth: &maut.Config{
+			InitialAPIKey:    "test",
+			CookieSecret:     []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 			SimpleAuthEnable: true,
 			APIKeyAuthEnable: true,
 			OIDCAuthEnable:   true,
@@ -64,10 +63,6 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			// AuthBlockNew:      false,
 			// AuthDefaultRoles:  nil,
 		},
-	}
-
-	if err := config.Auth.Load(ctx); err != nil {
-		return nil, err
 	}
 
 	return config, nil
@@ -176,7 +171,7 @@ func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.I
 	catalystServer := api.NewServer(catalystService, func(s []string) func(http.Handler) http.Handler {
 		return func(handler http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				handler.ServeHTTP(w, busdb.SetContext(r, Bob))
+				handler.ServeHTTP(w, r.WithContext(maut.UserContext(r.Context(), Bob, nil)))
 			})
 		}
 	})

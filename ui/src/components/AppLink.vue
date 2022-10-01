@@ -41,8 +41,8 @@ export default Vue.extend({
         return true;
       }
       let has = false;
-      if (this.$store.state.user.roles) {
-        this.lodash.forEach(this.$store.state.user.roles, (userRole) => {
+      if (this.$store.state.settings.roles) {
+        this.lodash.forEach(this.$store.state.settings.roles, (userRole) => {
           if (link.role === userRole || this.lodash.startsWith(link.role, userRole + ":")) {
             has = true;
           }

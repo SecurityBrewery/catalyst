@@ -7,7 +7,7 @@
         itemname="name"
         singular="Template"
         plural="Templates"
-        writepermission="engineer:template:write"
+        writepermission="template:write"
         @delete="deleteTemplate"
     ></List>
   </v-main>

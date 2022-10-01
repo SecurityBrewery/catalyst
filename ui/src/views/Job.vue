@@ -94,7 +94,7 @@ export default Vue.extend({
   },
   computed: {
     readonly: function (): boolean {
-      return !this.hasRole("admin:job:write");
+      return !this.hasRole("job:write");
     },
     globalautomations: function (): Array<AutomationResponse> {
       if (!this.automations) {
@@ -157,8 +157,8 @@ export default Vue.extend({
       });
     },
     hasRole: function (s: string): boolean {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     }

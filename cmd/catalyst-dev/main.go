@@ -8,15 +8,14 @@ import (
 	"time"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/cmd"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/hooks"
-	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/test"
 )
 
@@ -36,8 +35,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	demoUser := &model.UserResponse{ID: "demo", Roles: []string{role.Admin}}
-	ctx := busdb.UserContext(context.Background(), demoUser)
+	demoUser := &maut.User{ID: "demo", Roles: []string{maut.AdminRole}}
+	ctx := maut.UserContext(context.Background(), demoUser, catalyst.Admin.Permissions)
 	if err := test.SetupTestData(ctx, theCatalyst.DB); err != nil {
 		log.Fatal(err)
 	}

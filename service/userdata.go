@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -39,7 +39,7 @@ func (s *Service) UpdateUserData(ctx context.Context, id string, data *model.Use
 }
 
 func (s *Service) CurrentUserData(ctx context.Context) (doc *model.UserDataResponse, err error) {
-	user, ok := busdb.UserFromContext(ctx)
+	user, _, ok := maut.UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
@@ -48,7 +48,7 @@ func (s *Service) CurrentUserData(ctx context.Context) (doc *model.UserDataRespo
 }
 
 func (s *Service) UpdateCurrentUserData(ctx context.Context, data *model.UserData) (doc *model.UserDataResponse, err error) {
-	user, ok := busdb.UserFromContext(ctx)
+	user, _, ok := maut.UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}

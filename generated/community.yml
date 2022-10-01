@@ -1512,38 +1512,7 @@ paths:
               blocked: false
               id: bob
               roles:
-              - admin:backup:read
-              - admin:backup:restore
-              - admin:dashboard:write
-              - admin:group:write
-              - admin:job:read
-              - admin:job:write
-              - admin:log:read
-              - admin:settings:write
-              - admin:ticket:delete
-              - admin:user:write
-              - admin:userdata:read
-              - admin:userdata:write
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
+              - admin
           schema:
             $ref: '#/definitions/UserResponse'
       security:
@@ -2422,39 +2391,6 @@ paths:
                 icon: mdi-check
                 id: clean
                 name: Clean
-              roles:
-              - admin:backup:read
-              - admin:backup:restore
-              - admin:dashboard:write
-              - admin:group:write
-              - admin:job:read
-              - admin:job:write
-              - admin:log:read
-              - admin:settings:write
-              - admin:ticket:delete
-              - admin:user:write
-              - admin:userdata:read
-              - admin:userdata:write
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
               ticketTypes:
               - default_playbooks: []
                 default_template: default
@@ -2543,39 +2479,6 @@ paths:
                 icon: mdi-check
                 id: clean
                 name: Clean
-              roles:
-              - admin:backup:read
-              - admin:backup:restore
-              - admin:dashboard:write
-              - admin:group:write
-              - admin:job:read
-              - admin:job:write
-              - admin:log:read
-              - admin:settings:write
-              - admin:ticket:delete
-              - admin:user:write
-              - admin:userdata:read
-              - admin:userdata:write
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
               ticketTypes:
               - default_playbooks: []
                 default_template: default
@@ -6948,62 +6851,12 @@ paths:
               blocked: false
               id: bob
               roles:
-              - admin:backup:read
-              - admin:backup:restore
-              - admin:dashboard:write
-              - admin:group:write
-              - admin:job:read
-              - admin:job:write
-              - admin:log:read
-              - admin:settings:write
-              - admin:ticket:delete
-              - admin:user:write
-              - admin:userdata:read
-              - admin:userdata:write
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
+              - admin
             - apikey: true
               blocked: false
               id: script
               roles:
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
+              - engineer
           schema:
             items:
               $ref: '#/definitions/UserResponse'
@@ -7037,21 +6890,7 @@ paths:
               blocked: false
               id: syncscript
               roles:
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
+              - analyst
               secret: v39bOuobnlEljfWzjAgoKzhmnh1xSMxH
           schema:
             $ref: '#/definitions/NewUserResponse'
@@ -7098,26 +6937,7 @@ paths:
               blocked: false
               id: script
               roles:
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
+              - engineer
           schema:
             $ref: '#/definitions/UserResponse'
       security:
@@ -7157,38 +6977,8 @@ paths:
               blocked: false
               id: bob
               roles:
-              - admin:backup:read
-              - admin:backup:restore
-              - admin:dashboard:write
-              - admin:group:write
-              - admin:job:read
-              - admin:job:write
-              - admin:log:read
-              - admin:settings:write
-              - admin:ticket:delete
-              - admin:user:write
-              - admin:userdata:read
-              - admin:userdata:write
-              - analyst:automation:read
-              - analyst:currentsettings:write
-              - analyst:currentuser:read
-              - analyst:currentuserdata:read
-              - analyst:dashboard:read
-              - analyst:file
-              - analyst:group:read
-              - analyst:playbook:read
-              - analyst:rule:read
-              - analyst:settings:read
-              - analyst:template:read
-              - analyst:ticket:read
-              - analyst:ticket:write
-              - analyst:tickettype:read
-              - analyst:user:read
-              - engineer:automation:write
-              - engineer:playbook:write
-              - engineer:rule:write
-              - engineer:template:write
-              - engineer:tickettype:write
+              - analyst
+              - admin
           schema:
             $ref: '#/definitions/UserResponse'
       security:

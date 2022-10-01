@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 )
 
@@ -59,11 +59,16 @@ func (s *Service) DeleteUser(ctx context.Context, s2 string) (err error) {
 }
 
 func (s *Service) CurrentUser(ctx context.Context) (*model.UserResponse, error) {
-	user, ok := busdb.UserFromContext(ctx)
+	user, _, ok := maut.UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
-	s.publishRequest(ctx, nil, "CurrentUser", userResponseID(user))
+	s.publishRequest(ctx, nil, "CurrentUser", userID(user.ID))
 
-	return user, nil
+	return &model.UserResponse{
+		ID:      user.ID,
+		Apikey:  user.APIKey,
+		Blocked: user.Blocked,
+		Roles:   user.Roles,
+	}, nil
 }

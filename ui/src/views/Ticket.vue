@@ -761,7 +761,7 @@
           <div style="display: flex; align-items: center" class="pb-1">
             <span class="text--disabled">Files</span>
             <v-spacer></v-spacer>
-            <v-btn v-if="hasRole('analyst:file')" small icon @click="fileDialog = true">
+            <v-btn v-if="hasRole('file')" small icon @click="fileDialog = true">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </div>
@@ -1017,8 +1017,8 @@ export default Vue.extend({
   },
   methods: {
     hasRole: function (s: string) {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     },

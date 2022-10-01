@@ -3,11 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	"sort"
 
-	"github.com/SecurityBrewery/catalyst/database/busdb"
+	maut "github.com/jonas-plum/maut/auth"
+
 	"github.com/SecurityBrewery/catalyst/generated/model"
-	"github.com/SecurityBrewery/catalyst/role"
 )
 
 func (s *Service) GetSettings(ctx context.Context) (*model.SettingsResponse, error) {
@@ -29,7 +28,7 @@ func (s *Service) SaveSettings(ctx context.Context, settings *model.Settings) (*
 }
 
 func (s *Service) settings(ctx context.Context, globalSettings *model.Settings) (*model.SettingsResponse, error) {
-	user, ok := busdb.UserFromContext(ctx)
+	user, permissions, ok := maut.UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}
@@ -47,13 +46,11 @@ func (s *Service) settings(ctx context.Context, globalSettings *model.Settings) 
 	if userData.Timeformat != nil {
 		globalSettings.Timeformat = *userData.Timeformat
 	}
-	roles := role.Strings(role.List())
-	sort.Strings(roles)
 
 	return &model.SettingsResponse{
 		Tier:           model.SettingsResponseTierCommunity,
 		Version:        s.version,
-		Roles:          roles,
+		Roles:          permissions,
 		TicketTypes:    ticketTypeList,
 		ArtifactStates: globalSettings.ArtifactStates,
 		ArtifactKinds:  globalSettings.ArtifactKinds,

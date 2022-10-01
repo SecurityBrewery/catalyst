@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/generated/model"
@@ -15,7 +16,7 @@ import (
 const LogCollectionName = "logs"
 
 func (db *BusDatabase) LogCreate(ctx context.Context, logType, reference, message string) (*model.LogEntry, error) {
-	user, ok := UserFromContext(ctx)
+	user, _, ok := maut.UserFromContext(ctx)
 	if !ok {
 		return nil, errors.New("no user in context")
 	}

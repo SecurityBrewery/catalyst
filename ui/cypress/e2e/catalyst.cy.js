@@ -3,7 +3,7 @@ beforeEach(() => {
 
     cy.login();
 
-    cy.getCookie('user').should('exist');
+    cy.getCookie('maut_user').should('exist');
 
     cy.intercept('GET', '/api/userdata/demo', { fixture: 'userdata_demo.json' })
     cy.intercept('GET', '/api/users/demo', { fixture: 'user_demo.json' })

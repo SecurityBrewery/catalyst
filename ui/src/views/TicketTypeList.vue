@@ -8,7 +8,7 @@
         singular="Ticket Type"
         plural="Ticket Types"
         @delete="deleteTicketType"
-        writepermission="engineer:tickettype:write"
+        writepermission="tickettype:write"
     ></List>
   </v-main>
 </template>

@@ -14,12 +14,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-chi/chi/v5"
+	maut "github.com/jonas-plum/maut/auth"
 	tusd "github.com/tus/tusd/pkg/handler"
 	"github.com/tus/tusd/pkg/s3store"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -57,7 +57,7 @@ func tusdUpload(db *database.Database, catalystBus *bus.Bus, client *s3.S3, exte
 		}
 
 		userID := "unknown"
-		user, ok := busdb.UserFromContext(r.Context())
+		user, _, ok := maut.UserFromContext(r.Context())
 		if ok {
 			userID = user.ID
 		}

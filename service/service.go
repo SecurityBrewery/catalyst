@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
@@ -28,7 +28,7 @@ func (s *Service) publishRequest(ctx context.Context, err error, function string
 	}
 	if ids != nil {
 		userID := "unknown"
-		user, ok := busdb.UserFromContext(ctx)
+		user, _, ok := maut.UserFromContext(ctx)
 		if ok {
 			userID = user.ID
 		}

@@ -23,6 +23,7 @@ mv generated/openapi.json generated/catalyst.json
 echo generate server and tests
 swagger-go-chi generated/community.yml generated
 rm -rf generated/auth generated/cli
+find generated -type f -name "*.go" -print0 | xargs -0 sed -i '' -e 's#"github.com/go-chi/chi"#"github.com/go-chi/chi/v5"#g'
 
 echo generate typescript client
 openapi-generator generate -i generated/catalyst.yml -o ui/src/client -g typescript-axios --artifact-version 1.0.0-SNAPSHOT
@@ -34,3 +35,6 @@ rm -rf ui/src/client/.openapi-generator ui/src/client/git_push.sh ui/src/client/
 
 go mod tidy
 gci write --Section Standard --Section Default --Section "Prefix(github.com/SecurityBrewery/catalyst)" .
+cd internal/maut
+gci write --Section Standard --Section Default --Section "Prefix(github.com/jonas-plum/maut)" .
+cd ../..

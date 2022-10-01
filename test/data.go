@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	maut "github.com/jonas-plum/maut/auth"
+
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/database/migrations"
 	"github.com/SecurityBrewery/catalyst/generated/model"
@@ -13,7 +15,7 @@ import (
 var (
 	bobSetting = &model.UserData{Email: pointer.String("bob@example.org"), Name: pointer.String("Bob Bad")}
 	bobForm    = &model.UserForm{ID: "bob", Blocked: false, Roles: []string{"admin"}}
-	Bob        = &model.UserResponse{ID: "bob", Blocked: false, Roles: []string{"admin"}}
+	Bob        = &maut.User{ID: "bob", Blocked: false, Roles: []string{"admin"}}
 )
 
 func SetupTestData(ctx context.Context, db *database.Database) error {

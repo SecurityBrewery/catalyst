@@ -7,17 +7,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	maut "github.com/jonas-plum/maut/auth"
 
-	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
-	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
 	"github.com/SecurityBrewery/catalyst/index"
-	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/service"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
@@ -27,11 +24,9 @@ type Config struct {
 	DB        *database.Config
 	Storage   *storage.Config
 
-	Secret          []byte
-	Auth            *auth.Config
+	Auth            *maut.Config
 	ExternalAddress string
 	InternalAddress string
-	InitialAPIKey   string
 	Network         string
 	Port            int
 }
@@ -48,12 +43,6 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, time.Minute*10)
 	defer cancel()
-
-	if config.Auth.OIDCAuthEnable {
-		if err := config.Auth.Load(ctx); err != nil {
-			return nil, err
-		}
-	}
 
 	catalystStorage, err := storage.New(config.Storage)
 	if err != nil {
@@ -72,29 +61,19 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	busservice.New(config.InternalAddress+"/api", config.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
+	busservice.New(config.InternalAddress+"/api", config.Auth.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
 		return nil, err
 	}
 
-	if config.InitialAPIKey != "" {
-		_ = catalystDatabase.UserDelete(ctx, "setup")
-
-		ctx = busdb.UserContext(ctx, &model.UserResponse{
-			ID:      "setup",
-			Roles:   role.Strings(role.Explode(role.Admin)),
-			Apikey:  false,
-			Blocked: false,
-		})
-		_, err = catalystDatabase.UserCreateSetupAPIKey(ctx, config.InitialAPIKey)
-		if err != nil {
-			return nil, err
-		}
+	authenticator, err := maut.NewAuthenticator(ctx, config.Auth, newCatalystResolver(catalystDatabase))
+	if err != nil {
+		return nil, err
 	}
 
-	apiServer, err := setupAPI(catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
+	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
 	if err != nil {
 		return nil, err
 	}
@@ -108,36 +87,54 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	}, nil
 }
 
-func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
-	secureJar := auth.NewJar(config.Secret)
-
+func setupAPI(authenticator *maut.Authenticator, catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
 	middlewares := []func(next http.Handler) http.Handler{
-		auth.Authenticate(catalystDatabase, config.Auth, secureJar),
-		auth.AuthorizeBlockedUser(),
+		authenticator.Authenticate(),
+		authenticator.AuthorizeBlockedUser(),
 	}
 
 	// create server
-	apiServer := api.NewServer(catalystService, auth.AuthorizeRole, middlewares...)
-	fileReadWrite := auth.AuthorizeRole([]string{role.FileReadWrite.String()})
-	tudHandler := tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress)
-	apiServer.With(fileReadWrite).Head("/files/{ticketID}/tusd/{id}", tudHandler)
-	apiServer.With(fileReadWrite).Patch("/files/{ticketID}/tusd/{id}", tudHandler)
-	apiServer.With(fileReadWrite).Post("/files/{ticketID}/tusd", tudHandler)
-	apiServer.With(fileReadWrite).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
-	apiServer.With(fileReadWrite).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
-
-	apiServer.With(auth.AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
-	apiServer.With(auth.AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	apiServer := api.NewServer(catalystService, permissionAuth(authenticator), middlewares...)
+	apiServer.Mount("/files", fileServer(authenticator, catalystDatabase, bus, catalystStorage, config))
+	apiServer.Mount("/backup", backupServer(authenticator, catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
 	server.Mount("/api", apiServer)
+	server.Mount("/auth", authenticator.Server())
 	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
-	server.Mount("/auth", auth.Server(config.Auth, catalystDatabase, secureJar))
 
 	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/ui/", http.StatusFound)
 	})
 
 	return server, nil
+}
+
+func permissionAuth(authenticator *maut.Authenticator) func([]string) func(http.Handler) http.Handler {
+	return func(strings []string) func(http.Handler) http.Handler {
+		return authenticator.AuthorizePermission(strings...)
+	}
+}
+
+func fileServer(authenticator *maut.Authenticator, catalystDatabase *database.Database, bus *bus.Bus, catalystStorage *storage.Storage, config *Config) *chi.Mux {
+	fileRW := authenticator.AuthorizePermission("file:read", "file:write") // TODO: add test
+	tudHandler := tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress)
+	server := chi.NewRouter()
+	server.With(fileRW).Head("/{ticketID}/tusd/{id}", tudHandler)
+	server.With(fileRW).Patch("/{ticketID}/tusd/{id}", tudHandler)
+	server.With(fileRW).Post("/{ticketID}/tusd", tudHandler)
+	server.With(fileRW).Post("/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
+	server.With(fileRW).Get("/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
+
+	return server
+}
+
+func backupServer(authenticator *maut.Authenticator, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config) *chi.Mux {
+	server := chi.NewRouter()
+	// TODO: add test
+	server.With(authenticator.AuthorizePermission("backup:create")).Get("/create", backupHandler(catalystStorage, dbConfig))
+	server.With(authenticator.AuthorizePermission("backup:restore")).Post("/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
+
+	return server
 }
