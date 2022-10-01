@@ -2,6 +2,9 @@ package catalyst
 
 import (
 	"context"
+	"crypto/sha256"
+	"errors"
+	"fmt"
 
 	maut "github.com/cugu/maut/auth"
 
@@ -19,22 +22,26 @@ func newCatalystResolver(db *database.Database) *catalystResolver {
 	}
 }
 
-func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut.User, password string) error {
-	_, err := c.database.UserGet(ctx, user.ID)
-	if err != nil {
-		_, err := c.database.UserCreate(ctx, &model.UserForm{
+func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut.User, password string) (err error) {
+	if user != nil {
+		if _, err := c.database.UserGet(ctx, user.ID); err == nil {
+			return nil
+		}
+	}
+
+	if user == nil || user.APIKey {
+		_, err = c.database.UserCreateSetupAPIKey(ctx, password)
+	} else {
+		_, err = c.database.UserCreate(ctx, &model.UserForm{
 			Apikey:   user.APIKey,
 			Blocked:  user.Blocked,
 			ID:       user.ID,
 			Password: &password,
 			Roles:    user.Roles,
 		})
-		if err != nil {
-			return err
-		}
 	}
 
-	return nil
+	return err
 }
 
 func (c *catalystResolver) User(ctx context.Context, userID string) (*maut.User, error) {
@@ -46,8 +53,9 @@ func (c *catalystResolver) User(ctx context.Context, userID string) (*maut.User,
 	return mapMautUser(user), nil
 }
 
-func (c *catalystResolver) UserAPIKeyByHash(ctx context.Context, hash string) (*maut.User, error) {
-	user, err := c.database.UserAPIKeyByHash(ctx, hash)
+func (c *catalystResolver) UserAPIKeyByHash(ctx context.Context, key string) (*maut.User, error) {
+	sha256Hash := fmt.Sprintf("%x", sha256.Sum256([]byte(key)))
+	user, err := c.database.UserAPIKeyByHash(ctx, sha256Hash)
 	if err != nil {
 		return nil, err
 	}
@@ -67,23 +75,14 @@ func (c *catalystResolver) UserByIDAndPassword(ctx context.Context, username str
 func (c *catalystResolver) Role(ctx context.Context, roleID string) (r *maut.Role, err error) {
 	switch roleID {
 	case "admin":
-		r = &maut.Role{
-			Name: "admin",
-			// Permissions: role.Strings(role.Explode(role.Admin)), TODO
-		}
+		return admin, nil
 	case "engineer":
-		r = &maut.Role{
-			Name: "engineer",
-			// Permissions: role.Strings(role.Explode(role.Engineer)), TODO
-		}
+		return engineer, nil
 	case "analyst":
-		r = &maut.Role{
-			Name: "analyst",
-			// Permissions: role.Strings(role.Explode(role.Analyst)), TODO
-		}
+		return analyst, nil
 	}
 
-	return r, nil
+	return nil, errors.New("role not found")
 }
 
 func mapMautUser(user *model.UserResponse) *maut.User {

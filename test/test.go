@@ -32,9 +32,8 @@ func Context() context.Context {
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
 	config := &catalyst.Config{
-		InitialAPIKey: "test",
-		IndexPath:     "index.bleve",
-		Network:       "catalyst",
+		IndexPath: "index.bleve",
+		Network:   "catalyst",
 		DB: &database.Config{
 			Host:     "http://localhost:8529",
 			User:     "root",
@@ -46,6 +45,7 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			Password: "minio123",
 		},
 		Auth: &maut.Config{
+			InitialAPIKey:    "test",
 			CookieSecret:     []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 			SimpleAuthEnable: true,
 			APIKeyAuthEnable: true,

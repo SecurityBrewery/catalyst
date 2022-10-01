@@ -27,7 +27,6 @@ type Config struct {
 	Auth            *maut.Config
 	ExternalAddress string
 	InternalAddress string
-	InitialAPIKey   string
 	Network         string
 	Port            int
 }
@@ -62,22 +61,11 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, err
 	}
 
-	busservice.New(config.InternalAddress+"/api", config.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
+	busservice.New(config.InternalAddress+"/api", config.Auth.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
 		return nil, err
-	}
-
-	if config.InitialAPIKey != "" {
-		_ = catalystDatabase.UserDelete(ctx, "setup")
-
-		// TODO: add permissions ?
-		ctx = maut.UserContext(ctx, &maut.User{ID: "setup", Roles: []string{maut.AdminRole}}, nil)
-		_, err = catalystDatabase.UserCreateSetupAPIKey(ctx, config.InitialAPIKey)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	authenticator, err := maut.NewAuthenticator(ctx, config.Auth, newCatalystResolver(catalystDatabase))
@@ -149,10 +137,4 @@ func backupServer(authenticator *maut.Authenticator, catalystStorage *storage.St
 	server.With(authenticator.AuthorizePermission("backup:restore")).Post("/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	return server
-}
-
-func autRole(a *maut.Authenticator) func([]string) func(http.Handler) http.Handler {
-	return func(permissions []string) func(http.Handler) http.Handler {
-		return a.AuthorizePermission(permissions...)
-	}
 }

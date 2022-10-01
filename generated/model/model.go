@@ -370,7 +370,7 @@ type Settings struct {
 type SettingsResponse struct {
 	ArtifactKinds  []*Type               `json:"artifactKinds"`
 	ArtifactStates []*Type               `json:"artifactStates"`
-	Permissions    []string              `json:"permissions,omitempty"`
+	Roles          []string              `json:"roles,omitempty"`
 	TicketTypes    []*TicketTypeResponse `json:"ticketTypes"`
 	Tier           string                `json:"tier"`
 	Timeformat     string                `json:"timeformat"`

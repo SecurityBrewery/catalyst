@@ -13,7 +13,7 @@ import (
 type LoginResolver interface {
 	UserCreateIfNotExists(ctx context.Context, user *User, password string) error
 	User(ctx context.Context, userID string) (*User, error)
-	UserAPIKeyByHash(ctx context.Context, hash string) (*User, error)
+	UserAPIKeyByHash(ctx context.Context, key string) (*User, error)
 	UserByIDAndPassword(ctx context.Context, username string, password string) (*User, error)
 	Role(ctx context.Context, roleID string) (*Role, error)
 }
@@ -71,9 +71,9 @@ func (t *MemoryResolver) User(ctx context.Context, userID string) (*User, error)
 	return nil, errors.New("user not found")
 }
 
-func (t *MemoryResolver) UserAPIKeyByHash(ctx context.Context, hash string) (*User, error) {
+func (t *MemoryResolver) UserAPIKeyByHash(ctx context.Context, key string) (*User, error) {
 	for _, user := range t.users {
-		if user.APIKey && user.Hash != nil && bytes.Equal(argon2.IDKey([]byte(hash), user.Salt, 1, 64*1024, 4, 32), user.Hash) {
+		if user.APIKey && user.Hash != nil && bytes.Equal(argon2.IDKey([]byte(key), user.Salt, 1, 64*1024, 4, 32), user.Hash) {
 			return user, nil
 		}
 	}

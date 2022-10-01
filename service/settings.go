@@ -50,7 +50,7 @@ func (s *Service) settings(ctx context.Context, globalSettings *model.Settings) 
 	return &model.SettingsResponse{
 		Tier:           model.SettingsResponseTierCommunity,
 		Version:        s.version,
-		Permissions:    permissions,
+		Roles:          permissions,
 		TicketTypes:    ticketTypeList,
 		ArtifactStates: globalSettings.ArtifactStates,
 		ArtifactKinds:  globalSettings.ArtifactKinds,

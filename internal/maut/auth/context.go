@@ -24,6 +24,8 @@ func (a *Authenticator) setUserContext(r *http.Request, user *User) *http.Reques
 		}
 		permissions = append(permissions, userPermissions.Permissions...)
 	}
+	slices.Sort(permissions)
+	permissions = slices.Compact(permissions)
 
 	r = r.WithContext(context.WithValue(r.Context(), userContextKey, user))
 	r = r.WithContext(context.WithValue(r.Context(), permissionContextKey, permissions))

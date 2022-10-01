@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/xeipuuv/gojsonschema"
@@ -59,12 +58,30 @@ func parseQueryBool(r *http.Request, s string) (bool, error) {
 }
 
 func parseQueryStringArray(r *http.Request, key string) ([]string, error) {
-	return parseQueryArray(r, key), nil
+	stringArray, ok := r.URL.Query()[key]
+	if !ok {
+		return nil, nil
+	}
+	return removeEmpty(stringArray), nil
+}
+
+func removeEmpty(l []string) []string {
+	var stringArray []string
+	for _, s := range l {
+		if s == "" {
+			continue
+		}
+		stringArray = append(stringArray, s)
+	}
+
+	return stringArray
 }
 
 func parseQueryBoolArray(r *http.Request, key string) ([]bool, error) {
-	stringArray := parseQueryArray(r, key)
-
+	stringArray, ok := r.URL.Query()[key]
+	if !ok {
+		return nil, nil
+	}
 	var boolArray []bool
 	for _, s := range stringArray {
 		if s == "" {
@@ -78,33 +95,6 @@ func parseQueryBoolArray(r *http.Request, key string) ([]bool, error) {
 	}
 
 	return boolArray, nil
-}
-
-func parseQueryArray(r *http.Request, key string) []string {
-	stringArray, ok := r.URL.Query()[key]
-	if !ok {
-		return nil
-	}
-
-	if len(stringArray) == 0 {
-		return nil
-	}
-
-	stringArray = strings.Split(stringArray[0], ",")
-
-	return removeEmpty(stringArray)
-}
-
-func removeEmpty(l []string) []string {
-	var stringArray []string
-	for _, s := range l {
-		if s == "" {
-			continue
-		}
-		stringArray = append(stringArray, s)
-	}
-
-	return stringArray
 }
 
 func parseQueryOptionalInt(r *http.Request, key string) (*int, error) {

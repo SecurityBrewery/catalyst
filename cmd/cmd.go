@@ -92,9 +92,9 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			OIDCAuthEnable:   cli.OIDCEnable,
 			// InitialUser:      "",
 			// InitialPassword:  "",
-			// InitialAPIKey:    "",
-			OIDCIssuer: cli.OIDCIssuer,
-			AuthURL:    cli.AuthURL,
+			InitialAPIKey: cli.InitialAPIKey,
+			OIDCIssuer:    cli.OIDCIssuer,
+			AuthURL:       cli.AuthURL,
 			OAuth2: &oauth2.Config{
 				ClientID:     cli.OIDCClientID,
 				ClientSecret: cli.OIDCClientSecret,
@@ -110,7 +110,6 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 				OIDCClaimName:     cli.OIDCClaimName,
 			},
 		},
-		InitialAPIKey: cli.InitialAPIKey,
 	}
 
 	return config, nil

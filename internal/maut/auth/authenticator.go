@@ -86,12 +86,7 @@ func NewAuthenticator(ctx context.Context, config *Config, resolver LoginResolve
 	}
 
 	if config.InitialAPIKey != "" {
-		if err := resolver.UserCreateIfNotExists(ctx, &User{
-			ID:      "init",
-			APIKey:  true,
-			Blocked: false,
-			Roles:   []string{AdminRole},
-		}, config.InitialPassword); err != nil {
+		if err := resolver.UserCreateIfNotExists(ctx, nil, config.InitialAPIKey); err != nil {
 			return nil, err
 		}
 	}
