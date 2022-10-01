@@ -36,7 +36,7 @@ func main() {
 	}
 
 	demoUser := &maut.User{ID: "demo", Roles: []string{maut.AdminRole}}
-	ctx := maut.UserContext(context.Background(), demoUser, nil)
+	ctx := maut.UserContext(context.Background(), demoUser, catalyst.Admin.Permissions)
 	if err := test.SetupTestData(ctx, theCatalyst.DB); err != nil {
 		log.Fatal(err)
 	}

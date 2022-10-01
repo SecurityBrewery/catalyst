@@ -8,7 +8,7 @@
         singular="User / API Key"
         plural="Users / API Keys"
         @delete="deleteUser"
-        writepermission="admin:user:write"
+        writepermission="user:write"
     ></List>
   </v-main>
 </template>

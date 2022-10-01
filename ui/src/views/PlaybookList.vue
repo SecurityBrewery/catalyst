@@ -8,7 +8,7 @@
         singular="Playbook"
         plural="Playbooks"
         @delete="deletePlaybook"
-        writepermission="engineer:playbook:write"
+        writepermission="playbook:write"
     ></List>
   </v-main>
 </template>

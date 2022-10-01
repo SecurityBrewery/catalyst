@@ -92,7 +92,7 @@ func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*m
 	var key, salt, sha256Hash, sha512Hash *string
 	if newUser.Apikey {
 		key, sha256Hash = generateAPIKey()
-	} else {
+	} else if newUser.Password != nil {
 		salt, sha512Hash = hashUserPassword(newUser)
 	}
 

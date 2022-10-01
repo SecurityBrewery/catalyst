@@ -7,7 +7,7 @@
         itemname="id"
         singular="Automation"
         plural="Automations"
-        writepermission="engineer:automation:write"
+        writepermission="automation:write"
         @delete="deleteAutomation"
     ></List>
   </v-main>

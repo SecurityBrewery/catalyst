@@ -2,7 +2,7 @@ package catalyst
 
 import maut "github.com/cugu/maut/auth"
 
-var admin = &maut.Role{
+var Admin = &maut.Role{
 	Name: "admin",
 	Permissions: append(engineer.Permissions,
 		"backup:create",

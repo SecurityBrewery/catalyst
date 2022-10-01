@@ -75,7 +75,7 @@ func (c *catalystResolver) UserByIDAndPassword(ctx context.Context, username str
 func (c *catalystResolver) Role(ctx context.Context, roleID string) (r *maut.Role, err error) {
 	switch roleID {
 	case "admin":
-		return admin, nil
+		return Admin, nil
 	case "engineer":
 		return engineer, nil
 	case "analyst":

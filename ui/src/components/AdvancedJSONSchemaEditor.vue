@@ -151,8 +151,8 @@ export default Vue.extend({
       return DateTime.fromISO(s).toFormat(format);
     },
     hasRole: function (s: string): boolean {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     }

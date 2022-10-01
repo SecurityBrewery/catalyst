@@ -72,7 +72,7 @@ export default Vue.extend({
   },
   computed: {
     readonly: function (): boolean {
-      return !this.hasRole("engineer:automation:write");
+      return !this.hasRole("automation:write");
     },
     types: function (): Array<string> {
       return [ AutomationResponseTypeEnum.Global, AutomationResponseTypeEnum.Playbook, AutomationResponseTypeEnum.Artifact ]
@@ -104,8 +104,8 @@ export default Vue.extend({
       }
     },
     hasRole: function (s: string): boolean {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     },

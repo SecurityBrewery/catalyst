@@ -208,16 +208,16 @@ export default Vue.extend({
     valid: true,
     authenticated: false,
     settings: [
-      { icon: "mdi-format-list-bulleted-type", name: "Ticket Types", to: "TicketTypeList", role: "engineer:tickettype:write" },
-      { icon: "mdi-file-hidden", name: "Templates", to: "TemplateList", role: "analyst:template:read" },
-      { icon: "mdi-file-cog-outline", name: "Playbooks", to: "PlaybookList", role: "analyst:playbook:read" },
-      { icon: "mdi-flash", name: "Automations", to: "AutomationList", role: "analyst:automation:read" },
-      { icon: "mdi-filter", name: "Ingestion Rules", to: "RuleList", role: "analyst:rule:read", tier: "enterprise" },
-      { icon: "mdi-account", name: "Users & API Keys", to: "UserList", role: "admin:user:write" },
-      { icon: "mdi-account-group", name: "Groups", to: "GroupList", role: "admin:group:write", tier: "enterprise" },
-      { icon: "mdi-cogs", name: "User Data", to: "UserDataList", role: "admin:userdata:write" },
-      { icon: "mdi-format-list-checks", name: "Jobs", to: "JobList", role: "admin:job:write" },
-      { icon: "mdi-cog", name: "Settings", to: "Settings", role: "admin:settings:write" },
+      { icon: "mdi-format-list-bulleted-type", name: "Ticket Types", to: "TicketTypeList", role: "tickettype:write" },
+      { icon: "mdi-file-hidden", name: "Templates", to: "TemplateList", role: "template:read" },
+      { icon: "mdi-file-cog-outline", name: "Playbooks", to: "PlaybookList", role: "playbook:read" },
+      { icon: "mdi-flash", name: "Automations", to: "AutomationList", role: "automation:read" },
+      { icon: "mdi-filter", name: "Ingestion Rules", to: "RuleList", role: "rule:read", tier: "enterprise" },
+      { icon: "mdi-account", name: "Users & API Keys", to: "UserList", role: "user:write" },
+      { icon: "mdi-account-group", name: "Groups", to: "GroupList", role: "group:write", tier: "enterprise" },
+      { icon: "mdi-cogs", name: "User Data", to: "UserDataList", role: "userdata:write" },
+      { icon: "mdi-format-list-checks", name: "Jobs", to: "JobList", role: "job:write" },
+      { icon: "mdi-cog", name: "Settings", to: "Settings", role: "settings:write" },
     ],
     mini: true,
     goto: "",
@@ -235,7 +235,7 @@ export default Vue.extend({
     },
     internal: function (): Array<any> {
       return  [
-        { icon: "mdi-view-dashboard", name: "Dashboards", to: "DashboardList", role: "analyst:dashboard:read" },
+        { icon: "mdi-view-dashboard", name: "Dashboards", to: "DashboardList", role: "dashboard:read" },
         { icon: "mdi-check-bold", name: "Open Tasks", to: "TaskList", count: this.$store.state.task_count },
       ]
     },
@@ -280,8 +280,8 @@ export default Vue.extend({
       this.$router.push({ name: "TicketList", params: { type: type } });
     },
     hasRole: function (s: string) {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     },

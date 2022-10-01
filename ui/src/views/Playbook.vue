@@ -174,7 +174,7 @@ export default Vue.extend({
       }
     },
     readonly: function (): boolean {
-      return !this.hasRole("engineer:playbook:write");
+      return !this.hasRole("playbook:write");
     },
   },
   methods: {
@@ -286,8 +286,8 @@ export default Vue.extend({
       }
     },
     hasRole: function (s: string): boolean {
-      if (this.$store.state.user.roles) {
-        return this.lodash.includes(this.$store.state.user.roles, s);
+      if (this.$store.state.settings.roles) {
+        return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
     }

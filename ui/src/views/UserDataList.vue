@@ -9,7 +9,7 @@
         plural="User Data"
         :show-new="false"
         :deletable="false"
-        writepermission="admin:userdata:write"
+        writepermission="userdata:write"
     ></List>
   </v-main>
 </template>
