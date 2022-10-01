@@ -25,7 +25,7 @@ require (
 	github.com/tus/tusd v1.9.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
-	golang.org/x/exp v0.0.0-20220929160808-de9c53c655b9
+	golang.org/x/exp v0.0.0-20220930202632-ec3f01382ef9
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 	gopkg.in/yaml.v3 v3.0.1
 )
