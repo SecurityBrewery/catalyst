@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -24,6 +25,7 @@ func JSONError(w http.ResponseWriter, err error) {
 }
 
 func JSONErrorStatus(w http.ResponseWriter, status int, err error) {
+	log.Println("JSONErrorStatus", status, err)
 	w.WriteHeader(status)
 	b, _ := json.Marshal(map[string]string{"error": err.Error()})
 	_, _ = w.Write(b)

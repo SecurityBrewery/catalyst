@@ -4,12 +4,12 @@ import (
 	"context"
 	"log"
 
+	maut "github.com/cugu/maut/auth"
+
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/generated/time"
-	"github.com/SecurityBrewery/catalyst/role"
 )
 
 type busService struct {
@@ -30,9 +30,9 @@ func New(apiURL, apikey, network string, catalystBus *bus.Bus, db *database.Data
 
 func busContext() context.Context {
 	// TODO: change roles?
-	bot := &model.UserResponse{ID: "bot", Roles: []string{role.Admin}}
+	bot := &maut.User{ID: "bot", Roles: []string{maut.AdminRole}}
 
-	return busdb.UserContext(context.Background(), bot)
+	return maut.UserContext(context.Background(), bot, nil) // TODO add permissions ?
 }
 
 func (h *busService) logRequest(msg *bus.RequestMsg) {

@@ -5,7 +5,7 @@
         <v-form ref="form" v-model="valid" @submit.prevent="login">
           <v-card class="pa-4">
             <div class="d-flex justify-center">
-              <v-img src="/ui/flask.svg" height="100" width="100" class="flex-grow-0"></v-img>
+              <v-img src="/ui/static/flask.svg" height="100" width="100" class="flex-grow-0"></v-img>
             </div>
             <v-card-title class="text-center justify-center">
               Catalyst Login
@@ -45,7 +45,7 @@
         <v-list>
           <v-list-item class="px-2" :to="{ name: 'Home' }">
             <v-list-item-avatar rounded="0">
-              <v-img src="/ui/flask_white.svg" :width="40"></v-img>
+              <v-img src="/ui/static/flask_white.svg" :width="40"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="title">

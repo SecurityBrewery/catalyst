@@ -12,7 +12,6 @@ import (
 
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
 )
 
@@ -73,10 +72,6 @@ func ParseCatalystConfig() (*catalyst.Config, error) {
 }
 
 func MapConfig(cli CLI) (*catalyst.Config, error) {
-	roles := role.Explode(role.Analyst)
-	roles = append(roles, role.Explodes(cli.AuthDefaultRoles)...)
-	roles = role.Explodes(role.Strings(roles))
-
 	scopes := slices.Compact(append([]string{oidc.ScopeOpenID, "profile", "email"}, cli.OIDCScopes...))
 	config := &catalyst.Config{
 		IndexPath: cli.IndexPath,
@@ -87,16 +82,19 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			Password: cli.ArangoDBPassword,
 		},
 		Storage:         &storage.Config{Host: cli.S3Host, User: cli.S3User, Password: cli.S3Password},
-		Secret:          []byte(cli.Secret),
 		ExternalAddress: cli.ExternalAddress,
 		InternalAddress: cli.CatalystAddress,
 		Port:            cli.Port,
 		Auth: &maut.Config{
+			CookieSecret:     []byte(cli.Secret),
 			SimpleAuthEnable: false, // cli.SimpleAuthEnable,
 			APIKeyAuthEnable: cli.APIKeyAuthEnable,
 			OIDCAuthEnable:   cli.OIDCEnable,
-			OIDCIssuer:       cli.OIDCIssuer,
-			AuthURL:          cli.AuthURL,
+			// InitialUser:      "",
+			// InitialPassword:  "",
+			// InitialAPIKey:    "",
+			OIDCIssuer: cli.OIDCIssuer,
+			AuthURL:    cli.AuthURL,
 			OAuth2: &oauth2.Config{
 				ClientID:     cli.OIDCClientID,
 				ClientSecret: cli.OIDCClientSecret,
@@ -105,7 +103,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			},
 			UserCreateConfig: &maut.UserCreateConfig{
 				AuthBlockNew:      cli.AuthBlockNew,
-				AuthDefaultRoles:  role.Strings(roles),
+				AuthDefaultRoles:  cli.AuthDefaultRoles,
 				AuthAdminUsers:    cli.AuthAdminUsers,
 				OIDCClaimUsername: cli.OIDCClaimUsername,
 				OIDCClaimEmail:    cli.OIDCClaimEmail,

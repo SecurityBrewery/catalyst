@@ -94,7 +94,7 @@ func TestAuthenticator_hasOIDC(t *testing.T) {
 			t.Parallel()
 			req := httptest.NewRequest("POST", "/", nil)
 			resp := httptest.NewRecorder()
-			tt.authenticator.hasOIDC()(resp, req)
+			tt.authenticator.authConfig()(resp, req)
 			assertResult(t, resp, tt.want)
 		})
 	}

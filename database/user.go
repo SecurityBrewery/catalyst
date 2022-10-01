@@ -10,13 +10,13 @@ import (
 	"math/rand"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/cugu/maut/auth"
 	"github.com/iancoleman/strcase"
 
 	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/generated/pointer"
 	"github.com/SecurityBrewery/catalyst/generated/time"
-	"github.com/SecurityBrewery/catalyst/role"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
@@ -35,11 +35,9 @@ func generateKey() string {
 }
 
 func toUser(user *model.UserForm, salt, sha256, sha512 *string) *model.User {
-	roles := []string{}
-	roles = append(roles, role.Strings(role.Explodes(user.Roles))...)
 	u := &model.User{
 		Blocked: user.Blocked,
-		Roles:   roles,
+		Roles:   user.Roles,
 		Salt:    salt,
 		Sha256:  sha256,
 		Sha512:  sha512,
@@ -111,7 +109,7 @@ func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*m
 func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*model.UserResponse, error) {
 	newUser := &model.UserForm{
 		ID:      "setup",
-		Roles:   []string{role.Admin},
+		Roles:   []string{maut.AdminRole},
 		Apikey:  true,
 		Blocked: false,
 	}

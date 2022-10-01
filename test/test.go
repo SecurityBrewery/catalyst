@@ -18,7 +18,6 @@ import (
 	"github.com/SecurityBrewery/catalyst"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/database"
-	"github.com/SecurityBrewery/catalyst/database/busdb"
 	"github.com/SecurityBrewery/catalyst/generated/api"
 	"github.com/SecurityBrewery/catalyst/generated/model"
 	"github.com/SecurityBrewery/catalyst/hooks"
@@ -28,7 +27,7 @@ import (
 )
 
 func Context() context.Context {
-	return busdb.UserContext(context.Background(), Bob)
+	return maut.UserContext(context.Background(), Bob, nil) // TODO add permissions ?
 }
 
 func Config(ctx context.Context) (*catalyst.Config, error) {
@@ -46,8 +45,8 @@ func Config(ctx context.Context) (*catalyst.Config, error) {
 			User:     "minio",
 			Password: "minio123",
 		},
-		Secret: []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 		Auth: &maut.Config{
+			CookieSecret:     []byte("4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd"),
 			SimpleAuthEnable: true,
 			APIKeyAuthEnable: true,
 			OIDCAuthEnable:   true,
@@ -172,7 +171,7 @@ func Server(t *testing.T) (context.Context, *catalyst.Config, *bus.Bus, *index.I
 	catalystServer := api.NewServer(catalystService, func(s []string) func(http.Handler) http.Handler {
 		return func(handler http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				handler.ServeHTTP(w, busdb.SetContext(r, Bob))
+				handler.ServeHTTP(w, r.WithContext(maut.UserContext(r.Context(), Bob, nil)))
 			})
 		}
 	})

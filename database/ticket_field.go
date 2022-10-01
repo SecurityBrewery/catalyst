@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/arangodb/go-driver"
+	maut "github.com/cugu/maut/auth"
 	"github.com/iancoleman/strcase"
 	"github.com/mingrammer/commonregex"
 
@@ -110,7 +111,7 @@ func (db *Database) AddComment(ctx context.Context, id int64, comment *model.Com
 	}
 
 	if comment.Creator == nil || *comment.Creator == "" {
-		user, exists := busdb.UserFromContext(ctx)
+		user, _, exists := maut.UserFromContext(ctx)
 		if !exists {
 			return nil, errors.New("no user in context")
 		}

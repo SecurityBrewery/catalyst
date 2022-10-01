@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/cugu/maut/api"
 )
@@ -14,7 +14,7 @@ import (
 func (a *Authenticator) Server() *chi.Mux {
 	server := chi.NewRouter()
 
-	server.Get("/config", a.hasOIDC())
+	server.Get("/config", a.authConfig())
 
 	if a.config.OIDCAuthEnable {
 		server.Get("/callback", a.Callback())
@@ -28,7 +28,7 @@ func (a *Authenticator) Server() *chi.Mux {
 	return server
 }
 
-func (a *Authenticator) hasOIDC() func(writer http.ResponseWriter, request *http.Request) {
+func (a *Authenticator) authConfig() func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		b, _ := json.Marshal(map[string]any{
 			"simple": a.config.SimpleAuthEnable,
