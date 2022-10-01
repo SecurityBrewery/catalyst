@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	maut "github.com/cugu/maut/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/bus"
 	"github.com/SecurityBrewery/catalyst/busservice"
 	"github.com/SecurityBrewery/catalyst/database"
@@ -28,7 +28,7 @@ type Config struct {
 	Storage   *storage.Config
 
 	Secret          []byte
-	Auth            *auth.Config
+	Auth            *maut.Config
 	ExternalAddress string
 	InternalAddress string
 	InitialAPIKey   string
@@ -49,10 +49,16 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute*10)
 	defer cancel()
 
-	if config.Auth.OIDCAuthEnable {
-		if err := config.Auth.Load(ctx); err != nil {
-			return nil, err
+	/*
+		if config.Auth.OIDCAuthEnable {
+			if err := config.Auth.Load(ctx); err != nil {
+				return nil, err
+			}
 		}
+	*/
+	a, err := maut.NewAuthenticator(ctx, config.Auth, nil)
+	if err != nil {
+		return nil, err
 	}
 
 	catalystStorage, err := storage.New(config.Storage)
@@ -94,7 +100,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		}
 	}
 
-	apiServer, err := setupAPI(catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
+	apiServer, err := setupAPI(a, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
 	if err != nil {
 		return nil, err
 	}
@@ -108,17 +114,15 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	}, nil
 }
 
-func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
-	secureJar := auth.NewJar(config.Secret)
-
+func setupAPI(a *maut.Authenticator, catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
 	middlewares := []func(next http.Handler) http.Handler{
-		auth.Authenticate(catalystDatabase, config.Auth, secureJar),
-		auth.AuthorizeBlockedUser(),
+		a.Authenticate(),
+		a.AuthorizeBlockedUser(),
 	}
 
 	// create server
-	apiServer := api.NewServer(catalystService, auth.AuthorizeRole, middlewares...)
-	fileReadWrite := auth.AuthorizeRole([]string{role.FileReadWrite.String()})
+	apiServer := api.NewServer(catalystService, autRole(a), middlewares...)
+	fileReadWrite := a.AuthorizePermission(role.FileReadWrite.String())
 	tudHandler := tusdUpload(catalystDatabase, bus, catalystStorage.S3(), config.ExternalAddress)
 	apiServer.With(fileReadWrite).Head("/files/{ticketID}/tusd/{id}", tudHandler)
 	apiServer.With(fileReadWrite).Patch("/files/{ticketID}/tusd/{id}", tudHandler)
@@ -126,18 +130,24 @@ func setupAPI(catalystService *service.Service, catalystStorage *storage.Storage
 	apiServer.With(fileReadWrite).Post("/files/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
 	apiServer.With(fileReadWrite).Get("/files/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
 
-	apiServer.With(auth.AuthorizeRole([]string{role.BackupRead.String()})).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
-	apiServer.With(auth.AuthorizeRole([]string{role.BackupRestore.String()})).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
+	apiServer.With(a.AuthorizePermission(role.BackupRead.String())).Get("/backup/create", backupHandler(catalystStorage, dbConfig))
+	apiServer.With(a.AuthorizePermission(role.BackupRestore.String())).Post("/backup/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
 	server.Mount("/api", apiServer)
 	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
-	server.Mount("/auth", auth.Server(config.Auth, catalystDatabase, secureJar))
+	server.Mount("/auth", a.Server())
 
 	server.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/ui/", http.StatusFound)
 	})
 
 	return server, nil
+}
+
+func autRole(a *maut.Authenticator) func([]string) func(http.Handler) http.Handler {
+	return func(permissions []string) func(http.Handler) http.Handler {
+		return a.AuthorizePermission(permissions...)
+	}
 }

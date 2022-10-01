@@ -1,0 +1,33 @@
+{
+    "extends": [
+        "config:base"
+    ],
+    "packageRules": [
+        {
+            "datasources": [
+                "go"
+            ],
+            "extends": [
+                ":automergeDigest",
+                ":automergeMinor",
+                ":automergePr"
+            ],
+            "postUpdateOptions": [
+                "gomodTidy"
+            ]
+        },
+        {
+            "datasources": [
+                "npm"
+            ],
+            "extends": [
+                ":automergeDigest",
+                ":automergeMinor",
+                ":automergePr"
+            ]
+        }
+    ],
+    "assignees": [
+        "cugu"
+    ]
+}

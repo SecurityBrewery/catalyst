@@ -1,0 +1,33 @@
+name: CI
+on:
+  push: { branches: [ main ] }
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.19' }
+      - uses: golangci/golangci-lint-action@v3
+        with: { version: "v1.49", args: "--timeout 5m ./..." }
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.19' }
+      - run: docker compose up -d
+        working-directory: example
+      - name: Wait for keycloak
+        uses: cugu/wait_for_response@v1.13.0
+        with: { url: 'http://localhost:8081' }
+      - name: Wait for authelia
+        uses: cugu/wait_for_response@v1.13.0
+        with: { url: 'http://localhost:8082', method: "GET", verbose: "true" }
+      - name: Test
+        run: go test ./...

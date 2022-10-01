@@ -1,0 +1,115 @@
+---
+jwt_secret: a_very_important_secret
+
+server:
+  port: 8082
+
+log:
+  format: text
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+access_control:
+  default_policy: one_factor
+
+session:
+  secret: a_very_important_secret
+  domain: localhost
+
+storage:
+  encryption_key: you_must_generate_a_random_string_of_more_than_twenty_chars_and_configure_this
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+identity_providers:
+  oidc:
+    hmac_secret: this_is_a_secret_abc123abc123abc
+    issuer_private_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+    enable_client_debug_messages: true
+    cors:
+      allowed_origins: [ "*" ]
+    clients:
+      - id: "apitest-9092"
+        description: API
+        secret: secret
+        public: false
+        authorization_policy: one_factor
+        scopes: [ openid, groups, email, profile ]
+        redirect_uris:
+          - "http://localhost:9092/auth/callback"
+        userinfo_signing_algorithm: none
+      - id: "apitest-9192"
+        description: API
+        secret: secret
+        public: false
+        authorization_policy: one_factor
+        scopes: [ openid, groups, email, profile ]
+        redirect_uris:
+          - "http://localhost:9192/auth/callback"
+        userinfo_signing_algorithm: none
+      - id: "apitest-9292"
+        description: API
+        secret: secret
+        public: false
+        authorization_policy: one_factor
+        scopes: [ openid, groups, email, profile ]
+        redirect_uris:
+          - "http://localhost:9292/auth/callback"
+        userinfo_signing_algorithm: none

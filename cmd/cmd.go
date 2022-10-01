@@ -6,11 +6,11 @@ import (
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
+	maut "github.com/cugu/maut/auth"
 	"golang.org/x/exp/slices"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst"
-	"github.com/SecurityBrewery/catalyst/auth"
 	"github.com/SecurityBrewery/catalyst/database"
 	"github.com/SecurityBrewery/catalyst/role"
 	"github.com/SecurityBrewery/catalyst/storage"
@@ -91,7 +91,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 		ExternalAddress: cli.ExternalAddress,
 		InternalAddress: cli.CatalystAddress,
 		Port:            cli.Port,
-		Auth: &auth.Config{
+		Auth: &maut.Config{
 			SimpleAuthEnable: false, // cli.SimpleAuthEnable,
 			APIKeyAuthEnable: cli.APIKeyAuthEnable,
 			OIDCAuthEnable:   cli.OIDCEnable,
@@ -103,9 +103,9 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 				RedirectURL:  cli.ExternalAddress + "/auth/callback",
 				Scopes:       scopes,
 			},
-			UserCreateConfig: &auth.UserCreateConfig{
+			UserCreateConfig: &maut.UserCreateConfig{
 				AuthBlockNew:      cli.AuthBlockNew,
-				AuthDefaultRoles:  roles,
+				AuthDefaultRoles:  role.Strings(roles),
 				AuthAdminUsers:    cli.AuthAdminUsers,
 				OIDCClaimUsername: cli.OIDCClaimUsername,
 				OIDCClaimEmail:    cli.OIDCClaimEmail,

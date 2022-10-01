@@ -3,7 +3,7 @@ run:
   timeout: 5m
   skip-dirs:
     - generated
-    - internal
+    - testserver
 linters:
   enable:
     - asciicheck
@@ -46,21 +46,33 @@ linters:
     - unconvert
     - whitespace
 
-  disable:
-    # go 1.18
     - bodyclose
-    - contextcheck
     - gosimple
-    - ifshort
     - nilerr
-    - noctx
-    - rowserrcheck
-    - sqlclosecheck
+
     - staticcheck
     - stylecheck
     - tparallel
     - unparam
     - unused
+
+  disable:
+    # go 1.18
+    #- bodyclose
+    #- contextcheck
+    #- gosimple
+    #- nilerr
+    #- noctx
+    #- rowserrcheck
+    #- sqlclosecheck
+    #- staticcheck
+    #- stylecheck
+    #- tparallel
+    #- unparam
+    #- unused
+    #- wastedassign
+    - sqlclosecheck
+    - rowserrcheck
     - wastedassign
 
     # complexity
@@ -71,6 +83,7 @@ linters:
     - nestif
 
     # disable
+    - contextcheck
     - dupl
     - exhaustivestruct
     - funlen
@@ -83,6 +96,7 @@ linters:
     - gomoddirectives
     - lll
     - makezero
+    - noctx
     - prealloc
     - structcheck
     - tagliatelle
@@ -95,7 +109,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com/SecurityBrewery/catalyst)
+      - prefix(github.com/cugu/maut)
   ireturn:
     allow:
       - error
@@ -107,15 +121,12 @@ linters-settings:
       - chi.Router
 issues:
   exclude-rules:
-    - path: caql
-      text: "var-naming: don't use underscores"
-    - path: database/user.go
-      text: "G404"
-      linters: [ gosec ]
-    - path: caql/function.go
-      text: "G404"
-      linters: [ gosec ]
-    - path: caql
-      linters: [ forcetypeassert ]
-    - text: github.com/go-chi/chi/v5.Router
-      linters: [ ireturn ]
+    - linters:
+        - errchkjson
+      text: "encoding/json.Marshal"
+    - linters: [ containedctx ]
+      path: context_test.go
+    - linters: [ govet ]
+      path: _test.go
+    - linters: [ ireturn ]
+      path: example
