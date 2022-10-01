@@ -95,11 +95,11 @@ func setupAPI(authenticator *maut.Authenticator, catalystService *service.Servic
 
 	// create server
 	apiServer := api.NewServer(catalystService, permissionAuth(authenticator), middlewares...)
+	apiServer.Mount("/files", fileServer(authenticator, catalystDatabase, bus, catalystStorage, config))
+	apiServer.Mount("/backup", backupServer(authenticator, catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
-	server.Mount("/files", fileServer(authenticator, catalystDatabase, bus, catalystStorage, config))
-	server.Mount("/backup", backupServer(authenticator, catalystStorage, catalystDatabase, dbConfig))
 	server.Mount("/api", apiServer)
 	server.Mount("/auth", authenticator.Server())
 	server.With(middlewares...).Handle("/wss", handleWebSocket(bus))
