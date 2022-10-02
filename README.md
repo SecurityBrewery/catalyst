@@ -72,11 +72,16 @@ Automations are scripts that automate tasks or enrich artifacts. Automations are
 run in their own Docker containers. This enables them to be created in different
 scripting languages and run securely in their own environment.
 
-### Users
+### Dashboards
 
 <center>
-  <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/roles.png" />
+  <img alt="Screenshot of the dashboard editor" src="docs/screenshots/dashboard.png" />
 </center>
+
+Catalyst comes with a dashboard editor that allows you to create custom dashboards
+for your organisation. Dashboards can be created with line, bar, and pie charts.
+
+### Users
 
 Catalyst has two different types of users, normal users accessing the platform
 via OIDC authentication and API keys for external script. A
