@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	maut "github.com/jonas-plum/maut/auth"
 
 	"github.com/SecurityBrewery/catalyst/generated/model"
