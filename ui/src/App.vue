@@ -111,7 +111,7 @@
             <v-list-item class="version" dense style="min-height: 20px">
               <v-list-item-content>
                 <v-list-item-title style="text-align: center; opacity: 0.5;">
-                  {{ $store.state.settings.tier }} v{{ $store.state.settings.version }}
+                  {{ $store.state.settings.version }}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
