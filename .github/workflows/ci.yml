@@ -125,17 +125,17 @@ jobs:
         with: { go-version: '1.19', cache: true }
       - uses: actions/download-artifact@v3
         with: { name: ui, path: ui/dist }
+      - name: Version
+        if: github.ref_type == 'tag' && github.ref_name != ''
+        run: |
+          echo ${{ github.ref_name }}
+          echo ${{ github.ref_name }} > VERSION
       - run: go build -o catalyst ./cmd/catalyst/.
       - uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Version
-        if: github.ref_type == 'tag' && github.ref_name != ''
-        run: |
-          echo ${{ github.ref_name }}
-          echo ${{ github.ref_name }} > VERSION
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
