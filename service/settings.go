@@ -31,7 +31,7 @@ func (s *Service) settings(ctx context.Context, globalSettings *model.Settings) 
 	if ok {
 		userData, _ := s.database.UserDataGet(ctx, user.ID)
 
-		if userData == nil || userData.Timeformat != nil {
+		if userData != nil && userData.Timeformat != nil {
 			globalSettings.Timeformat = *userData.Timeformat
 		}
 	}
