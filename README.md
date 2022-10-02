@@ -75,7 +75,7 @@ scripting languages and run securely in their own environment.
 ### Dashboards
 
 <center>
-  <img style={{float: 'right', marginLeft: '10px', marginBottom: '20px'}} alt="Screenshot of the dashboard editor" src="/screenshots/dashboard.png" />
+  <img alt="Screenshot of the dashboard editor" src="docs/screenshots/dashboard.png" />
 </center>
 
 Catalyst comes with a dashboard editor that allows you to create custom dashboards
