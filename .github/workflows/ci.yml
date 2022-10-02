@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with: { node-version: '14', cache: 'yarn' }
+        with: { node-version: '14', cache: 'yarn', cache-dependency-path: 'ui/yarn.lock' }
       - uses: actions/setup-go@v3
         with: { go-version: '1.19', cache: true }
       - run: |
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with: { node-version: '14', cache: 'yarn' }
+        with: { node-version: '14', cache: 'yarn', cache-dependency-path: 'ui/yarn.lock' }
       - run: yarn install && yarn build
         working-directory: ui
       - uses: actions/upload-artifact@v3
