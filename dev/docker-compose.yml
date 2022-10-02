@@ -30,9 +30,9 @@ services:
       AUTHELIA_STORAGE_ENCRYPTION_KEY: "AUTHELIA_STORAGE_ENCRYPTION_KEY"
       AUTHELIA_SESSION_SECRET: "AUTHELIA_SESSION_SECRET"
     volumes:
-      - ./authelia/configuration.yml /config/configuration.yml
-      - ./authelia/users_database.yml /config/users_database.yml
-      - ./authelia/private.pem /config/private.pem
+      - ./authelia/configuration.yml:/config/configuration.yml
+      - ./authelia/users_database.yml:/config/users_database.yml
+      - ./authelia/private.pem:/config/private.pem
     networks: [ catalyst ]
 
 networks:
