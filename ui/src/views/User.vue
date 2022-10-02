@@ -39,7 +39,7 @@
                 v => !!v || 'Password is required',
                 v => (v && v.length >= 8) || 'Password must be at least 8 characters',
               ]"></v-text-field>
-          <v-select multiple chips label="Roles" v-model="user.roles" :items="$store.state.settings.roles"></v-select>
+          <v-select multiple chips label="Roles" v-model="user.roles" :items="['analyst', 'engineer', 'admin']"></v-select>
           <v-btn @click="save" color="success" outlined>
             <v-icon>mdi-plus-thick</v-icon>
             Create
