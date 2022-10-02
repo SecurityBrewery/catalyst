@@ -3,7 +3,7 @@ services:
   nginx:
     image: nginx:1.23
     volumes:
-      - ./nginx-with-keycloak.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports: [ "80:80", "8529:8529", "9000:9000", "8082:8082", "9003:9003" ]
     networks: [ catalyst ]
 
