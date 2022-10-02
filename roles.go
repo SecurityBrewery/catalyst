@@ -13,9 +13,7 @@ var Admin = &maut.Role{
 		"log:read",
 		"settings:write",
 		"ticket:delete",
-		"tickettype:read",
 		"user:write",
-		"userdata:read",
 		"userdata:write",
 	),
 }
@@ -45,6 +43,8 @@ var analyst = &maut.Role{
 		"template:read",
 		"ticket:read",
 		"ticket:write",
+		"tickettype:read",
 		"user:read",
+		"userdata:read",
 	},
 }
