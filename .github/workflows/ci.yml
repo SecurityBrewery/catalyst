@@ -13,25 +13,9 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
-        with: { go-version: '1.18' }
-
-      - id: goenv
-        run: |
-          echo "::set-output name=gocache::$(go env GOCACHE)"
-          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
-
       - uses: actions/checkout@v3
-
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gocache }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gomodcache }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
-
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.19', cache: true }
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
@@ -40,29 +24,12 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    env: { GIN_MODE: test }
     steps:
-      - uses: actions/setup-go@v3
-        with: { go-version: '1.18' }
-      - uses: actions/setup-node@v3
-        with: { node-version: '14' }
-
-      - id: goenv
-        run: |
-          echo "::set-output name=gocache::$(go env GOCACHE)"
-          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
-
       - uses: actions/checkout@v3
-
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gocache }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gomodcache }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
-
+      - uses: actions/setup-node@v3
+        with: { node-version: '14', cache: 'yarn' }
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.19', cache: true }
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
@@ -85,46 +52,29 @@ jobs:
         auth: [ keycloak ] # simple
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with: { go-version: '1.18' }
       - uses: actions/setup-node@v3
         with: { node-version: '14' }
-
       # run UI
       - run: |
           yarn install
           yarn serve &
         working-directory: ui
-      - run: go install github.com/cugu/wait_for_response@latest
-      - name: Wait for frontend
-        uses: cugu/wait_for_response@v1.13.0
-        with:
-          url: 'http://localhost:8080'
-          responseCode: 200
-
+      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8080
       # run containers
       - run: | 
           sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
           sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
-
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
         if: matrix.auth == 'simple'
       - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
         working-directory: dev
         if: matrix.auth == 'keycloak'
-      - name: Wait for keycloak
-        uses: cugu/wait_for_response@v1.13.0
-        with:
-          url: 'http://localhost:9002/auth/realms/catalyst'
-          responseCode: 200
-          verbose: true
-          timeout: 3m
-          interval: 10s
+      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:9002/auth/realms/catalyst
         if: matrix.auth == 'keycloak'
-
       # run catalyst
       - run: |
           mkdir -p ui/dist/img
@@ -136,16 +86,7 @@ jobs:
       - run: bash start_dev_with_keycloak.sh &
         working-directory: dev
         if: matrix.auth == 'keycloak'
-      - name: Wait for catalyst
-        uses: cugu/wait_for_response@v1.13.0
-        with:
-          url: 'http://localhost:8000'
-          method: GET
-          responseCode: 302
-          verbose: true
-          timeout: 3m
-          interval: 10s
-
+      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8000
       # run cypress
       - uses: cypress-io/github-action@v4
         env:
@@ -165,15 +106,9 @@ jobs:
     name: Build npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
-        with: { node-version: '14' }
       - uses: actions/checkout@v3
-
-      - uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
+      - uses: actions/setup-node@v3
+        with: { node-version: '14', cache: 'yarn' }
       - run: yarn install && yarn build
         working-directory: ui
       - uses: actions/upload-artifact@v3
@@ -185,25 +120,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-npm, test ]
     steps:
-      - uses: actions/setup-go@v3
-        with: { go-version: '1.18' }
-
-      - id: goenv
-        run: |
-          echo "::set-output name=gocache::$(go env GOCACHE)"
-          echo "::set-output name=gomodcache::$(go env GOMODCACHE)"
-
       - uses: actions/checkout@v3
-
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gocache }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.goenv.outputs.gomodcache }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
-
+      - uses: actions/setup-go@v3
+        with: { go-version: '1.19', cache: true }
       - uses: actions/download-artifact@v3
         with: { name: ui, path: ui/dist }
       - run: go build -o catalyst ./cmd/catalyst/.
