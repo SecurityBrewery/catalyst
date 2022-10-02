@@ -72,7 +72,7 @@ Automations are scripts that automate tasks or enrich artifacts. Automations are
 run in their own Docker containers. This enables them to be created in different
 scripting languages and run securely in their own environment.
 
-## Dashboards
+### Dashboards
 
 <center>
   <img style={{float: 'right', marginLeft: '10px', marginBottom: '20px'}} alt="Screenshot of the dashboard editor" src="/screenshots/dashboard.png" />
