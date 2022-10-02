@@ -33,7 +33,7 @@ jobs:
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
+      - run: docker compose --quiet-pull --detach
         working-directory: dev
       - name: Install ArangoDB
         run: |
@@ -49,7 +49,7 @@ jobs:
     strategy:
       matrix:
         test: [ tickets, templates, playbooks ]
-        auth: [ keycloak ] # simple
+        auth: [ authelia ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -64,17 +64,12 @@ jobs:
         working-directory: ui
       - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8080
       # run containers
-      - run: | 
-          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
-          sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx-with-keycloak.conf
+      - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
-        if: matrix.auth == 'simple'
-      - run: docker compose -f docker-compose-with-keycloak.yml up --quiet-pull --detach
-        working-directory: dev
-        if: matrix.auth == 'keycloak'
+        if: matrix.auth == 'authelia'
       - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:9002/auth/realms/catalyst
-        if: matrix.auth == 'keycloak'
+        if: matrix.auth == 'authelia'
       # run catalyst
       - run: |
           mkdir -p ui/dist/img
@@ -82,10 +77,7 @@ jobs:
       - run: go mod download
       - run: bash start_dev.sh &
         working-directory: dev
-        if: matrix.auth == 'simple'
-      - run: bash start_dev_with_keycloak.sh &
-        working-directory: dev
-        if: matrix.auth == 'keycloak'
+        if: matrix.auth == 'authelia'
       - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8000
       # run cypress
       - uses: cypress-io/github-action@v4
@@ -95,12 +87,6 @@ jobs:
         with:
           browser: chrome
           working-directory: ui
-      - uses: actions/upload-artifact@v3
-        if: always() && matrix.auth == 'simple'
-        with:
-          name: cypress-videos
-          path: ui/cypress/videos
-          retention-days: 1
 
   build-npm:
     name: Build npm

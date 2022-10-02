@@ -61,7 +61,7 @@
         <v-text-field v-if="!user.apikey" label="New Password (leave empty to keep)" v-model="user.password" hide-details class="mb-4"></v-text-field>
         <v-checkbox v-if="!user.apikey" label="Blocked" v-model="user.blocked" hide-details class="mb-4"></v-checkbox>
 
-        <v-select multiple chips v-if="!user.apikey" label="Roles" v-model="user.roles" :items="$store.state.settings.roles"></v-select>
+        <v-select multiple chips v-if="!user.apikey" label="Roles" v-model="user.roles" :items="['analyst', 'engineer', 'admin']"></v-select>
         <div v-else>
           <v-chip v-for="role in user.roles" :key="role" class="mr-1 mb-1">{{ role }}</v-chip>
         </div>
