@@ -39,6 +39,16 @@ func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut
 			Password: &password,
 			Roles:    user.Roles,
 		})
+		if err != nil {
+			return err
+		}
+
+		err = c.database.UserDataCreate(ctx, user.ID, &model.UserData{
+			Email:      user.Email,
+			Image:      nil,
+			Name:       user.Name,
+			Timeformat: nil,
+		})
 	}
 
 	return err

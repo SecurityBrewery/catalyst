@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	maut "github.com/jonas-plum/maut/auth"
 
@@ -29,23 +28,15 @@ func (s *Service) SaveSettings(ctx context.Context, settings *model.Settings) (*
 
 func (s *Service) settings(ctx context.Context, globalSettings *model.Settings) (*model.SettingsResponse, error) {
 	user, permissions, ok := maut.UserFromContext(ctx)
-	if !ok {
-		return nil, errors.New("no user in context")
+	if ok {
+		userData, _ := s.database.UserDataGet(ctx, user.ID)
+
+		if userData != nil && userData.Timeformat != nil {
+			globalSettings.Timeformat = *userData.Timeformat
+		}
 	}
 
-	userData, err := s.database.UserDataGet(ctx, user.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	ticketTypeList, err := s.database.TicketTypeList(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if userData.Timeformat != nil {
-		globalSettings.Timeformat = *userData.Timeformat
-	}
+	ticketTypeList, _ := s.database.TicketTypeList(ctx)
 
 	return &model.SettingsResponse{
 		Tier:           model.SettingsResponseTierCommunity,
