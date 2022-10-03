@@ -2,6 +2,7 @@ package catalyst
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -46,36 +47,36 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 
 	catalystStorage, err := storage.New(config.Storage)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create storage: %w", err)
 	}
 
 	catalystIndex, err := index.New(config.IndexPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create index: %w", err)
 	}
 
 	catalystBus := bus.New()
 
 	catalystDatabase, err := database.New(ctx, catalystIndex, catalystBus, hooks, config.DB)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create database: %w", err)
 	}
 
 	busservice.New(config.InternalAddress+"/api", config.Auth.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create service: %w", err)
 	}
 
 	authenticator, err := maut.NewAuthenticator(ctx, config.Auth, newCatalystResolver(catalystDatabase))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create authenticator: %w", err)
 	}
 
 	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create api server: %w", err)
 	}
 
 	return &Server{
@@ -132,7 +133,6 @@ func fileServer(authenticator *maut.Authenticator, catalystDatabase *database.Da
 
 func backupServer(authenticator *maut.Authenticator, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config) *chi.Mux {
 	server := chi.NewRouter()
-	// TODO: add test
 	server.With(authenticator.AuthorizePermission("backup:create")).Get("/create", backupHandler(catalystStorage, dbConfig))
 	server.With(authenticator.AuthorizePermission("backup:restore")).Post("/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
