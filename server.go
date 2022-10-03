@@ -2,7 +2,7 @@ package catalyst
 
 import (
 	"context"
-	"github.com/pkg/errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -47,36 +47,36 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 
 	catalystStorage, err := storage.New(config.Storage)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create storage")
+		return nil, fmt.Errorf("failed to create storage: %w", err)
 	}
 
 	catalystIndex, err := index.New(config.IndexPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create index")
+		return nil, fmt.Errorf("failed to create index: %w", err)
 	}
 
 	catalystBus := bus.New()
 
 	catalystDatabase, err := database.New(ctx, catalystIndex, catalystBus, hooks, config.DB)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create database")
+		return nil, fmt.Errorf("failed to create database: %w", err)
 	}
 
 	busservice.New(config.InternalAddress+"/api", config.Auth.InitialAPIKey, config.Network, catalystBus, catalystDatabase)
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create service")
+		return nil, fmt.Errorf("failed to create service: %s", err)
 	}
 
 	authenticator, err := maut.NewAuthenticator(ctx, config.Auth, newCatalystResolver(catalystDatabase))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create authenticator")
+		return nil, fmt.Errorf("failed to create authenticator: %s", err)
 	}
 
 	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create api server")
+		return nil, fmt.Errorf("failed to create api server: %s", err)
 	}
 
 	return &Server{
