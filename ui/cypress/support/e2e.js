@@ -25,6 +25,7 @@ Cypress.Commands.add('login', (options = {}) => {
         cy.get("#password").type("bob");
         cy.get("#kc-login").click();
     } else if (Cypress.env('AUTH') === 'authelia') {
+        cy.contains("Login with OIDC").should('be.visible').click();
         cy.get("#username-textfield").should('be.visible').type("bob");
         cy.get("#password-textfield").type("bob");
         cy.get("#sign-in-button").click();
