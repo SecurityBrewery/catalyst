@@ -66,17 +66,17 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 
 	catalystService, err := service.New(catalystBus, catalystDatabase, catalystStorage, GetVersion())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create service: %s", err)
+		return nil, fmt.Errorf("failed to create service: %w", err)
 	}
 
 	authenticator, err := maut.NewAuthenticator(ctx, config.Auth, newCatalystResolver(catalystDatabase))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create authenticator: %s", err)
+		return nil, fmt.Errorf("failed to create authenticator: %w", err)
 	}
 
 	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create api server: %s", err)
+		return nil, fmt.Errorf("failed to create api server: %w", err)
 	}
 
 	return &Server{
