@@ -1,9 +1,11 @@
+#!/bin/bash
+set -e
+
 export SECRET=4ef5b29539b70233dd40c02a1799d25079595565e05a193b09da2c3e60ada1cd
 
 export SIMPLE_AUTH_ENABLE=false
 export OIDC_ENABLE=true
-export OIDC_ISSUER=http://authelia:8082
-export OIDC_AUTH_URL=http://localhost:8082/api/oidc/authorization
+export OIDC_ISSUER=http://localhost:8082
 export OIDC_CLIENT_SECRET=secret
 
 export ARANGO_DB_HOST=http://localhost:8529
