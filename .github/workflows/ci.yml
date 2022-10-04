@@ -50,7 +50,7 @@ jobs:
       matrix:
         test: [ tickets, templates, playbooks ]
         auth: [ authelia ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
