@@ -50,7 +50,7 @@ jobs:
       matrix:
         test: [ tickets, templates, playbooks ]
         auth: [ authelia ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
@@ -62,13 +62,13 @@ jobs:
           yarn install
           yarn serve &
         working-directory: ui
-      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8080
+      - run: curl --head -X GET --retry 60 --retry-all-errors --retry-delay 10 http://localhost:8080
       # run containers
       - run: sed -i 's/host.docker.internal/172.17.0.1/g' dev/nginx.conf
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
         if: matrix.auth == 'authelia'
-      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8082
+      - run: curl --head -X GET --retry 60 --retry-all-errors --retry-delay 10 http://localhost:8082
         if: matrix.auth == 'authelia'
       # run catalyst
       - run: |
@@ -78,7 +78,7 @@ jobs:
       - run: bash start_dev.sh &
         working-directory: dev
         if: matrix.auth == 'authelia'
-      - run: curl --head -X GET --retry 60 --retry-connrefused --retry-delay 10 http://localhost:8000
+      - run: curl --head -X GET --retry 60 --retry-all-errors --retry-delay 10 http://localhost:8000
       # run cypress
       - uses: cypress-io/github-action@v4
         env:
