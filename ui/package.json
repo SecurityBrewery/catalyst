@@ -33,7 +33,7 @@
     "register-service-worker": "1.7.2",
     "splitpanes": "2.4.1",
     "swagger-ui": "4.13.0",
-    "vue": "2.7.13",
+    "vue": "2.7.10",
     "vue-axios": "3.4.1",
     "vue-chartjs": "3.5.1",
     "vue-class-component": "7.2.6",
@@ -66,7 +66,7 @@
     "@vue/cli-plugin-unit-jest": "4.5.19",
     "@vue/cli-plugin-vuex": "4.5.19",
     "@vue/cli-service": "4.5.19",
-    "@vue/compiler-sfc": "3.2.41",
+    "@vue/compiler-sfc": "3.2.40",
     "@vue/eslint-config-typescript": "10.0.0",
     "@vue/test-utils": "2.1.0",
     "babel-eslint": "10.1.0",
@@ -78,7 +78,7 @@
     "sass-loader": "^10",
     "typescript": "4.8.4",
     "vue-cli-plugin-vuetify": "2.5.8",
-    "vue-template-compiler": "2.7.13",
+    "vue-template-compiler": "2.7.10",
     "vuetify-loader": "1.9.2"
   }
 }
