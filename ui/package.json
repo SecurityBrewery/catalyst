@@ -47,7 +47,7 @@
     "vue-prism-editor": "1.3.0",
     "vue-property-decorator": "9.1.2",
     "vue-router": "3.6.5",
-    "vuetify": "2.6.11",
+    "vuetify": "2.6.12",
     "vuex": "3.6.2",
     "yaml": "2.0.1"
   },
