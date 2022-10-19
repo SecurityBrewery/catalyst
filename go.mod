@@ -26,7 +26,7 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	github.com/tus/tusd v1.10.0
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/exp v0.0.0-20221012211006-4de253d81b95
+	golang.org/x/exp v0.0.0-20221018221608-02f3b879a704
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	gopkg.in/yaml.v3 v3.0.1
 )
