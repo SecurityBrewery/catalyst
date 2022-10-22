@@ -33,8 +33,7 @@ rm -rf generated/models/old
 rm -rf generated/.openapi-generator generated/.openapi-generator-ignore generated/README.md
 rm -rf ui/src/client/.openapi-generator ui/src/client/git_push.sh ui/src/client/.gitignore ui/src/client/.openapi-generator-ignore
 
+gofmt -w -r 'interface{} -> any' .
 go mod tidy
 gci write --Section Standard --Section Default --Section "Prefix(github.com/SecurityBrewery/catalyst)" .
-cd internal/maut
-gci write --Section Standard --Section Default --Section "Prefix(github.com/jonas-plum/maut)" .
 cd ../..
