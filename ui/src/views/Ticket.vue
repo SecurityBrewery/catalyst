@@ -761,7 +761,7 @@
           <div style="display: flex; align-items: center" class="pb-1">
             <span class="text--disabled">Files</span>
             <v-spacer></v-spacer>
-            <v-btn v-if="hasRole('file')" small icon @click="fileDialog = true">
+            <v-btn v-if="hasRole('file:write')" small icon @click="fileDialog = true">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </div>
@@ -778,6 +778,7 @@
               </v-list-item-title>
               <v-list-item-action class="ma-0">
                 <v-btn
+                  v-if="hasRole('file:read')"
                   icon
                   x-small
                   @click="download(file.name, file.key)"
