@@ -61,8 +61,6 @@ func generateMigrations() ([]Migration, error) {
 
 		&updateDocument[model.Settings]{ID: "update-settings-global-1", Collection: "settings", Key: "global", Document: &model.Settings{ArtifactStates: []*model.Type{{Icon: "mdi-help-circle-outline", ID: "unknown", Name: "Unknown", Color: pointer.String(model.TypeColorInfo)}, {Icon: "mdi-skull", ID: "malicious", Name: "Malicious", Color: pointer.String(model.TypeColorError)}, {Icon: "mdi-check", ID: "clean", Name: "Clean", Color: pointer.String(model.TypeColorSuccess)}}, ArtifactKinds: []*model.Type{{Icon: "mdi-server", ID: "asset", Name: "Asset"}, {Icon: "mdi-bullseye", ID: "ioc", Name: "IOC"}}, Timeformat: "yyyy-MM-dd hh:mm:ss"}},
 
-		&updateSchema{ID: "update-user-simple-login", Name: "users", DataType: "user", Schema: `{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"roles":{"items":{"type":"string"},"type":"array"},"salt":{"type":"string"},"sha256":{"type":"string"},"sha512":{"type":"string"}},"required":["blocked","apikey","roles"],"$id":"#/definitions/User"}`},
-
 		&mapRoles{ID: "simplify-roles"},
 	}, nil
 }

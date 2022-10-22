@@ -116,10 +116,10 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"default_groups":{"items":{"type":"string"},"type":"array"},"default_playbooks":{"items":{"type":"string"},"type":"array"},"default_template":{"type":"string"},"icon":{"type":"string"},"id":{"type":"string"},"name":{"type":"string"}},"required":["id","name","icon","default_template","default_playbooks"],"$id":"#/definitions/TicketTypeResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"logs":{"items":{"$ref":"#/definitions/LogEntry"},"type":"array"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/PlaybookResponse"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"tickets":{"items":{"$ref":"#/definitions/TicketSimpleResponse"},"type":"array"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["id","name","type","status","created","modified","schema"],"$id":"#/definitions/TicketWithTickets"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"color":{"title":"Color","type":"string","enum":["error","info","success","warning"]},"icon":{"title":"Icon (https://materialdesignicons.com)","type":"string"},"id":{"title":"ID","type":"string"},"name":{"title":"Name","type":"string"}},"required":["id","name","icon"],"$id":"#/definitions/Type"}`),
-		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"roles":{"items":{"type":"string"},"type":"array"},"salt":{"type":"string"},"sha256":{"type":"string"},"sha512":{"type":"string"}},"required":["blocked","apikey","roles"],"$id":"#/definitions/User"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"roles":{"items":{"type":"string"},"type":"array"},"sha256":{"type":"string"}},"required":["blocked","apikey","roles"],"$id":"#/definitions/User"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"email":{"type":"string"},"image":{"type":"string"},"name":{"type":"string"},"timeformat":{"title":"Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)","type":"string"}},"$id":"#/definitions/UserData"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"email":{"type":"string"},"id":{"type":"string"},"image":{"type":"string"},"name":{"type":"string"},"timeformat":{"title":"Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)","type":"string"}},"required":["id"],"$id":"#/definitions/UserDataResponse"}`),
-		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"id":{"type":"string"},"password":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"}},"required":["id","blocked","roles","apikey"],"$id":"#/definitions/UserForm"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"}},"required":["id","blocked","roles","apikey"],"$id":"#/definitions/UserForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"id":{"type":"string"},"roles":{"items":{"type":"string"},"type":"array"}},"required":["id","blocked","roles","apikey"],"$id":"#/definitions/UserResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"aggregation":{"type":"string"},"filter":{"type":"string"},"name":{"type":"string"},"type":{"type":"string","enum":["bar","line","pie"]},"width":{"maximum":12,"type":"integer"}},"required":["name","type","aggregation","width"],"$id":"#/definitions/Widget"}`),
 	)
@@ -588,9 +588,7 @@ type User struct {
 	Apikey  bool     `json:"apikey"`
 	Blocked bool     `json:"blocked"`
 	Roles   []string `json:"roles"`
-	Salt    *string  `json:"salt,omitempty"`
 	Sha256  *string  `json:"sha256,omitempty"`
-	Sha512  *string  `json:"sha512,omitempty"`
 }
 
 type UserData struct {
@@ -609,11 +607,10 @@ type UserDataResponse struct {
 }
 
 type UserForm struct {
-	Apikey   bool     `json:"apikey"`
-	Blocked  bool     `json:"blocked"`
-	ID       string   `json:"id"`
-	Password *string  `json:"password,omitempty"`
-	Roles    []string `json:"roles"`
+	Apikey  bool     `json:"apikey"`
+	Blocked bool     `json:"blocked"`
+	ID      string   `json:"id"`
+	Roles   []string `json:"roles"`
 }
 
 type UserResponse struct {
