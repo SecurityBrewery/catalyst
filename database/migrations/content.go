@@ -14,9 +14,6 @@ var VTHashAutomation string
 //go:embed automations/comment.py
 var CommentAutomation string
 
-//go:embed playbooks/malware.yml
-var MalwarePlaybook string
-
 //go:embed playbooks/phishing.yml
 var PhishingPlaybook string
 
