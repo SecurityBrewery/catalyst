@@ -33,10 +33,10 @@ func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut
 		_, err = c.database.UserCreateSetupAPIKey(ctx, password)
 	} else {
 		_, err = c.database.UserCreate(ctx, &model.UserForm{
-			Apikey:   user.APIKey,
-			Blocked:  user.Blocked,
-			ID:       user.ID,
-			Roles:    user.Roles,
+			Apikey:  user.APIKey,
+			Blocked: user.Blocked,
+			ID:      user.ID,
+			Roles:   user.Roles,
 		})
 		if err != nil {
 			return err
