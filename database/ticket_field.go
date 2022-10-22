@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
 	maut "github.com/jonas-plum/maut/auth"
