@@ -117,7 +117,6 @@
               <v-card-title>Select new Template</v-card-title>
               <v-card-text>
                 <v-select
-                    v-if="templates"
                     label="Template"
                     :items="templates"
                     item-text="name"
@@ -455,7 +454,6 @@
               </v-card-title>
               <v-card-text>
                 <v-select
-                  v-if="playbooks"
                   :items="playbooks"
                   item-text="name"
                   item-value="id"
@@ -1553,11 +1551,10 @@ export default Vue.extend({
     }
   },
   mounted() {
-    if (this.$route.params.id === 'new') {
-      return
+    if (this.$route.params.id !== 'new') {
+      this.loadTicket();
     }
 
-    this.loadTicket();
     API.listUsers().then(response => {
       this.users = response.data;
     });
