@@ -9,6 +9,7 @@ import Vue from "vue";
 import { UserData } from "@/client";
 import { API } from "@/services/api";
 import UserDataEditor from "@/components/UserDataEditor.vue";
+import axios, {AxiosResponseTransformer} from "axios";
 
 interface State {
   userdata?: UserData;
@@ -34,7 +35,12 @@ export default Vue.extend({
       });
     },
     loadUserData: function () {
-      API.currentUserData().then((response) => {
+      const defaultTransformers = axios.defaults.transformResponse as AxiosResponseTransformer[]
+      const transformResponse = defaultTransformers.concat((data) => {
+        data.notoast = true;
+        return data
+      });
+      API.currentUserData({transformResponse: transformResponse}).then((response) => {
         this.userdata = response.data;
       });
     }
