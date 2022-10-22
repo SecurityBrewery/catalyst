@@ -109,7 +109,7 @@ import LineChart from "../components/charts/Line";
 import BarChart from "../components/charts/Bar";
 import PieChart from "../components/charts/Doughnut";
 import {ChartData} from "chart.js";
-import {AxiosError, AxiosTransformer} from "axios";
+import {AxiosError, AxiosResponseTransformer} from "axios";
 
 interface State {
   dashboard?: DashboardResponse;
@@ -215,7 +215,7 @@ export default Vue.extend({
     loadWidgetData: function (widgets: Array<Widget>) {
       this.lodash.forEach(widgets, (widget: Widget, index: number) => {
         let widgetErrors = {};
-        let defaultTransformers = this.axios.defaults.transformResponse as AxiosTransformer[]
+        let defaultTransformers = this.axios.defaults.transformResponse as AxiosResponseTransformer[]
         let transformResponse = defaultTransformers.concat((data) => {
           data.notoast = true;
           return data

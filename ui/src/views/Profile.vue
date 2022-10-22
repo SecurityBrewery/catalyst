@@ -9,7 +9,7 @@ import Vue from "vue";
 import { UserData } from "@/client";
 import { API } from "@/services/api";
 import UserDataEditor from "@/components/UserDataEditor.vue";
-import axios, {AxiosTransformer} from "axios";
+import axios, {AxiosResponseTransformer} from "axios";
 
 interface State {
   userdata?: UserData;
@@ -35,7 +35,7 @@ export default Vue.extend({
       });
     },
     loadUserData: function () {
-      const defaultTransformers = axios.defaults.transformResponse as AxiosTransformer[]
+      const defaultTransformers = axios.defaults.transformResponse as AxiosResponseTransformer[]
       const transformResponse = defaultTransformers.concat((data) => {
         data.notoast = true;
         return data

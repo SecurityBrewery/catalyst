@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex, {ActionContext} from "vuex";
 import {API} from "@/services/api";
 import {UserData, TicketList, UserResponse, SettingsResponse} from "@/client";
-import axios, {AxiosResponse, AxiosTransformer} from "axios";
+import axios, {AxiosResponse, AxiosResponseTransformer} from "axios";
 import {Alert} from "@/types/types";
 import {templateStore} from "./modules/templates";
 import {socketStore} from "@/store/modules/socket";
@@ -63,7 +63,7 @@ export default new Vuex.Store({
       })
     },
     getUserData (context: ActionContext<any, any>) {
-      const defaultTransformers = axios.defaults.transformResponse as AxiosTransformer[]
+      const defaultTransformers = axios.defaults.transformResponse as AxiosResponseTransformer[]
       const transformResponse = defaultTransformers.concat((data) => {
         data.notoast = true;
         return data

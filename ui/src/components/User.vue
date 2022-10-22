@@ -22,7 +22,7 @@
 import Vue from "vue";
 import {UserData} from "@/client";
 import {API} from "@/services/api";
-import {AxiosTransformer} from "axios";
+import {AxiosResponseTransformer} from "axios";
 
 interface State {
   user?: UserData,
@@ -46,7 +46,7 @@ export default Vue.extend({
         return
       }
 
-      let defaultTransformers = this.axios.defaults.transformResponse as AxiosTransformer[]
+      let defaultTransformers = this.axios.defaults.transformResponse as AxiosResponseTransformer[]
       let transformResponse = defaultTransformers.concat((data) => {
         data.notoast = true;
         return data
