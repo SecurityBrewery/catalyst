@@ -130,6 +130,11 @@ export default Vue.extend({
   components: {
     VueCropper
   },
+  watch: {
+    "userdata": function () {
+      this.editoruserdata = this.userdata;
+    },
+  },
   methods: {
     saveUserData: function() {
       this.$emit("save", this.editoruserdata);

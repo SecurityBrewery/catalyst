@@ -1285,11 +1285,7 @@ definitions:
         items:
           type: string
         type: array
-      salt:
-        type: string
       sha256:
-        type: string
-      sha512:
         type: string
     required:
     - blocked
@@ -1337,8 +1333,6 @@ definitions:
       blocked:
         type: boolean
       id:
-        type: string
-      password:
         type: string
       roles:
         items:
