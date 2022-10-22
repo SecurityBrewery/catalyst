@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"crypto/sha256"
-	"crypto/sha512"
 	"errors"
 	"fmt"
 	"log"
@@ -34,13 +33,11 @@ func generateKey() string {
 	return string(b)
 }
 
-func toUser(user *model.UserForm, salt, sha256, sha512 *string) *model.User {
+func toUser(user *model.UserForm, sha256 *string) *model.User {
 	u := &model.User{
 		Blocked: user.Blocked,
 		Roles:   user.Roles,
-		Salt:    salt,
 		Sha256:  sha256,
-		Sha512:  sha512,
 		Apikey:  user.Apikey,
 	}
 
@@ -89,16 +86,14 @@ func (db *Database) UserGetOrCreate(ctx context.Context, newUser *model.UserForm
 }
 
 func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*model.NewUserResponse, error) {
-	var key, salt, sha256Hash, sha512Hash *string
+	var key, sha256Hash *string
 	if newUser.Apikey {
 		key, sha256Hash = generateAPIKey()
-	} else if newUser.Password != nil {
-		salt, sha512Hash = hashUserPassword(newUser)
 	}
 
 	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
-	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, salt, sha256Hash, sha512Hash))
+	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, sha256Hash))
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +112,7 @@ func (db *Database) UserCreateSetupAPIKey(ctx context.Context, key string) (*mod
 
 	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
-	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, nil, sha256Hash, nil))
+	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, sha256Hash))
 	if err != nil {
 		return nil, err
 	}
@@ -136,19 +131,11 @@ func (db *Database) UserUpdate(ctx context.Context, id string, user *model.UserF
 		return nil, errors.New("cannot update an API key")
 	}
 
-	var salt, sha512Hash *string
-	if user.Password != nil {
-		salt, sha512Hash = hashUserPassword(user)
-	} else {
-		salt = doc.Salt
-		sha512Hash = doc.Sha512
-	}
-
 	ctx = driver.WithReturnNew(ctx, &doc)
 
 	user.ID = id
 
-	meta, err := db.userCollection.ReplaceDocument(ctx, id, toUser(user, salt, nil, sha512Hash))
+	meta, err := db.userCollection.ReplaceDocument(ctx, id, toUser(user, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -243,14 +230,4 @@ func generateAPIKey() (key, sha256Hash *string) {
 	sha256Hash = pointer.String(fmt.Sprintf("%x", sha256.Sum256([]byte(newKey))))
 
 	return &newKey, sha256Hash
-}
-
-func hashUserPassword(newUser *model.UserForm) (salt, sha512Hash *string) {
-	if newUser.Password != nil {
-		saltKey := generateKey()
-		salt = &saltKey
-		sha512Hash = pointer.String(fmt.Sprintf("%x", sha512.Sum512([]byte(saltKey+*newUser.Password))))
-	}
-
-	return salt, sha512Hash
 }

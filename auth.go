@@ -36,7 +36,6 @@ func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut
 			Apikey:   user.APIKey,
 			Blocked:  user.Blocked,
 			ID:       user.ID,
-			Password: &password,
 			Roles:    user.Roles,
 		})
 		if err != nil {

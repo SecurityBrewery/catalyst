@@ -17,11 +17,12 @@
           <span v-if="user.apikey">API Key</span>
           <span v-else>User</span>
         </h2>
+        <i>Users can only be created via OIDC.</i>
         <v-form>
-          <v-btn-toggle v-model="user.apikey" mandatory dense>
+          <!--v-btn-toggle v-model="user.apikey" mandatory dense>
             <v-btn :value="false">User</v-btn>
             <v-btn :value="true">API Key</v-btn>
-          </v-btn-toggle>
+          </v-btn-toggle-->
           <v-text-field label="ID" v-model="user.id" class="mb-2" :rules="[
                 v => !!v || 'ID is required',
                 v => (v && v.length < 254) || 'ID must be between 1 and 254 characters',
@@ -58,7 +59,7 @@
           <span v-if="user.apikey">(API Key)</span>
         </h2>
 
-        <v-text-field v-if="!user.apikey" label="New Password (leave empty to keep)" v-model="user.password" hide-details class="mb-4"></v-text-field>
+        <!--v-text-field v-if="!user.apikey" label="New Password (leave empty to keep)" v-model="user.password" hide-details class="mb-4"></v-text-field-->
         <v-checkbox v-if="!user.apikey" label="Blocked" v-model="user.blocked" hide-details class="mb-4"></v-checkbox>
 
         <v-select multiple chips v-if="!user.apikey" label="Roles" v-model="user.roles" :items="['analyst', 'engineer', 'admin']"></v-select>
