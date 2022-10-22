@@ -2026,6 +2026,12 @@ export interface TicketWithTickets {
     'comments'?: Array<Comment>;
     /**
      * 
+     * @type {Array<TicketSimpleResponse>}
+     * @memberof TicketWithTickets
+     */
+    'correlated_tickets'?: Array<TicketSimpleResponse>;
+    /**
+     * 
      * @type {string}
      * @memberof TicketWithTickets
      */

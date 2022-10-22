@@ -114,7 +114,7 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"default_groups":{"items":{"type":"string"},"type":"array"},"default_playbooks":{"items":{"type":"string"},"type":"array"},"default_template":{"type":"string"},"icon":{"type":"string"},"name":{"type":"string"}},"required":["name","icon","default_template","default_playbooks"],"$id":"#/definitions/TicketType"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"default_groups":{"items":{"type":"string"},"type":"array"},"default_playbooks":{"items":{"type":"string"},"type":"array"},"default_template":{"type":"string"},"icon":{"type":"string"},"id":{"type":"string"},"name":{"type":"string"}},"required":["name","icon","default_template","default_playbooks"],"$id":"#/definitions/TicketTypeForm"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"default_groups":{"items":{"type":"string"},"type":"array"},"default_playbooks":{"items":{"type":"string"},"type":"array"},"default_template":{"type":"string"},"icon":{"type":"string"},"id":{"type":"string"},"name":{"type":"string"}},"required":["id","name","icon","default_template","default_playbooks"],"$id":"#/definitions/TicketTypeResponse"}`),
-		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"logs":{"items":{"$ref":"#/definitions/LogEntry"},"type":"array"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/PlaybookResponse"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"tickets":{"items":{"$ref":"#/definitions/TicketSimpleResponse"},"type":"array"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["id","name","type","status","created","modified","schema"],"$id":"#/definitions/TicketWithTickets"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"correlated_tickets":{"items":{"$ref":"#/definitions/TicketSimpleResponse"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"logs":{"items":{"$ref":"#/definitions/LogEntry"},"type":"array"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/PlaybookResponse"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"tickets":{"items":{"$ref":"#/definitions/TicketSimpleResponse"},"type":"array"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["id","name","type","status","created","modified","schema"],"$id":"#/definitions/TicketWithTickets"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"color":{"title":"Color","type":"string","enum":["error","info","success","warning"]},"icon":{"title":"Icon (https://materialdesignicons.com)","type":"string"},"id":{"title":"ID","type":"string"},"name":{"title":"Name","type":"string"}},"required":["id","name","icon"],"$id":"#/definitions/Type"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"apikey":{"type":"boolean"},"blocked":{"type":"boolean"},"roles":{"items":{"type":"string"},"type":"array"},"sha256":{"type":"string"}},"required":["blocked","apikey","roles"],"$id":"#/definitions/User"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"email":{"type":"string"},"image":{"type":"string"},"name":{"type":"string"},"timeformat":{"title":"Time Format (https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens)","type":"string"}},"$id":"#/definitions/UserData"}`),
@@ -557,24 +557,25 @@ type TicketTypeResponse struct {
 }
 
 type TicketWithTickets struct {
-	Artifacts  []*Artifact                  `json:"artifacts,omitempty"`
-	Comments   []*Comment                   `json:"comments,omitempty"`
-	Created    time.Time                    `json:"created"`
-	Details    map[string]any               `json:"details,omitempty"`
-	Files      []*File                      `json:"files,omitempty"`
-	ID         int64                        `json:"id"`
-	Logs       []*LogEntry                  `json:"logs,omitempty"`
-	Modified   time.Time                    `json:"modified"`
-	Name       string                       `json:"name"`
-	Owner      *string                      `json:"owner,omitempty"`
-	Playbooks  map[string]*PlaybookResponse `json:"playbooks,omitempty"`
-	Read       []string                     `json:"read,omitempty"`
-	References []*Reference                 `json:"references,omitempty"`
-	Schema     string                       `json:"schema"`
-	Status     string                       `json:"status"`
-	Tickets    []*TicketSimpleResponse      `json:"tickets,omitempty"`
-	Type       string                       `json:"type"`
-	Write      []string                     `json:"write,omitempty"`
+	Artifacts         []*Artifact                  `json:"artifacts,omitempty"`
+	Comments          []*Comment                   `json:"comments,omitempty"`
+	CorrelatedTickets []*TicketSimpleResponse      `json:"correlated_tickets,omitempty"`
+	Created           time.Time                    `json:"created"`
+	Details           map[string]any               `json:"details,omitempty"`
+	Files             []*File                      `json:"files,omitempty"`
+	ID                int64                        `json:"id"`
+	Logs              []*LogEntry                  `json:"logs,omitempty"`
+	Modified          time.Time                    `json:"modified"`
+	Name              string                       `json:"name"`
+	Owner             *string                      `json:"owner,omitempty"`
+	Playbooks         map[string]*PlaybookResponse `json:"playbooks,omitempty"`
+	Read              []string                     `json:"read,omitempty"`
+	References        []*Reference                 `json:"references,omitempty"`
+	Schema            string                       `json:"schema"`
+	Status            string                       `json:"status"`
+	Tickets           []*TicketSimpleResponse      `json:"tickets,omitempty"`
+	Type              string                       `json:"type"`
+	Write             []string                     `json:"write,omitempty"`
 }
 
 type Type struct {

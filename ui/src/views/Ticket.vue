@@ -715,6 +715,19 @@
               "
             ></TicketSnippet>
           </v-list>
+          <div
+              v-if="ticket.correlated_tickets && ticket.correlated_tickets.length"
+              style="display: flex; align-items: center" class="py-1" >
+            <span class="text--disabled">Correlated Tickets</span>
+          </div>
+          <v-list dense v-if="ticket.correlated_tickets && ticket.correlated_tickets.length">
+            <TicketSnippet
+                v-for="relatedTicket in ticket.correlated_tickets"
+                :key="relatedTicket.id"
+                :to="{ name: 'Ticket', params: { id: relatedTicket.id } }"
+                :ticket="relatedTicket"
+            ></TicketSnippet>
+          </v-list>
           <v-dialog v-model="relatedDialog" max-width="800px">
             <v-card>
               <v-card-title>

@@ -1059,6 +1059,7 @@ definitions:
       modified: { type: string, format: "date-time", example: "1985-04-12T23:20:50.52Z" }
 
       tickets: { type: array, items: { $ref: "#/definitions/TicketSimpleResponse" } }
+      correlated_tickets: { type: array, items: { $ref: "#/definitions/TicketSimpleResponse" } }
 
   TicketList:
     type: object
