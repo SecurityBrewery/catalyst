@@ -93,7 +93,7 @@
       <template v-slot:item="{ item }">
         <tr @click="open(item)">
           <td colspan="5" class="pa-0">
-            <v-list-item :to="{ name: 'Ticket', params: { type: item.type, id: item.id } }" class="pa-0" style="background: none">
+            <v-list-item class="pa-0" style="background: none">
               <ticketSnippet :ticket="item"></ticketSnippet>
             </v-list-item>
           </td>

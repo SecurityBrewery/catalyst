@@ -136,7 +136,7 @@ func toTicketSimpleResponse(key string, ticket *model.Ticket) (*model.TicketSimp
 	}, nil
 }
 
-func toTicketWithTickets(ticketResponse *model.TicketResponse, tickets []*model.TicketSimpleResponse, logs []*model.LogEntry) *model.TicketWithTickets {
+func toTicketWithTickets(ticketResponse *model.TicketResponse, tickets, correlatedTickets []*model.TicketSimpleResponse, logs []*model.LogEntry) *model.TicketWithTickets {
 	return &model.TicketWithTickets{
 		Artifacts:  ticketResponse.Artifacts,
 		Comments:   ticketResponse.Comments,
@@ -155,8 +155,9 @@ func toTicketWithTickets(ticketResponse *model.TicketResponse, tickets []*model.
 		Type:       ticketResponse.Type,
 		Write:      ticketResponse.Write,
 
-		Logs:    logs,
-		Tickets: tickets,
+		Logs:              logs,
+		Tickets:           tickets,
+		CorrelatedTickets: correlatedTickets,
 	}
 }
 
@@ -405,7 +406,6 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 
 	tickets := outTickets
 	tickets = append(tickets, inTickets...)
-	tickets = append(tickets, sameArtifactTickets...)
 	sort.Slice(tickets, func(i, j int) bool {
 		return tickets[i].ID < tickets[j].ID
 	})
@@ -420,7 +420,7 @@ func (db *Database) ticketGetQuery(ctx context.Context, ticketID int64, query st
 		return nil, err
 	}
 
-	return toTicketWithTickets(ticketResponse, tickets, logs), nil
+	return toTicketWithTickets(ticketResponse, tickets, sameArtifactTickets, logs), nil
 }
 
 func (db *Database) TicketUpdate(ctx context.Context, ticketID int64, ticket *model.Ticket) (*model.TicketWithTickets, error) {

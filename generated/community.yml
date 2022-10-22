@@ -1053,6 +1053,10 @@ definitions:
         items:
           $ref: '#/definitions/Comment'
         type: array
+      correlated_tickets:
+        items:
+          $ref: '#/definitions/TicketSimpleResponse'
+        type: array
       created:
         example: 1985-04-12T23:20:50.52Z
         format: date-time
