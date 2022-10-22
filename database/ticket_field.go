@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/arangodb/go-driver"
 	"github.com/iancoleman/strcase"
 	maut "github.com/jonas-plum/maut/auth"
@@ -259,14 +258,13 @@ func findName(playbooks map[string]*model.PlaybookResponse, name string) string 
 func runRootTask(ticket *model.TicketResponse, playbookID string, db *Database) error {
 	playbook := ticket.Playbooks[playbookID]
 
-	var root *model.TaskResponse
-	for _, task := range playbook.Tasks {
-		if task.Order == 0 {
-			root = task
+	for id, task := range playbook.Tasks {
+		if task.Order == 0 && task.Type == model.TaskTypeAutomation {
+			if err := runTask(ticket.ID, playbookID, id, task, ticket, db); err != nil {
+				return err
+			}
 		}
 	}
-
-	runNextTasks(ticket.ID, playbookID, root.Next, root.Data, ticket, db)
 
 	return nil
 }
