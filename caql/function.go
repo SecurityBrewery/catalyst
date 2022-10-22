@@ -693,9 +693,9 @@ func (s *aqlInterpreter) function(ctx *parser.Function_callContext) {
 	}
 }
 
-func unique(array []interface{}) []interface{} {
-	seen := map[interface{}]bool{}
-	var filtered []interface{}
+func unique(array []any) []any {
+	seen := map[any]bool{}
+	var filtered []any
 	for _, e := range array {
 		_, ok := seen[e]
 		if !ok {
@@ -707,7 +707,7 @@ func unique(array []interface{}) []interface{} {
 	return filtered
 }
 
-func contains(values []interface{}, e interface{}) bool {
+func contains(values []any, e any) bool {
 	for _, v := range values {
 		if e == v {
 			return true
