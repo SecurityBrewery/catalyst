@@ -83,7 +83,8 @@ func restoreS3(catalystStorage *storage.Storage, p string) error {
 
 	entries, err := fs.ReadDir(minioDir, ".")
 	if err != nil {
-		return err
+		// directory might not exist
+		return nil
 	}
 
 	for _, entry := range entries {

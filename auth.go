@@ -30,7 +30,8 @@ func (c *catalystResolver) UserCreateIfNotExists(ctx context.Context, user *maut
 	}
 
 	if user == nil || user.APIKey {
-		_, err = c.database.UserCreateSetupAPIKey(ctx, password)
+		// ignore error, because we don't care if the user already exists
+		_, _ = c.database.UserCreateSetupAPIKey(ctx, password)
 	} else {
 		_, err = c.database.UserCreate(ctx, &model.UserForm{
 			Apikey:  user.APIKey,
