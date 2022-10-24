@@ -21,7 +21,7 @@ require (
 	github.com/imdario/mergo v0.3.13
 	github.com/jonas-plum/maut v0.0.0-20221001191853-1856efe6da0b
 	github.com/mingrammer/commonregex v1.0.1
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tidwall/gjson v1.14.3
 	github.com/tidwall/sjson v1.2.5
 	github.com/tus/tusd v1.10.0
