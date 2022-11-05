@@ -19,7 +19,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/imdario/mergo v0.3.13
-	github.com/jonas-plum/maut v0.0.0-20221001191853-1856efe6da0b
+	github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tidwall/gjson v1.14.3
