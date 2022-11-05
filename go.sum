@@ -379,8 +379,8 @@ github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9Y
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
 github.com/jmespath/go-jmespath/internal/testify v1.5.1 h1:shLQSRRSCCPj3f2gpwzGwWFoC7ycTf1rcQZHOlsJ6N8=
 github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=
-github.com/jonas-plum/maut v0.0.0-20221001191853-1856efe6da0b h1:gJtcxg/ifOIf7eWXv0ETHYUCEYLxo29WK7RKF+vJ/a4=
-github.com/jonas-plum/maut v0.0.0-20221001191853-1856efe6da0b/go.mod h1:GHi17CboIfEAzcLKyOforrRGpNsJkIahosnrlgfsOvM=
+github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915 h1:KMj2qGSB7YUIaUftqWASPI+ggVelUlXYppv1DA/CCD0=
+github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915/go.mod h1:GHi17CboIfEAzcLKyOforrRGpNsJkIahosnrlgfsOvM=
 github.com/jpillora/backoff v1.0.0/go.mod h1:J/6gKK9jxlEcS3zixgDgUAsiuZ7yrSoa/FX5e0EB2j4=
 github.com/json-iterator/go v0.0.0-20171115153421-f7279a603ede/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
