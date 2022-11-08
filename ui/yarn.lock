@@ -8356,10 +8356,10 @@ json-parse-even-better-errors@^2.3.0:
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
 
-json-schema-editor-vue@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/json-schema-editor-vue/-/json-schema-editor-vue-2.1.1.tgz#dc1c3f4ab9a9767e7b69061d4451a1458541de0f"
-  integrity sha512-zs+1Yc6kUBKHuQvFKC8bQadjhSw6vRCvvH+OMdyLjHrTHn1ExWLKKtdu6FYBdM6OfMxPwx11RJeu9Q0tWAAQ4A==
+json-schema-editor-vue@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/json-schema-editor-vue/-/json-schema-editor-vue-2.1.2.tgz#956c24808085df943311b3242bcaf0b0d869e621"
+  integrity sha512-c7p8xRpyXdTynnlal72zPUke7MRcf3Lc81S2GapK0F3RnkVJ44LJ2K6u+CVl7t4mOhWQh9cABEDTaYJbl+XqOQ==
   dependencies:
     ant-design-vue "^1.7.2"
     core-js "^3.6.5"
