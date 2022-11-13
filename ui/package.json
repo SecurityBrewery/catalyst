@@ -68,7 +68,7 @@
     "@vue/cli-service": "4.5.19",
     "@vue/compiler-sfc": "3.2.40",
     "@vue/eslint-config-typescript": "10.0.0",
-    "@vue/test-utils": "2.2.1",
+    "@vue/test-utils": "2.2.2",
     "babel-eslint": "10.1.0",
     "cypress": "10.11.0",
     "eslint": "7.32.0",
