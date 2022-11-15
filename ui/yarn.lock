@@ -2533,10 +2533,10 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.40.tgz#e57799da2a930b975321981fcee3d1e90ed257ae"
   integrity sha512-0PLQ6RUtZM0vO3teRfzGi4ltLUO5aO+kLgwh4Um3THSR03rpQWLTuRCkuO5A41ITzwdWeKdPHtSARuPkoo5pCQ==
 
-"@vue/test-utils@2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.2.2.tgz#b7a33f201e34308efbec0a442696a7ebe8a2ee77"
-  integrity sha512-Eof2ic+Erv7wx2mrYVxBwQtAmMdCU6nywajcFKre0T3d8j6flej1IAKlEzJTn+/6IHvYPxY2hYOsOfXRXI90Jg==
+"@vue/test-utils@2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.2.3.tgz#101ad79e920a80df14353fe7afae0b23b5772413"
+  integrity sha512-MbqIS11cPEuZmqvyKNCnTdGxfNS4FhvQx7HO1JFQHlZRIM3ql2iwjPv9L1AFiLl4taW/5RTQz0r54d47xJuurA==
 
 "@vue/test-utils@^2.0.0":
   version "2.1.0"
