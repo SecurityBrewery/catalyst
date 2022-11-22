@@ -22,7 +22,7 @@ require (
 	github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.8.1
-	github.com/tidwall/gjson v1.14.3
+	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
 	github.com/tus/tusd v1.10.0
 	github.com/xeipuuv/gojsonschema v1.2.0
