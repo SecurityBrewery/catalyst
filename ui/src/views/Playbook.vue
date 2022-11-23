@@ -83,7 +83,7 @@ const taskSchema = {
   properties: {
     automation: { type: "string" },
     join: { type: "boolean" },
-    msg: { type: "object", additionalProperties: { type: "string" } },
+    payload: { type: "object", additionalProperties: { type: "string" } },
     name: { type: "string" },
     next: {
       type: "object",
@@ -129,8 +129,8 @@ const inityaml = "name: VirusTotal hash check\n" +
     "    name: Hash the word\n" +
     "    type: automation\n" +
     "    automation: hash.sha1\n" +
-    "    msg:\n" +
-    "      payload: \"playbook.tasks['input'].data['word']\"\n" +
+    "    payload:\n" +
+    "      default: \"playbook.tasks['input'].data['word']\"\n" +
     "    next:\n" +
     "      end:\n" +
     "\n" +
