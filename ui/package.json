@@ -20,7 +20,7 @@
     "ajv": "8.11.2",
     "ant-design-vue": "1.7.8",
     "antlr4": "4.11.0",
-    "axios": "1.2.0",
+    "axios": "1.2.1",
     "chart.js": "2.9.4",
     "core-js": "3.26.1",
     "graphlib": "2.1.8",
