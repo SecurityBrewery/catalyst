@@ -2,7 +2,7 @@ module github.com/SecurityBrewery/catalyst
 
 go 1.19
 
-replace github.com/xeipuuv/gojsonschema => github.com/warjiang/gojsonschema v1.2.1-0.20210329105853-aa9f9a8cfec7
+replace github.com/xeipuuv/gojsonschema => github.com/warjiang/gojsonschema v1.2.1-0.20201027075954-b076d39a02e5
 
 require (
 	github.com/alecthomas/kong v0.7.1
