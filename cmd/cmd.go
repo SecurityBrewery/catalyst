@@ -49,6 +49,8 @@ type CLI struct {
 	S3Host     string `env:"S3_HOST"     default:"http://minio:9000" name:"s3-host"`
 	S3User     string `env:"S3_USER"     default:"minio"             name:"s3-user"`
 	S3Password string `env:"S3_PASSWORD" required:""                 name:"s3-password"`
+
+	Version kong.VersionFlag `help:"Show version."`
 }
 
 func ParseCatalystConfig() (*catalyst.Config, error) {
@@ -57,6 +59,7 @@ func ParseCatalystConfig() (*catalyst.Config, error) {
 		&cli,
 		kong.Configuration(kong.JSON, "/etc/catalyst.json", ".catalyst.json"),
 		kong.Configuration(kongyaml.Loader, "/etc/catalyst.yaml", ".catalyst.yaml"),
+		kong.Vars{"version": catalyst.GetVersion()},
 	)
 
 	if cli.OIDCEnable {
