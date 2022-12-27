@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/coreos/go-oidc/v3/oidc"
