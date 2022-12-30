@@ -49,7 +49,7 @@
     "vue-router": "3.6.5",
     "vuetify": "2.6.13",
     "vuex": "3.6.2",
-    "yaml": "2.0.1"
+    "yaml": "2.2.1"
   },
   "devDependencies": {
     "@testing-library/vue": "6.6.1",
