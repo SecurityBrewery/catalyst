@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@crinkles/digl": "^2.0.2",
     "@koumoul/vjsf": "2.21.0",
     "@mdi/font": "7.1.96",
     "@mdi/util": "0.3.2",
@@ -23,6 +24,7 @@
     "axios": "1.2.1",
     "chart.js": "2.9.4",
     "core-js": "3.26.1",
+    "d3": "^7.8.0",
     "graphlib": "2.1.8",
     "json-schema-editor-vue": "2.2.0",
     "just-kebab-case": "4.2.0",
@@ -30,6 +32,7 @@
     "less-loader": "11.1.0",
     "lodash": "4.17.21",
     "luxon": "3.1.1",
+    "panzoom": "^9.4.3",
     "register-service-worker": "1.7.2",
     "splitpanes": "2.4.1",
     "swagger-ui": "4.13.0",

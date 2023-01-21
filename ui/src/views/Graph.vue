@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height">
+  <div class="network-graph fill-height">
     <v-card
         v-if="selected !== undefined"
         class="mt-3 ml-3 px-0"
@@ -184,33 +184,33 @@ export default Vue.extend({
 </script>
 
 <style>
-.node,
-.node.selected {
+.network-graph .node,
+.network-graph .node.selected {
   stroke: #388E3C !important;
 }
-.node.event {
+.network-graph .node.event {
   stroke: #D32F2F !important;
 }
-.node.center {
+.network-graph .node.center {
   stroke: #FFEB3B !important;
   fill: #FFEB3B !important;
 }
 
-.theme--dark .node-label,
-.theme--dark .node-label.event {
+.theme--dark .network-graph .node-label,
+.theme--dark .network-graph .node-label.event {
   fill: #ffffff !important;
 }
 
-.node-label,
-.node-label.event {
+.network-graph .node-label,
+.network-graph .node-label.event {
   fill: #000000 !important;
 }
 
-.link {
+.network-graph .link {
   stroke: #424242 !important;
 }
-.link.selected,
-.link:hover,.node:hover{
+.network-graph .link.selected,
+.network-graph .link:hover,.node:hover{
   stroke: #FFEB3B !important;
 }
 </style>

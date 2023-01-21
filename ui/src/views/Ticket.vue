@@ -295,19 +295,13 @@
                   <v-icon small>mdi-close-circle</v-icon>
                 </v-btn>
               </v-card-subtitle>
-              <div style="overflow-x: scroll">
-                <vue-pipeline
-                  v-if="showPipelines"
-                  ref="pipeline"
-                  :x="50"
-                  :y="55"
-                  :data="pipeline(playbook)"
-                  :showArrow="true"
-                  :ystep="70"
-                  :xstep="90"
-                  lineStyle="default"
-                  @select="select"
-                  class="mx-4"
+              <div style="overflow-x: scroll; text-align: center">
+                <PlaybookGraph
+                    v-if="playbook"
+                    :playbook="playbook"
+                    horizontal
+                    :scale="0.3"
+                    style="margin: 0 auto"
                 />
               </div>
               <v-list dense color="cards" class="tasks py-0">
@@ -319,7 +313,6 @@
                   link
                   @click="selectTask(taskwithid, playbookid)"
                 >
-                  <!--template v-slot:activator-->
                   <v-list-item-icon>
                     <v-icon
                       :class="{
@@ -863,6 +856,8 @@ import {DateTime} from "luxon";
 import VueMarkdown from "vue-markdown";
 import JSONHTML from "../components/JSONHTML.vue";
 import TicketNew from "@/views/TicketNew.vue";
+import yaml from "yaml";
+import PlaybookGraph from "@/components/playbookeditor/PlaybookGraph.vue";
 
 interface State {
   valid: boolean;
@@ -929,6 +924,7 @@ interface TaskWithID {
 export default Vue.extend({
   name: "Ticket",
   components: {
+    PlaybookGraph,
     TicketNew,
     Dashboard,
     ArtifactSnippet,
@@ -999,6 +995,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    yaml() {
+      return yaml
+    },
     schema: function() {
       if (this.ticket !== undefined && this.ticket.schema !== undefined) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

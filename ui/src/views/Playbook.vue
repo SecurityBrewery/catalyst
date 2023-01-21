@@ -19,25 +19,35 @@
     <v-alert v-else-if="error" color="warning">
       {{ error }}
     </v-alert>
-    <div v-else class="px-4 overflow-scroll">
-        <vue-pipeline
-            v-if="pipelineData"
-            ref="pipeline"
-            :x="50"
-            :y="55"
-            :data="pipelineData"
-            :showArrow="true"
-            :ystep="70"
-            :xstep="100"
-            lineStyle="default"
-        />
-    </div>
 
-    <v-subheader class="pl-0 py-0" style="height: 20px; font-size: 12px">
-      Playbook
-    </v-subheader>
     <div class="flex-grow-1 flex-shrink-1 overflow-scroll">
-      <Editor v-model="playbook.yaml" @input="updatePipeline" lang="yaml" :readonly="readonly"></Editor>
+      <v-tabs
+          v-model="tab"
+          background-color="transparent"
+      >
+        <v-tab>Graph (experimental)</v-tab>
+        <v-tab>YAML</v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab" style="background: transparent">
+        <v-tab-item>
+          <v-text-field
+              v-model="playbook.name"
+              label="Name"
+              outlined
+              dense
+              :readonly="readonly"
+              class="mt-4"
+          />
+          <PlaybookEditor
+              v-if="playbookJSON"
+              v-model="playbookJSON" />
+        </v-tab-item>
+        <v-tab-item>
+          <v-card class="py-2">
+            <Editor v-model="playbookYAML" lang="yaml" :readonly="readonly"></Editor>
+          </v-card>
+        </v-tab-item>
+      </v-tabs-items>
     </div>
 
     <v-row v-if="!readonly" class="px-3 my-6 flex-grow-0 flex-shrink-0">
@@ -62,6 +72,7 @@ import Editor from "../components/Editor.vue";
 import {alg, Graph} from "graphlib";
 import yaml from 'yaml';
 import Ajv from "ajv";
+import PlaybookEditor from "@/components/playbookeditor/PlaybookEditor.vue";
 
 const playbookSchema = {
   type: "object",
@@ -100,8 +111,10 @@ interface State {
   playbook?: PlaybookTemplate;
   g: Record<string, any>;
   selected: any;
-  pipelineData: any;
   error: string;
+  tab: number;
+  playbookYAML: string;
+  playbookJSON: any;
 }
 
 interface TaskWithID {
@@ -140,17 +153,26 @@ const inityaml = "name: VirusTotal hash check\n" +
 
 export default Vue.extend({
   name: "Playbook",
-  components: { Editor },
+  components: { Editor, PlaybookEditor },
   data: (): State => ({
     playbook: undefined,
     g: {},
     selected: undefined,
-    pipelineData: undefined,
     error: "",
+    tab: 1,
+    playbookJSON: undefined,
+    playbookYAML: inityaml
   }),
   watch: {
     '$route': function () {
       this.loadPlaybook();
+    },
+    tab: function (value) {
+      if (value === 0) {
+        this.playbookJSON = yaml.parse(this.playbookYAML);
+      } else {
+        this.playbookYAML = yaml.stringify(this.playbookJSON);
+      }
     }
   },
   computed: {
@@ -198,77 +220,26 @@ export default Vue.extend({
       }
       return tasks;
     },
-    updatePipeline: function () {
-      if (this.playbook) {
-        this.pipeline(this.playbook.yaml);
-      }
-    },
-    pipeline: function(playbookYAML: string) {
-      try {
-        let playbook = yaml.parse(playbookYAML);
-
-        this.error = "";
-
-        let g = new Graph();
-
-        for (const stepKey in playbook.tasks) {
-          g.setNode(stepKey);
-        }
-
-        this.lodash.forEach(playbook.tasks, (task: Task, stepKey: string) => {
-          if ("next" in task) {
-            this.lodash.forEach(task.next, (condition, nextKey) => {
-              g.setEdge(stepKey, nextKey);
-            });
-          }
-        });
-
-        let tasks = this.tasks(g, playbook);
-        let elements = [] as Array<any>;
-        this.lodash.forEach(tasks, task => {
-          elements.push({
-            id: task.id,
-            name: task.task.name,
-            next: [],
-            status: "unknown"
-          });
-        });
-
-        this.lodash.forEach(tasks, (task: TaskWithID) => {
-          if ("next" in task.task) {
-            this.lodash.forEach(task.task.next, (condition, nextKey) => {
-              let nextID = this.lodash.findIndex(elements, ["id", nextKey]);
-              let stepID = this.lodash.findIndex(elements, ["id", task.id]);
-              if (nextID !== -1) {
-                // TODO: invalid schema
-                elements[stepID].next.push({index: nextID});
-              }
-            });
-          }
-        });
-
-        this.pipelineData = undefined;
-        this.$nextTick(() => {
-          this.pipelineData = this.lodash.values(elements);
-        })
-      }
-      catch (e: unknown) {
-        console.log(e);
-        this.error = this.lodash.toString(e);
-      }
-    },
     save() {
       if (this.playbook === undefined) {
         return;
       }
+      let playbook = this.playbook;
+      if (this.tab === 0) {
+        let jsonData = this.playbookJSON;
+        jsonData["name"] = playbook.name;
+        playbook.yaml = yaml.stringify(jsonData);
+      } else {
+        playbook.yaml = this.playbookYAML;
+      }
+
       if (this.$route.params.id == 'new') {
-        let playbook = this.playbook;
         // playbook.id = kebabCase(playbook.name);
         API.createPlaybook(playbook).then(() => {
           this.$store.dispatch("alertSuccess", { name: "Playbook created" });
         });
       } else {
-        API.updatePlaybook(this.$route.params.id, this.playbook).then(() => {
+        API.updatePlaybook(this.$route.params.id, playbook).then(() => {
           this.$store.dispatch("alertSuccess", { name: "Playbook saved" });
         });
       }
@@ -279,9 +250,13 @@ export default Vue.extend({
       }
       if (this.$route.params.id == 'new') {
         this.playbook = { name: "MyPlaybook", yaml: inityaml }
+        this.playbookJSON = yaml.parse(this.playbook.yaml);
+        this.playbookYAML = this.playbook.yaml;
       } else {
         API.getPlaybook(this.$route.params.id).then((response) => {
           this.playbook = response.data;
+          this.playbookJSON = yaml.parse(this.playbook.yaml);
+          this.playbookYAML = this.playbook.yaml;
         });
       }
     },
@@ -290,7 +265,7 @@ export default Vue.extend({
         return this.lodash.includes(this.$store.state.settings.roles, s);
       }
       return false;
-    }
+    },
   },
   mounted() {
     this.loadPlaybook();
