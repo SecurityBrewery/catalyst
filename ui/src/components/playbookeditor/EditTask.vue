@@ -54,6 +54,50 @@
           label="Automation"
           variant="underlined"/>
 
+      <v-list v-if="task.type === 'automation'">
+        <v-subheader class="pa-0" style="padding-inline-start: 0 !important;">Payload Mapping</v-subheader>
+        <v-toolbar v-for="(expr, key) in task.payload" :key="key" class="next-row" flat dense>
+          {{ key }}:
+          <v-text-field
+              v-model="task.payload[key]"
+              label="Expression"
+              variant="solo"
+              clearable
+              hide-details
+              density="compact"
+              bg-color="surface"
+          />
+          <v-btn @click="deletePayloadMapping(key)" color="error" class="pa-0 ma-0" icon>
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-toolbar class="next-row" flat dense>
+          <v-text-field
+              v-model="newPayloadMapping"
+              label="Payload Field"
+              variant="solo"
+              bg-color="surface"
+              hide-details
+              density="compact"
+          />:
+          <v-text-field
+              v-model="newExpression"
+              label="CAQL Expression"
+              variant="solo"
+              hide-details
+              density="compact"
+              bg-color="surface"
+          />
+          <v-btn
+              @click="addPayloadMapping"
+              :disabled="!newPayloadMapping || !newExpression"
+              class="pa-0 ma-0"
+              icon>
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-toolbar>
+      </v-list>
+
       <v-list v-if="task.next || possibleNexts.length > 1">
         <v-subheader class="pa-0" style="padding-inline-start: 0 !important;">Next Task(s)</v-subheader>
         <v-toolbar v-for="(expr, key) in task.next" :key="key" class="next-row" flat dense>
@@ -126,6 +170,7 @@ interface Task {
   description: string;
   type: string;
   next: Record<string, string>;
+  payload: Record<string, string>;
   join: boolean;
 }
 
@@ -168,8 +213,15 @@ const deleteNext = (key: string) => {
   del(task.value.next, key);
 };
 
+const deletePayloadMapping = (key: string) => {
+  del(task.value.payload, key);
+};
+
 const newNext = ref('');
 const newCondition = ref('');
+
+const newPayloadMapping = ref('');
+const newExpression = ref('');
 
 watch(() => props.possibleNexts, () => {
   if (props.possibleNexts.length > 0) {
@@ -187,6 +239,17 @@ const addNext = () => {
   set(task.value.next, newNext.value, newCondition.value);
   newNext.value = "";
   newCondition.value = "";
+};
+
+const addPayloadMapping = () => {
+  if (task.value.payload === undefined) {
+    // task.value.payload = {};
+    set(task.value, 'payload', {});
+  }
+  // task.value.payload[newPayloadMapping.value] = newExpression.value;
+  set(task.value.payload, newPayloadMapping.value, newExpression.value);
+  newPayloadMapping.value = "";
+  newExpression.value = "";
 };
 
 const automations = ref<Array<AutomationResponse>>([]);
