@@ -1323,10 +1323,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@koumoul/vjsf@2.21.1":
-  version "2.21.1"
-  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.21.1.tgz#bd95055bdc65e6e94815089807add134c88dba02"
-  integrity sha512-fS8qF2BSE8Ok0TkiLbBlhXKrg2MvYaZyA0FY7SnhAju4NUPKVPdF7MeETgUrI6Vfe4GlZgm4oBhxoGOzZvEsOg==
+"@koumoul/vjsf@2.21.2":
+  version "2.21.2"
+  resolved "https://registry.yarnpkg.com/@koumoul/vjsf/-/vjsf-2.21.2.tgz#a058efb3119cd3e575e95dae6a08908bd16720af"
+  integrity sha512-RK3tfYBVp3meo2h8BdxJfwZD331doVlTrCMe8Ppnes+9rlGiOhGZTrdar0FaiJvNuyoSkj4EqS7sdR4QThBWpw==
   dependencies:
     debounce "^1.2.1"
     debounce-promise "^3.1.2"
