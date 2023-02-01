@@ -2452,6 +2452,16 @@
     estree-walker "^2.0.2"
     source-map "^0.6.1"
 
+"@vue/compiler-core@3.2.45":
+  version "3.2.45"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.2.45.tgz#d9311207d96f6ebd5f4660be129fb99f01ddb41b"
+  integrity sha512-rcMj7H+PYe5wBV3iYeUgbCglC+pbpN8hBLTJvRiK2eKQiWqu+fG9F+8sW99JdL4LQi7Re178UOxn09puSXvn4A==
+  dependencies:
+    "@babel/parser" "^7.16.4"
+    "@vue/shared" "3.2.45"
+    estree-walker "^2.0.2"
+    source-map "^0.6.1"
+
 "@vue/compiler-dom@3.2.40":
   version "3.2.40"
   resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.2.40.tgz#c225418773774db536174d30d3f25ba42a33e7e4"
@@ -2459,6 +2469,14 @@
   dependencies:
     "@vue/compiler-core" "3.2.40"
     "@vue/shared" "3.2.40"
+
+"@vue/compiler-dom@^3.0.1":
+  version "3.2.45"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.2.45.tgz#c43cc15e50da62ecc16a42f2622d25dc5fd97dce"
+  integrity sha512-tyYeUEuKqqZO137WrZkpwfPCdiiIeXYCcJ8L4gWz9vqaxzIQRccTSwSWZ/Axx5YR2z+LvpUbmPNXxuBU45lyRw==
+  dependencies:
+    "@vue/compiler-core" "3.2.45"
+    "@vue/shared" "3.2.45"
 
 "@vue/compiler-sfc@2.7.10":
   version "2.7.10"
@@ -2539,12 +2557,19 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.40.tgz#e57799da2a930b975321981fcee3d1e90ed257ae"
   integrity sha512-0PLQ6RUtZM0vO3teRfzGi4ltLUO5aO+kLgwh4Um3THSR03rpQWLTuRCkuO5A41ITzwdWeKdPHtSARuPkoo5pCQ==
 
-"@vue/test-utils@2.2.8":
-  version "2.2.8"
-  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.2.8.tgz#2002a2b2c90309f66c5c175b735621438832a610"
-  integrity sha512-/R8DKzp41Ip/RqTt1jvOVi5gxby3EwNWiYHNYsG9FAjEvt0gzDvYN55lCKzX7IdnI5zVIOo5tHtts0SLT+JrWw==
+"@vue/shared@3.2.45":
+  version "3.2.45"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.45.tgz#a3fffa7489eafff38d984e23d0236e230c818bc2"
+  integrity sha512-Ewzq5Yhimg7pSztDV+RH1UDKBzmtqieXQlpTVm2AwraoRL/Rks96mvd8Vgi7Lj+h+TH8dv7mXD3FRZR3TUvbSg==
+
+"@vue/test-utils@2.2.9":
+  version "2.2.9"
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.2.9.tgz#d915b204963582fd867c35277acddfd00efb6daa"
+  integrity sha512-WP2gmUX9hucNGCE+FMqdTwisRQcPkY+f9oaZOcUP/xdJbIbTwdCGeOpQzXe8h+W218SC7RPzfTFc6r8T3tkggg==
   dependencies:
     js-beautify "1.14.6"
+  optionalDependencies:
+    "@vue/compiler-dom" "^3.0.1"
 
 "@vue/test-utils@^2.0.0":
   version "2.1.0"
