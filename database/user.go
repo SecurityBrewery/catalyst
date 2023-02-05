@@ -93,7 +93,7 @@ func (db *Database) UserCreate(ctx context.Context, newUser *model.UserForm) (*m
 
 	var doc model.User
 	newctx := driver.WithReturnNew(ctx, &doc)
-	meta, err := db.userCollection.CreateDocument(ctx, newctx, strcase.ToKebab(newUser.ID), toUser(newUser, sha256Hash))
+	meta, err := db.userCollection.CreateDocument(ctx, newctx, newUser.ID, toUser(newUser, sha256Hash))
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/arangodb/go-driver"
 	maut "github.com/jonas-plum/maut/auth"
@@ -13,14 +14,6 @@ import (
 )
 
 func newUserResponseID(user *model.NewUserResponse) []driver.DocumentID {
-	if user == nil {
-		return nil
-	}
-
-	return userID(user.ID)
-}
-
-func userResponseID(user *model.UserResponse) []driver.DocumentID {
 	if user == nil {
 		return nil
 	}
@@ -42,20 +35,35 @@ func (s *Service) CreateUser(ctx context.Context, form *model.UserForm) (doc *mo
 	return s.database.UserCreate(ctx, form)
 }
 
-func (s *Service) GetUser(ctx context.Context, s2 string) (*model.UserResponse, error) {
-	return s.database.UserGet(ctx, s2)
+func (s *Service) GetUser(ctx context.Context, id string) (*model.UserResponse, error) {
+	decodedValue, err := url.QueryUnescape(id)
+	if err == nil {
+		id = decodedValue
+	}
+
+	return s.database.UserGet(ctx, id)
 }
 
-func (s *Service) UpdateUser(ctx context.Context, s2 string, form *model.UserForm) (doc *model.UserResponse, err error) {
-	defer s.publishRequest(ctx, err, "UpdateUser", userID(s2))
+func (s *Service) UpdateUser(ctx context.Context, id string, form *model.UserForm) (doc *model.UserResponse, err error) {
+	decodedValue, err := url.QueryUnescape(id)
+	if err == nil {
+		id = decodedValue
+	}
 
-	return s.database.UserUpdate(ctx, s2, form)
+	defer s.publishRequest(ctx, err, "UpdateUser", userID(id))
+
+	return s.database.UserUpdate(ctx, id, form)
 }
 
-func (s *Service) DeleteUser(ctx context.Context, s2 string) (err error) {
-	defer s.publishRequest(ctx, err, "DeleteUser", userID(s2))
+func (s *Service) DeleteUser(ctx context.Context, id string) (err error) {
+	decodedValue, err := url.QueryUnescape(id)
+	if err == nil {
+		id = decodedValue
+	}
 
-	return s.database.UserDelete(ctx, s2)
+	defer s.publishRequest(ctx, err, "DeleteUser", userID(id))
+
+	return s.database.UserDelete(ctx, id)
 }
 
 func (s *Service) CurrentUser(ctx context.Context) (*model.UserResponse, error) {
