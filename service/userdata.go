@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/arangodb/go-driver"
 	maut "github.com/jonas-plum/maut/auth"
@@ -29,10 +30,20 @@ func (s *Service) ListUserData(ctx context.Context) (doc []*model.UserDataRespon
 }
 
 func (s *Service) GetUserData(ctx context.Context, id string) (*model.UserDataResponse, error) {
+	decodedValue, err := url.QueryUnescape(id)
+	if err == nil {
+		id = decodedValue
+	}
+
 	return s.database.UserDataGet(ctx, id)
 }
 
 func (s *Service) UpdateUserData(ctx context.Context, id string, data *model.UserData) (doc *model.UserDataResponse, err error) {
+	decodedValue, err := url.QueryUnescape(id)
+	if err == nil {
+		id = decodedValue
+	}
+
 	defer s.publishRequest(ctx, err, "UpdateUserData", userDataResponseID(doc))
 
 	return s.database.UserDataUpdate(ctx, id, data)
