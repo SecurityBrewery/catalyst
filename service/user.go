@@ -40,6 +40,7 @@ func (s *Service) GetUser(ctx context.Context, id string) (*model.UserResponse, 
 	if err == nil {
 		id = decodedValue
 	}
+
 	return s.database.UserGet(ctx, id)
 }
 
