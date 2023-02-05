@@ -99,6 +99,7 @@ export default Vue.extend({
   watch: {
     '$route': function () {
       this.loadUser();
+      this.newUserResponse = undefined;
     }
   },
   methods: {
