@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/kong v0.7.1
 	github.com/alecthomas/kong-yaml v0.1.1
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d
-	github.com/arangodb/go-driver v1.4.1
+	github.com/arangodb/go-driver v1.5.0
 	github.com/aws/aws-sdk-go v1.44.203
 	github.com/blevesearch/bleve/v2 v2.3.6
 	github.com/coreos/go-oidc/v3 v3.5.0
