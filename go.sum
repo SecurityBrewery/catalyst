@@ -413,8 +413,8 @@ github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk5
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d h1:0xIrH2lJbraclvJT3pvTf3u2oCAL60cAqiv4qRpz4EI=
 github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d/go.mod h1:F7bn7fEU90QkQ3tnmaTx3LTKLEDqnwWODIYppRQ5hnY=
-github.com/arangodb/go-driver v1.5.0 h1:PaSwAMbxGATf6M5uJpm5fvO/6FiT8ZgJIxEl+AQj6EY=
-github.com/arangodb/go-driver v1.5.0/go.mod h1:+Kn5y+rHkSpjXmYOQiBDhwSJvIhOHdNI1ODl/aqD/fc=
+github.com/arangodb/go-driver v1.5.2 h1:/gmUh2XbNJKvEMgldlZ465KfKfL8aHlsjen0AF50VgY=
+github.com/arangodb/go-driver v1.5.2/go.mod h1:VQNm7LN7ZzKZ8TxYQ3JJ7U/JTtb8y9fRiF11YMCjOTA=
 github.com/arangodb/go-velocypack v0.0.0-20200318135517-5af53c29c67e h1:Xg+hGrY2LcQBbxd0ZFdbGSyRKTYMZCfBbw/pMJFOk1g=
 github.com/arangodb/go-velocypack v0.0.0-20200318135517-5af53c29c67e/go.mod h1:mq7Shfa/CaixoDxiyAAc5jZ6CVBAyPaNQCGS7mkj4Ho=
 github.com/aws/aws-sdk-go v1.44.181/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
