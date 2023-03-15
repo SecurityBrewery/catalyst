@@ -83,7 +83,7 @@ func (s *Service) CreateTicketBatch(ctx context.Context, ticketFormArray *model.
 
 func (s *Service) CreateTicketByRef(ctx context.Context, formByRef *model.TicketFormByRef) (doc *model.TicketResponse, err error) {
 	// change form and call CreateTicket
-	var form = model.TicketForm{
+	form := model.TicketForm{
 		Artifacts:  formByRef.Artifacts,
 		Comments:   formByRef.Comments,
 		Created:    formByRef.Created,
@@ -98,24 +98,32 @@ func (s *Service) CreateTicketByRef(ctx context.Context, formByRef *model.Ticket
 		Status:     formByRef.Status,
 		Type:       formByRef.Type,
 		Write:      formByRef.Write,
+		Schema: func() *string {
+			s := "{}"
+
+			return &s
+		}(),
 	}
 	form.Playbooks = make([]*model.PlaybookTemplateForm, 0)
 	// find the playbooks to complete
 	for _, v := range formByRef.PlaybooksId {
-		playbook_value, err := s.GetPlaybook(ctx, v)
+		playbookValue, err := s.GetPlaybook(ctx, v)
 		if err == nil {
 			form.Playbooks = append(form.Playbooks, &model.PlaybookTemplateForm{
-				Yaml: playbook_value.Yaml,
-				ID:   &playbook_value.ID,
+				Yaml: playbookValue.Yaml,
+				ID:   &playbookValue.ID,
 			})
 		}
 	}
-	// find the template to complete
-	template_value, err := s.GetTemplate(ctx, *formByRef.SchemaId)
-	if err == nil {
-		form.Schema = &template_value.Schema
+	// check if a schema is provided
+	if formByRef.SchemaId != nil {
+		// find the schema to complete
+		schemaValue, err := s.GetTemplate(ctx, *formByRef.SchemaId)
+		if err == nil {
+			form.Schema = &schemaValue.Schema
+		}
 	}
-	// create the ticket using common API
+	// create the ticket using common method
 	return s.CreateTicket(ctx, &form)
 }
 

@@ -17,7 +17,6 @@ var Tests = []struct {
 	Args Args
 	Want Want
 }{
-
 	{
 		Name: "ListAutomations",
 		Args: Args{Method: "Get", URL: "/automations"},
@@ -347,7 +346,7 @@ var Tests = []struct {
 		Args: Args{Method: "Post", URL: "/tickets/byref", Data: map[string]any{"id": 123, "name": "Wannacry infection", "owner": "bob", "status": "open", "type": "incident"}},
 		Want: Want{
 			Status: 200,
-			Body:   map[string]any{"created": time.Date(2021, time.December, 12, 12, 12, 12, 12, time.UTC), "id": 123, "modified": time.Date(2021, time.December, 12, 12, 12, 12, 12, time.UTC), "name": "Wannacry infection", "owner": "bob", "schema": "\"\"", "status": "open", "type": "incident"},
+			Body:   map[string]any{"created": time.Date(2021, time.December, 12, 12, 12, 12, 12, time.UTC), "id": 123, "modified": time.Date(2021, time.December, 12, 12, 12, 12, 12, time.UTC), "name": "Wannacry infection", "owner": "bob", "schema": "{}", "status": "open", "type": "incident"},
 		},
 	},
 

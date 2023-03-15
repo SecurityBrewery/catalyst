@@ -6632,7 +6632,7 @@ paths:
               modified: 2021-12-12T12:12:12.000000012Z
               name: Wannacry infection
               owner: bob
-              schema: '""'
+              schema: '{}'
               status: open
               type: incident
           schema:

@@ -105,7 +105,7 @@ paths:
               created: "2021-12-12T12:12:12.000000012Z"
               modified: "2021-12-12T12:12:12.000000012Z"
               owner: "bob"
-              schema: "\"\""
+              schema: "{}"
       security: [ { roles: [ "ticket:write" ] } ]
 
   /tickets/{id}:

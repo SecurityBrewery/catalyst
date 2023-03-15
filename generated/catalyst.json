@@ -5018,7 +5018,7 @@
                   "modified" : "2021-10-02T16:04:59.078+00:00",
                   "name" : "Wannacry infection",
                   "owner" : "bob",
-                  "schema" : "\"\"",
+                  "schema" : "{}",
                   "status" : "open",
                   "type" : "incident"
                 }
