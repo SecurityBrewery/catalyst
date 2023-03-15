@@ -47,6 +47,7 @@ type Service interface {
 	ListTickets(context.Context, *string, *int, *int, []string, []bool, *string) (*model.TicketList, error)
 	CreateTicket(context.Context, *model.TicketForm) (*model.TicketResponse, error)
 	CreateTicketBatch(context.Context, *model.TicketFormArray) error
+	CreateTicketByRef(context.Context, *model.TicketFormByRef) (*model.TicketResponse, error)
 	GetTicket(context.Context, int64) (*model.TicketWithTickets, error)
 	UpdateTicket(context.Context, int64, *model.Ticket) (*model.TicketWithTickets, error)
 	DeleteTicket(context.Context, int64) error
@@ -125,6 +126,7 @@ func NewServer(service Service, roleAuth func([]string) func(http.Handler) http.
 	r.With(roleAuth([]string{"ticket:read"})).Get("/tickets", s.listTicketsHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets", s.createTicketHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/batch", s.createTicketBatchHandler)
+	r.With(roleAuth([]string{"ticket:write"})).Post("/tickets/byref", s.createTicketByRefHandler)
 	r.With(roleAuth([]string{"ticket:read"})).Get("/tickets/{id}", s.getTicketHandler)
 	r.With(roleAuth([]string{"ticket:write"})).Put("/tickets/{id}", s.updateTicketHandler)
 	r.With(roleAuth([]string{"ticket:delete"})).Delete("/tickets/{id}", s.deleteTicketHandler)
@@ -625,6 +627,27 @@ func (s *server) createTicketBatchHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	response(w, nil, s.service.CreateTicketBatch(r.Context(), ticketP))
+}
+
+func (s *server) createTicketByRefHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	if validateSchema(body, model.TicketFormByRefSchema, w) {
+		return
+	}
+
+	var ticketP *model.TicketFormByRef
+	if err := parseBody(body, &ticketP); err != nil {
+		JSONError(w, err)
+		return
+	}
+
+	result, err := s.service.CreateTicketByRef(r.Context(), ticketP)
+	response(w, result, err)
 }
 
 func (s *server) getTicketHandler(w http.ResponseWriter, r *http.Request) {

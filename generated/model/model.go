@@ -46,6 +46,7 @@ var (
 	TicketSchema                   = new(gojsonschema.Schema)
 	TicketFormSchema               = new(gojsonschema.Schema)
 	TicketFormArraySchema          = new(gojsonschema.Schema)
+	TicketFormByRefSchema          = new(gojsonschema.Schema)
 	TicketListSchema               = new(gojsonschema.Schema)
 	TicketResponseSchema           = new(gojsonschema.Schema)
 	TicketSimpleResponseSchema     = new(gojsonschema.Schema)
@@ -105,6 +106,7 @@ func init() {
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/Playbook"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["name","type","status","created","modified","schema"],"$id":"#/definitions/Ticket"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"items":{"$ref":"#/definitions/PlaybookTemplateForm"},"type":"array"},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["name","type","status"],"$id":"#/definitions/TicketForm"}`),
 		gojsonschema.NewStringLoader(`{"items":{"$ref":"#/definitions/TicketForm"},"type":"array","$id":"#/definitions/TicketFormArray"}`),
+		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks_id":{"items":{"type":"string"},"type":"array"},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema_id":{"type":"string"},"status":{"type":"string"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["name","type","status"],"$id":"#/definitions/TicketFormByRef"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"count":{"type":"number"},"tickets":{"items":{"$ref":"#/definitions/TicketSimpleResponse"},"type":"array"}},"required":["tickets","count"],"$id":"#/definitions/TicketList"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/PlaybookResponse"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["id","name","type","status","created","modified","schema"],"$id":"#/definitions/TicketResponse"}`),
 		gojsonschema.NewStringLoader(`{"type":"object","properties":{"artifacts":{"items":{"$ref":"#/definitions/Artifact"},"type":"array"},"comments":{"items":{"$ref":"#/definitions/Comment"},"type":"array"},"created":{"format":"date-time","type":"string"},"details":{"type":"object"},"files":{"items":{"$ref":"#/definitions/File"},"type":"array"},"id":{"format":"int64","type":"integer"},"modified":{"format":"date-time","type":"string"},"name":{"type":"string"},"owner":{"type":"string"},"playbooks":{"type":"object","additionalProperties":{"$ref":"#/definitions/Playbook"}},"read":{"items":{"type":"string"},"type":"array"},"references":{"items":{"$ref":"#/definitions/Reference"},"type":"array"},"schema":{"type":"string"},"status":{"type":"string"},"type":{"type":"string"},"write":{"items":{"type":"string"},"type":"array"}},"required":["id","name","type","status","created","modified","schema"],"$id":"#/definitions/TicketSimpleResponse"}`),
@@ -165,6 +167,7 @@ func init() {
 	TicketSchema = mustCompile(`#/definitions/Ticket`)
 	TicketFormSchema = mustCompile(`#/definitions/TicketForm`)
 	TicketFormArraySchema = mustCompile(`#/definitions/TicketFormArray`)
+	TicketFormByRefSchema = mustCompile(`#/definitions/TicketFormByRef`)
 	TicketListSchema = mustCompile(`#/definitions/TicketList`)
 	TicketResponseSchema = mustCompile(`#/definitions/TicketResponse`)
 	TicketSimpleResponseSchema = mustCompile(`#/definitions/TicketSimpleResponse`)
@@ -469,6 +472,25 @@ type TicketForm struct {
 }
 
 type TicketFormArray []*TicketForm
+
+type TicketFormByRef struct {
+	Artifacts   []*Artifact    `json:"artifacts,omitempty"`
+	Comments    []*Comment     `json:"comments,omitempty"`
+	Created     *time.Time     `json:"created,omitempty"`
+	Details     map[string]any `json:"details,omitempty"`
+	Files       []*File        `json:"files,omitempty"`
+	ID          *int64         `json:"id,omitempty"`
+	Modified    *time.Time     `json:"modified,omitempty"`
+	Name        string         `json:"name"`
+	Owner       *string        `json:"owner,omitempty"`
+	PlaybooksId []string       `json:"playbooks_id,omitempty"`
+	Read        []string       `json:"read,omitempty"`
+	References  []*Reference   `json:"references,omitempty"`
+	SchemaId    *string        `json:"schema_id,omitempty"`
+	Status      string         `json:"status"`
+	Type        string         `json:"type"`
+	Write       []string       `json:"write,omitempty"`
+}
 
 type TicketList struct {
 	Count   int                     `json:"count"`

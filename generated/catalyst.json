@@ -4989,6 +4989,52 @@
         "x-codegen-request-body-name" : "ticket"
       }
     },
+    "/tickets/byref" : {
+      "post" : {
+        "operationId" : "createTicketByRef",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TicketFormByRef"
+              }
+            }
+          },
+          "description" : "New ticket by reference",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TicketResponse"
+                }
+              },
+              "test" : {
+                "example" : {
+                  "created" : "2021-10-02T16:04:59.078+00:00",
+                  "id" : 123,
+                  "modified" : "2021-10-02T16:04:59.078+00:00",
+                  "name" : "Wannacry infection",
+                  "owner" : "bob",
+                  "schema" : "\"\"",
+                  "status" : "open",
+                  "type" : "incident"
+                }
+              }
+            },
+            "description" : "successful operation"
+          }
+        },
+        "security" : [ {
+          "roles" : [ "ticket:write" ]
+        } ],
+        "summary" : "Create a new tickets with references to Playbooks and Template",
+        "tags" : [ "tickets" ],
+        "x-codegen-request-body-name" : "ticket"
+      }
+    },
     "/tickettypes" : {
       "get" : {
         "operationId" : "listTicketTypes",
@@ -6620,6 +6666,99 @@
           "$ref" : "#/components/schemas/TicketForm"
         },
         "type" : "array"
+      },
+      "TicketFormByRef" : {
+        "properties" : {
+          "artifacts" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Artifact"
+            },
+            "type" : "array"
+          },
+          "comments" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Comment"
+            },
+            "type" : "array"
+          },
+          "created" : {
+            "example" : "1985-04-12T23:20:50.52Z",
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "details" : {
+            "example" : {
+              "description" : "my little incident"
+            },
+            "properties" : { },
+            "type" : "object"
+          },
+          "files" : {
+            "items" : {
+              "$ref" : "#/components/schemas/File"
+            },
+            "type" : "array"
+          },
+          "id" : {
+            "example" : 123,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "modified" : {
+            "example" : "1985-04-12T23:20:50.52Z",
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "WannyCry",
+            "type" : "string"
+          },
+          "owner" : {
+            "example" : "bob",
+            "type" : "string"
+          },
+          "playbooks_id" : {
+            "example" : [ "simple" ],
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "read" : {
+            "example" : [ "bob" ],
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "references" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Reference"
+            },
+            "type" : "array"
+          },
+          "schema_id" : {
+            "example" : "default",
+            "type" : "string"
+          },
+          "status" : {
+            "example" : "open",
+            "type" : "string"
+          },
+          "type" : {
+            "example" : "incident",
+            "type" : "string"
+          },
+          "write" : {
+            "example" : [ "alice" ],
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "status", "type" ],
+        "type" : "object"
       },
       "TicketList" : {
         "properties" : {

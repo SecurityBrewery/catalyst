@@ -97,6 +97,26 @@ func parseQueryBoolArray(r *http.Request, key string) ([]bool, error) {
 	return boolArray, nil
 }
 
+func parseQueryOptionalBool(r *http.Request, key string) (*bool, error) {
+	if exists := r.URL.Query().Has(key); exists {
+		var value bool
+		v := r.URL.Query().Get(key)
+		if v == "" {
+			value = true
+			return &value, nil
+		}
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			return nil, fmt.Errorf("%w", &HTTPError{http.StatusUnprocessableEntity, err})
+		} else {
+			value = b
+			return &value, nil
+		}
+	}
+
+	return nil, nil
+}
+
 func parseQueryOptionalInt(r *http.Request, key string) (*int, error) {
 	s := r.URL.Query().Get(key)
 	if s == "" {

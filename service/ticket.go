@@ -81,6 +81,44 @@ func (s *Service) CreateTicketBatch(ctx context.Context, ticketFormArray *model.
 	return err
 }
 
+func (s *Service) CreateTicketByRef(ctx context.Context, formByRef *model.TicketFormByRef) (doc *model.TicketResponse, err error) {
+	// change form and call CreateTicket
+	var form = model.TicketForm{
+		Artifacts:  formByRef.Artifacts,
+		Comments:   formByRef.Comments,
+		Created:    formByRef.Created,
+		Details:    formByRef.Details,
+		Files:      formByRef.Files,
+		ID:         formByRef.ID,
+		Modified:   formByRef.Modified,
+		Name:       formByRef.Name,
+		Owner:      formByRef.Owner,
+		Read:       formByRef.Read,
+		References: formByRef.References,
+		Status:     formByRef.Status,
+		Type:       formByRef.Type,
+		Write:      formByRef.Write,
+	}
+	form.Playbooks = make([]*model.PlaybookTemplateForm, 0)
+	// find the playbooks to complete
+	for _, v := range formByRef.PlaybooksId {
+		playbook_value, err := s.GetPlaybook(ctx, v)
+		if err == nil {
+			form.Playbooks = append(form.Playbooks, &model.PlaybookTemplateForm{
+				Yaml: playbook_value.Yaml,
+				ID:   &playbook_value.ID,
+			})
+		}
+	}
+	// find the template to complete
+	template_value, err := s.GetTemplate(ctx, *formByRef.SchemaId)
+	if err == nil {
+		form.Schema = &template_value.Schema
+	}
+	// create the ticket using common API
+	return s.CreateTicket(ctx, &form)
+}
+
 func (s *Service) GetTicket(ctx context.Context, i int64) (*model.TicketWithTickets, error) {
 	return s.database.TicketGet(ctx, i)
 }

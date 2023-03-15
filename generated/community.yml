@@ -776,6 +776,78 @@ definitions:
     items:
       $ref: '#/definitions/TicketForm'
     type: array
+  TicketFormByRef:
+    properties:
+      artifacts:
+        items:
+          $ref: '#/definitions/Artifact'
+        type: array
+      comments:
+        items:
+          $ref: '#/definitions/Comment'
+        type: array
+      created:
+        example: 1985-04-12T23:20:50.52Z
+        format: date-time
+        type: string
+      details:
+        example:
+          description: my little incident
+        type: object
+      files:
+        items:
+          $ref: '#/definitions/File'
+        type: array
+      id:
+        example: 123
+        format: int64
+        type: integer
+      modified:
+        example: 1985-04-12T23:20:50.52Z
+        format: date-time
+        type: string
+      name:
+        example: WannyCry
+        type: string
+      owner:
+        example: bob
+        type: string
+      playbooks_id:
+        example:
+        - simple
+        items:
+          type: string
+        type: array
+      read:
+        example:
+        - bob
+        items:
+          type: string
+        type: array
+      references:
+        items:
+          $ref: '#/definitions/Reference'
+        type: array
+      schema_id:
+        example: default
+        type: string
+      status:
+        example: open
+        type: string
+      type:
+        example: incident
+        type: string
+      write:
+        example:
+        - alice
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    - type
+    - status
+    type: object
   TicketList:
     properties:
       count:
@@ -6532,6 +6604,43 @@ paths:
       - roles:
         - ticket:write
       summary: Create a new tickets in batch
+      tags:
+      - tickets
+  /tickets/byref:
+    post:
+      operationId: createTicketByRef
+      parameters:
+      - description: New ticket by reference
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/TicketFormByRef'
+        x-example:
+          id: 123
+          name: Wannacry infection
+          owner: bob
+          status: open
+          type: incident
+      responses:
+        "200":
+          description: successful operation
+          examples:
+            test:
+              created: 2021-12-12T12:12:12.000000012Z
+              id: 123
+              modified: 2021-12-12T12:12:12.000000012Z
+              name: Wannacry infection
+              owner: bob
+              schema: '""'
+              status: open
+              type: incident
+          schema:
+            $ref: '#/definitions/TicketResponse'
+      security:
+      - roles:
+        - ticket:write
+      summary: Create a new tickets with references to Playbooks and Template
       tags:
       - tickets
   /tickettypes:
