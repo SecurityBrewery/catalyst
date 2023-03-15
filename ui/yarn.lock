@@ -1003,14 +1003,14 @@
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
 "@crinkles/digl@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@crinkles/digl/-/digl-2.0.2.tgz#add3574124c29dbb3e262624d412d64e8b5d1b54"
-  integrity sha512-lwdBaMIcZrs0PGHsbua0wjbSgzWtYvIzBhaS7Xr4UZm+QAh727IQqoOVk12EYT41t6XfdZVdkwYN6aeYA3q4jw==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@crinkles/digl/-/digl-2.0.3.tgz#6ccbbdcf0790a33627d19b56b606db5920d0d37a"
+  integrity sha512-ufZT9Ww3kR2KyB5BCocXfU6QMdxdINqGRicM+T6YIK4PsRDKnoCXCm9En0ICBOia2wSvRRGWtULma4c+eYuGfw==
 
 "@cypress/request@^2.88.10":
-  version "2.88.10"
-  resolved "https://registry.yarnpkg.com/@cypress/request/-/request-2.88.10.tgz#b66d76b07f860d3a4b8d7a0604d020c662752cce"
-  integrity sha512-Zp7F+R93N0yZyG34GutyTNr+okam7s/Fzc1+i3kcqOP8vk6OuajuE9qZJ6Rs+10/1JFtXFYMdyarnU1rZuJesg==
+  version "2.88.11"
+  resolved "https://registry.yarnpkg.com/@cypress/request/-/request-2.88.11.tgz#5a4c7399bc2d7e7ed56e92ce5acb620c8b187047"
+  integrity sha512-M83/wfQ1EkspjkE2lNWNV5ui2Cv7UCv1swW1DqljahbzLVWltcsexQh8jYtuS/vzFXP+HySntGM83ZXA9fn17w==
   dependencies:
     aws-sign2 "~0.7.0"
     aws4 "^1.8.0"
@@ -1025,7 +1025,7 @@
     json-stringify-safe "~5.0.1"
     mime-types "~2.1.19"
     performance-now "^2.1.0"
-    qs "~6.5.2"
+    qs "~6.10.3"
     safe-buffer "^5.1.2"
     tough-cookie "~2.5.0"
     tunnel-agent "^0.6.0"
@@ -11156,6 +11156,13 @@ qs@^6.10.2:
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
+  dependencies:
+    side-channel "^1.0.4"
+
+qs@~6.10.3:
+  version "6.10.5"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.5.tgz#974715920a80ff6a262264acd2c7e6c2a53282b4"
+  integrity sha512-O5RlPh0VFtR78y79rgcgKK4wbAI0C5zGVLztOIdpWX6ep368q5Hv6XRxDvXuZ9q3C6v+e3n8UfZZJw7IIG27eQ==
   dependencies:
     side-channel "^1.0.4"
 
