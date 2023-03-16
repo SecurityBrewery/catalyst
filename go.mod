@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/imdario/mergo v0.3.13
+	github.com/imdario/mergo v0.3.14
 	github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915
 	github.com/mingrammer/commonregex v1.0.1
 	github.com/stretchr/testify v1.8.2
