@@ -17,7 +17,7 @@ require (
 	github.com/gobwas/ws v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
-	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
+	github.com/icza/dyno v0.0.0-20230330125955-09f820a8d9c0
 	github.com/imdario/mergo v0.3.14
 	github.com/jonas-plum/maut v0.0.0-20221105155335-ed984fd96915
 	github.com/mingrammer/commonregex v1.0.1
