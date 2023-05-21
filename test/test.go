@@ -30,7 +30,7 @@ func Context() context.Context {
 	return maut.UserContext(context.Background(), Bob, nil) // TODO add permissions ?
 }
 
-func Config(ctx context.Context) (*catalyst.Config, error) {
+func Config(_ context.Context) (*catalyst.Config, error) {
 	config := &catalyst.Config{
 		IndexPath: "index.bleve",
 		Network:   "catalyst",

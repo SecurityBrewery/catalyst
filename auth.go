@@ -82,7 +82,7 @@ func (c *catalystResolver) UserByIDAndPassword(ctx context.Context, username str
 	return mapMautUser(user), nil
 }
 
-func (c *catalystResolver) Role(ctx context.Context, roleID string) (r *maut.Role, err error) {
+func (c *catalystResolver) Role(_ context.Context, roleID string) (r *maut.Role, err error) {
 	switch roleID {
 	case "admin":
 		return Admin, nil

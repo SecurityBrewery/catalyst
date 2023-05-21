@@ -79,11 +79,7 @@ func copyFile(ctx context.Context, cli *client.Client, path string, contentStrin
 		return err
 	}
 
-	if err := cli.CopyToContainer(ctx, id, "/", tarBuf, types.CopyToContainerOptions{}); err != nil {
-		return err
-	}
-
-	return nil
+	return cli.CopyToContainer(ctx, id, "/", tarBuf, types.CopyToContainerOptions{})
 }
 
 func runDocker(ctx context.Context, jobID, containerID string, db *database.Database) (stdout []byte, stderr []byte, err error) {

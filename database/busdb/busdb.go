@@ -82,7 +82,7 @@ func NewCollection[T any](internal driver.Collection, db *BusDatabase) *Collecti
 	return &Collection[T]{internal: internal, db: db}
 }
 
-func (c *Collection[T]) CreateDocument(ctx, newctx context.Context, key string, document *T) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) CreateDocument(_, newctx context.Context, key string, document *T) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.CreateDocument(newctx, &Keyed[T]{Key: key, Doc: document})
@@ -95,7 +95,7 @@ func (c *Collection[T]) CreateDocument(ctx, newctx context.Context, key string, 
 	return meta, nil
 }
 
-func (c *Collection[T]) CreateEdge(ctx, newctx context.Context, edge *driver.EdgeDocument) (meta driver.DocumentMeta, err error) {
+func (c *Collection[T]) CreateEdge(_, newctx context.Context, edge *driver.EdgeDocument) (meta driver.DocumentMeta, err error) {
 	defer func() { err = toHTTPErr(err) }()
 
 	meta, err = c.internal.CreateDocument(newctx, edge)

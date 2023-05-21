@@ -33,7 +33,7 @@ type WriterAtBuffer struct {
 	bytes.Buffer
 }
 
-func (fw WriterAtBuffer) WriteAt(p []byte, offset int64) (n int, err error) {
+func (fw WriterAtBuffer) WriteAt(p []byte, _ int64) (n int, err error) {
 	return fw.Write(p)
 }
 

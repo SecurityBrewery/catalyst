@@ -238,7 +238,7 @@ func (s *aqlBuilder) ExitReference(ctx *parser.ReferenceContext) {
 }
 
 // ExitCompound_value is called when production compound_value is exited.
-func (s *aqlBuilder) ExitCompound_value(ctx *parser.Compound_valueContext) {
+func (s *aqlBuilder) ExitCompound_value(_ *parser.Compound_valueContext) {
 	// pass
 }
 

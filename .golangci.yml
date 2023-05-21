@@ -119,3 +119,5 @@ issues:
       linters: [ forcetypeassert ]
     - text: github.com/go-chi/chi/v5.Router
       linters: [ ireturn ]
+    - path: ui/ui.go
+      linters: [ typecheck ]
