@@ -426,8 +426,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bits-and-blooms/bitset v1.2.0/go.mod h1:gIdJ4wp64HaoK2YrL1Q5/N7Y16edYb8uY+O0FJTyyDA=
 github.com/bits-and-blooms/bitset v1.2.1 h1:M+/hrU9xlMp7t4TyTDQW97d3tRPVuKFC6zBEK16QnXY=
 github.com/bits-and-blooms/bitset v1.2.1/go.mod h1:gIdJ4wp64HaoK2YrL1Q5/N7Y16edYb8uY+O0FJTyyDA=
-github.com/blevesearch/bleve/v2 v2.3.7 h1:nIfIrhv28tvgBpbVF8Dq7/U1zW/YiwSqg/PBgE3x8bo=
-github.com/blevesearch/bleve/v2 v2.3.7/go.mod h1:2tToYD6mDeseIA13jcZiEEqYrVLg6xdk0v6+F7dWquU=
+github.com/blevesearch/bleve/v2 v2.3.8 h1:IqFyMJ73n4gY8AmVqM8Sa6EtAZ5beE8yramVqCvs2kQ=
+github.com/blevesearch/bleve/v2 v2.3.8/go.mod h1:Lh9aZEHrLKxwPnW4z4lsBEGnflZQ1V/aWP/t+htsiDw=
 github.com/blevesearch/bleve_index_api v1.0.5 h1:Lc986kpC4Z0/n1g3gg8ul7H+lxgOQPcXb9SxvQGu+tw=
 github.com/blevesearch/bleve_index_api v1.0.5/go.mod h1:YXMDwaXFFXwncRS8UobWs7nvo0DmusriM1nztTlj1ms=
 github.com/blevesearch/geo v0.1.17 h1:AguzI6/5mHXapzB0gE9IKWo+wWPHZmXZoscHcjFgAFA=
@@ -456,8 +456,8 @@ github.com/blevesearch/zapx/v13 v13.3.7 h1:igIQg5eKmjw168I7av0Vtwedf7kHnQro/M+ub
 github.com/blevesearch/zapx/v13 v13.3.7/go.mod h1:yyrB4kJ0OT75UPZwT/zS+Ru0/jYKorCOOSY5dBzAy+s=
 github.com/blevesearch/zapx/v14 v14.3.7 h1:gfe+fbWslDWP/evHLtp/GOvmNM3sw1BbqD7LhycBX20=
 github.com/blevesearch/zapx/v14 v14.3.7/go.mod h1:9J/RbOkqZ1KSjmkOes03AkETX7hrXT0sFMpWH4ewC4w=
-github.com/blevesearch/zapx/v15 v15.3.9 h1:/s9zqKxFaZKQTTcMO2b/Tup0ch5MSztlvw+frVDfIBk=
-github.com/blevesearch/zapx/v15 v15.3.9/go.mod h1:m7Y6m8soYUvS7MjN9eKlz1xrLCcmqfFadmu7GhWIrLY=
+github.com/blevesearch/zapx/v15 v15.3.10 h1:bQ9ZxJCj6rKp873EuVJu2JPxQ+EWQZI1cjJGeroovaQ=
+github.com/blevesearch/zapx/v15 v15.3.10/go.mod h1:m7Y6m8soYUvS7MjN9eKlz1xrLCcmqfFadmu7GhWIrLY=
 github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40/go.mod h1:8rLXio+WjiTceGBHIoTvn60HIbs7Hm7bcHjyrSqYB9c=
 github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f h1:gOO/tNZMjjvTKZWpY7YnXC72ULNLErRtp94LountVE8=
 github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f/go.mod h1:8rLXio+WjiTceGBHIoTvn60HIbs7Hm7bcHjyrSqYB9c=
