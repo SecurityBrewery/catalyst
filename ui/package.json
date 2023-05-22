@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@crinkles/digl": "^2.0.2",
-    "@koumoul/vjsf": "2.21.3",
+    "@koumoul/vjsf": "2.21.4",
     "@mdi/font": "7.2.96",
     "@mdi/util": "0.3.2",
     "@types/luxon": "3.2.0",
