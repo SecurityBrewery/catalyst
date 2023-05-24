@@ -13,7 +13,7 @@
     "@koumoul/vjsf": "2.21.4",
     "@mdi/font": "7.2.96",
     "@mdi/util": "0.3.2",
-    "@types/luxon": "3.2.0",
+    "@types/luxon": "3.3.0",
     "@types/prismjs": "1.26.0",
     "@uppy/core": "1.20.1",
     "@uppy/tus": "1.9.2",
