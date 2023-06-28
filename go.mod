@@ -6,7 +6,7 @@ replace github.com/xeipuuv/gojsonschema => github.com/warjiang/gojsonschema v1.2
 
 require (
 	github.com/alecthomas/kong v0.7.1
-	github.com/alecthomas/kong-yaml v0.1.1
+	github.com/alecthomas/kong-yaml v0.2.0
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220816024939-bc8df83d7b9d
 	github.com/arangodb/go-driver v1.5.2
 	github.com/aws/aws-sdk-go v1.44.291
@@ -90,6 +90,5 @@ require (
 	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
 	google.golang.org/grpc v1.52.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
