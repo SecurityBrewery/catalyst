@@ -35,7 +35,7 @@
     "panzoom": "^9.4.3",
     "register-service-worker": "1.7.2",
     "splitpanes": "2.4.1",
-    "swagger-ui": "4.13.0",
+    "swagger-ui": "5.1.0",
     "vue": "2.7.14",
     "vue-axios": "3.5.2",
     "vue-chartjs": "3.5.1",
