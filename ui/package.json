@@ -72,7 +72,7 @@
     "@vue/compiler-sfc": "3.3.4",
     "@vue/eslint-config-typescript": "10.0.0",
     "@vue/test-utils": "2.4.0",
-    "@babel/eslint-parser": "7.22.6",
+    "@babel/eslint-parser": "7.22.7",
     "cypress": "11.2.0",
     "eslint": "7.32.0",
     "eslint-plugin-jest": "27.2.2",
