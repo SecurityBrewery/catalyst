@@ -75,7 +75,7 @@
     "@babel/eslint-parser": "7.22.9",
     "cypress": "11.2.0",
     "eslint": "7.32.0",
-    "eslint-plugin-jest": "27.2.2",
+    "eslint-plugin-jest": "27.2.3",
     "eslint-plugin-vue": "7.20.0",
     "sass": "1.63.6",
     "sass-loader": "^10",
