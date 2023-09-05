@@ -26,7 +26,7 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	github.com/tus/tusd v1.12.1
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/oauth2 v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -85,7 +85,7 @@ require (
 	go.etcd.io/bbolt v1.3.7 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/grpc v1.56.1 // indirect
