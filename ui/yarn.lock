@@ -1835,10 +1835,10 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
 
-"@types/vue-markdown@2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@types/vue-markdown/-/vue-markdown-2.2.1.tgz#dd302c67349e0e591d3fcb84e924eb8bf9314fea"
-  integrity sha512-pqa1RU0GZybdtqqadOWT8rTwMSchH1PR+oYeenscTT8Nrq/gniL7hpibhH40+aZBjx3Ps0syaTSiSae4Inw7GQ==
+"@types/vue-markdown@2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/vue-markdown/-/vue-markdown-2.2.3.tgz#156f20c613be9349d966060ca394800c021ae4f3"
+  integrity sha512-h5rkIrNw9a426YbN33YpMX0Kvf0iP9i5PWehlunhoRjHiFMlAHv/G/wz7Bkxs2C5IRIHQlb6pQe/mFEH991UWw==
   dependencies:
     vue "^2.5.16"
 
