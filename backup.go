@@ -3,6 +3,7 @@ package catalyst
 import (
 	"archive/zip"
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -151,5 +152,10 @@ func arangodump(dir string, config *database.Config) error {
 	}
 	cmd := exec.Command("arangodump", args...)
 
-	return cmd.Run()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("arangodump failed (%w), %s", err, string(out))
+	}
+
+	return nil
 }
