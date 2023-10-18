@@ -172,5 +172,10 @@ func arangorestore(dir string, config *database.Config) error {
 	}
 	cmd := exec.Command("arangorestore", args...)
 
-	return cmd.Run()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("arangorestore failed (%w), %s", err, string(out))
+	}
+
+	return nil
 }
