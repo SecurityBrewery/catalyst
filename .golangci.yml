@@ -9,7 +9,6 @@ linters:
     - asciicheck
     - containedctx
     - decorder
-    - depguard
     - dogsled
     - durationcheck
     - errchkjson
@@ -71,6 +70,7 @@ linters:
     - nestif
 
     # disable
+    - depguard
     - dupl
     - exhaustivestruct
     - funlen
