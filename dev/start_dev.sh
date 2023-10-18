@@ -11,6 +11,7 @@ export OIDC_CLIENT_SECRET=secret
 export ARANGO_DB_HOST=http://localhost:8529
 export ARANGO_DB_PASSWORD=foobar
 export S3_HOST=http://localhost:9000
+export S3_REGION=eu-central-1
 export S3_PASSWORD=minio123
 
 export AUTH_BLOCK_NEW=false

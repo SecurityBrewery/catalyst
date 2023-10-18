@@ -49,6 +49,7 @@ type CLI struct {
 	S3Host     string `env:"S3_HOST"     default:"http://minio:9000" name:"s3-host"`
 	S3User     string `env:"S3_USER"     default:"minio"             name:"s3-user"`
 	S3Password string `env:"S3_PASSWORD" required:""                 name:"s3-password"`
+	S3Region   string `env:"S3_REGION" default:"us-east-1" name:"s3-region"`
 
 	Version kong.VersionFlag `help:"Show version."`
 }
@@ -84,7 +85,7 @@ func MapConfig(cli CLI) (*catalyst.Config, error) {
 			User:     cli.ArangoDBUser,
 			Password: cli.ArangoDBPassword,
 		},
-		Storage:         &storage.Config{Host: cli.S3Host, User: cli.S3User, Password: cli.S3Password},
+		Storage:         &storage.Config{Host: cli.S3Host, User: cli.S3User, Region: cli.S3Region, Password: cli.S3Password},
 		ExternalAddress: cli.ExternalAddress,
 		InternalAddress: cli.CatalystAddress,
 		Port:            cli.Port,

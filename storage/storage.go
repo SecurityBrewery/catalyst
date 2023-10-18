@@ -20,6 +20,7 @@ type Storage struct {
 type Config struct {
 	Host     string
 	User     string
+	Region	 string
 	Password string
 }
 
@@ -27,7 +28,7 @@ func New(config *Config) (*Storage, error) {
 	s, err := session.NewSession(&aws.Config{
 		Credentials:      credentials.NewStaticCredentials(config.User, config.Password, ""),
 		Endpoint:         aws.String(config.Host),
-		Region:           aws.String("us-east-1"),
+		Region:           aws.String(config.Region),
 		DisableSSL:       aws.Bool(true),
 		S3ForcePathStyle: aws.Bool(true),
 	})
