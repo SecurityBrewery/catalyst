@@ -42,6 +42,7 @@ func Config(_ context.Context) (*catalyst.Config, error) {
 		Storage: &storage.Config{
 			Host:     "http://localhost:9000",
 			User:     "minio",
+			Region:   "eu-central-1",
 			Password: "minio123",
 		},
 		Auth: &maut.Config{
