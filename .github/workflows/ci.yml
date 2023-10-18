@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
-        with: { go-version: '1.19' }
+        with: { go-version: '1.21' }
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - uses: golangci/golangci-lint-action@v3
-        with: { version: 'v1.52' }
+        with: { version: 'v1.54' }
 
   test:
     name: Test
@@ -30,18 +30,12 @@ jobs:
       - uses: actions/setup-node@v3
         with: { node-version: '14', cache: 'yarn', cache-dependency-path: 'ui/yarn.lock' }
       - uses: actions/setup-go@v4
-        with: { go-version: '1.19', cache: true }
+        with: { go-version: '1.21' }
       - run: |
           mkdir -p ui/dist/img
           touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
       - run: docker compose up --quiet-pull --detach
         working-directory: dev
-      - name: Install ArangoDB
-        run: |
-          curl -OL https://download.arangodb.com/arangodb38/DEBIAN/Release.key
-          sudo apt-key add Release.key
-          sudo apt-add-repository 'deb https://download.arangodb.com/arangodb38/DEBIAN/ /'
-          sudo apt-get update -y && sudo apt-get -y install arangodb3
       - run: go test -coverprofile=cover.out -coverpkg=./... ./...
       - run: go tool cover -func=cover.out
       - uses: codecov/codecov-action@v3
@@ -55,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
-        with: { go-version: '1.18' }
+        with: { go-version: '1.21' }
       - uses: actions/setup-node@v3
         with: { node-version: '14' }
       # run UI
@@ -109,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
-        with: { go-version: '1.19', cache: true }
+        with: { go-version: '1.21' }
       - uses: actions/download-artifact@v3
         with: { name: ui, path: ui/dist }
       - name: Version

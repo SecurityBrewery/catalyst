@@ -81,6 +81,7 @@ dist
 node_modules
 
 profile.cov
+cover.out
 
 generated/caql/parser/*.interp
 generated/caql/parser/*.tokens

@@ -20,7 +20,7 @@ type Storage struct {
 type Config struct {
 	Host     string
 	User     string
-	Region	 string
+	Region   string
 	Password string
 }
 
