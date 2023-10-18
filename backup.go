@@ -101,7 +101,7 @@ func backupArango(c *database.Config, archive *zip.Writer) error {
 	}
 	defer os.RemoveAll(dir)
 
-	if err := arangodump(dir, c); err != nil {
+	if err := arangodump(path.Join(dir, "arango"), c); err != nil {
 		return err
 	}
 
