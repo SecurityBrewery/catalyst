@@ -74,7 +74,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 		return nil, fmt.Errorf("failed to create authenticator: %w", err)
 	}
 
-	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, config.DB, catalystBus, config)
+	apiServer, err := setupAPI(authenticator, catalystService, catalystStorage, catalystDatabase, catalystBus, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create api server: %w", err)
 	}
@@ -88,7 +88,7 @@ func New(hooks *hooks.Hooks, config *Config) (*Server, error) {
 	}, nil
 }
 
-func setupAPI(authenticator *maut.Authenticator, catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config, bus *bus.Bus, config *Config) (chi.Router, error) {
+func setupAPI(authenticator *maut.Authenticator, catalystService *service.Service, catalystStorage *storage.Storage, catalystDatabase *database.Database, bus *bus.Bus, config *Config) (chi.Router, error) {
 	middlewares := []func(next http.Handler) http.Handler{
 		authenticator.Authenticate(),
 		authenticator.AuthorizeBlockedUser(),
@@ -97,7 +97,6 @@ func setupAPI(authenticator *maut.Authenticator, catalystService *service.Servic
 	// create server
 	apiServer := api.NewServer(catalystService, permissionAuth(authenticator), middlewares...)
 	apiServer.Mount("/files", fileServer(authenticator, catalystDatabase, bus, catalystStorage, config))
-	apiServer.Mount("/backup", backupServer(authenticator, catalystStorage, catalystDatabase, dbConfig))
 
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
@@ -127,14 +126,6 @@ func fileServer(authenticator *maut.Authenticator, catalystDatabase *database.Da
 	server.With(fileRW).Post("/{ticketID}/tusd", tudHandler)
 	server.With(fileRW).Post("/{ticketID}/upload", upload(catalystDatabase, catalystStorage.S3(), catalystStorage.Uploader()))
 	server.With(fileRW).Get("/{ticketID}/download/{key}", download(catalystStorage.Downloader()))
-
-	return server
-}
-
-func backupServer(authenticator *maut.Authenticator, catalystStorage *storage.Storage, catalystDatabase *database.Database, dbConfig *database.Config) *chi.Mux {
-	server := chi.NewRouter()
-	server.With(authenticator.AuthorizePermission("backup:create")).Get("/create", backupHandler(catalystStorage, dbConfig))
-	server.With(authenticator.AuthorizePermission("backup:restore")).Post("/restore", restoreHandler(catalystStorage, catalystDatabase, dbConfig))
 
 	return server
 }
