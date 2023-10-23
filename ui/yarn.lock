@@ -3100,10 +3100,10 @@ ant-design-vue@1.7.8, ant-design-vue@^1.7.2:
     vue-ref "^2.0.0"
     warning "^4.0.0"
 
-antlr4@4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/antlr4/-/antlr4-4.11.0.tgz#d7466f5044fa6e333c0ec821b30c6157f6b004ae"
-  integrity sha512-GUGlpE2JUjAN+G8G5vY+nOoeyNhHsXoIJwP1XF1oRw89vifA1K46T6SEkwLwr7drihN7I/lf0DIjKc4OZvBX8w==
+antlr4@4.13.1:
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/antlr4/-/antlr4-4.13.1.tgz#1e0a1830a08faeb86217cb2e6c34716004e4253d"
+  integrity sha512-kiXTspaRYvnIArgE97z5YVVf/cDVQABr3abFRR6mE7yesLMkgu4ujuyV/sgxafQ8wgve0DJQUJ38Z8tkgA2izA==
 
 any-promise@^1.0.0:
   version "1.3.0"
