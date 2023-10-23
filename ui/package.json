@@ -19,7 +19,7 @@
     "@uppy/tus": "1.9.2",
     "@uppy/vue": "0.2.7",
     "ajv": "8.12.0",
-    "ant-design-vue": "1.7.8",
+    "ant-design-vue": "4.0.6",
     "antlr4": "4.11.0",
     "axios": "1.5.1",
     "chart.js": "2.9.4",
