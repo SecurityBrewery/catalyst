@@ -1,97 +1,94 @@
 <h1 align="center">
-  <img width="30" alt="Screenshot of the playbook part of a ticket" src="ui/public/flask_white.svg" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="ui/src/assets/flask_white.svg">
+    <img width="30" alt="Shows an illustrated sun in light color mode and a moon with stars in dark color mode." src="ui/src/assets/flask.svg">
+  </picture>
   Catalyst</h1>
 <h3 align="center">Speed up your reactions</h3>
 <h4 align="center">
 <a href="https://catalyst-soar.com">Website</a>
 - 
 <a href="https://catalyst-soar.com/docs/category/catalyst-handbook">The Catalyst Handbook (Documentation)</a>
--
-<a href="https://try.catalyst-soar.com">Try online</a>
 </h4>
 
 
-Catalyst is an incident response platform or SOAR (Security Orchestration, Automation and Response) system. It can help
-you to automate your alert handling and incident response procedures.
+Catalyst is an incident response platform or Security Orchestration, Automation and Response (SOAR) system.
+It can help you to automate your alert handling and incident response procedures.
 
 ## Features
 
 ### Ticket (Alert & Incident) Management
 
-![Screenshot of a ticket](docs/screenshots/ticket.png)
-
-Tickets are the core of Catalyst. They represent alerts, incidents, forensics
-investigations, threat hunts or any other event you want to handle in your
-organisation.
-
-### Ticket Templates
+Tickets are the core of Catalyst.
+They represent alerts, incidents, forensics investigations,
+threat hunts or any other event you want to handle in your organisation.
 
 <center>
-  <img width="400" alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/details.png" />
+    <a href="docs/screenshots/ticket.png">
+      <img alt="Screenshot of a ticket" src="docs/screenshots/ticket.png" />
+    </a>
 </center>
 
-Templates define the custom information for tickets. The core information for
-tickets like title, creation date or closing status is kept quite minimal and other
-information like criticality, description or MITRE ATT&CK information can be
-added individually.
+### Ticket Types
 
-### Conditional Custom Fields
+Templates define the custom information for tickets. 
+The core information for tickets like title, creation date or closing status is kept quite minimal 
+and other information like criticality, description or MITRE ATT&CK information can be added individually.
+
+### Timelines
+
+Timelines are used to document the progress of an investigation.
+They can be used to document the steps taken during an investigation, the findings or the results of the investigation.
+
+### Tasks
+
+Tasks are the smallest unit of work in Catalyst. They can be assigned to users and have a status.
+Tasks can be used to document the progress of an investigation or to assign work to different users.
 
 <center>
-  <img width="400" alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/conditional_custom_field_a.png" />
-  <img width="400" alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/conditional_custom_field_b.png" />
+    <a href="docs/screenshots/tasks.png">
+      <img alt="Screenshot of the tasks part of a ticket" src="docs/screenshots/tasks.png" />
+    </a>
 </center>
 
-Custom Fields can be dependent on each other. So if you, for example choose
-"malware" as an incident type a custom field ask you to define it further as
-ransomware, worm, etc. which a "phishing" incident would ask for the number
-of received mails in that campaign.
+### Custom Fields
+
+Custom fields can be added to tickets to store additional information.
+They can be used to store information like the affected system, the attacker's IP address or the type of malware.
+Custom fields can be added to ticket types and are then available for all tickets of this type.
 
 ### Playbooks
 
-<center>
-  <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/phishing_playbook.png" />
-</center>
-
-Playbooks represent processes that can be attached to tickets. Playbooks can
-contain manual and automated tasks. Complex workflows with different workflow
-branches, parallel tasks and task dependencies can be modeled.
-
-### Automations
+Playbooks represent processes that can be attached to tickets.
+They are a collection of tasks that can be executed in a specific order.
+Catalyst contains a playbook editor that allows you to create custom playbooks for your organisation.
 
 <center>
-  <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/script.png" />
+    <a href="docs/screenshots/playbook.png">
+      <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/playbook.png" />
+    </a>
 </center>
-
-Automations are scripts that automate tasks or enrich artifacts. Automations are
-run in their own Docker containers. This enables them to be created in different
-scripting languages and run securely in their own environment.
 
 ### Dashboards
 
+Catalyst comes with a dashboard that presents the most important information at a glance.
+
 <center>
-  <img alt="Screenshot of the dashboard editor" src="docs/screenshots/dashboard.png" />
+    <a href="docs/screenshots/dashboard.png">
+        <img alt="Screenshot of the dashboard" src="docs/screenshots/dashboard.png" />
+    </a>
 </center>
 
-Catalyst comes with a dashboard editor that allows you to create custom dashboards
-for your organisation. Dashboards can be created with line, bar, and pie charts.
+### Webhooks
+
+Catalyst can send webhooks to other systems. 
+This can be used to trigger actions in other systems and create automated workflows.
 
 ### Users
 
-Catalyst has two different types of users, normal users accessing the platform
-via OIDC authentication and API keys for external script. A
-fine-grained access model is available for both types and allows to define
-possible actions for each user.
+Catalyst supports authentication via username and password 
+or via OAuth2 with an external identity provider like Google, GitHub or GitLab.
 
-## License
+### More
 
-Copyright (c) 2021-present Jonas Plum
-
-Portions of this software are licensed as follows:
-
-* All third party components incorporated into Catalyst are licensed under the
-  original license provided by the owner of the applicable component. Those
-  files contain a license notice on top of the file and are listed in the
-  [NOTICE](NOTICE) file.
-* Content outside the above-mentioned files above is
-  available under the [GNU Affero General Public License v3.0](LICENSE).
+Catalyst supports a lot more features like: Links, Files, or Comments on tickets.

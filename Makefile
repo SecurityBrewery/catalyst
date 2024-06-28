@@ -1,9 +1,52 @@
+.PHONY: install
+install:
+	@echo "Installing..."
+	go install github.com/bombsimon/wsl/v4/cmd...@master
+	go install mvdan.cc/gofumpt@latest
+	go install github.com/daixiang0/gci@latest
+
+.PHONY: fmt
+fmt:
+	@echo "Formatting..."
+	go mod tidy
+	go fmt ./...
+	gci write -s standard -s default -s "prefix(github.com/SecurityBrewery/catalyst)" .
+	gofumpt -l -w .
+	wsl -fix ./... || true
+	cd ui && bun format
+
 .PHONY: lint
 lint:
 	golangci-lint run  ./...
 
-.PHONY: fmt
-fmt:
-	gci write -s standard -s default -s "prefix(github.com/SecurityBrewery/catalyst)" .
-	# gofumpt -l -w .
-	# wsl --fix ./...
+.PHONY: test
+test:
+	@echo "Testing..."
+	go test -v ./...
+	cd ui && bun test
+
+.PHONY: build
+build:
+	@echo "Building..."
+	cd ui && bun install
+	cd ui && bun build-only
+	mkdir -p bin
+	go build -o bin/catalyst .
+
+.PHONY: build-ui
+build-ui:
+	@echo "Building..."
+	cd ui && bun install
+	cd ui && bun build-only
+
+.PHONY: build-linux
+build-linux:
+	@echo "Building..."
+	cd ui && bun install
+	cd ui && bun build-only
+	mkdir -p bin
+	GOOS=linux GOARCH=amd64	go build -o bin/catalyst .
+
+.PHONY: serve-ui
+serve-ui:
+	cd ui && bun dev --port 3000
