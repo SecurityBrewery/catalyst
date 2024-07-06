@@ -65,11 +65,11 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 	if _, err := dao.FindRecordById(migrations.UserCollectionName, "u_test"); err != nil {
 		record := models.NewRecord(collection)
 		record.SetId("u_test")
-		record.SetUsername("u_test")
-		record.SetPassword("1234567890")
+		_ = record.SetUsername("u_test")
+		_ = record.SetPassword("1234567890")
 		record.Set("name", gofakeit.Name())
 		record.Set("email", "user@catalyst-soar.com")
-		record.SetVerified(true)
+		_ = record.SetVerified(true)
 
 		records = append(records, record)
 	}
@@ -77,11 +77,11 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 	for range count - 1 {
 		record := models.NewRecord(collection)
 		record.SetId("u_" + security.PseudorandomString(5))
-		record.SetUsername("u_" + security.RandomStringWithAlphabet(5, "123456789"))
-		record.SetPassword("1234567890")
+		_ = record.SetUsername("u_" + security.RandomStringWithAlphabet(5, "123456789"))
+		_ = record.SetPassword("1234567890")
 		record.Set("name", gofakeit.Name())
 		record.Set("email", gofakeit.Username()+"@catalyst-soar.com")
-		record.SetVerified(true)
+		_ = record.SetVerified(true)
 
 		records = append(records, record)
 	}

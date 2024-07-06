@@ -17,6 +17,7 @@ fmt:
 
 .PHONY: lint
 lint:
+	golangci-lint version
 	golangci-lint run  ./...
 
 .PHONY: test
@@ -25,31 +26,11 @@ test:
 	go test -v ./...
 	cd ui && bun test
 
-.PHONY: build
-build:
-	@echo "Building..."
-	cd ui && bun install
-	cd ui && bun build-only
-	mkdir -p bin
-	go build -o bin/catalyst .
-
 .PHONY: build-ui
 build-ui:
 	@echo "Building..."
 	cd ui && bun install
 	cd ui && bun build-only
-
-.PHONY: build-linux
-build-linux:
-	@echo "Building..."
-	cd ui && bun install
-	cd ui && bun build-only
-	mkdir -p bin
-	GOOS=linux GOARCH=amd64	go build -o bin/catalyst .
-
-.PHONY: serve-ui
-serve-ui:
-	cd ui && bun dev --port 3000
 
 .PHONY: dev
 dev:
@@ -60,3 +41,7 @@ dev:
 	go run . set-feature-flags dev
 	go run . fake-data
 	go run . serve
+
+.PHONY: dev-ui
+serve-ui:
+	cd ui && bun dev --port 3000

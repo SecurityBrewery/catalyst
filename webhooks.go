@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -97,7 +99,7 @@ func event(app *pocketbase.PocketBase, action, collection string, record *models
 		return nil
 	}
 
-	b, err := json.Marshal(&Payload{
+	payload, err := json.Marshal(&Payload{
 		Action:     action,
 		Collection: collection,
 		Record:     record,
@@ -109,20 +111,31 @@ func event(app *pocketbase.PocketBase, action, collection string, record *models
 	}
 
 	for _, webhook := range webhooks {
-		resp, err := http.Post(webhook.Destination, "application/json", bytes.NewReader(b))
-		if err != nil {
-			app.Logger().Error("failed to send webhook", "error", err.Error())
-
-			continue
-		}
-
-		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-			app.Logger().Info("webhook sent", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)
+		if err := sendWebhook(ctx.Request().Context(), webhook, payload); err != nil {
+			app.Logger().Error("failed to send webhook", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination, "error", err.Error())
 		} else {
-			b, _ := io.ReadAll(resp.Body)
-
-			app.Logger().Error("failed to send webhook", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination, "status", resp.Status, "details", string(b))
+			app.Logger().Info("webhook sent", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)
 		}
+	}
+
+	return nil
+}
+
+func sendWebhook(ctx context.Context, webhook Webhook, payload []byte) error {
+	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, webhook.Destination, bytes.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		b, _ := io.ReadAll(resp.Body)
+
+		return fmt.Errorf("failed to send webhook: %s", string(b))
 	}
 
 	return nil

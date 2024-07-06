@@ -17,7 +17,7 @@ func fakeDataCmd(app *pocketbase.PocketBase) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "fake-data",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			if err := fakedata.Generate(app.DB(), userCount, ticketCount); err != nil {
 				log.Fatal(err)
 			}
@@ -34,7 +34,7 @@ func fakeDataCmd(app *pocketbase.PocketBase) *cobra.Command {
 func setFeatureFlagsCmd(app *pocketbase.PocketBase) *cobra.Command {
 	return &cobra.Command{
 		Use: "set-feature-flags",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			featureCollection, err := app.Dao().FindCollectionByNameOrId(migrations.FeatureCollectionName)
 			if err != nil {
 				log.Fatal(err)

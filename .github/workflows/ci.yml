@@ -4,10 +4,6 @@ on:
   pull_request:
   release: { types: [ published ] }
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   lint:
     name: Lint
@@ -15,27 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
-        with: { go-version: '1.21' }
-      - run: |
-          mkdir -p ui/dist/img
-          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - uses: golangci/golangci-lint-action@v3
-        with: { version: 'v1.54' }
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make build-ui
+
+      - uses: golangci/golangci-lint-action@v6
+        with: { version: 'v1.59' }
 
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '14', cache: 'yarn', cache-dependency-path: 'ui/yarn.lock' }
       - uses: actions/setup-go@v4
-        with: { go-version: '1.21' }
-      - run: |
-          mkdir -p ui/dist/img
-          touch ui/dist/index.html ui/dist/favicon.ico ui/dist/manifest.json ui/dist/img/fake.png
-      - run: docker compose up --quiet-pull --detach
-        working-directory: dev
-      - run: go test -coverprofile=cover.out -coverpkg=./... ./...
-      - run: go tool cover -func=cover.out
-      - uses: codecov/codecov-action@v3
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make build-ui
+
+      - run: make test
