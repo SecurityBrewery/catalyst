@@ -18,7 +18,7 @@ func fakeDataCmd(app *pocketbase.PocketBase) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "fake-data",
 		Run: func(_ *cobra.Command, _ []string) {
-			if err := fakedata.Generate(app.DB(), userCount, ticketCount); err != nil {
+			if err := fakedata.Generate(app, userCount, ticketCount); err != nil {
 				log.Fatal(err)
 			}
 		},

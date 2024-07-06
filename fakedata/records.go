@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/security"
@@ -21,9 +21,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(db dbx.Builder, userCount, ticketCount int) error {
-	dao := daos.New(db)
-
+func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -32,20 +30,20 @@ func Generate(db dbx.Builder, userCount, ticketCount int) error {
 		ticketCount = minimumTicketCount
 	}
 
-	types, err := dao.FindRecordsByExpr(migrations.TypeCollectionName)
+	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
 	if err != nil {
 		return err
 	}
 
-	users := userRecords(dao, userCount)
-	playbooks := playbookRecords(dao)
-	tickets := ticketRecords(dao, users, types, playbooks, ticketCount)
-	webhooks := webhookRecords(dao)
+	users := userRecords(app.Dao(), userCount)
+	playbooks := playbookRecords(app.Dao())
+	tickets := ticketRecords(app.Dao(), users, types, playbooks, ticketCount)
+	webhooks := webhookRecords(app.Dao())
 
 	for _, records := range [][]*models.Record{users, tickets, webhooks, playbooks} {
 		for _, record := range records {
-			if err := dao.SaveRecord(record); err != nil {
-				return err
+			if err := app.Dao().SaveRecord(record); err != nil {
+				app.Logger().Error(err.Error())
 			}
 		}
 	}
@@ -76,7 +74,7 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 
 	for range count - 1 {
 		record := models.NewRecord(collection)
-		record.SetId("u_" + security.PseudorandomString(5))
+		record.SetId("u_" + security.PseudorandomString(10))
 		_ = record.SetUsername("u_" + security.RandomStringWithAlphabet(5, "123456789"))
 		_ = record.SetPassword("1234567890")
 		record.Set("name", gofakeit.Name())
@@ -105,7 +103,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 		created = created.Add(time.Duration(-gofakeit.Number(13, 37)) * time.Hour)
 
 		record := models.NewRecord(collection)
-		record.SetId("t_" + security.PseudorandomString(5))
+		record.SetId("t_" + security.PseudorandomString(10))
 
 		updated := gofakeit.DateRange(created, time.Now())
 
@@ -135,7 +133,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 			commentUpdated := gofakeit.DateRange(commentCreated, time.Now())
 
 			commentRecord := models.NewRecord(commentCollection)
-			commentRecord.SetId("c_" + security.PseudorandomString(5))
+			commentRecord.SetId("c_" + security.PseudorandomString(10))
 			commentRecord.Set("created", commentCreated.Format("2006-01-02T15:04:05Z"))
 			commentRecord.Set("updated", commentUpdated.Format("2006-01-02T15:04:05Z"))
 			commentRecord.Set("ticket", record.GetId())
@@ -156,7 +154,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 			timelineUpdated := gofakeit.DateRange(timelineCreated, time.Now())
 
 			timelineRecord := models.NewRecord(timelineCollection)
-			timelineRecord.SetId("tl_" + security.PseudorandomString(5))
+			timelineRecord.SetId("tl_" + security.PseudorandomString(10))
 			timelineRecord.Set("created", timelineCreated.Format("2006-01-02T15:04:05Z"))
 			timelineRecord.Set("updated", timelineUpdated.Format("2006-01-02T15:04:05Z"))
 			timelineRecord.Set("ticket", record.GetId())
@@ -177,7 +175,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 			taskUpdated := gofakeit.DateRange(taskCreated, time.Now())
 
 			taskRecord := models.NewRecord(taskCollection)
-			taskRecord.SetId("ts_" + security.PseudorandomString(5))
+			taskRecord.SetId("ts_" + security.PseudorandomString(10))
 			taskRecord.Set("created", taskCreated.Format("2006-01-02T15:04:05Z"))
 			taskRecord.Set("updated", taskUpdated.Format("2006-01-02T15:04:05Z"))
 			taskRecord.Set("ticket", record.GetId())
@@ -199,7 +197,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 			linkUpdated := gofakeit.DateRange(linkCreated, time.Now())
 
 			linkRecord := models.NewRecord(linkCollection)
-			linkRecord.SetId("l_" + security.PseudorandomString(5))
+			linkRecord.SetId("l_" + security.PseudorandomString(10))
 			linkRecord.Set("created", linkCreated.Format("2006-01-02T15:04:05Z"))
 			linkRecord.Set("updated", linkUpdated.Format("2006-01-02T15:04:05Z"))
 			linkRecord.Set("ticket", record.GetId())
@@ -241,7 +239,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 			}
 
 			runRecord := models.NewRecord(runCollection)
-			runRecord.SetId("r_" + security.PseudorandomString(5))
+			runRecord.SetId("r_" + security.PseudorandomString(10))
 			runRecord.Set("created", runCreated.Format("2006-01-02T15:04:05Z"))
 			runRecord.Set("updated", runUpdated.Format("2006-01-02T15:04:05Z"))
 			runRecord.Set("ticket", record.GetId())
@@ -261,10 +259,8 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
-	// var records []*models.Record
-
 	record := models.NewRecord(collection)
-	record.SetId("w_" + security.PseudorandomString(5))
+	record.SetId("w_" + security.PseudorandomString(10))
 	record.Set("name", "Test Webhook")
 	record.Set("collection", "tickets")
 	record.Set("destination", "http://localhost:8080/webhook")
@@ -316,7 +312,7 @@ func playbookRecords(dao *daos.Dao) []*models.Record {
 	}
 
 	record1 := models.NewRecord(playbookCollection)
-	record1.SetId("p_" + security.PseudorandomString(5))
+	record1.SetId("p_" + security.PseudorandomString(10))
 	record1.Set("name", "Malware Infection")
 	record1.Set("steps", string(b))
 
@@ -344,7 +340,7 @@ func playbookRecords(dao *daos.Dao) []*models.Record {
 	}
 
 	record2 := models.NewRecord(playbookCollection)
-	record2.SetId("p_" + security.PseudorandomString(5))
+	record2.SetId("p_" + security.PseudorandomString(10))
 	record2.Set("name", "Customer information")
 	record2.Set("steps", string(b))
 
