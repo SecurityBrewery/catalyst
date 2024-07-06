@@ -26,14 +26,14 @@ const dialogOpen = ref(false)
 
 const isDemo = ref(false)
 
-const { data: flags } = useQuery({
-  queryKey: ['flags'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/flags', {})
+const { data: config } = useQuery({
+  queryKey: ['config'],
+  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
 })
 
-watch(flags, (newFlags) => {
-  if (!newFlags) return
-  if (newFlags['flags'].includes('demo')) {
+watch(config, (newConfig) => {
+  if (!newConfig) return
+  if (newConfig['flags'].includes('demo')) {
     isDemo.value = true
   }
 })

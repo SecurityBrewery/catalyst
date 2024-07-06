@@ -33,7 +33,7 @@ func settingsUp(dao *daos.Dao) error {
 }
 
 func allowUserViewUp(dao *daos.Dao) error {
-	collection, err := dao.FindCollectionByNameOrId(userCollectionName)
+	collection, err := dao.FindCollectionByNameOrId(UserCollectionName)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func allowUserViewUp(dao *daos.Dao) error {
 }
 
 func baseDown(db dbx.Builder) error {
-	collection, err := daos.New(db).FindCollectionByNameOrId(userCollectionName)
+	collection, err := daos.New(db).FindCollectionByNameOrId(UserCollectionName)
 	if err != nil {
 		return err
 	}

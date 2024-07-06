@@ -50,3 +50,13 @@ build-linux:
 .PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
+
+.PHONY: dev
+dev:
+	@echo "Running..."
+	rm -rf catalyst_data
+	go run . migrate up
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . set-feature-flags dev
+	go run . fake-data
+	go run . serve

@@ -2,11 +2,10 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
-	"github.com/SecurityBrewery/catalyst/ff"
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
@@ -19,23 +18,19 @@ func main() {
 func run() error {
 	migrations.Register()
 
-	dir := "./catalyst_data"
-	if os.Getenv("CATALYST_DIR") != "" {
-		dir = os.Getenv("CATALYST_DIR")
-	}
-
 	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDev:     ff.HasDevFlag(),
-		DefaultDataDir: dir,
+		DefaultDev:     dev(),
+		DefaultDataDir: "catalyst_data",
 	})
+
+	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{})
+
+	app.RootCmd.AddCommand(fakeDataCmd(app))
+	app.RootCmd.AddCommand(setFeatureFlagsCmd(app))
 
 	app.OnBeforeServe().Add(addRoutes())
 
 	attachWebhooks(app)
-
-	if !ff.HasDevFlag() {
-		os.Args = []string{"catalyst", "serve", "--http", "0.0.0.0:8088"}
-	}
 
 	return app.Start()
 }

@@ -1,4 +1,4 @@
-package migrations
+package fakedata
 
 import "github.com/brianvoe/gofakeit/v7"
 

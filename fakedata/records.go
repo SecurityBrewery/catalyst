@@ -1,4 +1,4 @@
-package migrations
+package fakedata
 
 import (
 	"encoding/json"
@@ -12,19 +12,37 @@ import (
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/security"
 
+	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/playbook"
 )
 
-func testdataUp(db dbx.Builder) error {
+const (
+	minimumUserCount   = 1
+	minimumTicketCount = 1
+)
+
+func Generate(db dbx.Builder, userCount, ticketCount int) error {
 	dao := daos.New(db)
 
-	users := userRecords(dao, 10)
-	types := typeRecords(dao)
+	if userCount < minimumUserCount {
+		userCount = minimumUserCount
+	}
+
+	if ticketCount < minimumTicketCount {
+		ticketCount = minimumTicketCount
+	}
+
+	types, err := dao.FindRecordsByExpr(migrations.TypeCollectionName)
+	if err != nil {
+		return err
+	}
+
+	users := userRecords(dao, userCount)
 	playbooks := playbookRecords(dao)
-	tickets := ticketRecords(dao, users, types, playbooks, 30)
+	tickets := ticketRecords(dao, users, types, playbooks, ticketCount)
 	webhooks := webhookRecords(dao)
 
-	for _, records := range [][]*models.Record{users, types, tickets, webhooks, playbooks} {
+	for _, records := range [][]*models.Record{users, tickets, webhooks, playbooks} {
 		for _, record := range records {
 			if err := dao.SaveRecord(record); err != nil {
 				return err
@@ -36,22 +54,25 @@ func testdataUp(db dbx.Builder) error {
 }
 
 func userRecords(dao *daos.Dao, count int) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(userCollectionName)
+	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
 	var records []*models.Record
 
-	record := models.NewRecord(collection)
-	record.SetId("u_" + security.PseudorandomString(5))
-	record.SetUsername("u_" + security.RandomStringWithAlphabet(5, "123456789"))
-	record.SetPassword("1234567890")
-	record.Set("name", gofakeit.Name())
-	record.Set("email", "user@catalyst-soar.com")
-	record.SetVerified(true)
+	// create the test user
+	if _, err := dao.FindRecordById(migrations.UserCollectionName, "u_test"); err != nil {
+		record := models.NewRecord(collection)
+		record.SetId("u_test")
+		record.SetUsername("u_test")
+		record.SetPassword("1234567890")
+		record.Set("name", gofakeit.Name())
+		record.Set("email", "user@catalyst-soar.com")
+		record.SetVerified(true)
 
-	records = append(records, record)
+		records = append(records, record)
+	}
 
 	for range count - 1 {
 		record := models.NewRecord(collection)
@@ -68,37 +89,8 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 	return records
 }
 
-func typeRecords(dao *daos.Dao) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(typeCollectionName)
-	if err != nil {
-		panic(err)
-	}
-
-	var records []*models.Record
-
-	record := models.NewRecord(collection)
-	record.SetId("y_" + security.PseudorandomString(5))
-	record.Set("singular", "Incident")
-	record.Set("plural", "Incidents")
-	record.Set("icon", "Flame")
-	record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
-
-	records = append(records, record)
-
-	record = models.NewRecord(collection)
-	record.SetId("y_" + security.PseudorandomString(5))
-	record.Set("singular", "Alert")
-	record.Set("plural", "Alerts")
-	record.Set("icon", "AlertTriangle")
-	record.Set("schema", `{"type":"object","properties":{"severity":{"title":"Severity","type":"string"}},"required": ["severity"]}`)
-
-	records = append(records, record)
-
-	return records
-}
-
 func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, count int) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(ticketCollectionName)
+	collection, err := dao.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -106,7 +98,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 	var records []*models.Record
 
 	created := time.Now()
-	number := gofakeit.Number(7000, 7200)
+	number := gofakeit.Number(200*count, 300*count)
 
 	for range count {
 		number -= gofakeit.Number(100, 200)
@@ -134,7 +126,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 		// Add comments
 		for range gofakeit.IntN(5) {
-			commentCollection, err := dao.FindCollectionByNameOrId(commentCollectionName)
+			commentCollection, err := dao.FindCollectionByNameOrId(migrations.CommentCollectionName)
 			if err != nil {
 				panic(err)
 			}
@@ -155,7 +147,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 		// Add timeline
 		for range gofakeit.IntN(5) {
-			timelineCollection, err := dao.FindCollectionByNameOrId(timelineCollectionName)
+			timelineCollection, err := dao.FindCollectionByNameOrId(migrations.TimelineCollectionName)
 			if err != nil {
 				panic(err)
 			}
@@ -176,7 +168,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 		// Add tasks
 		for range gofakeit.IntN(5) {
-			taskCollection, err := dao.FindCollectionByNameOrId(taskCollectionName)
+			taskCollection, err := dao.FindCollectionByNameOrId(migrations.TaskCollectionName)
 			if err != nil {
 				panic(err)
 			}
@@ -198,7 +190,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 		// Add links
 		for range gofakeit.IntN(5) {
-			linkCollection, err := dao.FindCollectionByNameOrId(linkCollectionName)
+			linkCollection, err := dao.FindCollectionByNameOrId(migrations.LinkCollectionName)
 			if err != nil {
 				panic(err)
 			}
@@ -219,7 +211,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 		// Add runs
 		for range gofakeit.IntN(2) {
-			runCollection, err := dao.FindCollectionByNameOrId(runCollectionName)
+			runCollection, err := dao.FindCollectionByNameOrId(migrations.RunCollectionName)
 			if err != nil {
 				panic(err)
 			}
@@ -264,7 +256,7 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 }
 
 func webhookRecords(dao *daos.Dao) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(webhookCollectionName)
+	collection, err := dao.FindCollectionByNameOrId(migrations.WebhookCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -281,7 +273,7 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 }
 
 func playbookRecords(dao *daos.Dao) []*models.Record {
-	playbookCollection, err := dao.FindCollectionByNameOrId(playbookCollectionName)
+	playbookCollection, err := dao.FindCollectionByNameOrId(migrations.PlaybookCollectionName)
 	if err != nil {
 		panic(err)
 	}
