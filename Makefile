@@ -26,6 +26,12 @@ test:
 	go test -v ./...
 	cd ui && bun test
 
+.PHONY: test-coverage
+test-coverage:
+	@echo "Testing with coverage..."
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out
+
 .PHONY: build-ui
 build-ui:
 	@echo "Building..."
