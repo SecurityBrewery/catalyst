@@ -17,19 +17,17 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { LoaderCircle, Search } from 'lucide-vue-next'
+import { Info, LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
 import type { ListResult } from 'pocketbase'
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, Type } from '@/lib/types'
-
-const router = useRouter()
 
 const props = defineProps<{
   selectedType: Type
@@ -42,17 +40,29 @@ const filter = computed(() => {
   let raw = ''
   const params: Record<string, string> = {}
 
-  /*
   if (searchValue.value && searchValue.value !== '') {
-    let raws: Array<string> = []
-    props.selectedType.expand.fields.forEach((field) => {
-      if (field.type === 'bool') return
-      raws.push(`${field.name} ~ {:search}`)
+    let raws: Array<string> = [
+      'name ~ {:search}',
+      'description ~ {:search}',
+      'owner.name ~ {:search}',
+      'owner.email ~ {:search}',
+      'links_via_ticket.name ~ {:search}',
+      'links_via_ticket.url ~ {:search}',
+      'tasks_via_ticket.name ~ {:search}',
+      'comments_via_ticket.message ~ {:search}',
+      'files_via_ticket.name ~ {:search}',
+      'timeline_via_ticket.message ~ {:search}',
+      'state.severity ~ {:search}'
+    ]
+
+    Object.keys(props.selectedType.schema.properties).forEach((key) => {
+      const property = props.selectedType.schema.properties[key]
+      if (property.type === 'bool') return
+      raws.push(`state.${key} ~ {:search}`)
     })
     raw += '(' + raws.join(' || ') + `)`
     params['search'] = searchValue.value
   }
-   */
 
   if (raw !== '') raw += ' && '
   if (tab.value === 'open') {
@@ -85,7 +95,8 @@ const {
     pb.collection('tickets').getList(page.value, perPage.value, {
       sort: '-created',
       filter: filter.value,
-      expand: 'owner,type'
+      expand:
+        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,runs_via_ticket,tasks_via_ticket.owner'
     })
 })
 
@@ -119,9 +130,28 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
       </div>
       <div class="px-4 py-2">
         <form>
-          <div class="relative">
-            <Search class="absolute left-2 top-2.5 size-4 text-muted-foreground" />
+          <div class="relative flex flex-row items-center">
             <Input v-model="searchValue" placeholder="Search" class="pl-8" />
+            <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
+              <Search class="size-4 text-muted-foreground" />
+            </span>
+
+            <div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Info class="ml-2 size-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p class="w-64">
+                      Search name, description, or owner. Links, tasks, comments, files, and
+                      timeline messages are also searched, but cause unreliable results if there are
+                      more than 1000 records.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
         </form>
       </div>
@@ -178,33 +208,6 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
           </PaginationList>
         </Pagination>
       </div>
-      <!-- TabsContent value="all" class="flex flex-1 flex-col items-center ">
-          <TicketListList :tickets="tickets" />
-        </TabsContent>
-        <TabsContent value="open" class="flex flex-1 flex-col items-center ">
-          <TicketListList :tickets="tickets" />
-        </TabsContent>
-        <TabsContent value="closed" class="flex flex-1 flex-col items-center">
-          <TicketListList :tickets="tickets" />
-        </TabsContent-->
     </Tabs>
   </div>
 </template>
-
-<style scoped>
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(15px);
-}
-
-.list-leave-active {
-  position: absolute;
-}
-</style>
