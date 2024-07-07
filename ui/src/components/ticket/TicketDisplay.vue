@@ -2,7 +2,6 @@
 import TanView from '@/components/TanView.vue'
 import JSONSchemaFormFields from '@/components/form/JSONSchemaFormFields.vue'
 import DynamicMDEditor from '@/components/input/DynamicMDEditor.vue'
-import StatusIcon from '@/components/ticket/StatusIcon.vue'
 import TicketActionBar from '@/components/ticket/TicketActionBar.vue'
 import TicketCloseBar from '@/components/ticket/TicketCloseBar.vue'
 import TicketHeader from '@/components/ticket/TicketHeader.vue'
@@ -10,6 +9,8 @@ import TicketTab from '@/components/ticket/TicketTab.vue'
 import TicketComments from '@/components/ticket/comment/TicketComments.vue'
 import TicketFiles from '@/components/ticket/file/TicketFiles.vue'
 import TicketLinks from '@/components/ticket/link/TicketLinks.vue'
+import RunView from '@/components/ticket/run/RunView.vue'
+import StatusIcon from '@/components/ticket/StatusIcon.vue'
 import TicketTasks from '@/components/ticket/task/TicketTasks.vue'
 import TicketTimeline from '@/components/ticket/timeline/TicketTimeline.vue'
 import { Badge } from '@/components/ui/badge'
@@ -51,7 +52,7 @@ const {
   queryFn: (): Promise<Ticket> =>
     pb.collection('tickets').getOne(id.value, {
       expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
+        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,runs_via_ticket,tasks_via_ticket.owner'
     })
 })
 
@@ -86,6 +87,28 @@ const editStateMutation = useMutation({
       description: error.message,
       variant: 'destructive'
     })
+})
+
+const runStatus = computed(() => {
+  if (!ticket.value) {
+    return 'pending'
+  }
+
+  const runs = ticket.value.expand.runs_via_ticket
+
+  if (runs.some((run) => run.steps.some((step) => step.status === 'failed'))) {
+    return 'failed'
+  }
+
+  if (runs.every((run) => run.steps.every((step) => step.status === 'completed'))) {
+    return 'completed'
+  }
+
+  if (runs.every((run) => run.steps.every((step) => step.status === 'open'))) {
+    return 'open'
+  }
+
+  return 'pending'
 })
 
 const taskStatus = computed(() => {
@@ -150,6 +173,17 @@ const updateDescription = (value: string) => (message.value = value)
                   }}
                 </Badge>
               </TabsTrigger>
+              <TabsTrigger value="playbooks">
+                Playbooks
+                <Badge
+                  v-if="ticket.expand.runs_via_ticket && ticket.expand.runs_via_ticket.length > 0"
+                  variant="outline"
+                  class="ml-2"
+                >
+                  {{ ticket.expand.runs_via_ticket ? ticket.expand.runs_via_ticket.length : 0 }}
+                  <StatusIcon :status="runStatus" class="size-6" />
+                </Badge>
+              </TabsTrigger>
               <TabsTrigger value="tasks">
                 Tasks
                 <Badge
@@ -179,6 +213,9 @@ const updateDescription = (value: string) => (message.value = value)
             </TabsList>
             <TicketTab value="timeline">
               <TicketTimeline :ticket="ticket" :timeline="ticket.expand.timeline_via_ticket" />
+            </TicketTab>
+            <TicketTab value="playbooks">
+              <RunView :ticket="ticket" :runs="ticket.expand.runs_via_ticket" />
             </TicketTab>
             <TicketTab value="tasks">
               <TicketTasks :ticket="ticket" :tasks="ticket.expand.tasks_via_ticket" />

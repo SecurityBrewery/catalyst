@@ -44,6 +44,18 @@ const catalystStore = useCatalystStore()
   <IncidentNav :is-collapsed="catalystStore.sidebarCollapsed" />
 
   <Separator />
+  <NavList
+    :is-collapsed="catalystStore.sidebarCollapsed"
+    :links="[
+      {
+        title: 'Playbooks',
+        icon: 'Book',
+        variant: 'ghost',
+        to: '/playbooks'
+      }
+    ]"
+  />
+  <Separator />
 
   <div class="flex-1" />
 

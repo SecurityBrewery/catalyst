@@ -69,14 +69,14 @@ onMounted(() => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>{{ count('users') }}</CardTitle>
-              <CardDescription>Users</CardDescription>
+              <CardTitle>{{ count('playbooks') }}</CardTitle>
+              <CardDescription>Playbooks</CardDescription>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle></CardTitle>
-              <CardDescription></CardDescription>
+              <CardTitle>{{ count('users') }}</CardTitle>
+              <CardDescription>Users</CardDescription>
             </CardHeader>
           </Card>
           <Card>
