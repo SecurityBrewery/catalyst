@@ -12,6 +12,7 @@ linters:
     - nestif
 
     # disable
+    - bodyclose
     - depguard
     - dupl
     - err113
@@ -28,6 +29,8 @@ linters:
     - lll
     - makezero
     - mnd
+    - paralleltest
+    - perfsprint
     - prealloc
     - tagalign
     - tagliatelle

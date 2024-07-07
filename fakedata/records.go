@@ -36,8 +36,9 @@ func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
 	users := userRecords(app.Dao(), userCount)
 	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
 	webhooks := webhookRecords(app.Dao())
+	actions := actionRecords(app.Dao())
 
-	for _, records := range [][]*models.Record{users, tickets, webhooks} {
+	for _, records := range [][]*models.Record{users, tickets, webhooks, actions} {
 		for _, record := range records {
 			if err := app.Dao().SaveRecord(record); err != nil {
 				app.Logger().Error(err.Error())
@@ -219,6 +220,24 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 	record.Set("name", "Test Webhook")
 	record.Set("collection", "tickets")
 	record.Set("destination", "http://localhost:8080/webhook")
+
+	return []*models.Record{record}
+}
+
+func actionRecords(dao *daos.Dao) []*models.Record {
+	collection, err := dao.FindCollectionByNameOrId(migrations.ActionCollectionName)
+	if err != nil {
+		panic(err)
+	}
+
+	record := models.NewRecord(collection)
+	record.SetId("w_" + security.PseudorandomString(10))
+	record.Set("name", "test")
+	record.Set("type", "python")
+	record.Set("bootstrap", "requests")
+	record.Set("script", `import sys
+
+print(sys.argv[1])`)
 
 	return []*models.Record{record}
 }

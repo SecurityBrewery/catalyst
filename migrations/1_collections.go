@@ -11,15 +11,16 @@ import (
 )
 
 const (
-	TimelineCollectionName = "timeline"
+	ActionCollectionName   = "actions"
 	CommentCollectionName  = "comments"
-	fileCollectionName     = "files"
+	FeatureCollectionName  = "features"
 	LinkCollectionName     = "links"
 	TaskCollectionName     = "tasks"
 	TicketCollectionName   = "tickets"
+	TimelineCollectionName = "timeline"
 	TypeCollectionName     = "types"
 	WebhookCollectionName  = "webhooks"
-	FeatureCollectionName  = "features"
+	fileCollectionName     = "files"
 
 	UserCollectionName = "_pb_users_auth_"
 )
@@ -113,6 +114,21 @@ func collectionsUp(db dbx.Builder) error {
 				fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", FeatureCollectionName),
 			},
 		},
+		internalCollection(&models.Collection{
+			Name: ActionCollectionName,
+			Type: models.CollectionTypeBase,
+			Schema: schema.NewSchema(
+				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
+				&schema.SchemaField{Name: "type", Type: schema.FieldTypeText, Required: true},
+				&schema.SchemaField{Name: "token", Type: schema.FieldTypeText, Required: true},
+				&schema.SchemaField{Name: "description", Type: schema.FieldTypeText},
+				&schema.SchemaField{Name: "bootstrap", Type: schema.FieldTypeText},
+				&schema.SchemaField{Name: "script", Type: schema.FieldTypeText},
+			),
+			Indexes: types.JsonArray[string]{
+				fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", ActionCollectionName),
+			},
+		}),
 	}
 
 	dao := daos.New(db)
