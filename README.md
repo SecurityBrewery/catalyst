@@ -57,18 +57,6 @@ Custom fields can be added to tickets to store additional information.
 They can be used to store information like the affected system, the attacker's IP address or the type of malware.
 Custom fields can be added to ticket types and are then available for all tickets of this type.
 
-### Playbooks
-
-Playbooks represent processes that can be attached to tickets.
-They are a collection of tasks that can be executed in a specific order.
-Catalyst contains a playbook editor that allows you to create custom playbooks for your organisation.
-
-<center>
-    <a href="docs/screenshots/playbook.png">
-      <img alt="Screenshot of the playbook part of a ticket" src="docs/screenshots/playbook.png" />
-    </a>
-</center>
-
 ### Dashboards
 
 Catalyst comes with a dashboard that presents the most important information at a glance.

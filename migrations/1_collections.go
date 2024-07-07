@@ -15,8 +15,6 @@ const (
 	CommentCollectionName  = "comments"
 	fileCollectionName     = "files"
 	LinkCollectionName     = "links"
-	PlaybookCollectionName = "playbooks"
-	RunCollectionName      = "runs"
 	TaskCollectionName     = "tasks"
 	TicketCollectionName   = "tickets"
 	TypeCollectionName     = "types"
@@ -91,23 +89,6 @@ func collectionsUp(db dbx.Builder) error {
 		}),
 
 		internalCollection(&models.Collection{
-			Name: PlaybookCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "steps", Type: schema.FieldTypeJson, Required: true, Options: &schema.JsonOptions{MaxSize: 50_000}},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: RunCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "steps", Type: schema.FieldTypeJson, Required: true, Options: &schema.JsonOptions{MaxSize: 50_000}},
-			),
-		}),
-		internalCollection(&models.Collection{
 			Name: fileCollectionName,
 			Type: models.CollectionTypeBase,
 			Schema: schema.NewSchema(
@@ -157,13 +138,11 @@ func internalCollection(c *models.Collection) *models.Collection {
 
 func collectionsDown(db dbx.Builder) error {
 	collections := []string{
-		PlaybookCollectionName,
 		TicketCollectionName,
 		TypeCollectionName,
 		fileCollectionName,
 		LinkCollectionName,
 		TaskCollectionName,
-		RunCollectionName,
 		CommentCollectionName,
 		TimelineCollectionName,
 		FeatureCollectionName,

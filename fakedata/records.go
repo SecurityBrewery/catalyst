@@ -1,7 +1,6 @@
 package fakedata
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -13,7 +12,6 @@ import (
 	"github.com/pocketbase/pocketbase/tools/security"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
-	"github.com/SecurityBrewery/catalyst/playbook"
 )
 
 const (
@@ -36,11 +34,10 @@ func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
 	}
 
 	users := userRecords(app.Dao(), userCount)
-	playbooks := playbookRecords(app.Dao())
-	tickets := ticketRecords(app.Dao(), users, types, playbooks, ticketCount)
+	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
 	webhooks := webhookRecords(app.Dao())
 
-	for _, records := range [][]*models.Record{users, tickets, webhooks, playbooks} {
+	for _, records := range [][]*models.Record{users, tickets, webhooks} {
 		for _, record := range records {
 			if err := app.Dao().SaveRecord(record); err != nil {
 				app.Logger().Error(err.Error())
@@ -87,7 +84,7 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 	return records
 }
 
-func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, count int) []*models.Record {
+func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*models.Record {
 	collection, err := dao.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
 		panic(err)
@@ -206,48 +203,6 @@ func ticketRecords(dao *daos.Dao, users, types, playbooks []*models.Record, coun
 
 			records = append(records, linkRecord)
 		}
-
-		// Add runs
-		for range gofakeit.IntN(2) {
-			runCollection, err := dao.FindCollectionByNameOrId(migrations.RunCollectionName)
-			if err != nil {
-				panic(err)
-			}
-
-			runCreated := gofakeit.DateRange(created, time.Now())
-			runUpdated := gofakeit.DateRange(runCreated, time.Now())
-
-			runPlaybook := random(playbooks)
-			runPlaybookStepsJSON := runPlaybook.GetString("steps")
-
-			var runPlaybookSteps []playbook.Step
-
-			if err := json.Unmarshal([]byte(runPlaybookStepsJSON), &runPlaybookSteps); err != nil {
-				continue
-			}
-
-			var steps []any
-			for _, step := range runPlaybookSteps {
-				steps = append(steps, map[string]any{
-					"name":        step.Name,
-					"type":        step.Type,
-					"status":      gofakeit.RandomString([]string{"open", "completed"}),
-					"description": step.Description,
-					"schema":      step.Schema,
-					"state":       map[string]any{},
-				})
-			}
-
-			runRecord := models.NewRecord(runCollection)
-			runRecord.SetId("r_" + security.PseudorandomString(10))
-			runRecord.Set("created", runCreated.Format("2006-01-02T15:04:05Z"))
-			runRecord.Set("updated", runUpdated.Format("2006-01-02T15:04:05Z"))
-			runRecord.Set("ticket", record.GetId())
-			runRecord.Set("name", runPlaybook.Get("name"))
-			runRecord.Set("steps", steps)
-
-			records = append(records, runRecord)
-		}
 	}
 
 	return records
@@ -266,83 +221,4 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 	record.Set("destination", "http://localhost:8080/webhook")
 
 	return []*models.Record{record}
-}
-
-func playbookRecords(dao *daos.Dao) []*models.Record {
-	playbookCollection, err := dao.FindCollectionByNameOrId(migrations.PlaybookCollectionName)
-	if err != nil {
-		panic(err)
-	}
-
-	playbook1 := []playbook.Step{
-		{
-			Name:        "Detection and Isolation",
-			Type:        "task",
-			Description: "Monitor and identify malware presence, then isolate affected systems from the network.",
-			// Schema: playbook.JSONSchema{
-			// 	Type: "object",
-			// 	Properties: map[string]playbook.JSONProperty{
-			// 		"name": {
-			// 			Title: "Name",
-			// 			Type:  "string",
-			// 		},
-			// 	},
-			// },
-		},
-		{
-			Name:        "Containment and Mitigation",
-			Type:        "task",
-			Description: "Contain the malware and mitigate the impact on the network.",
-		},
-		{
-			Name:        "Eradication and Recovery",
-			Type:        "task",
-			Description: "Remove the malware from the network and recover affected systems.",
-		},
-		{
-			Name:        "Post-Incident Analysis",
-			Type:        "task",
-			Description: "Analyze the incident and identify the root cause of the malware infection.",
-		},
-	}
-
-	b, err := json.Marshal(playbook1)
-	if err != nil {
-		panic(err)
-	}
-
-	record1 := models.NewRecord(playbookCollection)
-	record1.SetId("p_" + security.PseudorandomString(10))
-	record1.Set("name", "Malware Infection")
-	record1.Set("steps", string(b))
-
-	playbook2 := []playbook.Step{
-		{
-			Name:        "Data Collection",
-			Type:        "task",
-			Description: "Collect customer information and store it in a secure location.",
-		},
-		{
-			Name:        "Data Analysis",
-			Type:        "task",
-			Description: "Analyze the collected data and identify patterns and trends.",
-		},
-		{
-			Name:        "Data Reporting",
-			Type:        "task",
-			Description: "Generate reports based on the analyzed data and share them with the customer.",
-		},
-	}
-
-	b, err = json.Marshal(playbook2)
-	if err != nil {
-		panic(err)
-	}
-
-	record2 := models.NewRecord(playbookCollection)
-	record2.SetId("p_" + security.PseudorandomString(10))
-	record2.Set("name", "Customer information")
-	record2.Set("steps", string(b))
-
-	return []*models.Record{record1, record2}
 }

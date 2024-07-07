@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
-import PlaybookView from '@/views/PlaybookView.vue'
 import TicketView from '@/views/TicketView.vue'
 
 const router = createRouter({
@@ -26,11 +25,6 @@ const router = createRouter({
       path: '/tickets/:type/:id?',
       name: 'tickets',
       component: TicketView
-    },
-    {
-      path: '/playbooks/:id?',
-      name: 'playbooks',
-      component: PlaybookView
     }
   ]
 })

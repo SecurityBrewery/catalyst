@@ -17,8 +17,6 @@ const dashboardCountsViewQuery = `SELECT id, count FROM (
   UNION
   SELECT 'tickets' as id, COUNT(tickets.id) as count FROM tickets
   UNION
-  SELECT 'playbooks' as id, COUNT(playbooks.id) as count FROM playbooks
-  UNION
   SELECT 'tasks' as id, COUNT(tasks.id) as count FROM tasks
 ) as counts;`
 

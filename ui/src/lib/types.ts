@@ -29,7 +29,6 @@ export interface Ticket {
     links_via_ticket: Array<Link>
     files_via_ticket: Array<File>
     tasks_via_ticket: Array<Task>
-    runs_via_ticket: Array<Run>
   }
 }
 
@@ -117,39 +116,6 @@ export interface User {
 
   created: string
   updated: string
-}
-
-export interface Playbook {
-  id: string
-
-  name: string
-  steps: Array<PlaybookStep>
-
-  created: string
-  updated: string
-}
-
-export interface PlaybookStep {
-  name: string
-  type: 'task' | 'jsonschema'
-  description: string
-  schema: JSONSchema
-}
-
-export interface Run {
-  id: string
-  ticket: string
-  name: string
-  steps: Array<RunStep>
-}
-
-export interface RunStep {
-  name: string
-  type: 'task' | 'jsonschema'
-  status: 'open' | 'completed' | 'pending' | 'failed'
-  description: string
-  schema: JSONSchema
-  state: any
 }
 
 export interface JSONSchema {

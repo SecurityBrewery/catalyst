@@ -100,7 +100,7 @@ const {
       sort: '-created',
       filter: filter.value,
       expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,runs_via_ticket,tasks_via_ticket.owner'
+        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
     })
 })
 
