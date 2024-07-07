@@ -47,7 +47,7 @@ func attachWebhooks(app *pocketbase.PocketBase) {
 				},
 				&schema.SchemaField{
 					Name:     "destination",
-					Type:     schema.FieldTypeText,
+					Type:     schema.FieldTypeUrl,
 					Required: true,
 				},
 			),

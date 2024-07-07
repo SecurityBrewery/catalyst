@@ -36,7 +36,7 @@ build-ui:
 dev:
 	@echo "Running..."
 	rm -rf catalyst_data
-	go run . migrate up
+	go run . bootstrap
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . set-feature-flags dev
 	go run . fake-data
