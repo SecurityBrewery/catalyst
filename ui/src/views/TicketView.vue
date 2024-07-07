@@ -29,7 +29,7 @@ const {
 })
 
 watch(
-  () => route.params,
+  () => type.value,
   () => refetch()
 )
 

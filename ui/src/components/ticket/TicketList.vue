@@ -25,9 +25,13 @@ import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
 import type { ListResult } from 'pocketbase'
 import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, Type } from '@/lib/types'
+
+const router = useRouter()
+const route = useRoute()
 
 const props = defineProps<{
   selectedType: Type
@@ -99,6 +103,18 @@ const {
         'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,runs_via_ticket,tasks_via_ticket.owner'
     })
 })
+
+watch(
+  () => ticketItems.value,
+  () => {
+    if (!route.params.id && ticketItems.value && ticketItems.value.items.length > 0) {
+      router.push({
+        name: 'tickets',
+        params: { type: props.selectedType.id, id: ticketItems.value.items[0].id }
+      })
+    }
+  }
+)
 
 const debouncedRefetch = debounce(refetch, 300)
 watch(searchValue, () => debouncedRefetch())
