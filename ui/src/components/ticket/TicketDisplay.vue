@@ -3,6 +3,7 @@ import TanView from '@/components/TanView.vue'
 import JSONSchemaFormFields from '@/components/form/JSONSchemaFormFields.vue'
 import DynamicMDEditor from '@/components/input/DynamicMDEditor.vue'
 import TicketActionBar from '@/components/ticket/TicketActionBar.vue'
+import TicketCloseBar from '@/components/ticket/TicketCloseBar.vue'
 import TicketHeader from '@/components/ticket/TicketHeader.vue'
 import TicketTab from '@/components/ticket/TicketTab.vue'
 import TicketComments from '@/components/ticket/comment/TicketComments.vue'
@@ -244,6 +245,8 @@ const updateDescription = (value: string) => (message.value = value)
           </div>
         </ScrollArea>
       </div>
+      <Separator />
+      <TicketCloseBar :ticket="ticket" />
     </div>
   </TanView>
 </template>

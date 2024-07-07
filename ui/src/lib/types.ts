@@ -14,6 +14,7 @@ export interface Ticket {
   name: string
   description: string
   open: boolean
+  resolution: string
   schema: JSONSchema
   state: any
   owner: string

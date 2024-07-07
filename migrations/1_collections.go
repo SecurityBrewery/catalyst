@@ -46,6 +46,7 @@ func collectionsUp(db dbx.Builder) error {
 				&schema.SchemaField{Name: "type", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: TypeCollectionName, MaxSelect: types.Pointer(1)}},
 				&schema.SchemaField{Name: "description", Type: schema.FieldTypeText},
 				&schema.SchemaField{Name: "open", Type: schema.FieldTypeBool},
+				&schema.SchemaField{Name: "resolution", Type: schema.FieldTypeText},
 				&schema.SchemaField{Name: "schema", Type: schema.FieldTypeJson, Options: &schema.JsonOptions{MaxSize: 50_000}},
 				&schema.SchemaField{Name: "state", Type: schema.FieldTypeJson, Options: &schema.JsonOptions{MaxSize: 50_000}},
 				&schema.SchemaField{Name: "owner", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: UserCollectionName, MaxSelect: types.Pointer(1)}},

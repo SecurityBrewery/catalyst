@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
+import TicketCloseDialog from '@/components/ticket/TicketCloseDialog.vue'
 import TicketDeleteDialog from '@/components/ticket/TicketDeleteDialog.vue'
 import TicketUserSelect from '@/components/ticket/TicketUserSelect.vue'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Check, CircleDot, Repeat } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
@@ -64,9 +65,11 @@ const closeTicketMutation = useMutation({
     pb.collection('tickets').update(props.ticket.id, {
       open: !props.ticket.open
     }),
-  onSuccess: () => {
+  onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
-    router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+    if (!data.open) {
+      router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+    }
   },
   onError: (error) => {
     toast({
@@ -78,6 +81,8 @@ const closeTicketMutation = useMutation({
 })
 
 const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.expand.type.id))
+
+const closeTicketDialogOpen = ref(false)
 </script>
 
 <template>
@@ -94,7 +99,12 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem v-for="type in otherTypes" :key="type.id" class="cursor-pointer" @click="changeTypeMutation.mutate(type.id)">
+                <DropdownMenuItem
+                  v-for="type in otherTypes"
+                  :key="type.id"
+                  class="cursor-pointer"
+                  @click="changeTypeMutation.mutate(type.id)"
+                >
                   <Icon :name="type.icon" class="mr-2 size-4" />
                   Convert to {{ type.singular }}
                 </DropdownMenuItem>
@@ -104,6 +114,7 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
         </TooltipTrigger>
         <TooltipContent>Change Type</TooltipContent>
       </Tooltip>
+      <TicketCloseDialog v-model="closeTicketDialogOpen" :ticket="ticket" />
       <Tooltip>
         <TooltipTrigger as-child>
           <div>
@@ -116,10 +127,17 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem class="cursor-pointer" @click="closeTicketMutation.mutate">
-                  <Check v-if="ticket.open" class="mr-2 h-4 w-4" />
-                  <Repeat v-else class="mr-2 h-4 w-4" />
-                  {{ ticket?.open ? 'Close Ticket' : 'Reopen Ticket' }}
+                <DropdownMenuItem
+                  v-if="ticket.open"
+                  class="cursor-pointer"
+                  @click="closeTicketDialogOpen = true"
+                >
+                  <Check class="mr-2 size-4" />
+                  Close Ticket
+                </DropdownMenuItem>
+                <DropdownMenuItem v-else class="cursor-pointer" @click="closeTicketMutation.mutate">
+                  <Repeat class="mr-2 size-4" />
+                  Reopen Ticket
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
