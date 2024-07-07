@@ -41,6 +41,24 @@ const {
     })
 })
 
+const changeTypeMutation = useMutation({
+  mutationFn: (typeID: string): Promise<Ticket> =>
+    pb.collection('tickets').update(props.ticket.id, {
+      type: typeID
+    }),
+  onSuccess: (data: Ticket) => {
+    queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
+  },
+  onError: (error) => {
+    toast({
+      title: error.name,
+      description: error.message,
+      variant: 'destructive'
+    })
+  }
+})
+
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
     pb.collection('tickets').update(props.ticket.id, {
@@ -65,22 +83,18 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
 <template>
   <div class="flex items-center justify-between bg-background p-2">
     <div class="flex items-center gap-2">
-      <div class="flex h-10 flex-row items-center rounded border px-4 py-2">
-        <Icon :name="ticket.expand.type.icon" class="mr-2 size-4" />
-        {{ ticket.expand.type.singular }}
-      </div>
-      <!-- Tooltip>
+      <Tooltip>
         <TooltipTrigger as-child>
           <div>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="outline" :disabled="!ticket">
-                  <Icon :name="selectedType.icon" class="mr-2 size-4" />
-                  {{ selectedType.singular }}
+                  <Icon :name="ticket.expand.type.icon" class="mr-2 size-4" />
+                  {{ ticket.expand.type.singular }}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem v-for="type in otherTypes" :key="type.id" class="cursor-pointer">
+                <DropdownMenuItem v-for="type in otherTypes" :key="type.id" class="cursor-pointer" @click="changeTypeMutation.mutate(type.id)">
                   <Icon :name="type.icon" class="mr-2 size-4" />
                   Convert to {{ type.singular }}
                 </DropdownMenuItem>
@@ -89,7 +103,7 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
           </div>
         </TooltipTrigger>
         <TooltipContent>Change Type</TooltipContent>
-      </Tooltip -->
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger as-child>
           <div>
@@ -123,18 +137,5 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
       </Tooltip>
     </div>
     <TicketDeleteDialog :ticket="ticket" />
-    <!-- DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button variant="ghost" size="icon" :disabled="!ticket">
-          <MoreVertical class="size-4" />
-          <span class="sr-only">More</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem>
-          <TicketDeleteDialog :selectedType="selectedType" :ticket="ticket" />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu-->
   </div>
 </template>
