@@ -36,9 +36,9 @@ func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
 	users := userRecords(app.Dao(), userCount)
 	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
 	webhooks := webhookRecords(app.Dao())
-	actions := actionRecords(app.Dao())
+	reactions := reactionRecords(app.Dao())
 
-	for _, records := range [][]*models.Record{users, tickets, webhooks, actions} {
+	for _, records := range [][]*models.Record{users, tickets, webhooks, reactions} {
 		for _, record := range records {
 			if err := app.Dao().SaveRecord(record); err != nil {
 				app.Logger().Error(err.Error())
@@ -224,8 +224,10 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 	return []*models.Record{record}
 }
 
-func actionRecords(dao *daos.Dao) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(migrations.ActionCollectionName)
+func reactionRecords(dao *daos.Dao) []*models.Record {
+	var records []*models.Record
+
+	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionWebhookCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -233,11 +235,23 @@ func actionRecords(dao *daos.Dao) []*models.Record {
 	record := models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
 	record.Set("name", "test")
-	record.Set("type", "python")
-	record.Set("bootstrap", "requests")
-	record.Set("script", `import sys
+	record.Set("headers", `["Content-Type: application/json"]`)
+	record.Set("destination", "http://localhost:8080/webhook")
 
-print(sys.argv[1])`)
+	records = append(records, record)
 
-	return []*models.Record{record}
+	collection, err = dao.FindCollectionByNameOrId(migrations.ReactionPythonCollectionName)
+	if err != nil {
+		panic(err)
+	}
+
+	record = models.NewRecord(collection)
+	record.SetId("w_" + security.PseudorandomString(10))
+	record.Set("name", "test")
+	record.Set("requirements", "requests")
+	record.Set("script", "import sys\n\nprint(sys.argv[1])")
+
+	records = append(records, record)
+
+	return records
 }

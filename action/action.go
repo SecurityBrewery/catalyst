@@ -11,7 +11,7 @@ import (
 )
 
 func findAction(app core.App, action string) (*models.Record, bool, error) {
-	records, err := app.Dao().FindRecordsByExpr(migrations.ActionCollectionName, dbx.HashExp{"name": action})
+	records, err := app.Dao().FindRecordsByExpr(migrations.ReactionPythonCollectionName, dbx.HashExp{"name": action}) // TODO
 	if err != nil {
 		return nil, false, err
 	}

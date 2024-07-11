@@ -130,3 +130,35 @@ export interface JSONSchema {
   >
   required?: Array<string>
 }
+
+export interface Reaction {
+  id: string
+
+  name: string
+  type: string
+
+  created: string
+  updated: string
+}
+
+export interface ReactionPython {
+  id: string
+
+  name: string
+  requirements: string
+  script: string
+
+  created: string
+  updated: string
+}
+
+export interface ReactionWebhook {
+  id: string
+
+  name: string
+  headers: Array<string>
+  destination: string
+
+  created: string
+  updated: string
+}

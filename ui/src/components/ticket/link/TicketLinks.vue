@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import PanelListElement from '@/components/common/PanelListElement.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import LinkAddDialog from '@/components/ticket/link/LinkAddDialog.vue'
-import LinkRemoveDialog from '@/components/ticket/link/LinkRemoveDialog.vue'
+import { Button } from '@/components/ui/button'
+
+import { Trash2 } from 'lucide-vue-next'
 
 import { ref } from 'vue'
 
@@ -38,7 +41,18 @@ const dialogOpen = ref(false)
         </div>
       </a>
 
-      <LinkRemoveDialog :ticket="ticket" :link="link" />
+      <DeleteDialog
+        v-if="link"
+        collection="links"
+        :id="link.id"
+        :name="link.name"
+        singular="Link"
+        :queryKey="['tickets', ticket.id]"
+      >
+        <Button variant="ghost" size="icon" class="h-8 w-8">
+          <Trash2 class="size-4" />
+        </Button>
+      </DeleteDialog>
     </PanelListElement>
   </TicketPanel>
 </template>

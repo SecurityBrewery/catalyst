@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	ActionCollectionName   = "actions"
 	CommentCollectionName  = "comments"
 	FeatureCollectionName  = "features"
 	LinkCollectionName     = "links"
@@ -114,21 +113,6 @@ func collectionsUp(db dbx.Builder) error {
 				fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", FeatureCollectionName),
 			},
 		},
-		internalCollection(&models.Collection{
-			Name: ActionCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "type", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "token", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "description", Type: schema.FieldTypeText},
-				&schema.SchemaField{Name: "bootstrap", Type: schema.FieldTypeText},
-				&schema.SchemaField{Name: "script", Type: schema.FieldTypeText},
-			),
-			Indexes: types.JsonArray[string]{
-				fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", ActionCollectionName),
-			},
-		}),
 	}
 
 	dao := daos.New(db)

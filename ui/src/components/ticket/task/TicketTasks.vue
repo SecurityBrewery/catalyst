@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import PanelListElement from '@/components/common/PanelListElement.vue'
 import UserSelect from '@/components/common/UserSelect.vue'
 import DynamicInput from '@/components/input/DynamicInput.vue'
@@ -9,7 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from '@/components/ui/toast'
 
-import { User2 } from 'lucide-vue-next'
+import { Trash2, User2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
@@ -105,7 +106,18 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
               {{ task.expand.owner.name }}
             </Button>
           </UserSelect>
-          <TaskRemoveDialog :ticket="ticket" :task="task" />
+          <DeleteDialog
+            v-if="task"
+            collection="tasks"
+            :id="task.id"
+            :name="task.name"
+            :singular="'Task'"
+            :queryKey="['tickets', ticket.id]"
+          >
+            <Button variant="ghost" size="icon" class="h-8 w-8">
+              <Trash2 class="size-4" />
+            </Button>
+          </DeleteDialog>
         </div>
       </PanelListElement>
     </Card>
