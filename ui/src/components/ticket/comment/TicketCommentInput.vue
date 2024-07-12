@@ -2,7 +2,6 @@
 import MDEditor from '@/components/input/MDEditor.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { toast } from '@/components/ui/toast'
 
 import { Plus } from 'lucide-vue-next'
 
@@ -11,6 +10,7 @@ import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const props = defineProps<{
   ticket: Ticket
@@ -34,12 +34,7 @@ const addCommentMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     message.value = ''
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 </script>
 

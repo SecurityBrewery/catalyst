@@ -1,3 +1,5 @@
+import { toast } from '@/components/ui/toast'
+
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -11,4 +13,12 @@ export function human(bytes: number) {
     : bytes < 1048576
       ? (bytes / 1024).toFixed(1) + ' KB'
       : (bytes / 1048576).toFixed(1) + ' MB'
+}
+
+export function handleError(error: Error) {
+  toast({
+    title: error.name,
+    description: error.message,
+    variant: 'destructive'
+  })
 }

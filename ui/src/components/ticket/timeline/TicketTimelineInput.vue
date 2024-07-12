@@ -3,7 +3,6 @@ import MDEditor from '@/components/input/MDEditor.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { toast } from '@/components/ui/toast'
 import { Calendar } from '@/components/ui/v-calendar'
 
 import { Calendar as CalendarIcon, Plus } from 'lucide-vue-next'
@@ -14,7 +13,7 @@ import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, TimelineItem } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { cn, handleError } from '@/lib/utils'
 
 const props = defineProps<{
   ticket: Ticket
@@ -38,12 +37,7 @@ const addCommentMutation = useMutation({
     message.value = ''
     newTimelineItem.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const addComment = () => addCommentMutation.mutate()

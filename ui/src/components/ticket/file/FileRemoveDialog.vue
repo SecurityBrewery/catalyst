@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { toast } from '@/components/ui/toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
@@ -19,6 +18,7 @@ import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { File, Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -35,12 +35,7 @@ const removeFileMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     isOpen.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 </script>
 

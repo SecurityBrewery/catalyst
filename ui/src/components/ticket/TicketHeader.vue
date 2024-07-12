@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import DynamicInput from '@/components/input/DynamicInput.vue'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import type { Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -24,12 +24,7 @@ const editNameMutation = useMutation({
       name: name.value
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const updateName = (value: string) => {

@@ -10,7 +10,6 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
@@ -18,6 +17,7 @@ import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 const router = useRouter()
@@ -42,13 +42,7 @@ const closeTicketMutation = useMutation({
       router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
     }
   },
-  onError: (error) => {
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
-  }
+  onError: handleError
 })
 </script>
 

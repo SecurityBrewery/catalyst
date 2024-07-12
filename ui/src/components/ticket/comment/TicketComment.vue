@@ -17,7 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { toast } from '@/components/ui/toast'
 
 import { Edit, MoreVertical, Trash } from 'lucide-vue-next'
 
@@ -27,6 +26,7 @@ import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { Comment } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -44,12 +44,7 @@ const deleteCommentMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.comment.ticket] })
     isOpen.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const editCommentMutation = useMutation({
@@ -61,12 +56,7 @@ const editCommentMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.comment.ticket] })
     editMode.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const edit = () => (editMode.value = true)

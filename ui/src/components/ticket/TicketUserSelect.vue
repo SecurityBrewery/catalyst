@@ -2,7 +2,6 @@
 import UserSelect from '@/components/common/UserSelect.vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/toast'
 
 import { LoaderCircle, User2 } from 'lucide-vue-next'
 
@@ -10,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, User } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -34,12 +34,7 @@ const setTicketOwnerMutation = useMutation({
       owner: user.id
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets'] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const update = (user: User) => setTicketOwnerMutation.mutate(user)

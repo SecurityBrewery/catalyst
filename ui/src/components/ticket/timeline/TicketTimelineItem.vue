@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import PanelListElement from '@/components/common/PanelListElement.vue'
-import DynamicInput from '@/components/input/DynamicInput.vue'
 import DynamicMDEditor from '@/components/input/DynamicMDEditor.vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,10 +19,9 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { toast } from '@/components/ui/toast'
 import { Calendar } from '@/components/ui/v-calendar'
 
-import { Calendar as CalendarIcon, Edit, MoreVertical, Trash } from 'lucide-vue-next'
+import { Edit, MoreVertical, Trash } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
@@ -31,7 +29,7 @@ import { ref, watch } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { TimelineItem } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { cn, handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -51,12 +49,7 @@ const updateTimelineMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
     editMode.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 watch(time, () => {
@@ -71,12 +64,7 @@ const deleteTimelineItemMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
     isOpen.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const edit = () => (editMode.value = true)
