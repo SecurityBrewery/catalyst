@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
+import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketCloseDialog from '@/components/ticket/TicketCloseDialog.vue'
 import TicketUserSelect from '@/components/ticket/TicketUserSelect.vue'
 import { Button } from '@/components/ui/button'
@@ -141,6 +142,14 @@ const closeTicketDialogOpen = ref(false)
         <TooltipContent>Change User</TooltipContent>
       </Tooltip>
     </div>
-    <TicketDeleteDialog :ticket="ticket" />
+    <DeleteDialog
+      v-if="ticket"
+      :collection="'tickets'"
+      :id="ticket.id"
+      :name="ticket.name"
+      singular="Ticket"
+      :to="{ name: 'tickets' }"
+      :queryKey="['tickets']"
+    />
   </div>
 </template>
