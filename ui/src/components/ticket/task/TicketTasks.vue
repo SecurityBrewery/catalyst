@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import { pb } from '@/lib/pocketbase'
 import type { Task, Ticket, User } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -29,12 +30,7 @@ const setTaskOwnerMutation = useMutation({
       owner: update.user.id
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, user })
@@ -45,12 +41,7 @@ const checkMutation = useMutation({
       open: !task.open
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const check = (task: Task) => checkMutation.mutate(task)
@@ -61,12 +52,7 @@ const updateTaskNameMutation = useMutation({
       name: update.name
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const updateTaskName = (id: string, name: string) => updateTaskNameMutation.mutate({ id, name })
