@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
 import { Button } from '@/components/ui/button'
 
-import { Download } from 'lucide-vue-next'
+import { Download, Trash2 } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
@@ -69,7 +70,18 @@ watch(config, (newConfig) => {
       >
         <Download class="size-4" />
       </Button>
-      <FileRemoveDialog :ticket="ticket" :file="file" />
+      <DeleteDialog
+        v-if="file"
+        collection="files"
+        :id="file.id"
+        :name="file.name"
+        singular="File"
+        :queryKey="['tickets', ticket.id]"
+      >
+        <Button variant="ghost" size="icon" class="h-8 w-8">
+          <Trash2 class="size-4" />
+        </Button>
+      </DeleteDialog>
     </div>
   </TicketPanel>
 </template>
