@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { defineRule, useForm } from 'vee-validate'
 import { watch } from 'vue'
 
-import type { ReactionPython, ReactionWebhook } from '@/lib/types'
+import type { ReactionWebhook } from '@/lib/types'
 
 const submitDisabled = defineModel('submitDisabled')
 

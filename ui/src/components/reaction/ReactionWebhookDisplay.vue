@@ -4,12 +4,12 @@ import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import ReactionWebhookForm from '@/components/reaction/ReactionWebhookForm.vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { pb } from '@/lib/pocketbase'
 import type { ReactionWebhook } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -33,12 +33,7 @@ const updateReactionMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
     queryClient.invalidateQueries({ queryKey: ['reactions_webhooks'] })
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 </script>
 

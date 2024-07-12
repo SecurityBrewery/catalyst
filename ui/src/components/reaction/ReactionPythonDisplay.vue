@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import TanView from '@/components/TanView.vue'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
-import DynamicInput from '@/components/input/DynamicInput.vue'
 import ReactionPythonForm from '@/components/reaction/ReactionPythonForm.vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { pb } from '@/lib/pocketbase'
 import type { ReactionPython } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -34,12 +33,7 @@ const updateReactionMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
     queryClient.invalidateQueries({ queryKey: ['reactions_python'] })
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 </script>
 

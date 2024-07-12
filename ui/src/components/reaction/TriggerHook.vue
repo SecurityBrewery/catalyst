@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -10,8 +9,6 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-
-import { computed } from 'vue'
 
 interface TriggerWebhookData {
   collection: string

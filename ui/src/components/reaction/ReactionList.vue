@@ -2,11 +2,9 @@
 import TanView from '@/components/TanView.vue'
 import ResourceListElement from '@/components/common/ResourceListElement.vue'
 import ReactionNewDialog from '@/components/reaction/ReactionNewDialog.vue'
-import ReactionPythonNewDialog from '@/components/reaction/ReactionPythonNewDialog.vue'
 import { Separator } from '@/components/ui/separator'
 
 import { useQuery } from '@tanstack/vue-query'
-import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'

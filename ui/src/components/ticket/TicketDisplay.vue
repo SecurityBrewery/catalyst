@@ -18,7 +18,6 @@ import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { toast } from '@/components/ui/toast'
 
 import { Edit } from 'lucide-vue-next'
 
@@ -28,6 +27,7 @@ import { useRoute } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, Type } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const route = useRoute()
 const queryClient = useQueryClient()
@@ -64,12 +64,7 @@ const editDescriptionMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
     editMode.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const edit = () => (editMode.value = true)
@@ -80,12 +75,7 @@ const editStateMutation = useMutation({
       state: state
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', id.value] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const taskStatus = computed(() => {

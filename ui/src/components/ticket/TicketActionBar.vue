@@ -2,7 +2,6 @@
 import Icon from '@/components/Icon.vue'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketCloseDialog from '@/components/ticket/TicketCloseDialog.vue'
-import TicketDeleteDialog from '@/components/ticket/TicketDeleteDialog.vue'
 import TicketUserSelect from '@/components/ticket/TicketUserSelect.vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { toast } from '@/components/ui/toast'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { Check, CircleDot, Repeat } from 'lucide-vue-next'
@@ -22,6 +20,7 @@ import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket, Type } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 const router = useRouter()
@@ -52,13 +51,7 @@ const changeTypeMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
   },
-  onError: (error) => {
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
-  }
+  onError: handleError
 })
 
 const closeTicketMutation = useMutation({
@@ -72,13 +65,7 @@ const closeTicketMutation = useMutation({
       router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
     }
   },
-  onError: (error) => {
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
-  }
+  onError: handleError
 })
 
 const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.expand.type.id))

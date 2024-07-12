@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { toast } from '@/components/ui/toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
@@ -19,6 +18,7 @@ import { ref } from 'vue'
 import { type RouteLocationRaw, useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 const router = useRouter()
@@ -40,12 +40,7 @@ const deleteMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: props.queryKey })
     if (props.to) router.push(props.to)
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 </script>
 

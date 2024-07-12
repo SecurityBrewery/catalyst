@@ -20,12 +20,12 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 import { pb } from '@/lib/pocketbase'
 import type { Reaction } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -46,12 +46,7 @@ const {
 const updateReactionMutation = useMutation({
   mutationFn: (update: any) => pb.collection('reactions').update(props.id, update),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reactions'] }),
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const updateName = (name: string) => updateReactionMutation.mutate({ name: name })

@@ -8,8 +8,6 @@ import { ChevronRight } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
-import format from 'date-fns/format'
-import { computed } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { Ticket } from '@/lib/types'

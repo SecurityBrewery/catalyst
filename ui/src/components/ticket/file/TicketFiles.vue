@@ -2,7 +2,6 @@
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
-import FileRemoveDialog from '@/components/ticket/file/FileRemoveDialog.vue'
 import { Button } from '@/components/ui/button'
 
 import { Download, Trash2 } from 'lucide-vue-next'
