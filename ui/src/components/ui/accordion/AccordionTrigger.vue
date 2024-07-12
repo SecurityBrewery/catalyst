@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ChevronDown } from 'lucide-vue-next'
-
 import { AccordionHeader, AccordionTrigger, type AccordionTriggerProps } from 'radix-vue'
 import { type HTMLAttributes, computed } from 'vue'
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
-import FileRemoveDialog from '@/components/ticket/file/FileRemoveDialog.vue'
 import { Button } from '@/components/ui/button'
 
 import { Download } from 'lucide-vue-next'

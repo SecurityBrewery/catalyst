@@ -10,13 +10,13 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { File as CFile, Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -42,13 +42,7 @@ const addFileMutation = useMutation({
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     isOpen.value = false
   },
-  onError: (error) => {
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
-  }
+  onError: handleError
 })
 
 const save = () => addFileMutation.mutate()

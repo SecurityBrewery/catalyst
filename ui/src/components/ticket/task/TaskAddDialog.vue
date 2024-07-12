@@ -4,7 +4,6 @@ import UserSelect from '@/components/common/UserSelect.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/toast'
 
 import { Plus, User2 } from 'lucide-vue-next'
 
@@ -13,6 +12,7 @@ import { computed, ref } from 'vue'
 
 import { pb } from '@/lib/pocketbase'
 import type { Task, Ticket } from '@/lib/types'
+import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
@@ -40,12 +40,7 @@ const addTaskMutation = useMutation({
     owner.value = pb.authStore.model
     isOpen.value = false
   },
-  onError: (error) =>
-    toast({
-      title: error.name,
-      description: error.message,
-      variant: 'destructive'
-    })
+  onError: handleError
 })
 
 const submitDisabled = computed(() => !name.value || !owner.value)
