@@ -2,8 +2,6 @@
 import ThreeColumn from '@/components/layout/ThreeColumn.vue'
 import ReactionDisplay from '@/components/reaction/ReactionDisplay.vue'
 import ReactionList from '@/components/reaction/ReactionList.vue'
-import ReactionPythonDisplay from '@/components/reaction/ReactionPythonDisplay.vue'
-import ReactionWebhookDisplay from '@/components/reaction/ReactionWebhookDisplay.vue'
 
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
