@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"encoding/base64"
@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-type CatalystActionResponse struct {
+type CatalystReactionResponse struct {
 	StatusCode      int         `json:"statusCode"`
 	Headers         http.Header `json:"headers"`
 	Body            string      `json:"body"`
 	IsBase64Encoded bool        `json:"isBase64Encoded"`
 }
 
-func (cr *CatalystActionResponse) toResponse(logger *slog.Logger, w http.ResponseWriter) {
+func (cr *CatalystReactionResponse) toResponse(logger *slog.Logger, w http.ResponseWriter) {
 	for key, values := range cr.Headers {
 		for _, value := range values {
 			w.Header().Add(key, value)

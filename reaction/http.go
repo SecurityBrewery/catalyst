@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 )
 
 func requestToPayload(r *http.Request) (string, error) {
-	payload, err := json.Marshal(catalystActionRequest(r))
+	payload, err := json.Marshal(catalystReactionRequest(r))
 	if err != nil {
 		return "", err
 	}
@@ -17,7 +17,7 @@ func requestToPayload(r *http.Request) (string, error) {
 }
 
 func outputToResponse(logger *slog.Logger, w http.ResponseWriter, output []byte) {
-	var catalystResponse CatalystActionResponse
+	var catalystResponse CatalystReactionResponse
 	if err := json.Unmarshal(output, &catalystResponse); err == nil {
 		catalystResponse.toResponse(logger, w)
 

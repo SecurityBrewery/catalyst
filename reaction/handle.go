@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-const prefix = "/action/"
+const prefix = "/reaction/"
 
 func Handle(app core.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +19,7 @@ func Handle(app core.App) http.HandlerFunc {
 
 		actionName := strings.TrimPrefix(r.URL.Path, prefix)
 
-		action, found, err := findAction(app, actionName)
+		action, found, err := findReaction(app, actionName)
 		if err != nil {
 			errResponse(app.Logger(), w, http.StatusInternalServerError, err.Error())
 
@@ -47,7 +47,7 @@ func Handle(app core.App) http.HandlerFunc {
 			return
 		}
 
-		output, err := runAction(
+		output, err := runReaction(
 			action.GetString("type"),
 			action.GetString("name"),
 			action.GetString("bootstrap"),

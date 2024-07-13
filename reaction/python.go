@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func runPythonAction(name, bootstrap, script, payload string) ([]byte, error) {
+func runPythonReaction(name, bootstrap, script, payload string) ([]byte, error) {
 	tempDir, err := os.MkdirTemp("", "catalyst_action_"+name)
 	if err != nil {
 		return nil, err

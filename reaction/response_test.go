@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"io"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestCatalystActionResponse_toResponse(t *testing.T) {
+func TestCatalystReactionResponse_toResponse(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
 
 	type fields struct {
@@ -37,7 +37,7 @@ func TestCatalystActionResponse_toResponse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 
-			cr := &CatalystActionResponse{
+			cr := &CatalystReactionResponse{
 				StatusCode:      tt.fields.StatusCode,
 				Headers:         tt.fields.Headers,
 				Body:            tt.fields.Body,

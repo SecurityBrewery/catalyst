@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"io"

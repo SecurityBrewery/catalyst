@@ -13,7 +13,7 @@ import (
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 
-	"github.com/SecurityBrewery/catalyst/action"
+	"github.com/SecurityBrewery/catalyst/reaction"
 )
 
 //go:embed ui/dist/*
@@ -29,7 +29,7 @@ func addRoutes() func(*core.ServeEvent) error {
 			return c.Redirect(http.StatusFound, "/ui/")
 		})
 		e.Router.GET("/ui/*", staticFiles())
-		e.Router.Any("/action/*", echo.WrapHandler(action.Handle(e.App)))
+		e.Router.Any("/reaction/*", echo.WrapHandler(reaction.Handle(e.App)))
 		e.Router.GET("/api/config", func(c echo.Context) error {
 			flags, err := flags(e.App)
 			if err != nil {

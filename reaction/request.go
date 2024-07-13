@@ -1,4 +1,4 @@
-package action
+package reaction
 
 import (
 	"encoding/base64"
@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-type CatalystActionRequest struct {
+type CatalystReactionRequest struct {
 	Method          string      `json:"method"`
 	Path            string      `json:"path"`
 	Headers         http.Header `json:"headers"`
@@ -17,10 +17,10 @@ type CatalystActionRequest struct {
 	IsBase64Encoded bool        `json:"isBase64Encoded"`
 }
 
-func catalystActionRequest(r *http.Request) *CatalystActionRequest {
+func catalystReactionRequest(r *http.Request) *CatalystReactionRequest {
 	body, isBase64Encoded := encodeBody(r)
 
-	return &CatalystActionRequest{
+	return &CatalystReactionRequest{
 		Method:          r.Method,
 		Path:            r.URL.EscapedPath(),
 		Headers:         r.Header,
