@@ -135,29 +135,10 @@ export interface Reaction {
   id: string
 
   name: string
-  type: string
-
-  created: string
-  updated: string
-}
-
-export interface ReactionPython {
-  id: string
-
-  name: string
-  requirements: string
-  script: string
-
-  created: string
-  updated: string
-}
-
-export interface ReactionWebhook {
-  id: string
-
-  name: string
-  headers: Array<string>
-  destination: string
+  trigger: string
+  triggerdata: any
+  reaction: string
+  reactiondata: any
 
   created: string
   updated: string

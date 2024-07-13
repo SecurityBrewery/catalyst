@@ -25,7 +25,7 @@ withDefaults(defineProps<Props>(), {
 
       <Button v-if="!hideAdd" variant="ghost" size="icon" class="h-8 w-8" @click="emit('add')">
         <Plus class="size-4" />
-        <span class="sr-only">Add link</span>
+        <span class="sr-only">Add item</span>
       </Button>
     </div>
     <Card v-if="$slots.default" class="p-0">

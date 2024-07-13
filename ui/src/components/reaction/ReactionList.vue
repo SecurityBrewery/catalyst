@@ -25,10 +25,23 @@ const {
     })
 })
 
-const subtitle = (reaction: Reaction) => {
-  if (reaction.type === 'python') {
+const subtitle = (reaction: Reaction) =>
+  triggerNiceName(reaction) + ' to ' + reactionNiceName(reaction)
+
+const triggerNiceName = (reaction: Reaction) => {
+  if (reaction.trigger === 'hook') {
+    return 'Hook'
+  } else if (reaction.trigger === 'webhook') {
+    return 'Webhook'
+  } else {
+    return 'Unknown'
+  }
+}
+
+const reactionNiceName = (reaction: Reaction) => {
+  if (reaction.reaction === 'python') {
     return 'Python'
-  } else if (reaction.type === 'webhook') {
+  } else if (reaction.reaction === 'webhook') {
     return 'Webhook'
   } else {
     return 'Unknown'
@@ -56,7 +69,7 @@ const subtitle = (reaction: Reaction) => {
             :subtitle="subtitle(reaction)"
             description=""
             :active="route.params.id === reaction.id"
-            :to="{ name: 'reactions', params: { id: reaction.id, type: reaction.type } }"
+            :to="{ name: 'reactions', params: { id: reaction.id } }"
             :open="false"
           >
             {{ reaction.name }}

@@ -13,7 +13,7 @@ const router = createRouter({
       redirect: '/dashboard'
     },
     {
-      path: '/reactions/:type?/:id?',
+      path: '/reactions/:id?',
       name: 'reactions',
       component: ReactionView
     },

@@ -224,32 +224,38 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 	return []*models.Record{record}
 }
 
+const (
+	triggerWebhook  = `{"token":"1234567890","path":"webhook"}`
+	reactionPython  = `{"requirements":"requests","script":"import sys\n\nprint(sys.argv[1])"}`
+	triggerHook     = `{"collections":["tickets","comments"],"events":["create","update","delete"]}`
+	reactionWebhook = `{"headers":["Content-Type: application/json"],"url":"http://localhost:8080/webhook"}`
+)
+
 func reactionRecords(dao *daos.Dao) []*models.Record {
 	var records []*models.Record
 
-	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionWebhookCollectionName)
+	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
 	record := models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
-	record.Set("name", "test")
-	record.Set("headers", `["Content-Type: application/json"]`)
-	record.Set("destination", "http://localhost:8080/webhook")
+	record.Set("name", "Test Reaction")
+	record.Set("trigger", "webhook")
+	record.Set("triggerdata", triggerWebhook)
+	record.Set("reaction", "python")
+	record.Set("reactiondata", reactionPython)
 
 	records = append(records, record)
 
-	collection, err = dao.FindCollectionByNameOrId(migrations.ReactionPythonCollectionName)
-	if err != nil {
-		panic(err)
-	}
-
 	record = models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
-	record.Set("name", "test")
-	record.Set("requirements", "requests")
-	record.Set("script", "import sys\n\nprint(sys.argv[1])")
+	record.Set("name", "Test Reaction 2")
+	record.Set("trigger", "hook")
+	record.Set("triggerdata", triggerHook)
+	record.Set("reaction", "webhook")
+	record.Set("reactiondata", reactionWebhook)
 
 	records = append(records, record)
 

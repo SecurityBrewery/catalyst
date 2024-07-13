@@ -9,5 +9,5 @@ func Register() {
 	migrations.Register(collectionsUp, collectionsDown, "1700000001_collections.go")
 	migrations.Register(defaultDataUp, nil, "1700000003_defaultdata.go")
 	migrations.Register(viewsUp, viewsDown, "1700000004_views.go")
-	migrations.Register(actionsUp, actionsDown, "1700000005_actions.go")
+	migrations.Register(reactionsUp, reactionsDown, "1700000005_reactions.go")
 }

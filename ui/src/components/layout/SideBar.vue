@@ -49,12 +49,6 @@ const catalystStore = useCatalystStore()
     :is-collapsed="catalystStore.sidebarCollapsed"
     :links="[
       {
-        title: 'Incoming Webhooks',
-        icon: 'Webhook',
-        variant: 'ghost',
-        to: '/webhooks'
-      },
-      {
         title: 'Reactions',
         icon: 'Zap',
         variant: 'ghost',
