@@ -1,37 +1,19 @@
-package main
+package app
 
 import (
-	"log"
-
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/migrations"
 	"github.com/pocketbase/pocketbase/migrations/logs"
 	"github.com/pocketbase/pocketbase/tools/migrate"
-	"github.com/spf13/cobra"
 )
-
-func bootstrapCmd(app *pocketbase.PocketBase) *cobra.Command {
-	return &cobra.Command{
-		Use: "bootstrap",
-		Run: func(_ *cobra.Command, _ []string) {
-			if err := app.Bootstrap(); err != nil {
-				log.Fatal(err)
-			}
-
-			if err := migrateDBs(app); err != nil {
-				log.Fatal(err)
-			}
-		},
-	}
-}
 
 type migration struct {
 	db         *dbx.DB
 	migrations migrate.MigrationsList
 }
 
-func migrateDBs(app *pocketbase.PocketBase) error {
+func migrateDBs(app core.App) error {
 	for _, m := range []migration{
 		{db: app.DB(), migrations: migrations.AppMigrations},
 		{db: app.LogsDB(), migrations: logs.LogsMigrations},

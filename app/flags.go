@@ -1,37 +1,32 @@
-package main
+package app
 
 import (
 	"log"
 	"slices"
 
-	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/spf13/cobra"
 
-	"github.com/SecurityBrewery/catalyst/fakedata"
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
-func fakeDataCmd(app *pocketbase.PocketBase) *cobra.Command {
-	var userCount, ticketCount int
-
-	cmd := &cobra.Command{
-		Use: "fake-data",
-		Run: func(_ *cobra.Command, _ []string) {
-			if err := fakedata.Generate(app, userCount, ticketCount); err != nil {
-				log.Fatal(err)
-			}
-		},
+func flags(app core.App) ([]string, error) {
+	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
+	if err != nil {
+		return nil, err
 	}
 
-	cmd.PersistentFlags().IntVar(&userCount, "users", 10, "Number of users to generate")
+	var flags []string
 
-	cmd.PersistentFlags().IntVar(&ticketCount, "tickets", 100, "Number of tickets to generate")
+	for _, r := range records {
+		flags = append(flags, r.GetString("name"))
+	}
 
-	return cmd
+	return flags, nil
 }
 
-func setFeatureFlagsCmd(app *pocketbase.PocketBase) *cobra.Command {
+func setFeatureFlagsCmd(app core.App) *cobra.Command {
 	return &cobra.Command{
 		Use: "set-feature-flags",
 		Run: func(_ *cobra.Command, args []string) {

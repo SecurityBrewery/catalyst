@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"bytes"
@@ -10,7 +10,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
@@ -28,7 +27,7 @@ type Webhook struct {
 	Destination string `db:"destination" json:"destination"`
 }
 
-func attachWebhooks(app *pocketbase.PocketBase) {
+func attachWebhooks(app core.App) {
 	migrations.Register(func(db dbx.Builder) error {
 		return daos.New(db).SaveCollection(&models.Collection{
 			Name:   webhooksCollection,
@@ -82,7 +81,7 @@ type Payload struct {
 	Admin      *models.Admin  `json:"admin,omitempty"`
 }
 
-func event(app *pocketbase.PocketBase, action, collection string, record *models.Record, ctx echo.Context) error {
+func event(app core.App, action, collection string, record *models.Record, ctx echo.Context) error {
 	auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
 	admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
 

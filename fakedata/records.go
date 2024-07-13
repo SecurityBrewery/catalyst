@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/security"
@@ -19,7 +19,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
+func Generate(app core.App, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
