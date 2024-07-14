@@ -30,9 +30,9 @@ const subtitle = (reaction: Reaction) =>
 
 const triggerNiceName = (reaction: Reaction) => {
   if (reaction.trigger === 'hook') {
-    return 'Hook'
+    return 'Collection Hook'
   } else if (reaction.trigger === 'webhook') {
-    return 'Webhook'
+    return 'HTTP / Webhook'
   } else {
     return 'Unknown'
   }
@@ -42,7 +42,7 @@ const reactionNiceName = (reaction: Reaction) => {
   if (reaction.reaction === 'python') {
     return 'Python'
   } else if (reaction.reaction === 'webhook') {
-    return 'Webhook'
+    return 'HTTP / Webhook'
   } else {
     return 'Unknown'
   }

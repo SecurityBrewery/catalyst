@@ -228,15 +228,15 @@ const curlExample = computed(() => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="webhook">Webhook</SelectItem>
-                    <SelectItem value="hook">Hook</SelectItem>
+                    <SelectItem value="webhook">HTTP / Webhook</SelectItem>
+                    <SelectItem value="hook">Collection Hook</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </FormControl>
             <FormDescription>
-              <p>Webhook: Receive a HTTP request.</p>
-              <p>Hook: Triggered by a collection and event.</p>
+              <p>HTTP / Webhook: Receive a HTTP request.</p>
+              <p>Collection Hook: Triggered by a collection and event.</p>
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -268,14 +268,14 @@ const curlExample = computed(() => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="python">Python</SelectItem>
-                    <SelectItem value="webhook">Webhook</SelectItem>
+                    <SelectItem value="webhook">HTTP / Webhook</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </FormControl>
             <FormDescription>
               <p>Python: Execute a Python script.</p>
-              <p>Webhook: Send an HTTP request.</p>
+              <p>HTTP / Webhook: Send an HTTP request.</p>
             </FormDescription>
             <FormMessage />
           </FormItem>
