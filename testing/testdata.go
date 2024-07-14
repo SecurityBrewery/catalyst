@@ -83,7 +83,7 @@ func reactionTestData(t *testing.T, app core.App) {
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", `{"path":"test2"}`)
 	record.Set("reaction", "webhook")
-	record.Set("reactiondata", `{"header":{"Content-Type":"application/json"},"url":"http://localhost:8080/test"}`)
+	record.Set("reactiondata", `{"headers":{"Content-Type":"application/json"},"url":"http://localhost:8080/test"}`)
 
 	if err := app.Dao().SaveRecord(record); err != nil {
 		t.Fatal(err)
