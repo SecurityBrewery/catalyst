@@ -1,8 +1,6 @@
 package app
 
 import (
-	"log"
-
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +10,7 @@ func Bootstrap(app core.App) error {
 		return err
 	}
 
-	return migrateDBs(app)
+	return MigrateDBs(app)
 }
 
 func bootstrapCmd(app core.App) *cobra.Command {
@@ -20,7 +18,7 @@ func bootstrapCmd(app core.App) *cobra.Command {
 		Use: "bootstrap",
 		Run: func(_ *cobra.Command, _ []string) {
 			if err := Bootstrap(app); err != nil {
-				log.Fatal(err)
+				app.Logger().Error(err.Error())
 			}
 		},
 	}

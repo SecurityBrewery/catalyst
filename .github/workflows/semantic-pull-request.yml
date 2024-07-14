@@ -20,6 +20,6 @@ jobs:
         with:
           scopes: |
             deps
-          subjectPattern: "^(?!deps$).+"
+          subjectPattern: ^(?![A-Z]).+$
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

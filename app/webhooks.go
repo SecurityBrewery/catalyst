@@ -51,16 +51,7 @@ func attachWebhooks(app core.App) {
 				},
 			),
 		})
-	}, func(db dbx.Builder) error {
-		dao := daos.New(db)
-
-		id, err := dao.FindCollectionByNameOrId(webhooksCollection)
-		if err != nil {
-			return err
-		}
-
-		return dao.DeleteCollection(id)
-	}, "1690000000_webhooks.go")
+	}, nil, "1690000000_webhooks.go")
 
 	app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
 		return event(app, "create", e.Collection.Name, e.Record, e.HttpContext)

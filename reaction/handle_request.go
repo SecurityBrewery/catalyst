@@ -1,10 +1,14 @@
 package reaction
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"unicode/utf8"
 )
 
 func requestToPayload(r *http.Request) (string, error) {
@@ -16,24 +20,39 @@ func requestToPayload(r *http.Request) (string, error) {
 	return string(payload), nil
 }
 
-func outputToResponse(logger *slog.Logger, w http.ResponseWriter, output []byte) {
-	var catalystResponse CatalystReactionResponse
-	if err := json.Unmarshal(output, &catalystResponse); err == nil {
-		catalystResponse.toResponse(logger, w)
-
-		return
-	}
-
-	textResponse(logger, w, output)
+type CatalystReactionRequest struct {
+	Method          string      `json:"method"`
+	Path            string      `json:"path"`
+	Headers         http.Header `json:"headers"`
+	Query           url.Values  `json:"query"`
+	Body            string      `json:"body"`
+	IsBase64Encoded bool        `json:"isBase64Encoded"`
 }
 
-func response(logger *slog.Logger, w http.ResponseWriter, statusCode int, body []byte) {
-	w.WriteHeader(statusCode)
+func catalystReactionRequest(r *http.Request) *CatalystReactionRequest {
+	body, isBase64Encoded := encodeBody(r)
 
-	_, err := w.Write(body)
-	if err != nil {
-		logger.Error(fmt.Sprintf("Error writing response: %s", err.Error()))
+	return &CatalystReactionRequest{
+		Method:          r.Method,
+		Path:            r.URL.EscapedPath(),
+		Headers:         r.Header,
+		Query:           r.URL.Query(),
+		Body:            body,
+		IsBase64Encoded: isBase64Encoded,
 	}
+}
+
+func encodeBody(request *http.Request) (string, bool) {
+	body, err := io.ReadAll(request.Body)
+	if err != nil {
+		return "", false
+	}
+
+	if utf8.Valid(body) {
+		return string(body), false
+	}
+
+	return base64.StdEncoding.EncodeToString(body), true
 }
 
 func errResponse(logger *slog.Logger, w http.ResponseWriter, status int, msg string) {
@@ -61,6 +80,15 @@ func textResponse(logger *slog.Logger, w http.ResponseWriter, output []byte) {
 	}
 
 	response(logger, w, http.StatusOK, output)
+}
+
+func response(logger *slog.Logger, w http.ResponseWriter, statusCode int, body []byte) {
+	w.WriteHeader(statusCode)
+
+	_, err := w.Write(body)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error writing response: %s", err.Error()))
+	}
 }
 
 // isJSON checks if the data is JSON.

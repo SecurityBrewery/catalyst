@@ -4,63 +4,50 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/labstack/echo/v5"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 const prefix = "/reaction/"
 
-func Handle(app core.App) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.URL.Path, prefix) {
-			errResponse(app.Logger(), w, http.StatusNotFound, "wrong prefix")
+func Handle(app core.App) func(c echo.Context) error {
+	return func(c echo.Context) error {
+		r := c.Request()
+		w := c.Response()
 
-			return
+		if !strings.HasPrefix(r.URL.Path, prefix) {
+			return apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
 		}
 
-		actionName := strings.TrimPrefix(r.URL.Path, prefix)
+		reactionName := strings.TrimPrefix(r.URL.Path, prefix)
 
-		action, found, err := findReaction(app, actionName)
+		reaction, trigger, found, err := findReaction(app, reactionName)
 		if err != nil {
-			errResponse(app.Logger(), w, http.StatusInternalServerError, err.Error())
-
-			return
+			return apis.NewNotFoundError(err.Error(), nil)
 		}
 
 		if !found {
-			errResponse(app.Logger(), w, http.StatusNotFound, "action not found")
-
-			return
+			return apis.NewNotFoundError("reaction not found", nil)
 		}
 
-		token := action.GetString("token")
-
-		if token != "" && bearerToken(r) != token {
-			errResponse(app.Logger(), w, http.StatusUnauthorized, "invalid token")
-
-			return
+		if trigger.Token != "" && bearerToken(r) != trigger.Token {
+			return apis.NewUnauthorizedError("invalid token", nil)
 		}
 
 		payload, err := requestToPayload(r)
 		if err != nil {
-			errResponse(app.Logger(), w, http.StatusInternalServerError, err.Error())
-
-			return
+			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
 		}
 
-		output, err := runReaction(
-			action.GetString("type"),
-			action.GetString("name"),
-			action.GetString("bootstrap"),
-			action.GetString("script"),
-			payload,
-		)
+		output, err := runReaction(r.Context(), reaction, payload)
 		if err != nil {
-			errResponse(app.Logger(), w, http.StatusInternalServerError, err.Error())
-
-			return
+			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
 		}
 
 		outputToResponse(app.Logger(), w, output)
+
+		return nil
 	}
 }
 

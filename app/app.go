@@ -5,21 +5,22 @@ import (
 	"strings"
 
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
-func App(dir string) *pocketbase.PocketBase {
+func init() {
 	migrations.Register()
+}
 
+func App(dir string) *pocketbase.PocketBase {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
 		DefaultDev:     dev(),
 		DefaultDataDir: dir,
 	})
 
-	attachWebhooks(app)
-
-	app.OnBeforeServe().Add(addRoutes())
+	BindHooks(app)
 
 	// Register additional commands
 	app.RootCmd.AddCommand(bootstrapCmd(app))
@@ -27,6 +28,12 @@ func App(dir string) *pocketbase.PocketBase {
 	app.RootCmd.AddCommand(setFeatureFlagsCmd(app))
 
 	return app
+}
+
+func BindHooks(app core.App) {
+	attachWebhooks(app)
+
+	app.OnBeforeServe().Add(addRoutes())
 }
 
 func dev() bool {

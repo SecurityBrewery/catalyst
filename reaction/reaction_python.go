@@ -1,6 +1,7 @@
 package reaction
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -8,7 +9,7 @@ import (
 	"strings"
 )
 
-func runPythonReaction(name, bootstrap, script, payload string) ([]byte, error) {
+func runPythonReaction(ctx context.Context, name, bootstrap, script, payload string) ([]byte, error) {
 	tempDir, err := os.MkdirTemp("", "catalyst_action_"+name)
 	if err != nil {
 		return nil, err
@@ -16,28 +17,28 @@ func runPythonReaction(name, bootstrap, script, payload string) ([]byte, error) 
 
 	defer os.RemoveAll(tempDir)
 
-	if err := pythonSetup(tempDir); err != nil {
+	if err := pythonSetup(ctx, tempDir); err != nil {
 		return nil, err
 	}
 
-	if err := pythonRunBootstrap(tempDir, bootstrap); err != nil {
+	if err := pythonRunBootstrap(ctx, tempDir, bootstrap); err != nil {
 		return nil, err
 	}
 
-	return pythonRunScript(tempDir, script, payload)
+	return pythonRunScript(ctx, tempDir, script, payload)
 }
 
-func pythonSetup(tempDir string) error {
+func pythonSetup(ctx context.Context, tempDir string) error {
 	pythonPath, err := findExec("python", "python3")
 	if err != nil {
 		return fmt.Errorf("python or python3 binary not found, %w", err)
 	}
 
 	// setup virtual environment
-	return exec.Command(pythonPath, "-m", "venv", tempDir+"/venv").Run()
+	return exec.CommandContext(ctx, pythonPath, "-m", "venv", tempDir+"/venv").Run()
 }
 
-func pythonRunBootstrap(tempDir, bootstrap string) error {
+func pythonRunBootstrap(ctx context.Context, tempDir, bootstrap string) error {
 	hasBootstrap := len(strings.TrimSpace(bootstrap)) > 0
 
 	if !hasBootstrap {
@@ -53,10 +54,10 @@ func pythonRunBootstrap(tempDir, bootstrap string) error {
 	// install dependencies
 	pipPath := tempDir + "/venv/bin/pip"
 
-	return exec.Command(pipPath, "install", "-r", bootstrapPath).Run()
+	return exec.CommandContext(ctx, pipPath, "install", "-r", bootstrapPath).Run()
 }
 
-func pythonRunScript(tempDir, script, payload string) ([]byte, error) {
+func pythonRunScript(ctx context.Context, tempDir, script, payload string) ([]byte, error) {
 	scriptPath := tempDir + "/script.py"
 
 	if err := os.WriteFile(scriptPath, []byte(script), 0o600); err != nil {
@@ -65,7 +66,7 @@ func pythonRunScript(tempDir, script, payload string) ([]byte, error) {
 
 	pythonPath := tempDir + "/venv/bin/python"
 
-	return exec.Command(pythonPath, scriptPath, payload).Output()
+	return exec.CommandContext(ctx, pythonPath, scriptPath, payload).Output()
 }
 
 func findExec(name ...string) (string, error) {

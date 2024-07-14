@@ -19,9 +19,9 @@ func addRoutes() func(*core.ServeEvent) error {
 			return c.Redirect(http.StatusFound, "/ui/")
 		})
 		e.Router.GET("/ui/*", staticFiles())
-		e.Router.Any("/reaction/*", echo.WrapHandler(reaction.Handle(e.App)))
+		e.Router.Any("/reaction/*", reaction.Handle(e.App))
 		e.Router.GET("/api/config", func(c echo.Context) error {
-			flags, err := flags(e.App)
+			flags, err := Flags(e.App)
 			if err != nil {
 				return err
 			}

@@ -71,7 +71,19 @@ func reactionTestData(t *testing.T, app core.App) {
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", `{"path":"test"}`)
 	record.Set("reaction", "python")
-	record.Set("reactiondata", `{"script":"print('Hello, World!')"}`)
+	record.Set("reactiondata", `{"bootstrap":"requests","script":"print('Hello, World!')"}`)
+
+	if err := app.Dao().SaveRecord(record); err != nil {
+		t.Fatal(err)
+	}
+
+	record = models.NewRecord(collection)
+	record.SetId("r_reaction_webhook")
+	record.Set("name", "Reaction")
+	record.Set("trigger", "webhook")
+	record.Set("triggerdata", `{"path":"test2"}`)
+	record.Set("reaction", "webhook")
+	record.Set("reactiondata", `{"header":{"Content-Type":"application/json"},"url":"http://localhost:8080/test"}`)
 
 	if err := app.Dao().SaveRecord(record); err != nil {
 		t.Fatal(err)

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"slices"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -11,7 +10,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
-func flags(app core.App) ([]string, error) {
+func Flags(app core.App) ([]string, error) {
 	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
 	if err != nil {
 		return nil, err
@@ -26,47 +25,55 @@ func flags(app core.App) ([]string, error) {
 	return flags, nil
 }
 
+func SetFlags(app core.App, args []string) error {
+	featureCollection, err := app.Dao().FindCollectionByNameOrId(migrations.FeatureCollectionName)
+	if err != nil {
+		return err
+	}
+
+	featureRecords, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
+	if err != nil {
+		return err
+	}
+
+	var existingFlags []string
+
+	for _, featureRecord := range featureRecords {
+		// remove feature flags that are not in the args
+		if !slices.Contains(args, featureRecord.GetString("name")) {
+			if err := app.Dao().DeleteRecord(featureRecord); err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		existingFlags = append(existingFlags, featureRecord.GetString("name"))
+	}
+
+	for _, arg := range args {
+		if slices.Contains(existingFlags, arg) {
+			continue
+		}
+
+		// add feature flags that are not in the args
+		record := models.NewRecord(featureCollection)
+		record.Set("name", arg)
+
+		if err := app.Dao().SaveRecord(record); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func setFeatureFlagsCmd(app core.App) *cobra.Command {
 	return &cobra.Command{
 		Use: "set-feature-flags",
 		Run: func(_ *cobra.Command, args []string) {
-			featureCollection, err := app.Dao().FindCollectionByNameOrId(migrations.FeatureCollectionName)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			featureRecords, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			var existingFlags []string
-
-			for _, featureRecord := range featureRecords {
-				// remove feature flags that are not in the args
-				if !slices.Contains(args, featureRecord.GetString("name")) {
-					if err := app.Dao().DeleteRecord(featureRecord); err != nil {
-						log.Fatal(err)
-					}
-
-					continue
-				}
-
-				existingFlags = append(existingFlags, featureRecord.GetString("name"))
-			}
-
-			for _, arg := range args {
-				if slices.Contains(existingFlags, arg) {
-					continue
-				}
-
-				// add feature flags that are not in the args
-				record := models.NewRecord(featureCollection)
-				record.Set("name", arg)
-
-				if err := app.Dao().SaveRecord(record); err != nil {
-					log.Fatal(err)
-				}
+			if err := SetFlags(app, args); err != nil {
+				app.Logger().Error(err.Error())
 			}
 		},
 	}

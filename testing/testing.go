@@ -14,7 +14,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
-func baseTestApp(t *testing.T) (core.App, string, string, func()) {
+func BaseApp(t *testing.T) (core.App, string, string, func()) {
 	t.Helper()
 
 	temp, err := os.MkdirTemp("", "catalyst_test_data")
@@ -43,7 +43,7 @@ func baseTestApp(t *testing.T) (core.App, string, string, func()) {
 	return baseApp, adminToken, analystToken, func() { _ = os.RemoveAll(temp) }
 }
 
-func testAppFactory(baseApp core.App) func(t *testing.T) *tests.TestApp {
+func AppFactory(baseApp core.App) func(t *testing.T) *tests.TestApp {
 	return func(t *testing.T) *tests.TestApp {
 		t.Helper()
 
@@ -52,8 +52,24 @@ func testAppFactory(baseApp core.App) func(t *testing.T) *tests.TestApp {
 			t.Fatal(err)
 		}
 
+		app.BindHooks(testApp)
+
+		if err := app.Bootstrap(testApp); err != nil {
+			t.Fatal(err)
+		}
+
 		return testApp
 	}
+}
+
+func App(t *testing.T) (*tests.TestApp, func()) {
+	t.Helper()
+
+	baseApp, _, _, cleanup := BaseApp(t)
+
+	testApp := AppFactory(baseApp)(t)
+
+	return testApp, cleanup
 }
 
 func generateAdminToken(t *testing.T, baseApp core.App, email string) (string, error) {

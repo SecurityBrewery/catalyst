@@ -28,9 +28,24 @@ func Generate(app core.App, userCount, ticketCount int) error {
 		ticketCount = minimumTicketCount
 	}
 
-	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
+	records, err := Records(app, userCount, ticketCount)
 	if err != nil {
 		return err
+	}
+
+	for _, record := range records {
+		if err := app.Dao().SaveRecord(record); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func Records(app core.App, userCount int, ticketCount int) ([]*models.Record, error) {
+	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
+	if err != nil {
+		return nil, err
 	}
 
 	users := userRecords(app.Dao(), userCount)
@@ -38,15 +53,14 @@ func Generate(app core.App, userCount, ticketCount int) error {
 	webhooks := webhookRecords(app.Dao())
 	reactions := reactionRecords(app.Dao())
 
-	for _, records := range [][]*models.Record{users, tickets, webhooks, reactions} {
-		for _, record := range records {
-			if err := app.Dao().SaveRecord(record); err != nil {
-				app.Logger().Error(err.Error())
-			}
-		}
-	}
+	var records []*models.Record
+	records = append(records, users...)
+	records = append(records, types...)
+	records = append(records, tickets...)
+	records = append(records, webhooks...)
+	records = append(records, reactions...)
 
-	return nil
+	return records, nil
 }
 
 func userRecords(dao *daos.Dao, count int) []*models.Record {

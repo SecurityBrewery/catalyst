@@ -138,14 +138,14 @@ func internalCollection(c *models.Collection) *models.Collection {
 
 func collectionsDown(db dbx.Builder) error {
 	collections := []string{
-		TicketCollectionName,
-		TypeCollectionName,
 		fileCollectionName,
 		LinkCollectionName,
 		TaskCollectionName,
 		CommentCollectionName,
 		TimelineCollectionName,
 		FeatureCollectionName,
+		TicketCollectionName,
+		TypeCollectionName,
 	}
 
 	dao := daos.New(db)

@@ -1,8 +1,6 @@
 package app
 
 import (
-	"log"
-
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/spf13/cobra"
 
@@ -16,7 +14,7 @@ func fakeDataCmd(app core.App) *cobra.Command {
 		Use: "fake-data",
 		Run: func(_ *cobra.Command, _ []string) {
 			if err := fakedata.Generate(app, userCount, ticketCount); err != nil {
-				log.Fatal(err)
+				app.Logger().Error(err.Error())
 			}
 		},
 	}

@@ -5,73 +5,64 @@ import (
 	"testing"
 )
 
-func TestReactions(t *testing.T) {
+func Test_Routes(t *testing.T) {
 	baseApp, adminToken, analystToken, baseAppCleanup := BaseApp(t)
 	defer baseAppCleanup()
 
 	testSets := []authMatrixText{
 		{
 			baseTest: BaseTest{
-				Name:           "TriggerReaction",
+				Name:           "Root",
 				Method:         http.MethodGet,
-				URL:            "/reaction/test",
+				URL:            "/",
 				TestAppFactory: AppFactory(baseApp),
 			},
 			authBasedExpectations: []AuthBasedExpectation{
 				{
 					Name:           "Unauthorized",
-					ExpectedStatus: http.StatusOK,
-					ExpectedContent: []string{
-						`Hello, World!`,
-					},
+					ExpectedStatus: http.StatusFound,
 				},
 				{
 					Name:           "Analyst",
 					RequestHeaders: map[string]string{"Authorization": analystToken},
-					ExpectedStatus: http.StatusOK,
-					ExpectedContent: []string{
-						`Hello, World!`,
-					},
+					ExpectedStatus: http.StatusFound,
 				},
 				{
 					Name:           "Admin",
 					RequestHeaders: map[string]string{"Authorization": adminToken},
-					ExpectedStatus: http.StatusOK,
-					ExpectedContent: []string{
-						`Hello, World!`,
-					},
+					ExpectedStatus: http.StatusFound,
 				},
 			},
 		},
 		{
 			baseTest: BaseTest{
-				Name:           "TriggerReaction2",
+				Name:           "Config",
 				Method:         http.MethodGet,
-				URL:            "/reaction/test2",
+				URL:            "/api/config",
 				TestAppFactory: AppFactory(baseApp),
 			},
 			authBasedExpectations: []AuthBasedExpectation{
 				{
 					Name:           "Unauthorized",
-					ExpectedStatus: http.StatusInternalServerError,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"message":"Post \"http://localhost:8080/test\": dial tcp [::1]:8080: connect: connection refused."`,
+						`"flags":null`,
 					},
 				},
 				{
 					Name:           "Analyst",
 					RequestHeaders: map[string]string{"Authorization": analystToken},
-					ExpectedStatus: http.StatusInternalServerError,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"message":"Post \"http://localhost:8080/test\": dial tcp [::1]:8080: connect: connection refused."`,
+						`"flags":null`,
 					},
 				},
 				{
 					Name:           "Admin",
 					RequestHeaders: map[string]string{"Authorization": adminToken},
-					ExpectedStatus: http.StatusInternalServerError,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"message":"Post \"http://localhost:8080/test\": dial tcp [::1]:8080: connect: connection refused."`,
+						`"flags":null`,
 					},
 				},
 			},

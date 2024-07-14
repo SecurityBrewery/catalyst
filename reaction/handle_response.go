@@ -2,9 +2,21 @@ package reaction
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 )
+
+func outputToResponse(logger *slog.Logger, w http.ResponseWriter, output []byte) {
+	var catalystResponse CatalystReactionResponse
+	if err := json.Unmarshal(output, &catalystResponse); err == nil {
+		catalystResponse.toResponse(logger, w)
+
+		return
+	}
+
+	textResponse(logger, w, output)
+}
 
 type CatalystReactionResponse struct {
 	StatusCode      int         `json:"statusCode"`
