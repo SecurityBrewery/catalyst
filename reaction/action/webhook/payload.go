@@ -6,7 +6,7 @@ import (
 	"unicode/utf8"
 )
 
-func encodeBody(requestBody io.Reader) (string, bool) {
+func EncodeBody(requestBody io.Reader) (string, bool) {
 	body, err := io.ReadAll(requestBody)
 	if err != nil {
 		return "", false

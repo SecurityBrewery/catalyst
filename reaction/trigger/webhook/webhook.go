@@ -1,7 +1,9 @@
 package webhook
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -9,6 +11,7 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
@@ -22,9 +25,8 @@ type Webhook struct {
 }
 
 func BindHooks(app core.App) {
-	// Bind webhooks
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Any("/reaction/*", handle(e.App))
+		e.Router.Any("/reaction/*", handle(e.App.Dao()))
 
 		return nil
 	})
@@ -32,48 +34,69 @@ func BindHooks(app core.App) {
 
 const prefix = "/reaction/"
 
-func handle(app core.App) func(c echo.Context) error {
+func handle(dao *daos.Dao) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		r := c.Request()
-		w := c.Response()
-
-		if !strings.HasPrefix(r.URL.Path, prefix) {
-			return apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
+		record, payload, apiErr := parseRequest(dao, c.Request())
+		if apiErr != nil {
+			return apiErr
 		}
 
-		reactionName := strings.TrimPrefix(r.URL.Path, prefix)
-
-		record, trigger, found, err := findByWebhookTrigger(app, reactionName)
-		if err != nil {
-			return apis.NewNotFoundError(err.Error(), nil)
-		}
-
-		if !found {
-			return apis.NewNotFoundError("reaction not found", nil)
-		}
-
-		if trigger.Token != "" && bearerToken(r) != trigger.Token {
-			return apis.NewUnauthorizedError("invalid token", nil)
-		}
-
-		payload, err := webhook.RequestFromHTTPRequest(r)
+		output, err := action.Run(c.Request().Context(), record.GetString("action"), record.GetString("actiondata"), string(payload))
 		if err != nil {
 			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
 		}
 
-		output, err := action.Run(r.Context(), record.GetString("action"), record.GetString("actiondata"), payload)
-		if err != nil {
-			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
-		}
-
-		webhook.OutputToResponse(w, output)
-
-		return nil
+		return writeOutput(c, output)
 	}
 }
 
-func findByWebhookTrigger(app core.App, path string) (*models.Record, *Webhook, bool, error) {
-	records, err := app.Dao().FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "webhook"})
+func parseRequest(dao *daos.Dao, r *http.Request) (*models.Record, []byte, *apis.ApiError) {
+	if !strings.HasPrefix(r.URL.Path, prefix) {
+		return nil, nil, apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
+	}
+
+	reactionName := strings.TrimPrefix(r.URL.Path, prefix)
+
+	record, trigger, found, err := findByWebhookTrigger(dao, reactionName)
+	if err != nil {
+		return nil, nil, apis.NewNotFoundError(err.Error(), nil)
+	}
+
+	if !found {
+		return nil, nil, apis.NewNotFoundError("reaction not found", nil)
+	}
+
+	if trigger.Token != "" {
+		auth := r.Header.Get("Authorization")
+
+		if !strings.HasPrefix(auth, "Bearer ") {
+			return nil, nil, apis.NewUnauthorizedError("missing token", nil)
+		}
+
+		if trigger.Token != strings.TrimPrefix(auth, "Bearer ") {
+			return nil, nil, apis.NewUnauthorizedError("invalid token", nil)
+		}
+	}
+
+	body, isBase64Encoded := webhook.EncodeBody(r.Body)
+
+	payload, err := json.Marshal(&Request{
+		Method:          r.Method,
+		Path:            r.URL.EscapedPath(),
+		Headers:         r.Header,
+		Query:           r.URL.Query(),
+		Body:            body,
+		IsBase64Encoded: isBase64Encoded,
+	})
+	if err != nil {
+		return nil, nil, apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
+	}
+
+	return record, payload, nil
+}
+
+func findByWebhookTrigger(dao *daos.Dao, path string) (*models.Record, *Webhook, bool, error) {
+	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "webhook"})
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -96,12 +119,28 @@ func findByWebhookTrigger(app core.App, path string) (*models.Record, *Webhook, 
 	return nil, nil, false, nil
 }
 
-func bearerToken(r *http.Request) string {
-	auth := r.Header.Get("Authorization")
+func writeOutput(c echo.Context, output []byte) error {
+	var catalystResponse webhook.Response
+	if err := json.Unmarshal(output, &catalystResponse); err == nil && catalystResponse.StatusCode != 0 {
+		for key, values := range catalystResponse.Headers {
+			for _, value := range values {
+				c.Response().Header().Add(key, value)
+			}
+		}
 
-	if !strings.HasPrefix(auth, "Bearer ") {
-		return ""
+		if catalystResponse.IsBase64Encoded {
+			output, err = base64.StdEncoding.DecodeString(catalystResponse.Body)
+			if err != nil {
+				return fmt.Errorf("error decoding base64 body: %w", err)
+			}
+		} else {
+			output = []byte(catalystResponse.Body)
+		}
 	}
 
-	return strings.TrimPrefix(auth, "Bearer ")
+	if isJSON(output) {
+		return c.JSON(http.StatusOK, json.RawMessage(output))
+	}
+
+	return c.String(http.StatusOK, string(output))
 }

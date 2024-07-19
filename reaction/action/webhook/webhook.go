@@ -28,14 +28,12 @@ func (a *Webhook) Run(ctx context.Context, payload string) ([]byte, error) {
 	}
 	defer res.Body.Close()
 
-	body, isBase64Encoded := encodeBody(res.Body)
+	body, isBase64Encoded := EncodeBody(res.Body)
 
-	catalystResponse := Response{
+	return json.Marshal(Response{
 		StatusCode:      res.StatusCode,
 		Headers:         res.Header,
 		Body:            body,
 		IsBase64Encoded: isBase64Encoded,
-	}
-
-	return json.Marshal(catalystResponse)
+	})
 }
