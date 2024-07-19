@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 </script>
 
 <template>
-  <FormField name="reactiondata.headers" v-slot="{ value, handleChange }">
+  <FormField name="actiondata.headers" v-slot="{ value, handleChange }">
     <FormItem>
       <FormLabel for="headers" class="text-right">Headers</FormLabel>
       <FormControl>
@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input'
       <FormMessage />
     </FormItem>
   </FormField>
-  <FormField name="reactiondata.url" v-slot="{ componentField }" validate-on-input>
+  <FormField name="actiondata.url" v-slot="{ componentField }" validate-on-input>
     <FormItem>
       <FormLabel for="url" class="text-right">URL</FormLabel>
       <FormControl>

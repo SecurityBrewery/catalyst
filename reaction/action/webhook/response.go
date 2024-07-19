@@ -1,31 +1,30 @@
-package reaction
+package webhook
 
 import (
 	"encoding/base64"
 	"encoding/json"
-	"log/slog"
 	"net/http"
 )
 
-func outputToResponse(logger *slog.Logger, w http.ResponseWriter, output []byte) {
-	var catalystResponse CatalystReactionResponse
-	if err := json.Unmarshal(output, &catalystResponse); err == nil {
-		catalystResponse.toResponse(logger, w)
+func OutputToResponse(w http.ResponseWriter, output []byte) {
+	var catalystResponse Response
+	if err := json.Unmarshal(output, &catalystResponse); err == nil && catalystResponse.StatusCode != 0 {
+		catalystResponse.ToResponse(w)
 
 		return
 	}
 
-	textResponse(logger, w, output)
+	textResponse(w, output)
 }
 
-type CatalystReactionResponse struct {
+type Response struct {
 	StatusCode      int         `json:"statusCode"`
 	Headers         http.Header `json:"headers"`
 	Body            string      `json:"body"`
 	IsBase64Encoded bool        `json:"isBase64Encoded"`
 }
 
-func (cr *CatalystReactionResponse) toResponse(logger *slog.Logger, w http.ResponseWriter) {
+func (cr *Response) ToResponse(w http.ResponseWriter) {
 	for key, values := range cr.Headers {
 		for _, value := range values {
 			w.Header().Add(key, value)
@@ -39,7 +38,7 @@ func (cr *CatalystReactionResponse) toResponse(logger *slog.Logger, w http.Respo
 
 		body, err = base64.StdEncoding.DecodeString(cr.Body)
 		if err != nil {
-			errResponse(logger, w, http.StatusInternalServerError, "Error decoding base64 body")
+			ErrResponse(w, http.StatusInternalServerError, "Error decoding base64 body")
 
 			return
 		}
@@ -47,5 +46,5 @@ func (cr *CatalystReactionResponse) toResponse(logger *slog.Logger, w http.Respo
 		body = []byte(cr.Body)
 	}
 
-	textResponse(logger, w, body)
+	textResponse(w, body)
 }

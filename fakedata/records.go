@@ -258,8 +258,8 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 	record.Set("name", "Test Reaction")
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", triggerWebhook)
-	record.Set("reaction", "python")
-	record.Set("reactiondata", reactionPython)
+	record.Set("action", "python")
+	record.Set("actiondata", reactionPython)
 
 	records = append(records, record)
 
@@ -268,8 +268,8 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 	record.Set("name", "Test Reaction 2")
 	record.Set("trigger", "hook")
 	record.Set("triggerdata", triggerHook)
-	record.Set("reaction", "webhook")
-	record.Set("reactiondata", reactionWebhook)
+	record.Set("action", "webhook")
+	record.Set("actiondata", reactionWebhook)
 
 	records = append(records, record)
 

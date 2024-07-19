@@ -11,7 +11,7 @@ import {
 </script>
 
 <template>
-  <FormField name="reactiondata.requirements" v-slot="{ componentField }">
+  <FormField name="actiondata.requirements" v-slot="{ componentField }">
     <FormItem>
       <FormLabel for="requirements" class="text-right">requirements.txt</FormLabel>
       <FormControl>
@@ -21,7 +21,7 @@ import {
       <FormMessage />
     </FormItem>
   </FormField>
-  <FormField name="reactiondata.script" v-slot="{ componentField }" validate-on-input>
+  <FormField name="actiondata.script" v-slot="{ componentField }" validate-on-input>
     <FormItem>
       <FormLabel for="script" class="text-right">Script</FormLabel>
       <FormControl>

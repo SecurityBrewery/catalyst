@@ -1,4 +1,4 @@
-package reaction
+package webhook
 
 import (
 	"net/http"

@@ -137,8 +137,8 @@ export interface Reaction {
   name: string
   trigger: string
   triggerdata: any
-  reaction: string
-  reactiondata: any
+  action: string
+  actiondata: any
 
   created: string
   updated: string

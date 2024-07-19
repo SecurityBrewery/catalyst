@@ -1,16 +1,14 @@
-package reaction
+package webhook
 
 import (
-	"io"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
 func Test_outputToResponse(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
-
 	type args struct {
 		output []byte
 	}
@@ -32,7 +30,7 @@ func Test_outputToResponse(t *testing.T) {
 			want: want{
 				Result: testResult{
 					Code:   200,
-					Header: http.Header{"Content-Type": []string{TextContentType}},
+					Header: http.Header{"Content-Type": []string{webhook.TextContentType}},
 					Body:   "body",
 				},
 			},
@@ -45,7 +43,7 @@ func Test_outputToResponse(t *testing.T) {
 			want: want{
 				Result: testResult{
 					Code:   200,
-					Header: http.Header{"Content-Type": []string{TextContentType}},
+					Header: http.Header{"Content-Type": []string{webhook.TextContentType}},
 					Body:   "body",
 				},
 			},
@@ -58,7 +56,7 @@ func Test_outputToResponse(t *testing.T) {
 			want: want{
 				Result: testResult{
 					Code:   200,
-					Header: http.Header{"Content-Type": []string{JSONContentType}},
+					Header: http.Header{"Content-Type": []string{webhook.JSONContentType}},
 					Body:   `{"key": "value"}`,
 				},
 			},
@@ -71,7 +69,7 @@ func Test_outputToResponse(t *testing.T) {
 			want: want{
 				Result: testResult{
 					Code:   200,
-					Header: http.Header{"Content-Type": []string{TextContentType}},
+					Header: http.Header{"Content-Type": []string{webhook.TextContentType}},
 					Body:   "body",
 				},
 			},
@@ -81,7 +79,7 @@ func Test_outputToResponse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 
-			outputToResponse(logger, w, tt.args.output)
+			webhook.OutputToResponse(w, tt.args.output)
 
 			w.Flush()
 
@@ -91,8 +89,6 @@ func Test_outputToResponse(t *testing.T) {
 }
 
 func TestCatalystReactionResponse_toResponse(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
-
 	type fields struct {
 		StatusCode      int
 		Headers         http.Header
@@ -119,13 +115,13 @@ func TestCatalystReactionResponse_toResponse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 
-			cr := &CatalystReactionResponse{
+			cr := &webhook.Response{
 				StatusCode:      tt.fields.StatusCode,
 				Headers:         tt.fields.Headers,
 				Body:            tt.fields.Body,
 				IsBase64Encoded: tt.fields.IsBase64Encoded,
 			}
-			cr.toResponse(logger, w)
+			cr.ToResponse(w)
 
 			resultEqual(t, w.Result(), tt.want.Result)
 		})
@@ -133,8 +129,6 @@ func TestCatalystReactionResponse_toResponse(t *testing.T) {
 }
 
 func Test_errResponse(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
-
 	type args struct {
 		status int
 		msg    string
@@ -153,7 +147,7 @@ func Test_errResponse(t *testing.T) {
 			},
 			want: testResult{
 				Code:   http.StatusInternalServerError,
-				Header: http.Header{"Content-Type": []string{JSONContentType}},
+				Header: http.Header{"Content-Type": []string{webhook.JSONContentType}},
 				Body:   `{"error": "error message"}`,
 			},
 		},
@@ -162,7 +156,7 @@ func Test_errResponse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 
-			errResponse(logger, w, tt.args.status, tt.args.msg)
+			webhook.ErrResponse(w, tt.args.status, tt.args.msg)
 
 			w.Flush()
 

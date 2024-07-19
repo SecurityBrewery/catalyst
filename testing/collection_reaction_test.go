@@ -32,7 +32,7 @@ func TestReactionsCollection(t *testing.T) {
 					RequestHeaders: map[string]string{"Authorization": analystToken},
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"totalItems":2`,
+						`"totalItems":3`,
 						`"id":"r_reaction"`,
 					},
 					NotExpectedContent: []string{
@@ -45,7 +45,7 @@ func TestReactionsCollection(t *testing.T) {
 					RequestHeaders: map[string]string{"Authorization": adminToken},
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"totalItems":2`,
+						`"totalItems":3`,
 						`"id":"r_reaction"`,
 					},
 					NotExpectedContent: []string{
@@ -62,11 +62,11 @@ func TestReactionsCollection(t *testing.T) {
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/collections/reactions/records",
 				Body: s(map[string]any{
-					"name":         "test",
-					"trigger":      "webhook",
-					"triggerdata":  map[string]any{"path": "test"},
-					"reaction":     "python",
-					"reactiondata": map[string]any{"script": "print('Hello, World!')"},
+					"name":        "test",
+					"trigger":     "webhook",
+					"triggerdata": map[string]any{"path": "test"},
+					"action":      "python",
+					"actiondata":  map[string]any{"script": "print('Hello, World!')"},
 				}),
 				TestAppFactory: AppFactory(baseApp),
 			},

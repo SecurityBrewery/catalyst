@@ -99,8 +99,8 @@ defineRule('triggerdata.events', (value: string[]) => {
   return true
 })
 
-defineRule('reactiondata.script', (value: string) => {
-  if (values.reaction !== 'python') {
+defineRule('actiondata.script', (value: string) => {
+  if (values.action !== 'python') {
     return true
   }
 
@@ -111,8 +111,8 @@ defineRule('reactiondata.script', (value: string) => {
   return true
 })
 
-defineRule('reactiondata.url', (value: string) => {
-  if (values.reaction !== 'webhook') {
+defineRule('actiondata.url', (value: string) => {
+  if (values.action !== 'webhook') {
     return true
   }
 
@@ -132,8 +132,8 @@ const { handleSubmit, validate, values } = useForm({
     name: '',
     trigger: '',
     triggerdata: {},
-    reaction: '',
-    reactiondata: {}
+    action: '',
+    actiondata: {}
   },
   validationSchema: {
     name: 'required',
@@ -142,8 +142,8 @@ const { handleSubmit, validate, values } = useForm({
     'triggerdata.path': 'triggerdata.path',
     'triggerdata.collections': 'triggerdata.collections',
     'triggerdata.events': 'triggerdata.events',
-    'reactiondata.script': 'reactiondata.script',
-    'reactiondata.url': 'reactiondata.url',
+    'actiondata.script': 'actiondata.script',
+    'actiondata.url': 'actiondata.url',
     reaction: 'required'
   }
 })
@@ -155,8 +155,8 @@ const equalReaction = (values: Reaction, reaction?: Reaction): boolean => {
     reaction.name === values.name &&
     reaction.trigger === values.trigger &&
     JSON.stringify(reaction.triggerdata) === JSON.stringify(values.triggerdata) &&
-    reaction.reaction === values.reaction &&
-    JSON.stringify(reaction.reactiondata) === JSON.stringify(values.reactiondata)
+    reaction.action === values.action &&
+    JSON.stringify(reaction.actiondata) === JSON.stringify(values.actiondata)
   )
 }
 

@@ -8,6 +8,8 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/SecurityBrewery/catalyst/reaction"
+	"github.com/SecurityBrewery/catalyst/webhook"
 )
 
 func init() {
@@ -31,7 +33,8 @@ func App(dir string) *pocketbase.PocketBase {
 }
 
 func BindHooks(app core.App) {
-	attachWebhooks(app)
+	webhook.BindHooks(app)
+	reaction.BindHooks(app)
 
 	app.OnBeforeServe().Add(addRoutes())
 }
