@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -39,7 +40,7 @@ func generateAdminToken(t *testing.T, baseApp core.App, email string) (string, e
 
 	admin, err := baseApp.Dao().FindAdminByEmail(email)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to find admin: %w", err)
 	}
 
 	return tokens.NewAdminAuthToken(baseApp, admin)
@@ -50,7 +51,7 @@ func generateRecordToken(t *testing.T, baseApp core.App, email string) (string, 
 
 	record, err := baseApp.Dao().FindAuthRecordByEmail(migrations.UserCollectionName, email)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to find record: %w", err)
 	}
 
 	return tokens.NewRecordAuthToken(baseApp, record)

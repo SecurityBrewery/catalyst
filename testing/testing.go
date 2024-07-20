@@ -3,6 +3,7 @@ package testing
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -48,7 +49,7 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 		App:    baseApp,
 		Router: server,
 	}); err != nil {
-		t.Fatal(err)
+		t.Fatal(fmt.Errorf("failed to trigger OnBeforeServe: %w", err))
 	}
 
 	recorder := httptest.NewRecorder()
