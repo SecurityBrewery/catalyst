@@ -1,15 +1,19 @@
 package testing
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCounter(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		name   string
 		repeat int
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -23,6 +27,8 @@ func TestCounter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			c := NewCounter()
 
 			for range tt.args.repeat {
