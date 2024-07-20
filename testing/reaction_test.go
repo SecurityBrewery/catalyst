@@ -3,7 +3,6 @@ package testing
 import (
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -12,10 +11,9 @@ func TestWebhookReactions(t *testing.T) {
 	baseApp, adminToken, analystToken, baseAppCleanup := BaseApp(t)
 	defer baseAppCleanup()
 
-	server := testWebhookServer()
-	defer server.Close()
+	server := NewRecordingServer()
 
-	go server.ListenAndServe() //nolint:errcheck
+	go http.ListenAndServe("127.0.0.1:12345", server) //nolint:gosec,errcheck
 
 	testSets := []authMatrixText{
 		{
@@ -81,37 +79,6 @@ func TestWebhookReactions(t *testing.T) {
 			}
 		})
 	}
-}
-
-func testWebhookServer() *http.Server {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/webhook", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"test":true}`)) //nolint:errcheck
-	})
-
-	return &http.Server{
-		Addr:              "127.0.0.1:12345",
-		Handler:           mux,
-		ReadHeaderTimeout: 3 * time.Second,
-	}
-}
-
-type RecordingServer struct {
-	Entries []string
-}
-
-func NewRecordingServer() *RecordingServer {
-	return &RecordingServer{}
-}
-
-func (s *RecordingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.Entries = append(s.Entries, r.URL.Path)
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"test":true}`)) //nolint:errcheck
 }
 
 func TestHookReactions(t *testing.T) {
