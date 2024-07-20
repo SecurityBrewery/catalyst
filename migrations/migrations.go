@@ -10,4 +10,5 @@ func Register() {
 	migrations.Register(defaultDataUp, nil, "1700000003_defaultdata.go")
 	migrations.Register(viewsUp, viewsDown, "1700000004_views.go")
 	migrations.Register(reactionsUp, reactionsDown, "1700000005_reactions.go")
+	migrations.Register(systemuserUp, systemuserDown, "1700000006_systemuser.go")
 }

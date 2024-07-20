@@ -3,108 +3,14 @@ package testing
 import (
 	"bytes"
 	"encoding/json"
-	"os"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tokens"
-
-	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
-
-func BaseApp(t *testing.T) (core.App, string, string, func()) {
-	t.Helper()
-
-	temp, err := os.MkdirTemp("", "catalyst_test_data")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	baseApp := app.App(temp)
-
-	if err := app.Bootstrap(baseApp); err != nil {
-		t.Fatal(err)
-	}
-
-	defaultTestData(t, baseApp)
-
-	adminToken, err := generateAdminToken(t, baseApp, adminEmail)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	analystToken, err := generateRecordToken(t, baseApp, analystEmail)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return baseApp, adminToken, analystToken, func() { _ = os.RemoveAll(temp) }
-}
-
-func AppFactory(baseApp core.App) func(t *testing.T) *tests.TestApp {
-	return func(t *testing.T) *tests.TestApp {
-		t.Helper()
-
-		testApp, err := tests.NewTestApp(baseApp.DataDir())
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		app.BindHooks(testApp)
-
-		if err := app.Bootstrap(testApp); err != nil {
-			t.Fatal(err)
-		}
-
-		return testApp
-	}
-}
-
-func App(t *testing.T) (*tests.TestApp, func()) {
-	t.Helper()
-
-	baseApp, _, _, cleanup := BaseApp(t)
-
-	testApp := AppFactory(baseApp)(t)
-
-	return testApp, cleanup
-}
-
-func generateAdminToken(t *testing.T, baseApp core.App, email string) (string, error) {
-	t.Helper()
-
-	app, err := tests.NewTestApp(baseApp.DataDir())
-	if err != nil {
-		return "", err
-	}
-	defer app.Cleanup()
-
-	admin, err := app.Dao().FindAdminByEmail(email)
-	if err != nil {
-		return "", err
-	}
-
-	return tokens.NewAdminAuthToken(app, admin)
-}
-
-func generateRecordToken(t *testing.T, baseApp core.App, email string) (string, error) {
-	t.Helper()
-
-	app, err := tests.NewTestApp(baseApp.DataDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer app.Cleanup()
-
-	record, err := app.Dao().FindAuthRecordByEmail(migrations.UserCollectionName, email)
-	if err != nil {
-		return "", err
-	}
-
-	return tokens.NewRecordAuthToken(app, record)
-}
 
 type BaseTest struct {
 	Name           string
@@ -112,53 +18,91 @@ type BaseTest struct {
 	RequestHeaders map[string]string
 	URL            string
 	Body           string
-	TestAppFactory func(t *testing.T) *tests.TestApp
 }
 
-type AuthBasedExpectation struct {
+type UserTest struct {
 	Name               string
-	RequestHeaders     map[string]string
+	AuthRecord         string
+	Admin              string
 	ExpectedStatus     int
 	ExpectedContent    []string
 	NotExpectedContent []string
 	ExpectedEvents     map[string]int
 }
 
-type authMatrixText struct {
-	baseTest              BaseTest
-	authBasedExpectations []AuthBasedExpectation
+type catalystTest struct {
+	baseTest  BaseTest
+	userTests []UserTest
 }
 
-func mergeScenario(base BaseTest, expectation AuthBasedExpectation) tests.ApiScenario {
-	return tests.ApiScenario{
-		Name:           expectation.Name,
-		Method:         base.Method,
-		Url:            base.URL,
-		Body:           bytes.NewBufferString(base.Body),
-		TestAppFactory: base.TestAppFactory,
+func (a *catalystTest) run(t *testing.T) {
+	t.Helper()
 
-		RequestHeaders:     mergeMaps(base.RequestHeaders, expectation.RequestHeaders),
-		ExpectedStatus:     expectation.ExpectedStatus,
-		ExpectedContent:    expectation.ExpectedContent,
-		NotExpectedContent: expectation.NotExpectedContent,
-		ExpectedEvents:     expectation.ExpectedEvents,
+	for _, userTest := range a.userTests {
+		t.Run(userTest.Name, func(t *testing.T) {
+			t.Parallel()
+
+			runMatrixTest(t, a.baseTest, userTest)
+		})
 	}
 }
 
-func mergeMaps(a, b map[string]string) map[string]string {
-	if a == nil {
-		return b
+func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
+	t.Helper()
+
+	baseApp, counter, baseAppCleanup := App(t)
+	defer baseAppCleanup()
+
+	server, err := apis.InitApi(baseApp)
+	require.NoError(t, err)
+
+	if err := baseApp.OnBeforeServe().Trigger(&core.ServeEvent{
+		App:    baseApp,
+		Router: server,
+	}); err != nil {
+		t.Fatal(err)
 	}
 
-	if b == nil {
-		return a
+	recorder := httptest.NewRecorder()
+	body := bytes.NewBufferString(baseTest.Body)
+	req := httptest.NewRequest(baseTest.Method, baseTest.URL, body)
+
+	for k, v := range baseTest.RequestHeaders {
+		req.Header.Set(k, v)
 	}
 
-	for k, v := range b {
-		a[k] = v
+	if userTest.AuthRecord != "" {
+		token, err := generateRecordToken(t, baseApp, userTest.AuthRecord)
+		require.NoError(t, err)
+
+		req.Header.Set("Authorization", token)
 	}
 
-	return a
+	if userTest.Admin != "" {
+		token, err := generateAdminToken(t, baseApp, userTest.Admin)
+		require.NoError(t, err)
+
+		req.Header.Set("Authorization", token)
+	}
+
+	server.ServeHTTP(recorder, req)
+
+	res := recorder.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, userTest.ExpectedStatus, res.StatusCode)
+
+	for _, expectedContent := range userTest.ExpectedContent {
+		assert.Contains(t, recorder.Body.String(), expectedContent)
+	}
+
+	for _, notExpectedContent := range userTest.NotExpectedContent {
+		assert.NotContains(t, recorder.Body.String(), notExpectedContent)
+	}
+
+	for event, count := range userTest.ExpectedEvents {
+		assert.Equal(t, count, counter.Count(event))
+	}
 }
 
 func b(data map[string]any) []byte {

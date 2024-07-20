@@ -4,7 +4,6 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tools/security"
 )
 
 func defaultDataUp(db dbx.Builder) error {
@@ -30,7 +29,7 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 	var records []*models.Record
 
 	record := models.NewRecord(collection)
-	record.SetId("y_" + security.PseudorandomString(5))
+	record.SetId("incident")
 	record.Set("singular", "Incident")
 	record.Set("plural", "Incidents")
 	record.Set("icon", "Flame")
@@ -39,7 +38,7 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 	records = append(records, record)
 
 	record = models.NewRecord(collection)
-	record.SetId("y_" + security.PseudorandomString(5))
+	record.SetId("alert")
 	record.Set("singular", "Alert")
 	record.Set("plural", "Alerts")
 	record.Set("icon", "AlertTriangle")

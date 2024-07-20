@@ -22,7 +22,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Edit } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'

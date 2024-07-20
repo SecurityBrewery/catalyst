@@ -21,9 +21,9 @@ import (
 const webhooksCollection = "webhooks"
 
 type Webhook struct {
-	ID          string `db:"id" json:"id"`
-	Name        string `db:"name" json:"name"`
-	Collection  string `db:"collection" json:"collection"`
+	ID          string `db:"id"          json:"id"`
+	Name        string `db:"name"        json:"name"`
+	Collection  string `db:"collection"  json:"collection"`
 	Destination string `db:"destination" json:"destination"`
 }
 

@@ -6,18 +6,16 @@ import (
 )
 
 func TestReactionsCollection(t *testing.T) {
-	baseApp, adminToken, analystToken, baseAppCleanup := BaseApp(t)
-	defer baseAppCleanup()
+	t.Parallel()
 
-	testSets := []authMatrixText{
+	testSets := []catalystTest{
 		{
 			baseTest: BaseTest{
-				Name:           "ListReactions",
-				Method:         http.MethodGet,
-				URL:            "/api/collections/reactions/records",
-				TestAppFactory: AppFactory(baseApp),
+				Name:   "ListReactions",
+				Method: http.MethodGet,
+				URL:    "/api/collections/reactions/records",
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusOK,
@@ -29,7 +27,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"totalItems":3`,
@@ -42,7 +40,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"totalItems":3`,
@@ -68,9 +66,8 @@ func TestReactionsCollection(t *testing.T) {
 					"action":      "python",
 					"actiondata":  map[string]any{"script": "print('Hello, World!')"},
 				}),
-				TestAppFactory: AppFactory(baseApp),
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusBadRequest,
@@ -80,7 +77,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"test"`,
@@ -97,7 +94,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"test"`,
@@ -120,9 +117,8 @@ func TestReactionsCollection(t *testing.T) {
 				Method:         http.MethodGet,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/collections/reactions/records/r_reaction",
-				TestAppFactory: AppFactory(baseApp),
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusNotFound,
@@ -132,7 +128,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
@@ -141,7 +137,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
@@ -157,9 +153,8 @@ func TestReactionsCollection(t *testing.T) {
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/collections/reactions/records/r_reaction",
 				Body:           s(map[string]any{"name": "update"}),
-				TestAppFactory: AppFactory(baseApp),
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusNotFound,
@@ -169,7 +164,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
@@ -184,7 +179,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
@@ -201,12 +196,11 @@ func TestReactionsCollection(t *testing.T) {
 		},
 		{
 			baseTest: BaseTest{
-				Name:           "DeleteReaction",
-				Method:         http.MethodDelete,
-				URL:            "/api/collections/reactions/records/r_reaction",
-				TestAppFactory: AppFactory(baseApp),
+				Name:   "DeleteReaction",
+				Method: http.MethodDelete,
+				URL:    "/api/collections/reactions/records/r_reaction",
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusNotFound,
@@ -216,7 +210,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnModelAfterDelete":          1,
@@ -227,7 +221,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnModelAfterDelete":          1,
@@ -241,10 +235,9 @@ func TestReactionsCollection(t *testing.T) {
 	}
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
-			for _, authBasedExpectation := range testSet.authBasedExpectations {
-				scenario := mergeScenario(testSet.baseTest, authBasedExpectation)
-				scenario.Test(t)
-			}
+			t.Parallel()
+
+			testSet.run(t)
 		})
 	}
 }

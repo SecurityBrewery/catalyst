@@ -5,39 +5,20 @@ linters:
   enable-all: true
   disable:
     # complexity
-    - cyclop
-    - gocognit
-    - gocyclo
     - maintidx
-    - nestif
+    - funlen
 
     # disable
-    - bodyclose
     - depguard
-    - dupl
     - err113
-    - execinquery
     - exhaustruct
-    - funlen
-    - gochecknoglobals
-    - gochecknoinits
-    - goconst
-    - godox
     - gomnd
-    - gomoddirectives
     - ireturn
     - lll
-    - makezero
     - mnd
-    - paralleltest
-    - perfsprint
-    - prealloc
-    - tagalign
-    - tagliatelle
     - testpackage
     - varnamelen
     - wrapcheck
-    - wsl
 linters-settings:
   gci:
     sections:

@@ -6,42 +6,39 @@ import (
 )
 
 func Test_Routes(t *testing.T) {
-	baseApp, adminToken, analystToken, baseAppCleanup := BaseApp(t)
-	defer baseAppCleanup()
+	t.Parallel()
 
-	testSets := []authMatrixText{
+	testSets := []catalystTest{
 		{
 			baseTest: BaseTest{
-				Name:           "Root",
-				Method:         http.MethodGet,
-				URL:            "/",
-				TestAppFactory: AppFactory(baseApp),
+				Name:   "Root",
+				Method: http.MethodGet,
+				URL:    "/",
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusFound,
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusFound,
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusFound,
 				},
 			},
 		},
 		{
 			baseTest: BaseTest{
-				Name:           "Config",
-				Method:         http.MethodGet,
-				URL:            "/api/config",
-				TestAppFactory: AppFactory(baseApp),
+				Name:   "Config",
+				Method: http.MethodGet,
+				URL:    "/api/config",
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusOK,
@@ -51,7 +48,7 @@ func Test_Routes(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":null`,
@@ -59,7 +56,7 @@ func Test_Routes(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					RequestHeaders: map[string]string{"Authorization": adminToken},
+					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":null`,
@@ -70,10 +67,9 @@ func Test_Routes(t *testing.T) {
 	}
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
-			for _, authBasedExpectation := range testSet.authBasedExpectations {
-				scenario := mergeScenario(testSet.baseTest, authBasedExpectation)
-				scenario.Test(t)
-			}
+			t.Parallel()
+
+			testSet.run(t)
 		})
 	}
 }

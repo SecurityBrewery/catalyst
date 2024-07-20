@@ -5,38 +5,40 @@ import (
 	"strings"
 
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/reaction"
 	"github.com/SecurityBrewery/catalyst/webhook"
 )
 
-func init() {
+func init() { //nolint:gochecknoinits
 	migrations.Register()
 }
 
-func App(dir string) *pocketbase.PocketBase {
+func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDev:     dev(),
+		DefaultDev:     false, // dev(),
 		DefaultDataDir: dir,
 	})
 
-	BindHooks(app)
+	webhook.BindHooks(app)
+	reaction.BindHooks(app, test)
+
+	app.OnBeforeServe().Add(addRoutes())
 
 	// Register additional commands
-	app.RootCmd.AddCommand(bootstrapCmd(app))
 	app.RootCmd.AddCommand(fakeDataCmd(app))
 	app.RootCmd.AddCommand(setFeatureFlagsCmd(app))
 
-	return app
-}
+	if err := app.Bootstrap(); err != nil {
+		return nil, err
+	}
 
-func BindHooks(app core.App) {
-	webhook.BindHooks(app)
-	reaction.BindHooks(app)
+	if err := MigrateDBs(app); err != nil {
+		return nil, err
+	}
 
-	app.OnBeforeServe().Add(addRoutes())
+	return app, nil
 }
 
 func dev() bool {

@@ -1,13 +1,13 @@
 package reaction
 
 import (
-	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase"
 
 	"github.com/SecurityBrewery/catalyst/reaction/trigger/hook"
 	"github.com/SecurityBrewery/catalyst/reaction/trigger/webhook"
 )
 
-func BindHooks(app core.App) {
-	hook.BindHooks(app)
-	webhook.BindHooks(app)
+func BindHooks(pb *pocketbase.PocketBase, test bool) {
+	hook.BindHooks(pb, test)
+	webhook.BindHooks(pb)
 }

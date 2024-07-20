@@ -1,8 +1,14 @@
-package webhook
+package webhook_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/SecurityBrewery/catalyst/reaction/trigger/webhook"
+)
 
 func Test_isJSON(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		data []byte
 	}
@@ -29,7 +35,9 @@ func Test_isJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isJSON(tt.args.data); got != tt.want {
+			t.Parallel()
+
+			if got := webhook.IsJSON(tt.args.data); got != tt.want {
 				t.Errorf("isJSON() = %v, want %v", got, tt.want)
 			}
 		})

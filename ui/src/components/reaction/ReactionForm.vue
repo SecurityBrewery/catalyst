@@ -166,6 +166,8 @@ watch(
   () => {
     if (equalReaction(values, props.reaction)) {
       submitDisabledReason.value = 'Make changes to save'
+    } else {
+      submitDisabledReason.value = ''
     }
   },
   { immediate: true }
@@ -312,7 +314,7 @@ const curlExample = computed(() => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <slot name="cancel" />
+      <slot name="cancel"></slot>
     </div>
   </form>
 </template>

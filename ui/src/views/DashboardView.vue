@@ -47,7 +47,7 @@ onMounted(() => {
 <template>
   <TwoColumn>
     <div class="flex h-screen flex-1 flex-col">
-      <div class="flex h-14 items-center bg-background px-4 py-2">
+      <div class="flex h-14 min-h-14 items-center bg-background px-4 py-2">
         <h1 class="text-xl font-bold">Dashboard</h1>
       </div>
       <Separator class="shrink-0" />

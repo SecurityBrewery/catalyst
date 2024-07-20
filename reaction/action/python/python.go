@@ -10,8 +10,14 @@ import (
 )
 
 type Python struct {
-	Bootstrap string `json:"bootstrap"`
-	Script    string `json:"script"`
+	Requirements string `json:"requirements"`
+	Script       string `json:"script"`
+
+	token string
+}
+
+func (a *Python) SetToken(token string) {
+	a.token = token
 }
 
 func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
@@ -22,7 +28,8 @@ func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
 
 	defer os.RemoveAll(tempDir)
 
-	if b, err := pythonSetup(ctx, tempDir); err != nil {
+	b, err := pythonSetup(ctx, tempDir)
+	if err != nil {
 		var ee *exec.ExitError
 		if errors.As(err, &ee) {
 			b = append(b, ee.Stderr...)
@@ -31,16 +38,17 @@ func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to setup python, %w: %s", err, string(b))
 	}
 
-	if b, err := pythonRunBootstrap(ctx, tempDir, a.Bootstrap); err != nil {
+	b, err = a.pythonInstallRequirements(ctx, tempDir)
+	if err != nil {
 		var ee *exec.ExitError
 		if errors.As(err, &ee) {
 			b = append(b, ee.Stderr...)
 		}
 
-		return nil, fmt.Errorf("failed to run bootstrap, %w: %s", err, string(b))
+		return nil, fmt.Errorf("failed to run install requirements, %w: %s", err, string(b))
 	}
 
-	b, err := pythonRunScript(ctx, tempDir, a.Script, payload)
+	b, err = a.pythonRunScript(ctx, tempDir, payload)
 	if err != nil {
 		var ee *exec.ExitError
 		if errors.As(err, &ee) {
@@ -63,35 +71,42 @@ func pythonSetup(ctx context.Context, tempDir string) ([]byte, error) {
 	return exec.CommandContext(ctx, pythonPath, "-m", "venv", tempDir+"/venv").Output()
 }
 
-func pythonRunBootstrap(ctx context.Context, tempDir, bootstrap string) ([]byte, error) {
-	hasBootstrap := len(strings.TrimSpace(bootstrap)) > 0
+func (a *Python) pythonInstallRequirements(ctx context.Context, tempDir string) ([]byte, error) {
+	hasRequirements := len(strings.TrimSpace(a.Requirements)) > 0
 
-	if !hasBootstrap {
+	if !hasRequirements {
 		return nil, nil
 	}
 
-	bootstrapPath := tempDir + "/requirements.txt"
+	requirementsPath := tempDir + "/requirements.txt"
 
-	if err := os.WriteFile(bootstrapPath, []byte(bootstrap), 0o600); err != nil {
+	if err := os.WriteFile(requirementsPath, []byte(a.Requirements), 0o600); err != nil {
 		return nil, err
 	}
 
 	// install dependencies
 	pipPath := tempDir + "/venv/bin/pip"
 
-	return exec.CommandContext(ctx, pipPath, "install", "-r", bootstrapPath).Output()
+	return exec.CommandContext(ctx, pipPath, "install", "-r", requirementsPath).Output()
 }
 
-func pythonRunScript(ctx context.Context, tempDir, script, payload string) ([]byte, error) {
+func (a *Python) pythonRunScript(ctx context.Context, tempDir, payload string) ([]byte, error) {
 	scriptPath := tempDir + "/script.py"
 
-	if err := os.WriteFile(scriptPath, []byte(script), 0o600); err != nil {
+	if err := os.WriteFile(scriptPath, []byte(a.Script), 0o600); err != nil {
 		return nil, err
 	}
 
 	pythonPath := tempDir + "/venv/bin/python"
 
-	return exec.CommandContext(ctx, pythonPath, scriptPath, payload).Output()
+	cmd := exec.CommandContext(ctx, pythonPath, scriptPath, payload)
+
+	cmd.Env = []string{}
+	if a.token != "" {
+		cmd.Env = append(cmd.Env, "CATALYST_TOKEN="+a.token)
+	}
+
+	return cmd.Output()
 }
 
 func findExec(name ...string) (string, error) {

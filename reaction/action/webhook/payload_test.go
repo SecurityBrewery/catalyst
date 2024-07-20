@@ -1,12 +1,16 @@
-package webhook
+package webhook_test
 
 import (
 	"bytes"
 	"io"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
 func TestEncodeBody(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		requestBody io.Reader
 	}
@@ -36,7 +40,9 @@ func TestEncodeBody(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := EncodeBody(tt.args.requestBody)
+			t.Parallel()
+
+			got, got1 := webhook.EncodeBody(tt.args.requestBody)
 			if got != tt.want {
 				t.Errorf("EncodeBody() got = %v, want %v", got, tt.want)
 			}

@@ -4,13 +4,17 @@ import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { toast } from '@/components/ui/toast'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Reaction } from '@/lib/types'
 import { handleError } from '@/lib/utils'
 
+const router = useRouter()
 const queryClient = useQueryClient()
 
 const props = defineProps<{
@@ -31,6 +35,35 @@ const updateReactionMutation = useMutation({
   mutationFn: (update: any) => pb.collection('reactions').update(props.id, update),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reactions'] }),
   onError: handleError
+})
+
+onMounted(() => {
+  pb.collection('reactions').subscribe(props.id, (data) => {
+    if (data.action === 'delete') {
+      toast({
+        title: 'Reaction deleted',
+        description: 'The reaction has been deleted.',
+        variant: 'destructive'
+      })
+
+      router.push({ name: 'reactions' })
+
+      return
+    }
+
+    if (data.action === 'update') {
+      toast({
+        title: 'Reaction updated',
+        description: 'The reaction has been updated.'
+      })
+
+      queryClient.invalidateQueries({ queryKey: ['reactions', props.id] })
+    }
+  })
+})
+
+onUnmounted(() => {
+  pb.collection('reactions').unsubscribe(props.id)
 })
 </script>
 
@@ -54,7 +87,7 @@ const updateReactionMutation = useMutation({
 
       <ScrollArea v-if="reaction" class="flex-1">
         <div class="flex max-w-[640px] flex-col gap-4 p-4">
-          <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" hide-cancel />
+          <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" />
         </div>
       </ScrollArea>
     </div>

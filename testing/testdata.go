@@ -19,6 +19,7 @@ func defaultTestData(t *testing.T, app core.App) {
 
 	adminTestData(t, app)
 	userTestData(t, app)
+	ticketTestData(t, app)
 	reactionTestData(t, app)
 }
 
@@ -57,6 +58,30 @@ func userTestData(t *testing.T, app core.App) {
 	}
 }
 
+func ticketTestData(t *testing.T, app core.App) {
+	t.Helper()
+
+	collection, err := app.Dao().FindCollectionByNameOrId(migrations.TicketCollectionName)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	record := models.NewRecord(collection)
+	record.SetId("t_test")
+
+	record.Set("name", "Test Ticket")
+	record.Set("type", "incident")
+	record.Set("description", "This is a test ticket.")
+	record.Set("open", true)
+	record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
+	record.Set("state", `{"tlp":"AMBER"}`)
+	record.Set("owner", "u_bob_analyst")
+
+	if err := app.Dao().SaveRecord(record); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func reactionTestData(t *testing.T, app core.App) {
 	t.Helper()
 
@@ -71,7 +96,7 @@ func reactionTestData(t *testing.T, app core.App) {
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", `{"path":"test"}`)
 	record.Set("action", "python")
-	record.Set("actiondata", `{"bootstrap":"requests","script":"print('Hello, World!')"}`)
+	record.Set("actiondata", `{"requirements":"requests","script":"print('Hello, World!')"}`)
 
 	if err := app.Dao().SaveRecord(record); err != nil {
 		t.Fatal(err)
@@ -95,7 +120,7 @@ func reactionTestData(t *testing.T, app core.App) {
 	record.Set("trigger", "hook")
 	record.Set("triggerdata", `{"collections":["tickets"],"events":["create"]}`)
 	record.Set("action", "python")
-	record.Set("actiondata", `{"bootstrap":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`)
+	record.Set("actiondata", `{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`)
 
 	if err := app.Dao().SaveRecord(record); err != nil {
 		t.Fatal(err)

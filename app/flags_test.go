@@ -11,7 +11,9 @@ import (
 )
 
 func Test_flags(t *testing.T) {
-	catalystApp, cleanup := catalystTesting.App(t)
+	t.Parallel()
+
+	catalystApp, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	got, err := app.Flags(catalystApp)
@@ -22,7 +24,9 @@ func Test_flags(t *testing.T) {
 }
 
 func Test_setFlags(t *testing.T) {
-	catalystApp, cleanup := catalystTesting.App(t)
+	t.Parallel()
+
+	catalystApp, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	require.NoError(t, app.SetFlags(catalystApp, []string{"test"}))

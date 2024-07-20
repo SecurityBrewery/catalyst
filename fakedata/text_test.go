@@ -7,22 +7,32 @@ import (
 )
 
 func Test_fakeTicketComment(t *testing.T) {
+	t.Parallel()
+
 	assert.NotEmpty(t, fakeTicketComment())
 }
 
 func Test_fakeTicketDescription(t *testing.T) {
+	t.Parallel()
+
 	assert.NotEmpty(t, fakeTicketDescription())
 }
 
 func Test_fakeTicketTask(t *testing.T) {
+	t.Parallel()
+
 	assert.NotEmpty(t, fakeTicketTask())
 }
 
 func Test_fakeTicketTimelineMessage(t *testing.T) {
+	t.Parallel()
+
 	assert.NotEmpty(t, fakeTicketTimelineMessage())
 }
 
 func Test_random(t *testing.T) {
+	t.Parallel()
+
 	type args[T any] struct {
 		e []T
 	}
@@ -40,6 +50,8 @@ func Test_random(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got := random(tt.args.e)
 
 			assert.Contains(t, tt.args.e, got)

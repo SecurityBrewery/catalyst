@@ -11,7 +11,9 @@ import (
 )
 
 func Test_MigrateDBsDown(t *testing.T) {
-	catalystApp, cleanup := catalystTesting.App(t)
+	t.Parallel()
+
+	catalystApp, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	_, err := catalystApp.Dao().FindCollectionByNameOrId(migrations.ReactionCollectionName)

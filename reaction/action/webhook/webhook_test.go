@@ -16,11 +16,15 @@ import (
 )
 
 func TestWebhook_Run(t *testing.T) {
+	t.Parallel()
+
 	server := catalystTesting.NewRecordingServer()
 
 	go http.ListenAndServe("127.0.0.1:12347", server) //nolint:gosec,errcheck
 
-	time.Sleep(1 * time.Second)
+	if err := catalystTesting.WaitForStatus("http://127.0.0.1:12347/health", http.StatusOK, 5*time.Second); err != nil {
+		t.Fatal(err)
+	}
 
 	type fields struct {
 		Headers map[string]string
@@ -50,10 +54,10 @@ func TestWebhook_Run(t *testing.T) {
 			want: map[string]any{
 				"statusCode": 200,
 				"headers": map[string]any{
-					"Content-Length": []any{"13"},
-					"Content-Type":   []any{"text/plain; charset=utf-8"},
+					"Content-Length": []any{"14"},
+					"Content-Type":   []any{"application/json; charset=UTF-8"},
 				},
-				"body":            `{"test":true}`,
+				"body":            "{\"test\":true}\n",
 				"isBase64Encoded": false,
 			},
 			wantErr: assert.NoError,
@@ -61,6 +65,8 @@ func TestWebhook_Run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx := context.Background()
 
 			a := &webhook.Webhook{
