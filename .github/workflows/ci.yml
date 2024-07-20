@@ -5,6 +5,21 @@ on:
   release: { types: [ published ] }
 
 jobs:
+  fmt:
+    name: Fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make build-ui
+
+      - run: make fmt
+
+      - run: git diff --exit-code
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
