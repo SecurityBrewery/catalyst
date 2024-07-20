@@ -56,13 +56,13 @@ const closeTicketMutation = useMutation({
 
       <Textarea v-model="resolution" placeholder="Closing reason" />
 
-      <DialogFooter class="mt-2">
-        <DialogClose as-child>
-          <Button type="button" variant="secondary"> Cancel</Button>
-        </DialogClose>
+      <DialogFooter class="mt-2 sm:justify-start">
         <Button type="button" variant="default" @click="closeTicketMutation.mutate()">
           Close
         </Button>
+        <DialogClose as-child>
+          <Button type="button" variant="secondary">Cancel</Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   </Dialog>

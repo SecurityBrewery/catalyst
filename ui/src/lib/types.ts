@@ -130,3 +130,16 @@ export interface JSONSchema {
   >
   required?: Array<string>
 }
+
+export interface Reaction {
+  id: string
+
+  name: string
+  trigger: string
+  triggerdata: any
+  action: string
+  actiondata: any
+
+  created: string
+  updated: string
+}

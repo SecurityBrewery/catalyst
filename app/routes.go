@@ -1,25 +1,16 @@
-package main
+package app
 
 import (
-	"embed"
-	"io/fs"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+
+	"github.com/SecurityBrewery/catalyst/ui"
 )
-
-//go:embed ui/dist/*
-var ui embed.FS
-
-func dev() bool {
-	return strings.HasPrefix(os.Args[0], os.TempDir())
-}
 
 func addRoutes() func(*core.ServeEvent) error {
 	return func(e *core.ServeEvent) error {
@@ -27,8 +18,9 @@ func addRoutes() func(*core.ServeEvent) error {
 			return c.Redirect(http.StatusFound, "/ui/")
 		})
 		e.Router.GET("/ui/*", staticFiles())
+
 		e.Router.GET("/api/config", func(c echo.Context) error {
-			flags, err := flags(e.App)
+			flags, err := Flags(e.App)
 			if err != nil {
 				return err
 			}
@@ -55,8 +47,6 @@ func staticFiles() func(echo.Context) error {
 			return nil
 		}
 
-		fsys, _ := fs.Sub(ui, "ui/dist")
-
-		return apis.StaticDirectoryHandler(fsys, true)(c)
+		return apis.StaticDirectoryHandler(ui.UI(), true)(c)
 	}
 }

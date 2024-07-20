@@ -1,9 +1,9 @@
 .PHONY: install
 install:
 	@echo "Installing..."
-	go install github.com/bombsimon/wsl/v4/cmd...@master
-	go install mvdan.cc/gofumpt@latest
-	go install github.com/daixiang0/gci@latest
+	go install github.com/bombsimon/wsl/v4/cmd...@v4.4.1
+	go install mvdan.cc/gofumpt@v0.6.0
+	go install github.com/daixiang0/gci@v0.13.4
 
 .PHONY: fmt
 fmt:
@@ -25,6 +25,13 @@ test:
 	@echo "Testing..."
 	go test -v ./...
 	cd ui && bun test
+
+.PHONY: test-coverage
+test-coverage:
+	@echo "Testing with coverage..."
+	go test -coverpkg=./... -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
+	go tool cover -html=coverage.out
 
 .PHONY: build-ui
 build-ui:

@@ -1,4 +1,4 @@
-package main
+package webhook
 
 import (
 	"bytes"
@@ -10,7 +10,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
@@ -28,7 +27,7 @@ type Webhook struct {
 	Destination string `db:"destination" json:"destination"`
 }
 
-func attachWebhooks(app *pocketbase.PocketBase) {
+func BindHooks(app core.App) {
 	migrations.Register(func(db dbx.Builder) error {
 		return daos.New(db).SaveCollection(&models.Collection{
 			Name:   webhooksCollection,
@@ -52,16 +51,7 @@ func attachWebhooks(app *pocketbase.PocketBase) {
 				},
 			),
 		})
-	}, func(db dbx.Builder) error {
-		dao := daos.New(db)
-
-		id, err := dao.FindCollectionByNameOrId(webhooksCollection)
-		if err != nil {
-			return err
-		}
-
-		return dao.DeleteCollection(id)
-	}, "1690000000_webhooks.go")
+	}, nil, "1690000000_webhooks.go")
 
 	app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
 		return event(app, "create", e.Collection.Name, e.Record, e.HttpContext)
@@ -82,7 +72,7 @@ type Payload struct {
 	Admin      *models.Admin  `json:"admin,omitempty"`
 }
 
-func event(app *pocketbase.PocketBase, action, collection string, record *models.Record, ctx echo.Context) error {
+func event(app core.App, event, collection string, record *models.Record, ctx echo.Context) error {
 	auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
 	admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
 
@@ -100,7 +90,7 @@ func event(app *pocketbase.PocketBase, action, collection string, record *models
 	}
 
 	payload, err := json.Marshal(&Payload{
-		Action:     action,
+		Action:     event,
 		Collection: collection,
 		Record:     record,
 		Auth:       auth,
@@ -112,9 +102,9 @@ func event(app *pocketbase.PocketBase, action, collection string, record *models
 
 	for _, webhook := range webhooks {
 		if err := sendWebhook(ctx.Request().Context(), webhook, payload); err != nil {
-			app.Logger().Error("failed to send webhook", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination, "error", err.Error())
+			app.Logger().Error("failed to send webhook", "action", event, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination, "error", err.Error())
 		} else {
-			app.Logger().Info("webhook sent", "action", action, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)
+			app.Logger().Info("webhook sent", "action", event, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)
 		}
 	}
 

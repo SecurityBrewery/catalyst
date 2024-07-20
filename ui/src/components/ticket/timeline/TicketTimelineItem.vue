@@ -120,13 +120,13 @@ const save = () =>
               Are you sure you want to delete this timeline item?</DialogDescription
             >
           </DialogHeader>
-          <DialogFooter>
-            <DialogClose as-child>
-              <Button type="button" variant="secondary"> Cancel</Button>
-            </DialogClose>
+          <DialogFooter class="sm:justify-start">
             <Button @click="deleteTimelineItemMutation.mutate" variant="destructive">
               Delete
             </Button>
+            <DialogClose as-child>
+              <Button type="button" variant="secondary"> Cancel</Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </DropdownMenu>

@@ -7,7 +7,6 @@ import TaskAddDialog from '@/components/ticket/task/TaskAddDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { toast } from '@/components/ui/toast'
 
 import { Trash2, User2 } from 'lucide-vue-next'
 

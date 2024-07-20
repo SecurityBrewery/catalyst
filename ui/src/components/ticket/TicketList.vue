@@ -153,7 +153,7 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
             </span>
 
             <div>
-              <TooltipProvider>
+              <TooltipProvider :delay-duration="0">
                 <Tooltip>
                   <TooltipTrigger as-child>
                     <Info class="ml-2 size-4 text-muted-foreground" />

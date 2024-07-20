@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	TimelineCollectionName = "timeline"
 	CommentCollectionName  = "comments"
-	fileCollectionName     = "files"
+	FeatureCollectionName  = "features"
 	LinkCollectionName     = "links"
 	TaskCollectionName     = "tasks"
 	TicketCollectionName   = "tickets"
+	TimelineCollectionName = "timeline"
 	TypeCollectionName     = "types"
 	WebhookCollectionName  = "webhooks"
-	FeatureCollectionName  = "features"
+	fileCollectionName     = "files"
 
 	UserCollectionName = "_pb_users_auth_"
 )
@@ -138,14 +138,14 @@ func internalCollection(c *models.Collection) *models.Collection {
 
 func collectionsDown(db dbx.Builder) error {
 	collections := []string{
-		TicketCollectionName,
-		TypeCollectionName,
 		fileCollectionName,
 		LinkCollectionName,
 		TaskCollectionName,
 		CommentCollectionName,
 		TimelineCollectionName,
 		FeatureCollectionName,
+		TicketCollectionName,
+		TypeCollectionName,
 	}
 
 	dao := daos.New(db)

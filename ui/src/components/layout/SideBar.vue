@@ -29,7 +29,6 @@ const catalystStore = useCatalystStore()
     <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
   </div>
   <NavList
-    class="mt-auto"
     :is-collapsed="catalystStore.sidebarCollapsed"
     :links="[
       {
@@ -43,10 +42,20 @@ const catalystStore = useCatalystStore()
   <Separator />
   <IncidentNav :is-collapsed="catalystStore.sidebarCollapsed" />
 
-  <Separator />
-
   <div class="flex-1" />
 
+  <Separator />
+  <NavList
+    :is-collapsed="catalystStore.sidebarCollapsed"
+    :links="[
+      {
+        title: 'Reactions',
+        icon: 'Zap',
+        variant: 'ghost',
+        to: '/reactions'
+      }
+    ]"
+  />
   <Separator />
   <UserDropDown :is-collapsed="catalystStore.sidebarCollapsed" />
   <Separator />

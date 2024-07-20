@@ -34,3 +34,5 @@ dist
 pb_data
 catalyst
 catalyst_data
+
+coverage.out

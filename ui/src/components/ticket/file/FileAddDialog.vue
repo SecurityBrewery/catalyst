@@ -65,11 +65,11 @@ function handleFileUpload($event: Event) {
 
       <Input id="file" type="file" class="mt-2" @change="handleFileUpload($event)" />
 
-      <DialogFooter class="mt-2">
-        <DialogClose as-child>
-          <Button type="button" variant="secondary"> Cancel</Button>
-        </DialogClose>
+      <DialogFooter class="mt-2 sm:justify-start">
         <Button @click="save">Upload</Button>
+        <DialogClose as-child>
+          <Button type="button" variant="secondary">Cancel</Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   </Dialog>

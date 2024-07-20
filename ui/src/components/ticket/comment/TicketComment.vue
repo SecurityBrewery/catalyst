@@ -99,11 +99,11 @@ const save = () => editCommentMutation.mutate()
               <DialogTitle>Delete comment</DialogTitle>
               <DialogDescription> Are you sure you want to delete this comment?</DialogDescription>
             </DialogHeader>
-            <DialogFooter>
+            <DialogFooter class="sm:justify-start">
+              <Button @click="deleteCommentMutation.mutate" variant="destructive">Delete</Button>
               <DialogClose as-child>
-                <Button type="button" variant="secondary"> Cancel</Button>
+                <Button type="button" variant="secondary">Cancel</Button>
               </DialogClose>
-              <Button @click="deleteCommentMutation.mutate" variant="destructive"> Delete </Button>
             </DialogFooter>
           </DialogContent>
         </DropdownMenu>

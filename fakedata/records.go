@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/security"
@@ -19,7 +19,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
+func Generate(app core.App, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -28,24 +28,39 @@ func Generate(app *pocketbase.PocketBase, userCount, ticketCount int) error {
 		ticketCount = minimumTicketCount
 	}
 
-	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
+	records, err := Records(app, userCount, ticketCount)
 	if err != nil {
 		return err
+	}
+
+	for _, record := range records {
+		if err := app.Dao().SaveRecord(record); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func Records(app core.App, userCount int, ticketCount int) ([]*models.Record, error) {
+	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
+	if err != nil {
+		return nil, err
 	}
 
 	users := userRecords(app.Dao(), userCount)
 	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
 	webhooks := webhookRecords(app.Dao())
+	reactions := reactionRecords(app.Dao())
 
-	for _, records := range [][]*models.Record{users, tickets, webhooks} {
-		for _, record := range records {
-			if err := app.Dao().SaveRecord(record); err != nil {
-				app.Logger().Error(err.Error())
-			}
-		}
-	}
+	var records []*models.Record
+	records = append(records, users...)
+	records = append(records, types...)
+	records = append(records, tickets...)
+	records = append(records, webhooks...)
+	records = append(records, reactions...)
 
-	return nil
+	return records, nil
 }
 
 func userRecords(dao *daos.Dao, count int) []*models.Record {
@@ -221,4 +236,42 @@ func webhookRecords(dao *daos.Dao) []*models.Record {
 	record.Set("destination", "http://localhost:8080/webhook")
 
 	return []*models.Record{record}
+}
+
+const (
+	triggerWebhook  = `{"token":"1234567890","path":"webhook"}`
+	reactionPython  = `{"requirements":"requests","script":"import sys\n\nprint(sys.argv[1])"}`
+	triggerHook     = `{"collections":["tickets","comments"],"events":["create","update","delete"]}`
+	reactionWebhook = `{"headers":["Content-Type: application/json"],"url":"http://localhost:8080/webhook"}`
+)
+
+func reactionRecords(dao *daos.Dao) []*models.Record {
+	var records []*models.Record
+
+	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionCollectionName)
+	if err != nil {
+		panic(err)
+	}
+
+	record := models.NewRecord(collection)
+	record.SetId("w_" + security.PseudorandomString(10))
+	record.Set("name", "Test Reaction")
+	record.Set("trigger", "webhook")
+	record.Set("triggerdata", triggerWebhook)
+	record.Set("action", "python")
+	record.Set("actiondata", reactionPython)
+
+	records = append(records, record)
+
+	record = models.NewRecord(collection)
+	record.SetId("w_" + security.PseudorandomString(10))
+	record.Set("name", "Test Reaction 2")
+	record.Set("trigger", "hook")
+	record.Set("triggerdata", triggerHook)
+	record.Set("action", "webhook")
+	record.Set("actiondata", reactionWebhook)
+
+	records = append(records, record)
+
+	return records
 }
