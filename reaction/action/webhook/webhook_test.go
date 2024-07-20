@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tidwall/sjson"
 
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
@@ -67,10 +68,10 @@ func TestWebhook_Run(t *testing.T) {
 			tt.wantErr(t, err)
 
 			want, err := json.Marshal(tt.want)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			got, err = sjson.DeleteBytes(got, "headers.Date")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			assert.JSONEq(t, string(want), string(got))
 		})
