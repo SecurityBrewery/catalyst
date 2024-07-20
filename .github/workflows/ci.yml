@@ -16,6 +16,7 @@ jobs:
 
       - run: make build-ui
 
+      - run: make install
       - run: make fmt
 
       - run: git diff --exit-code
