@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,6 +19,8 @@ func TestWebhook_Run(t *testing.T) {
 	server := catalystTesting.NewRecordingServer()
 
 	go http.ListenAndServe("127.0.0.1:12347", server) //nolint:gosec,errcheck
+
+	time.Sleep(1 * time.Second)
 
 	type fields struct {
 		Headers map[string]string
