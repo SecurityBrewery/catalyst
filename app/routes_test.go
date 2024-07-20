@@ -10,6 +10,8 @@ import (
 )
 
 func Test_staticFiles(t *testing.T) {
+	t.Parallel()
+
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()

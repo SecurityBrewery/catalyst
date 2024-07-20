@@ -8,6 +8,8 @@ import (
 )
 
 func Test_isIgnored(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		err error
 	}
@@ -29,6 +31,8 @@ func Test_isIgnored(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equalf(t, tt.want, isIgnored(tt.args.err), "isIgnored(%v)", tt.args.err)
 		})
 	}
