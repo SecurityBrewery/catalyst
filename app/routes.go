@@ -38,11 +38,10 @@ func staticFiles() func(echo.Context) error {
 	return func(c echo.Context) error {
 		if dev() {
 			u, _ := url.Parse("http://localhost:3000/")
-			proxy := httputil.NewSingleHostReverseProxy(u)
 
 			c.Request().Host = c.Request().URL.Host
 
-			proxy.ServeHTTP(c.Response(), c.Request())
+			httputil.NewSingleHostReverseProxy(u).ServeHTTP(c.Response(), c.Request())
 
 			return nil
 		}

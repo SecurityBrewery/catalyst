@@ -29,6 +29,7 @@ func Test_setFlags(t *testing.T) {
 	catalystApp, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
+	// stage 1
 	require.NoError(t, app.SetFlags(catalystApp, []string{"test"}))
 
 	got, err := app.Flags(catalystApp)
@@ -36,10 +37,19 @@ func Test_setFlags(t *testing.T) {
 
 	assert.ElementsMatch(t, []string{"test"}, got)
 
+	// stage 2
 	require.NoError(t, app.SetFlags(catalystApp, []string{"test2"}))
 
 	got, err = app.Flags(catalystApp)
 	require.NoError(t, err)
 
 	assert.ElementsMatch(t, []string{"test2"}, got)
+
+	// stage 3
+	require.NoError(t, app.SetFlags(catalystApp, []string{"test", "test2"}))
+
+	got, err = app.Flags(catalystApp)
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []string{"test", "test2"}, got)
 }
