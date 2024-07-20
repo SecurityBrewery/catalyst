@@ -64,8 +64,6 @@ jobs:
           mkdir -p ui/dist
           touch ui/dist/index.html
 
-      - run: make test
-
       - run: make test-coverage
 
       - uses: codecov/codecov-action@v4
