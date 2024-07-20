@@ -90,10 +90,7 @@ const change = () => validate({ mode: 'silent' }).then((res) => (submitDisabled.
           </FormItem>
         </FormField>
 
-        <DialogFooter class="mt-2">
-          <DialogClose as-child>
-            <Button type="button" variant="secondary"> Cancel</Button>
-          </DialogClose>
+        <DialogFooter class="mt-2 sm:justify-start">
           <Button
             :title="submitDisabled ? 'Please fill out all required fields' : undefined"
             :disabled="submitDisabled"
@@ -101,6 +98,9 @@ const change = () => validate({ mode: 'silent' }).then((res) => (submitDisabled.
           >
             Save
           </Button>
+          <DialogClose as-child>
+            <Button type="button" variant="secondary"> Cancel</Button>
+          </DialogClose>
         </DialogFooter>
       </form>
     </DialogContent>

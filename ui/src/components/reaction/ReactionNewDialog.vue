@@ -3,6 +3,7 @@ import ReactionForm from '@/components/reaction/ReactionForm.vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -33,6 +34,8 @@ const addReactionMutation = useMutation({
   },
   onError: handleError
 })
+
+const cancel = () => isOpen.value = false
 </script>
 
 <template>
@@ -47,7 +50,13 @@ const addReactionMutation = useMutation({
       </DialogHeader>
 
       <DialogScrollContent>
-        <ReactionForm @submit="addReactionMutation.mutate" />
+        <ReactionForm @submit="addReactionMutation.mutate">
+          <template #cancel>
+            <DialogClose as-child>
+              <Button type="button" variant="secondary">Cancel</Button>
+            </DialogClose>
+          </template>
+        </ReactionForm>
       </DialogScrollContent>
     </DialogContent>
   </Dialog>

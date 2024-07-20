@@ -139,11 +139,11 @@ watch(isOpen, () => {
 
         <JSONSchemaFormFields v-model="state" :schema="selectedType.schema" />
 
-        <DialogFooter class="mt-4">
+        <DialogFooter class="mt-4 sm:justify-start">
+          <Button type="submit"> Save </Button>
           <DialogClose as-child>
             <Button type="button" variant="secondary">Cancel</Button>
           </DialogClose>
-          <Button type="submit"> Save </Button>
         </DialogFooter>
       </form>
     </DialogContent>

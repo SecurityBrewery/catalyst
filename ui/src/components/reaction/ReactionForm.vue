@@ -1,35 +1,22 @@
 <script setup lang="ts">
-import ReactionPythonFormFields from '@/components/reaction/ReactionPythonFormFields.vue'
-import ReactionWebhookFormFields from '@/components/reaction/ReactionWebhookFormFields.vue'
+import ActionPythonFormFields from '@/components/reaction/ActionPythonFormFields.vue'
+import ActionWebhookFormFields from '@/components/reaction/ActionWebhookFormFields.vue'
 import TriggerHookFormFields from '@/components/reaction/TriggerHookFormFields.vue'
 import TriggerWebhookFormFields from '@/components/reaction/TriggerWebhookFormFields.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { defineRule, useForm } from 'vee-validate'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import type { Reaction } from '@/lib/types'
 
-const submitDisabled = defineModel('submitDisabled')
+const submitDisabledReason = ref<string>('')
 
 const props = defineProps<{
   reaction?: Reaction
@@ -144,7 +131,7 @@ const { handleSubmit, validate, values } = useForm({
     'triggerdata.events': 'triggerdata.events',
     'actiondata.script': 'actiondata.script',
     'actiondata.url': 'actiondata.url',
-    reaction: 'required'
+    action: 'required'
   }
 })
 
@@ -164,7 +151,7 @@ watch(
   () => props.reaction,
   () => {
     if (equalReaction(values, props.reaction)) {
-      submitDisabled.value = true
+      submitDisabledReason.value = 'Make changes to save'
     }
   },
   { immediate: true }
@@ -174,13 +161,17 @@ watch(
   values,
   () => {
     if (equalReaction(values, props.reaction)) {
-      submitDisabled.value = true
+      submitDisabledReason.value = 'Make changes to save'
 
       return
     }
 
     validate({ mode: 'silent' }).then((res) => {
-      submitDisabled.value = !res.valid
+      if (res.valid) {
+        submitDisabledReason.value = ''
+      } else {
+        submitDisabledReason.value = 'Please fix the errors'
+      }
     })
   },
   { deep: true, immediate: true }
@@ -204,16 +195,16 @@ const curlExample = computed(() => {
 </script>
 
 <template>
-  <form @submit="onSubmit" class="flex flex-col gap-4">
+  <form @submit="onSubmit" class="flex flex-col gap-4 items-start">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
-      <FormItem>
+      <FormItem class="w-full">
         <FormLabel for="name" class="text-right">Name</FormLabel>
         <Input id="name" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
     </FormField>
 
-    <Card>
+    <Card class="w-full">
       <CardHeader>
         <CardTitle>Trigger</CardTitle>
       </CardHeader>
@@ -252,16 +243,16 @@ const curlExample = computed(() => {
       </CardContent>
     </Card>
 
-    <Card>
+    <Card class="w-full">
       <CardHeader>
-        <CardTitle>Reaction</CardTitle>
+        <CardTitle>Action</CardTitle>
       </CardHeader>
       <CardContent class="flex flex-col gap-4">
-        <FormField name="reaction" v-slot="{ componentField }" validate-on-input>
+        <FormField name="action" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="reaction" class="text-right">Type</FormLabel>
+            <FormLabel for="action" class="text-right">Type</FormLabel>
             <FormControl>
-              <Select id="reaction" class="col-span-3" v-bind="componentField">
+              <Select id="action" class="col-span-3" v-bind="componentField">
                 <SelectTrigger class="font-medium">
                   <SelectValue placeholder="Select a type" />
                 </SelectTrigger>
@@ -281,18 +272,33 @@ const curlExample = computed(() => {
           </FormItem>
         </FormField>
 
-        <ReactionPythonFormFields v-if="values.reaction === 'python'" />
-        <ReactionWebhookFormFields v-else-if="values.reaction === 'webhook'" />
+        <ActionPythonFormFields v-if="values.action === 'python'" />
+        <ActionWebhookFormFields v-else-if="values.action === 'webhook'" />
       </CardContent>
     </Card>
 
-    <slot>
-      <Button
-        type="submit"
-        :variant="submitDisabled ? 'secondary' : 'default'"
-        :disabled="submitDisabled"
-        >Save
-      </Button>
-    </slot>
+    <div class="flex gap-4">
+      <TooltipProvider :delay-duration="0">
+        <Tooltip>
+          <TooltipTrigger class="cursor-default">
+            <Button
+              type="submit"
+              :variant="submitDisabledReason !== '' ? 'secondary' : 'default'"
+              :disabled="submitDisabledReason !== ''"
+              :title="submitDisabledReason"
+            >
+              Save
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span v-if="submitDisabledReason !== ''">
+              {{ submitDisabledReason }}
+            </span>
+            <span v-else> Save the reaction. </span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <slot name="cancel" />
+    </div>
   </form>
 </template>

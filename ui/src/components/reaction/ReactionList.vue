@@ -39,9 +39,9 @@ const triggerNiceName = (reaction: Reaction) => {
 }
 
 const reactionNiceName = (reaction: Reaction) => {
-  if (reaction.reaction === 'python') {
+  if (reaction.action === 'python') {
     return 'Python'
-  } else if (reaction.reaction === 'webhook') {
+  } else if (reaction.action === 'webhook') {
     return 'HTTP / Webhook'
   } else {
     return 'Unknown'

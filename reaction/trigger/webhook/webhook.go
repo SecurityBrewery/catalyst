@@ -24,15 +24,15 @@ type Webhook struct {
 	Path  string `json:"path"`
 }
 
+const prefix = "/reaction/"
+
 func BindHooks(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Any("/reaction/*", handle(e.App.Dao()))
+		e.Router.Any(prefix+"*", handle(e.App.Dao()))
 
 		return nil
 	})
 }
-
-const prefix = "/reaction/"
 
 func handle(dao *daos.Dao) func(c echo.Context) error {
 	return func(c echo.Context) error {

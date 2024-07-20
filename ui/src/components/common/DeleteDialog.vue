@@ -63,11 +63,11 @@ const deleteMutation = useMutation({
         >
       </DialogHeader>
 
-      <DialogFooter class="mt-2">
+      <DialogFooter class="mt-2 sm:justify-start">
+        <Button type="button" variant="destructive" @click="deleteMutation.mutate"> Delete </Button>
         <DialogClose as-child>
           <Button type="button" variant="secondary">Cancel</Button>
         </DialogClose>
-        <Button type="button" variant="destructive" @click="deleteMutation.mutate"> Delete </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

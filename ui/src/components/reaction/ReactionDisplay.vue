@@ -54,7 +54,7 @@ const updateReactionMutation = useMutation({
 
       <ScrollArea v-if="reaction" class="flex-1">
         <div class="flex max-w-[640px] flex-col gap-4 p-4">
-          <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" />
+          <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" hide-cancel />
         </div>
       </ScrollArea>
     </div>
