@@ -5,10 +5,24 @@ import TriggerHookFormFields from '@/components/reaction/TriggerHookFormFields.v
 import TriggerWebhookFormFields from '@/components/reaction/TriggerWebhookFormFields.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { defineRule, useForm } from 'vee-validate'
@@ -195,7 +209,7 @@ const curlExample = computed(() => {
 </script>
 
 <template>
-  <form @submit="onSubmit" class="flex flex-col gap-4 items-start">
+  <form @submit="onSubmit" class="flex flex-col items-start gap-4">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
         <FormLabel for="name" class="text-right">Name</FormLabel>

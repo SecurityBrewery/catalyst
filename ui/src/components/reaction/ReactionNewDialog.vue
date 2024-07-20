@@ -35,7 +35,7 @@ const addReactionMutation = useMutation({
   onError: handleError
 })
 
-const cancel = () => isOpen.value = false
+const cancel = () => (isOpen.value = false)
 </script>
 
 <template>
