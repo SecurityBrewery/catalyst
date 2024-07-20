@@ -60,515 +60,101 @@ func generateRecordToken(t *testing.T, baseApp core.App, email string) (string, 
 func countEvents(t *pocketbase.PocketBase) *Counter {
 	c := NewCounter()
 
-	t.OnBeforeApiError().Add(func(_ *core.ApiErrorEvent) error {
-		c.Increment("OnBeforeApiError")
-
-		return nil
-	})
-
-	t.OnAfterApiError().Add(func(_ *core.ApiErrorEvent) error {
-		c.Increment("OnAfterApiError")
-
-		return nil
-	})
-
-	t.OnModelBeforeCreate().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelBeforeCreate")
-
-		return nil
-	})
-
-	t.OnModelAfterCreate().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelAfterCreate")
-
-		return nil
-	})
-
-	t.OnModelBeforeUpdate().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelBeforeUpdate")
-
-		return nil
-	})
-
-	t.OnModelAfterUpdate().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelAfterUpdate")
-
-		return nil
-	})
-
-	t.OnModelBeforeDelete().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelBeforeDelete")
-
-		return nil
-	})
-
-	t.OnModelAfterDelete().Add(func(_ *core.ModelEvent) error {
-		c.Increment("OnModelAfterDelete")
-
-		return nil
-	})
-
-	t.OnRecordsListRequest().Add(func(_ *core.RecordsListEvent) error {
-		c.Increment("OnRecordsListRequest")
-
-		return nil
-	})
-
-	t.OnRecordViewRequest().Add(func(_ *core.RecordViewEvent) error {
-		c.Increment("OnRecordViewRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeCreateRequest().Add(func(_ *core.RecordCreateEvent) error {
-		c.Increment("OnRecordBeforeCreateRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterCreateRequest().Add(func(_ *core.RecordCreateEvent) error {
-		c.Increment("OnRecordAfterCreateRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeUpdateRequest().Add(func(_ *core.RecordUpdateEvent) error {
-		c.Increment("OnRecordBeforeUpdateRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterUpdateRequest().Add(func(_ *core.RecordUpdateEvent) error {
-		c.Increment("OnRecordAfterUpdateRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeDeleteRequest().Add(func(_ *core.RecordDeleteEvent) error {
-		c.Increment("OnRecordBeforeDeleteRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterDeleteRequest().Add(func(_ *core.RecordDeleteEvent) error {
-		c.Increment("OnRecordAfterDeleteRequest")
-
-		return nil
-	})
-
-	t.OnRecordAuthRequest().Add(func(_ *core.RecordAuthEvent) error {
-		c.Increment("OnRecordAuthRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeAuthWithPasswordRequest().Add(func(_ *core.RecordAuthWithPasswordEvent) error {
-		c.Increment("OnRecordBeforeAuthWithPasswordRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterAuthWithPasswordRequest().Add(func(_ *core.RecordAuthWithPasswordEvent) error {
-		c.Increment("OnRecordAfterAuthWithPasswordRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeAuthWithOAuth2Request().Add(func(_ *core.RecordAuthWithOAuth2Event) error {
-		c.Increment("OnRecordBeforeAuthWithOAuth2Request")
-
-		return nil
-	})
-
-	t.OnRecordAfterAuthWithOAuth2Request().Add(func(_ *core.RecordAuthWithOAuth2Event) error {
-		c.Increment("OnRecordAfterAuthWithOAuth2Request")
-
-		return nil
-	})
-
-	t.OnRecordBeforeAuthRefreshRequest().Add(func(_ *core.RecordAuthRefreshEvent) error {
-		c.Increment("OnRecordBeforeAuthRefreshRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterAuthRefreshRequest().Add(func(_ *core.RecordAuthRefreshEvent) error {
-		c.Increment("OnRecordAfterAuthRefreshRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeRequestPasswordResetRequest().Add(func(_ *core.RecordRequestPasswordResetEvent) error {
-		c.Increment("OnRecordBeforeRequestPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterRequestPasswordResetRequest().Add(func(_ *core.RecordRequestPasswordResetEvent) error {
-		c.Increment("OnRecordAfterRequestPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeConfirmPasswordResetRequest().Add(func(_ *core.RecordConfirmPasswordResetEvent) error {
-		c.Increment("OnRecordBeforeConfirmPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterConfirmPasswordResetRequest().Add(func(_ *core.RecordConfirmPasswordResetEvent) error {
-		c.Increment("OnRecordAfterConfirmPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeRequestVerificationRequest().Add(func(_ *core.RecordRequestVerificationEvent) error {
-		c.Increment("OnRecordBeforeRequestVerificationRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterRequestVerificationRequest().Add(func(_ *core.RecordRequestVerificationEvent) error {
-		c.Increment("OnRecordAfterRequestVerificationRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeConfirmVerificationRequest().Add(func(_ *core.RecordConfirmVerificationEvent) error {
-		c.Increment("OnRecordBeforeConfirmVerificationRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterConfirmVerificationRequest().Add(func(_ *core.RecordConfirmVerificationEvent) error {
-		c.Increment("OnRecordAfterConfirmVerificationRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeRequestEmailChangeRequest().Add(func(_ *core.RecordRequestEmailChangeEvent) error {
-		c.Increment("OnRecordBeforeRequestEmailChangeRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterRequestEmailChangeRequest().Add(func(_ *core.RecordRequestEmailChangeEvent) error {
-		c.Increment("OnRecordAfterRequestEmailChangeRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeConfirmEmailChangeRequest().Add(func(_ *core.RecordConfirmEmailChangeEvent) error {
-		c.Increment("OnRecordBeforeConfirmEmailChangeRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterConfirmEmailChangeRequest().Add(func(_ *core.RecordConfirmEmailChangeEvent) error {
-		c.Increment("OnRecordAfterConfirmEmailChangeRequest")
-
-		return nil
-	})
-
-	t.OnRecordListExternalAuthsRequest().Add(func(_ *core.RecordListExternalAuthsEvent) error {
-		c.Increment("OnRecordListExternalAuthsRequest")
-
-		return nil
-	})
-
-	t.OnRecordBeforeUnlinkExternalAuthRequest().Add(func(_ *core.RecordUnlinkExternalAuthEvent) error {
-		c.Increment("OnRecordBeforeUnlinkExternalAuthRequest")
-
-		return nil
-	})
-
-	t.OnRecordAfterUnlinkExternalAuthRequest().Add(func(_ *core.RecordUnlinkExternalAuthEvent) error {
-		c.Increment("OnRecordAfterUnlinkExternalAuthRequest")
-
-		return nil
-	})
-
-	t.OnMailerBeforeAdminResetPasswordSend().Add(func(_ *core.MailerAdminEvent) error {
-		c.Increment("OnMailerBeforeAdminResetPasswordSend")
-
-		return nil
-	})
-
-	t.OnMailerAfterAdminResetPasswordSend().Add(func(_ *core.MailerAdminEvent) error {
-		c.Increment("OnMailerAfterAdminResetPasswordSend")
-
-		return nil
-	})
-
-	t.OnMailerBeforeRecordResetPasswordSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerBeforeRecordResetPasswordSend")
-
-		return nil
-	})
-
-	t.OnMailerAfterRecordResetPasswordSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerAfterRecordResetPasswordSend")
-
-		return nil
-	})
-
-	t.OnMailerBeforeRecordVerificationSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerBeforeRecordVerificationSend")
-
-		return nil
-	})
-
-	t.OnMailerAfterRecordVerificationSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerAfterRecordVerificationSend")
-
-		return nil
-	})
-
-	t.OnMailerBeforeRecordChangeEmailSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerBeforeRecordChangeEmailSend")
-
-		return nil
-	})
-
-	t.OnMailerAfterRecordChangeEmailSend().Add(func(_ *core.MailerRecordEvent) error {
-		c.Increment("OnMailerAfterRecordChangeEmailSend")
-
-		return nil
-	})
-
-	t.OnRealtimeConnectRequest().Add(func(_ *core.RealtimeConnectEvent) error {
-		c.Increment("OnRealtimeConnectRequest")
-
-		return nil
-	})
-
-	t.OnRealtimeDisconnectRequest().Add(func(_ *core.RealtimeDisconnectEvent) error {
-		c.Increment("OnRealtimeDisconnectRequest")
-
-		return nil
-	})
-
-	t.OnRealtimeBeforeMessageSend().Add(func(_ *core.RealtimeMessageEvent) error {
-		c.Increment("OnRealtimeBeforeMessageSend")
-
-		return nil
-	})
-
-	t.OnRealtimeAfterMessageSend().Add(func(_ *core.RealtimeMessageEvent) error {
-		c.Increment("OnRealtimeAfterMessageSend")
-
-		return nil
-	})
-
-	t.OnRealtimeBeforeSubscribeRequest().Add(func(_ *core.RealtimeSubscribeEvent) error {
-		c.Increment("OnRealtimeBeforeSubscribeRequest")
-
-		return nil
-	})
-
-	t.OnRealtimeAfterSubscribeRequest().Add(func(_ *core.RealtimeSubscribeEvent) error {
-		c.Increment("OnRealtimeAfterSubscribeRequest")
-
-		return nil
-	})
-
-	t.OnSettingsListRequest().Add(func(_ *core.SettingsListEvent) error {
-		c.Increment("OnSettingsListRequest")
-
-		return nil
-	})
-
-	t.OnSettingsBeforeUpdateRequest().Add(func(_ *core.SettingsUpdateEvent) error {
-		c.Increment("OnSettingsBeforeUpdateRequest")
-
-		return nil
-	})
-
-	t.OnSettingsAfterUpdateRequest().Add(func(_ *core.SettingsUpdateEvent) error {
-		c.Increment("OnSettingsAfterUpdateRequest")
-
-		return nil
-	})
-
-	t.OnCollectionsListRequest().Add(func(_ *core.CollectionsListEvent) error {
-		c.Increment("OnCollectionsListRequest")
-
-		return nil
-	})
-
-	t.OnCollectionViewRequest().Add(func(_ *core.CollectionViewEvent) error {
-		c.Increment("OnCollectionViewRequest")
-
-		return nil
-	})
-
-	t.OnCollectionBeforeCreateRequest().Add(func(_ *core.CollectionCreateEvent) error {
-		c.Increment("OnCollectionBeforeCreateRequest")
-
-		return nil
-	})
-
-	t.OnCollectionAfterCreateRequest().Add(func(_ *core.CollectionCreateEvent) error {
-		c.Increment("OnCollectionAfterCreateRequest")
-
-		return nil
-	})
-
-	t.OnCollectionBeforeUpdateRequest().Add(func(_ *core.CollectionUpdateEvent) error {
-		c.Increment("OnCollectionBeforeUpdateRequest")
-
-		return nil
-	})
-
-	t.OnCollectionAfterUpdateRequest().Add(func(_ *core.CollectionUpdateEvent) error {
-		c.Increment("OnCollectionAfterUpdateRequest")
-
-		return nil
-	})
-
-	t.OnCollectionBeforeDeleteRequest().Add(func(_ *core.CollectionDeleteEvent) error {
-		c.Increment("OnCollectionBeforeDeleteRequest")
-
-		return nil
-	})
-
-	t.OnCollectionAfterDeleteRequest().Add(func(_ *core.CollectionDeleteEvent) error {
-		c.Increment("OnCollectionAfterDeleteRequest")
-
-		return nil
-	})
-
-	t.OnCollectionsBeforeImportRequest().Add(func(_ *core.CollectionsImportEvent) error {
-		c.Increment("OnCollectionsBeforeImportRequest")
-
-		return nil
-	})
-
-	t.OnCollectionsAfterImportRequest().Add(func(_ *core.CollectionsImportEvent) error {
-		c.Increment("OnCollectionsAfterImportRequest")
-
-		return nil
-	})
-
-	t.OnAdminsListRequest().Add(func(_ *core.AdminsListEvent) error {
-		c.Increment("OnAdminsListRequest")
-
-		return nil
-	})
-
-	t.OnAdminViewRequest().Add(func(_ *core.AdminViewEvent) error {
-		c.Increment("OnAdminViewRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeCreateRequest().Add(func(_ *core.AdminCreateEvent) error {
-		c.Increment("OnAdminBeforeCreateRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterCreateRequest().Add(func(_ *core.AdminCreateEvent) error {
-		c.Increment("OnAdminAfterCreateRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeUpdateRequest().Add(func(_ *core.AdminUpdateEvent) error {
-		c.Increment("OnAdminBeforeUpdateRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterUpdateRequest().Add(func(_ *core.AdminUpdateEvent) error {
-		c.Increment("OnAdminAfterUpdateRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeDeleteRequest().Add(func(_ *core.AdminDeleteEvent) error {
-		c.Increment("OnAdminBeforeDeleteRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterDeleteRequest().Add(func(_ *core.AdminDeleteEvent) error {
-		c.Increment("OnAdminAfterDeleteRequest")
-
-		return nil
-	})
-
-	t.OnAdminAuthRequest().Add(func(_ *core.AdminAuthEvent) error {
-		c.Increment("OnAdminAuthRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeAuthWithPasswordRequest().Add(func(_ *core.AdminAuthWithPasswordEvent) error {
-		c.Increment("OnAdminBeforeAuthWithPasswordRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterAuthWithPasswordRequest().Add(func(_ *core.AdminAuthWithPasswordEvent) error {
-		c.Increment("OnAdminAfterAuthWithPasswordRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeAuthRefreshRequest().Add(func(_ *core.AdminAuthRefreshEvent) error {
-		c.Increment("OnAdminBeforeAuthRefreshRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterAuthRefreshRequest().Add(func(_ *core.AdminAuthRefreshEvent) error {
-		c.Increment("OnAdminAfterAuthRefreshRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeRequestPasswordResetRequest().Add(func(_ *core.AdminRequestPasswordResetEvent) error {
-		c.Increment("OnAdminBeforeRequestPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterRequestPasswordResetRequest().Add(func(_ *core.AdminRequestPasswordResetEvent) error {
-		c.Increment("OnAdminAfterRequestPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnAdminBeforeConfirmPasswordResetRequest().Add(func(_ *core.AdminConfirmPasswordResetEvent) error {
-		c.Increment("OnAdminBeforeConfirmPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnAdminAfterConfirmPasswordResetRequest().Add(func(_ *core.AdminConfirmPasswordResetEvent) error {
-		c.Increment("OnAdminAfterConfirmPasswordResetRequest")
-
-		return nil
-	})
-
-	t.OnFileDownloadRequest().Add(func(_ *core.FileDownloadEvent) error {
-		c.Increment("OnFileDownloadRequest")
-
-		return nil
-	})
-
-	t.OnFileBeforeTokenRequest().Add(func(_ *core.FileTokenEvent) error {
-		c.Increment("OnFileBeforeTokenRequest")
-
-		return nil
-	})
-
-	t.OnFileAfterTokenRequest().Add(func(_ *core.FileTokenEvent) error {
-		c.Increment("OnFileAfterTokenRequest")
-
-		return nil
-	})
+	t.OnBeforeApiError().Add(count[*core.ApiErrorEvent](c, "OnBeforeApiError"))
+	t.OnBeforeApiError().Add(count[*core.ApiErrorEvent](c, "OnBeforeApiError"))
+	t.OnAfterApiError().Add(count[*core.ApiErrorEvent](c, "OnAfterApiError"))
+	t.OnModelBeforeCreate().Add(count[*core.ModelEvent](c, "OnModelBeforeCreate"))
+	t.OnModelAfterCreate().Add(count[*core.ModelEvent](c, "OnModelAfterCreate"))
+	t.OnModelBeforeUpdate().Add(count[*core.ModelEvent](c, "OnModelBeforeUpdate"))
+	t.OnModelAfterUpdate().Add(count[*core.ModelEvent](c, "OnModelAfterUpdate"))
+	t.OnModelBeforeDelete().Add(count[*core.ModelEvent](c, "OnModelBeforeDelete"))
+	t.OnModelAfterDelete().Add(count[*core.ModelEvent](c, "OnModelAfterDelete"))
+	t.OnRecordsListRequest().Add(count[*core.RecordsListEvent](c, "OnRecordsListRequest"))
+	t.OnRecordViewRequest().Add(count[*core.RecordViewEvent](c, "OnRecordViewRequest"))
+	t.OnRecordBeforeCreateRequest().Add(count[*core.RecordCreateEvent](c, "OnRecordBeforeCreateRequest"))
+	t.OnRecordAfterCreateRequest().Add(count[*core.RecordCreateEvent](c, "OnRecordAfterCreateRequest"))
+	t.OnRecordBeforeUpdateRequest().Add(count[*core.RecordUpdateEvent](c, "OnRecordBeforeUpdateRequest"))
+	t.OnRecordAfterUpdateRequest().Add(count[*core.RecordUpdateEvent](c, "OnRecordAfterUpdateRequest"))
+	t.OnRecordBeforeDeleteRequest().Add(count[*core.RecordDeleteEvent](c, "OnRecordBeforeDeleteRequest"))
+	t.OnRecordAfterDeleteRequest().Add(count[*core.RecordDeleteEvent](c, "OnRecordAfterDeleteRequest"))
+	t.OnRecordAuthRequest().Add(count[*core.RecordAuthEvent](c, "OnRecordAuthRequest"))
+	t.OnRecordBeforeAuthWithPasswordRequest().Add(count[*core.RecordAuthWithPasswordEvent](c, "OnRecordBeforeAuthWithPasswordRequest"))
+	t.OnRecordAfterAuthWithPasswordRequest().Add(count[*core.RecordAuthWithPasswordEvent](c, "OnRecordAfterAuthWithPasswordRequest"))
+	t.OnRecordBeforeAuthWithOAuth2Request().Add(count[*core.RecordAuthWithOAuth2Event](c, "OnRecordBeforeAuthWithOAuth2Request"))
+	t.OnRecordAfterAuthWithOAuth2Request().Add(count[*core.RecordAuthWithOAuth2Event](c, "OnRecordAfterAuthWithOAuth2Request"))
+	t.OnRecordBeforeAuthRefreshRequest().Add(count[*core.RecordAuthRefreshEvent](c, "OnRecordBeforeAuthRefreshRequest"))
+	t.OnRecordAfterAuthRefreshRequest().Add(count[*core.RecordAuthRefreshEvent](c, "OnRecordAfterAuthRefreshRequest"))
+	t.OnRecordBeforeRequestPasswordResetRequest().Add(count[*core.RecordRequestPasswordResetEvent](c, "OnRecordBeforeRequestPasswordResetRequest"))
+	t.OnRecordAfterRequestPasswordResetRequest().Add(count[*core.RecordRequestPasswordResetEvent](c, "OnRecordAfterRequestPasswordResetRequest"))
+	t.OnRecordBeforeConfirmPasswordResetRequest().Add(count[*core.RecordConfirmPasswordResetEvent](c, "OnRecordBeforeConfirmPasswordResetRequest"))
+	t.OnRecordAfterConfirmPasswordResetRequest().Add(count[*core.RecordConfirmPasswordResetEvent](c, "OnRecordAfterConfirmPasswordResetRequest"))
+	t.OnRecordBeforeRequestVerificationRequest().Add(count[*core.RecordRequestVerificationEvent](c, "OnRecordBeforeRequestVerificationRequest"))
+	t.OnRecordAfterRequestVerificationRequest().Add(count[*core.RecordRequestVerificationEvent](c, "OnRecordAfterRequestVerificationRequest"))
+	t.OnRecordBeforeConfirmVerificationRequest().Add(count[*core.RecordConfirmVerificationEvent](c, "OnRecordBeforeConfirmVerificationRequest"))
+	t.OnRecordAfterConfirmVerificationRequest().Add(count[*core.RecordConfirmVerificationEvent](c, "OnRecordAfterConfirmVerificationRequest"))
+	t.OnRecordBeforeRequestEmailChangeRequest().Add(count[*core.RecordRequestEmailChangeEvent](c, "OnRecordBeforeRequestEmailChangeRequest"))
+	t.OnRecordAfterRequestEmailChangeRequest().Add(count[*core.RecordRequestEmailChangeEvent](c, "OnRecordAfterRequestEmailChangeRequest"))
+	t.OnRecordBeforeConfirmEmailChangeRequest().Add(count[*core.RecordConfirmEmailChangeEvent](c, "OnRecordBeforeConfirmEmailChangeRequest"))
+	t.OnRecordAfterConfirmEmailChangeRequest().Add(count[*core.RecordConfirmEmailChangeEvent](c, "OnRecordAfterConfirmEmailChangeRequest"))
+	t.OnRecordListExternalAuthsRequest().Add(count[*core.RecordListExternalAuthsEvent](c, "OnRecordListExternalAuthsRequest"))
+	t.OnRecordBeforeUnlinkExternalAuthRequest().Add(count[*core.RecordUnlinkExternalAuthEvent](c, "OnRecordBeforeUnlinkExternalAuthRequest"))
+	t.OnRecordAfterUnlinkExternalAuthRequest().Add(count[*core.RecordUnlinkExternalAuthEvent](c, "OnRecordAfterUnlinkExternalAuthRequest"))
+	t.OnMailerBeforeAdminResetPasswordSend().Add(count[*core.MailerAdminEvent](c, "OnMailerBeforeAdminResetPasswordSend"))
+	t.OnMailerAfterAdminResetPasswordSend().Add(count[*core.MailerAdminEvent](c, "OnMailerAfterAdminResetPasswordSend"))
+	t.OnMailerBeforeRecordResetPasswordSend().Add(count[*core.MailerRecordEvent](c, "OnMailerBeforeRecordResetPasswordSend"))
+	t.OnMailerAfterRecordResetPasswordSend().Add(count[*core.MailerRecordEvent](c, "OnMailerAfterRecordResetPasswordSend"))
+	t.OnMailerBeforeRecordVerificationSend().Add(count[*core.MailerRecordEvent](c, "OnMailerBeforeRecordVerificationSend"))
+	t.OnMailerAfterRecordVerificationSend().Add(count[*core.MailerRecordEvent](c, "OnMailerAfterRecordVerificationSend"))
+	t.OnMailerBeforeRecordChangeEmailSend().Add(count[*core.MailerRecordEvent](c, "OnMailerBeforeRecordChangeEmailSend"))
+	t.OnMailerAfterRecordChangeEmailSend().Add(count[*core.MailerRecordEvent](c, "OnMailerAfterRecordChangeEmailSend"))
+	t.OnRealtimeConnectRequest().Add(count[*core.RealtimeConnectEvent](c, "OnRealtimeConnectRequest"))
+	t.OnRealtimeDisconnectRequest().Add(count[*core.RealtimeDisconnectEvent](c, "OnRealtimeDisconnectRequest"))
+	t.OnRealtimeBeforeMessageSend().Add(count[*core.RealtimeMessageEvent](c, "OnRealtimeBeforeMessageSend"))
+	t.OnRealtimeAfterMessageSend().Add(count[*core.RealtimeMessageEvent](c, "OnRealtimeAfterMessageSend"))
+	t.OnRealtimeBeforeSubscribeRequest().Add(count[*core.RealtimeSubscribeEvent](c, "OnRealtimeBeforeSubscribeRequest"))
+	t.OnRealtimeAfterSubscribeRequest().Add(count[*core.RealtimeSubscribeEvent](c, "OnRealtimeAfterSubscribeRequest"))
+	t.OnSettingsListRequest().Add(count[*core.SettingsListEvent](c, "OnSettingsListRequest"))
+	t.OnSettingsBeforeUpdateRequest().Add(count[*core.SettingsUpdateEvent](c, "OnSettingsBeforeUpdateRequest"))
+	t.OnSettingsAfterUpdateRequest().Add(count[*core.SettingsUpdateEvent](c, "OnSettingsAfterUpdateRequest"))
+	t.OnCollectionsListRequest().Add(count[*core.CollectionsListEvent](c, "OnCollectionsListRequest"))
+	t.OnCollectionViewRequest().Add(count[*core.CollectionViewEvent](c, "OnCollectionViewRequest"))
+	t.OnCollectionBeforeCreateRequest().Add(count[*core.CollectionCreateEvent](c, "OnCollectionBeforeCreateRequest"))
+	t.OnCollectionAfterCreateRequest().Add(count[*core.CollectionCreateEvent](c, "OnCollectionAfterCreateRequest"))
+	t.OnCollectionBeforeUpdateRequest().Add(count[*core.CollectionUpdateEvent](c, "OnCollectionBeforeUpdateRequest"))
+	t.OnCollectionAfterUpdateRequest().Add(count[*core.CollectionUpdateEvent](c, "OnCollectionAfterUpdateRequest"))
+	t.OnCollectionBeforeDeleteRequest().Add(count[*core.CollectionDeleteEvent](c, "OnCollectionBeforeDeleteRequest"))
+	t.OnCollectionAfterDeleteRequest().Add(count[*core.CollectionDeleteEvent](c, "OnCollectionAfterDeleteRequest"))
+	t.OnCollectionsBeforeImportRequest().Add(count[*core.CollectionsImportEvent](c, "OnCollectionsBeforeImportRequest"))
+	t.OnCollectionsAfterImportRequest().Add(count[*core.CollectionsImportEvent](c, "OnCollectionsAfterImportRequest"))
+	t.OnAdminsListRequest().Add(count[*core.AdminsListEvent](c, "OnAdminsListRequest"))
+	t.OnAdminViewRequest().Add(count[*core.AdminViewEvent](c, "OnAdminViewRequest"))
+	t.OnAdminBeforeCreateRequest().Add(count[*core.AdminCreateEvent](c, "OnAdminBeforeCreateRequest"))
+	t.OnAdminAfterCreateRequest().Add(count[*core.AdminCreateEvent](c, "OnAdminAfterCreateRequest"))
+	t.OnAdminBeforeUpdateRequest().Add(count[*core.AdminUpdateEvent](c, "OnAdminBeforeUpdateRequest"))
+	t.OnAdminAfterUpdateRequest().Add(count[*core.AdminUpdateEvent](c, "OnAdminAfterUpdateRequest"))
+	t.OnAdminBeforeDeleteRequest().Add(count[*core.AdminDeleteEvent](c, "OnAdminBeforeDeleteRequest"))
+	t.OnAdminAfterDeleteRequest().Add(count[*core.AdminDeleteEvent](c, "OnAdminAfterDeleteRequest"))
+	t.OnAdminAuthRequest().Add(count[*core.AdminAuthEvent](c, "OnAdminAuthRequest"))
+	t.OnAdminBeforeAuthWithPasswordRequest().Add(count[*core.AdminAuthWithPasswordEvent](c, "OnAdminBeforeAuthWithPasswordRequest"))
+	t.OnAdminAfterAuthWithPasswordRequest().Add(count[*core.AdminAuthWithPasswordEvent](c, "OnAdminAfterAuthWithPasswordRequest"))
+	t.OnAdminBeforeAuthRefreshRequest().Add(count[*core.AdminAuthRefreshEvent](c, "OnAdminBeforeAuthRefreshRequest"))
+	t.OnAdminAfterAuthRefreshRequest().Add(count[*core.AdminAuthRefreshEvent](c, "OnAdminAfterAuthRefreshRequest"))
+	t.OnAdminBeforeRequestPasswordResetRequest().Add(count[*core.AdminRequestPasswordResetEvent](c, "OnAdminBeforeRequestPasswordResetRequest"))
+	t.OnAdminAfterRequestPasswordResetRequest().Add(count[*core.AdminRequestPasswordResetEvent](c, "OnAdminAfterRequestPasswordResetRequest"))
+	t.OnAdminBeforeConfirmPasswordResetRequest().Add(count[*core.AdminConfirmPasswordResetEvent](c, "OnAdminBeforeConfirmPasswordResetRequest"))
+	t.OnAdminAfterConfirmPasswordResetRequest().Add(count[*core.AdminConfirmPasswordResetEvent](c, "OnAdminAfterConfirmPasswordResetRequest"))
+	t.OnFileDownloadRequest().Add(count[*core.FileDownloadEvent](c, "OnFileDownloadRequest"))
+	t.OnFileBeforeTokenRequest().Add(count[*core.FileTokenEvent](c, "OnFileBeforeTokenRequest"))
+	t.OnFileAfterTokenRequest().Add(count[*core.FileTokenEvent](c, "OnFileAfterTokenRequest"))
+	t.OnFileAfterTokenRequest().Add(count[*core.FileTokenEvent](c, "OnFileAfterTokenRequest"))
 
 	return c
+}
+
+func count[T any](c *Counter, name string) func(e T) error {
+	return func(e T) error {
+		c.Increment(name)
+
+		return nil
+	}
 }
