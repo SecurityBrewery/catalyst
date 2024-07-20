@@ -237,7 +237,13 @@ func TestReactionsCollection(t *testing.T) {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
 			t.Parallel()
 
-			testSet.run(t)
+			for _, userTest := range testSet.userTests {
+				t.Run(userTest.Name, func(t *testing.T) {
+					t.Parallel()
+
+					runMatrixTest(t, testSet.baseTest, userTest)
+				})
+			}
 		})
 	}
 }

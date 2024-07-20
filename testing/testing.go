@@ -35,18 +35,6 @@ type catalystTest struct {
 	userTests []UserTest
 }
 
-func (a *catalystTest) run(t *testing.T) {
-	t.Helper()
-
-	for _, userTest := range a.userTests {
-		t.Run(userTest.Name, func(t *testing.T) {
-			t.Parallel()
-
-			runMatrixTest(t, a.baseTest, userTest)
-		})
-	}
-}
-
 func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	t.Helper()
 

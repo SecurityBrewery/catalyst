@@ -43,7 +43,7 @@ func Test_Routes(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"flags":null`,
+						`"flags":[]`,
 					},
 				},
 				{
@@ -51,7 +51,7 @@ func Test_Routes(t *testing.T) {
 					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"flags":null`,
+						`"flags":[]`,
 					},
 				},
 				{
@@ -59,7 +59,7 @@ func Test_Routes(t *testing.T) {
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"flags":null`,
+						`"flags":[]`,
 					},
 				},
 			},
@@ -69,7 +69,13 @@ func Test_Routes(t *testing.T) {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
 			t.Parallel()
 
-			testSet.run(t)
+			for _, userTest := range testSet.userTests {
+				t.Run(userTest.Name, func(t *testing.T) {
+					t.Parallel()
+
+					runMatrixTest(t, testSet.baseTest, userTest)
+				})
+			}
 		})
 	}
 }
