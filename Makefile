@@ -29,7 +29,7 @@ test:
 .PHONY: test-coverage
 test-coverage:
 	@echo "Testing with coverage..."
-	go test -coverpkg=./... -coverprofile=coverage.out ./...
+	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
