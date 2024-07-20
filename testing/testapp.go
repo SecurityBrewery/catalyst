@@ -151,8 +151,8 @@ func countEvents(t *pocketbase.PocketBase) *Counter {
 	return c
 }
 
-func count[T any](c *Counter, name string) func(e T) error {
-	return func(e T) error {
+func count[T any](c *Counter, name string) func(_ T) error {
+	return func(_ T) error {
 		c.Increment(name)
 
 		return nil
