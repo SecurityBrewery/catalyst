@@ -3,12 +3,14 @@ package webhook_test
 import (
 	"context"
 	"encoding/json"
-	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
-	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/tidwall/sjson"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/tidwall/sjson"
+
+	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
+	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
 
 func TestWebhook_Run(t *testing.T) {
@@ -20,9 +22,11 @@ func TestWebhook_Run(t *testing.T) {
 		Headers map[string]string
 		URL     string
 	}
+
 	type args struct {
 		payload string
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields

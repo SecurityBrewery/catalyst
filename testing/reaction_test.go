@@ -1,9 +1,10 @@
 package testing
 
 import (
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestWebhookReactions(t *testing.T) {

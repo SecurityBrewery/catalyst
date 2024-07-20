@@ -2,8 +2,9 @@ package python
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPython_Run(t *testing.T) {
@@ -11,9 +12,11 @@ func TestPython_Run(t *testing.T) {
 		Bootstrap string
 		Script    string
 	}
+
 	type args struct {
 		payload string
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
