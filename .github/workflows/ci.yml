@@ -15,8 +15,10 @@ jobs:
       - uses: oven-sh/setup-bun@v1
 
       - run: |
-          mkdir -p ui/dist
-          touch ui/dist/index.html
+          bun install
+          mkdir -p dist
+          touch dist/index.html
+        working-directory: ui
 
       - run: make install
       - run: make fmt
