@@ -10,6 +10,20 @@ import (
 	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
 
+func TestHasFlag(t *testing.T) {
+	t.Parallel()
+
+	catalystApp, _, cleanup := catalystTesting.App(t)
+	defer cleanup()
+
+	// stage 1
+	assert.False(t, app.HasFlag(catalystApp, "test"))
+
+	// stage 2
+	require.NoError(t, app.SetFlags(catalystApp, []string{"test"}))
+	assert.True(t, app.HasFlag(catalystApp, "test"))
+}
+
 func Test_flags(t *testing.T) {
 	t.Parallel()
 
