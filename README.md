@@ -26,21 +26,10 @@ They represent alerts, incidents, forensics investigations,
 threat hunts or any other event you want to handle in your organisation.
 
 <center>
-    <a href="docs/screenshots/ticket.png">
-      <img alt="Screenshot of a ticket" src="docs/screenshots/ticket.png" />
+    <a href="/docs/screenshots/ticket.png">
+      <img alt="Screenshot of a ticket" src="/docs/screenshots/ticket.png" />
     </a>
 </center>
-
-### Ticket Types
-
-Templates define the custom information for tickets. 
-The core information for tickets like title, creation date or closing status is kept quite minimal 
-and other information like criticality, description or MITRE ATT&CK information can be added individually.
-
-### Timelines
-
-Timelines are used to document the progress of an investigation.
-They can be used to document the steps taken during an investigation, the findings or the results of the investigation.
 
 ### Tasks
 
@@ -48,36 +37,50 @@ Tasks are the smallest unit of work in Catalyst. They can be assigned to users a
 Tasks can be used to document the progress of an investigation or to assign work to different users.
 
 <center>
-    <a href="docs/screenshots/tasks.png">
-      <img alt="Screenshot of the tasks part of a ticket" src="docs/screenshots/tasks.png" />
+    <a href="/docs/screenshots/tasks.png">
+      <img alt="Screenshot of the tasks part of a ticket" src="/docs/screenshots/tasks.png" />
     </a>
 </center>
 
-### Custom Fields
+### Reactions
 
-Custom fields can be added to tickets to store additional information.
-They can be used to store information like the affected system, the attacker's IP address or the type of malware.
-Custom fields can be added to ticket types and are then available for all tickets of this type.
+Reactions are a way to automate Catalyst.
+Each reaction is composed of a trigger and an action.
+The trigger listens for events and the action is executed when the trigger is activated.
+There are triggers for HTTP/Webhooks and Collection Hooks and actions for Python and HTTP/Webhooks.
+
+<center>
+    <a href="/docs/screenshots/reactions.png">
+      <img alt="Screenshot of the reactions" src="/docs/screenshots/reactions.png" />
+    </a>
+</center>
+
+### Timelines
+
+Timelines are used to document the progress of an investigation.
+They can be used to document the steps taken during an investigation, the findings or the results of the investigation.
 
 ### Dashboards
 
 Catalyst comes with a dashboard that presents the most important information at a glance.
 
 <center>
-    <a href="docs/screenshots/dashboard.png">
-        <img alt="Screenshot of the dashboard" src="docs/screenshots/dashboard.png" />
+    <a href="/docs/screenshots/dashboard.png">
+        <img alt="Screenshot of the dashboard" src="/docs/screenshots/dashboard.png" />
     </a>
 </center>
 
-### Webhooks
+### Ticket Types
 
-Catalyst can send webhooks to other systems. 
-This can be used to trigger actions in other systems and create automated workflows.
+Templates define the custom information for tickets.
+The core information for tickets like title, creation date or closing status is kept quite minimal
+and other information like criticality, description or MITRE ATT&CK information can be added individually.
 
-### Users
+### Custom Fields
 
-Catalyst supports authentication via username and password 
-or via OAuth2 with an external identity provider like Google, GitHub or GitLab.
+Custom fields can be added to tickets to store additional information.
+They can be used to store information like the affected system, the attacker's IP address or the type of malware.
+Custom fields can be added to ticket types and are then available for all tickets of this type.
 
 ### More
 
