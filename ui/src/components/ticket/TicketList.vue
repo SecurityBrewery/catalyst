@@ -68,10 +68,11 @@ const filter = computed(() => {
     params['search'] = searchValue.value
   }
 
-  if (raw !== '') raw += ' && '
   if (tab.value === 'open') {
+    if (raw !== '') raw += ' && '
     raw += 'open = true'
   } else if (tab.value === 'closed') {
+    if (raw !== '') raw += ' && '
     raw += 'open = false'
   }
 
@@ -150,7 +151,7 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
       <div class="px-4 py-2">
         <form>
           <div class="relative flex flex-row items-center">
-            <Input v-model="searchValue" placeholder="Search" class="pl-8" />
+            <Input v-model="searchValue" placeholder="Search" @keydown.enter.prevent class="pl-8" />
             <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
               <Search class="size-4 text-muted-foreground" />
             </span>
