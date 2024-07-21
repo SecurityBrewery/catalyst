@@ -260,7 +260,7 @@ event = json.loads(sys.argv[1])
 body = json.loads(event["body"])
 
 # Connect to the PocketBase server
-client = PocketBase('http://127.0.0.1:8090')
+client = PocketBase(os.environ["CATALYST_APP_URL"])
 client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
 
 # Create a new ticket
@@ -281,7 +281,7 @@ from pocketbase import PocketBase
 ticket = json.loads(sys.argv[1])
 
 # Connect to the PocketBase server
-client = PocketBase('http://127.0.0.1:8090')
+client = PocketBase(os.environ["CATALYST_APP_URL"])
 client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
 
 # Get a random user
