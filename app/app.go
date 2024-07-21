@@ -17,7 +17,7 @@ func init() { //nolint:gochecknoinits
 
 func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDev:     false, // dev(),
+		DefaultDev:     test || dev(),
 		DefaultDataDir: dir,
 	})
 
