@@ -1,19 +1,38 @@
 package testing
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v5"
+)
 
 type RecordingServer struct {
+	server *echo.Echo
+
 	Entries []string
 }
 
 func NewRecordingServer() *RecordingServer {
-	return &RecordingServer{}
+	e := echo.New()
+
+	e.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]any{
+			"status": "ok",
+		})
+	})
+	e.Any("/*", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]any{
+			"test": true,
+		})
+	})
+
+	return &RecordingServer{
+		server: e,
+	}
 }
 
 func (s *RecordingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.Entries = append(s.Entries, r.URL.Path)
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"test":true}`)) //nolint:errcheck
+	s.server.ServeHTTP(w, r)
 }

@@ -1,4 +1,4 @@
-package ui
+package ui_test
 
 import (
 	"io/fs"
@@ -6,9 +6,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/SecurityBrewery/catalyst/ui"
 )
 
 func TestUI(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name      string
 		wantFiles []string
@@ -22,7 +26,9 @@ func TestUI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := UI()
+			t.Parallel()
+
+			got := ui.UI()
 
 			var gotFiles []string
 

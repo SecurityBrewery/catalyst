@@ -20,7 +20,7 @@ const queryClient = useQueryClient()
 
 const props = defineProps<{
   ticket: Ticket
-  tasks: Array<Task>
+  tasks?: Array<Task>
 }>()
 
 const setTaskOwnerMutation = useMutation({

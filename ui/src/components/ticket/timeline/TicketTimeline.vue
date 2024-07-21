@@ -12,7 +12,7 @@ import type { Ticket, TimelineItem } from '@/lib/types'
 
 const props = defineProps<{
   ticket: Ticket
-  timeline: Array<TimelineItem>
+  timeline?: Array<TimelineItem>
 }>()
 
 const commentsByDate: ComputedRef<Record<string, Array<TimelineItem>>> = computed(() => {
@@ -41,7 +41,7 @@ const commentsByDate: ComputedRef<Record<string, Array<TimelineItem>>> = compute
 <template>
   <div class="mt-2 flex flex-col gap-2">
     <Card
-      v-if="!props.timeline || props.timeline.length === 0"
+      v-if="!timeline || timeline.length === 0"
       class="flex h-10 items-center p-4 text-muted-foreground"
     >
       No timeline entries added yet.
@@ -61,6 +61,6 @@ const commentsByDate: ComputedRef<Record<string, Array<TimelineItem>>> = compute
         </Card>
       </div>
     </div>
-    <TicketTimelineInput :ticket="props.ticket" class="w-full" />
+    <TicketTimelineInput :ticket="ticket" class="w-full" />
   </div>
 </template>

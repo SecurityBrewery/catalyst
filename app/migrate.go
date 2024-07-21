@@ -33,13 +33,13 @@ func MigrateDBs(app core.App) error {
 	return nil
 }
 
-// this fix ignores some errors that come from upstream migrations.
-var ignoreErrors = []string{
-	"1673167670_multi_match_migrate",
-	"1660821103_add_user_ip_column",
-}
-
 func isIgnored(err error) bool {
+	// this fix ignores some errors that come from upstream migrations.
+	ignoreErrors := []string{
+		"1673167670_multi_match_migrate",
+		"1660821103_add_user_ip_column",
+	}
+
 	for _, ignore := range ignoreErrors {
 		if strings.Contains(err.Error(), ignore) {
 			return true

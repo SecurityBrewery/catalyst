@@ -7,7 +7,12 @@ import (
 )
 
 func main() {
-	if err := app.App("./catalyst_data").Start(); err != nil {
+	catalyst, err := app.App("./catalyst_data", false)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := catalyst.Start(); err != nil {
 		log.Fatal(err)
 	}
 }

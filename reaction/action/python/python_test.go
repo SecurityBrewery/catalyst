@@ -1,16 +1,20 @@
-package python
+package python_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 )
 
 func TestPython_Run(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
-		Bootstrap string
-		Script    string
+		Requirements string
+		Script       string
 	}
 
 	type args struct {
@@ -68,14 +72,28 @@ func TestPython_Run(t *testing.T) {
 			want:    nil,
 			wantErr: assert.Error,
 		},
+		{
+			name: "requests",
+			fields: fields{
+				Requirements: "requests",
+				Script:       "import requests\nprint(requests.get('https://xkcd.com/2961/info.0.json').text)",
+			},
+			args: args{
+				payload: "test",
+			},
+			want:    []byte("{\"month\": \"7\", \"num\": 2961, \"link\": \"\", \"year\": \"2024\", \"news\": \"\", \"safe_title\": \"CrowdStrike\", \"transcript\": \"\", \"alt\": \"We were going to try swordfighting, but all my compiling is on hold.\", \"img\": \"https://imgs.xkcd.com/comics/crowdstrike.png\", \"title\": \"CrowdStrike\", \"day\": \"19\"}\n"),
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx := context.Background()
 
-			a := &Python{
-				Bootstrap: tt.fields.Bootstrap,
-				Script:    tt.fields.Script,
+			a := &python.Python{
+				Requirements: tt.fields.Requirements,
+				Script:       tt.fields.Script,
 			}
 			got, err := a.Run(ctx, tt.args.payload)
 			tt.wantErr(t, err)

@@ -11,7 +11,9 @@ import (
 )
 
 func Test_records(t *testing.T) {
-	app, cleanup := catalystTesting.App(t)
+	t.Parallel()
+
+	app, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	got, err := fakedata.Records(app, 2, 2)
@@ -21,7 +23,9 @@ func Test_records(t *testing.T) {
 }
 
 func TestGenerate(t *testing.T) {
-	app, cleanup := catalystTesting.App(t)
+	t.Parallel()
+
+	app, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	err := fakedata.Generate(app, 0, 0)

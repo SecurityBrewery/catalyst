@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import TanView from '@/components/TanView.vue'
 import ResourceListElement from '@/components/common/ResourceListElement.vue'
-import ReactionNewDialog from '@/components/reaction/ReactionNewDialog.vue'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
-import { useQuery } from '@tanstack/vue-query'
-import { useRoute } from 'vue-router'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
 import type { Reaction } from '@/lib/types'
 
 const route = useRoute()
+const router = useRouter()
+const queryClient = useQueryClient()
 
 const {
   isPending,
@@ -47,6 +50,20 @@ const reactionNiceName = (reaction: Reaction) => {
     return 'Unknown'
   }
 }
+
+const openNew = () => {
+  router.push({ name: 'reactions', params: { id: 'new' } })
+}
+
+onMounted(() => {
+  pb.collection('reactions').subscribe('*', () => {
+    queryClient.invalidateQueries({ queryKey: ['reactions'] })
+  })
+})
+
+onUnmounted(() => {
+  pb.collection('reactions').unsubscribe('*')
+})
 </script>
 
 <template>
@@ -55,7 +72,7 @@ const reactionNiceName = (reaction: Reaction) => {
       <div class="flex items-center bg-background px-4 py-2">
         <h1 class="text-xl font-bold">Reactions</h1>
         <div class="ml-auto">
-          <ReactionNewDialog />
+          <Button variant="ghost" @click="openNew"> New Reaction </Button>
         </div>
       </div>
       <Separator />

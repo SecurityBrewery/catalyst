@@ -1,12 +1,15 @@
 package hook
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"slices"
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
@@ -22,43 +25,40 @@ type Hook struct {
 	Events      []string `json:"events"`
 }
 
-func BindHooks(app core.App) {
-	app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
-		if err := hook(app.Dao(), "create", e.Collection.Name, e.Record, e.HttpContext); err != nil {
-			app.Logger().Error("failed to find hook reaction", "error", err.Error())
-		}
-
-		return nil
+func BindHooks(pb *pocketbase.PocketBase, test bool) {
+	pb.App.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
+		return hook(e.HttpContext, pb.App, "create", e.Collection.Name, e.Record, test)
 	})
-	app.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
-		if err := hook(app.Dao(), "update", e.Collection.Name, e.Record, e.HttpContext); err != nil {
-			app.Logger().Error("failed to find hook reaction", "error", err.Error())
-		}
-
-		return nil
+	pb.App.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
+		return hook(e.HttpContext, pb.App, "update", e.Collection.Name, e.Record, test)
 	})
-	app.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error {
-		if err := hook(app.Dao(), "delete", e.Collection.Name, e.Record, e.HttpContext); err != nil {
-			app.Logger().Error("failed to find hook reaction", "error", err.Error())
-		}
-
-		return nil
+	pb.App.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error {
+		return hook(e.HttpContext, pb.App, "delete", e.Collection.Name, e.Record, test)
 	})
 }
 
-func hook(dao *daos.Dao, event, collection string, record *models.Record, ctx echo.Context) error {
+func hook(ctx echo.Context, app core.App, event, collection string, record *models.Record, test bool) error {
 	auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
 	admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
 
-	hook, found, err := findByHookTrigger(dao, collection, event)
-	if err != nil {
-		return fmt.Errorf("failed to find hook reaction: %w", err)
+	if !test {
+		go mustRunHook(app, collection, event, record, auth, admin)
+	} else {
+		mustRunHook(app, collection, event, record, auth, admin)
 	}
 
-	if !found {
-		return nil
-	}
+	return nil
+}
 
+func mustRunHook(app core.App, collection, event string, record, auth *models.Record, admin *models.Admin) {
+	ctx := context.Background()
+
+	if err := runHook(ctx, app, collection, event, record, auth, admin); err != nil {
+		slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
+	}
+}
+
+func runHook(ctx context.Context, app core.App, collection, event string, record, auth *models.Record, admin *models.Admin) error {
 	payload, err := json.Marshal(&webhook.Payload{
 		Action:     event,
 		Collection: collection,
@@ -67,10 +67,19 @@ func hook(dao *daos.Dao, event, collection string, record *models.Record, ctx ec
 		Admin:      admin,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to marshal payload: %w", err)
+		return fmt.Errorf("failed to marshal webhook payload: %w", err)
 	}
 
-	_, err = action.Run(ctx.Request().Context(), hook.GetString("action"), hook.GetString("actiondata"), string(payload))
+	hook, found, err := findByHookTrigger(app.Dao(), collection, event)
+	if err != nil {
+		return fmt.Errorf("failed to find hook by trigger: %w", err)
+	}
+
+	if !found {
+		return nil
+	}
+
+	_, err = action.Run(ctx, app, hook.GetString("action"), hook.GetString("actiondata"), string(payload))
 	if err != nil {
 		return fmt.Errorf("failed to run hook reaction: %w", err)
 	}
@@ -81,7 +90,7 @@ func hook(dao *daos.Dao, event, collection string, record *models.Record, ctx ec
 func findByHookTrigger(dao *daos.Dao, collection, event string) (*models.Record, bool, error) {
 	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
 	if err != nil {
-		return nil, false, err
+		return nil, false, fmt.Errorf("failed to find hook reaction: %w", err)
 	}
 
 	if len(records) == 0 {

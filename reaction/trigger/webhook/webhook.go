@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
@@ -26,22 +27,22 @@ type Webhook struct {
 
 const prefix = "/reaction/"
 
-func BindHooks(app core.App) {
-	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Any(prefix+"*", handle(e.App.Dao()))
+func BindHooks(pb *pocketbase.PocketBase) {
+	pb.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+		e.Router.Any(prefix+"*", handle(e.App))
 
 		return nil
 	})
 }
 
-func handle(dao *daos.Dao) func(c echo.Context) error {
+func handle(app core.App) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		record, payload, apiErr := parseRequest(dao, c.Request())
+		record, payload, apiErr := parseRequest(app.Dao(), c.Request())
 		if apiErr != nil {
 			return apiErr
 		}
 
-		output, err := action.Run(c.Request().Context(), record.GetString("action"), record.GetString("actiondata"), string(payload))
+		output, err := action.Run(c.Request().Context(), app, record.GetString("action"), record.GetString("actiondata"), string(payload))
 		if err != nil {
 			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
 		}
@@ -138,7 +139,7 @@ func writeOutput(c echo.Context, output []byte) error {
 		}
 	}
 
-	if isJSON(output) {
+	if IsJSON(output) {
 		return c.JSON(http.StatusOK, json.RawMessage(output))
 	}
 

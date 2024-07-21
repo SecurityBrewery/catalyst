@@ -16,7 +16,7 @@ func Flags(app core.App) ([]string, error) {
 		return nil, err
 	}
 
-	var flags []string
+	flags := make([]string, 0, len(records))
 
 	for _, r := range records {
 		flags = append(flags, r.GetString("name"))
@@ -36,7 +36,7 @@ func SetFlags(app core.App, args []string) error {
 		return err
 	}
 
-	var existingFlags []string
+	var existingFlags []string //nolint:prealloc
 
 	for _, featureRecord := range featureRecords {
 		// remove feature flags that are not in the args

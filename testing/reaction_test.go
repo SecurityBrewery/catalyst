@@ -3,41 +3,33 @@ package testing
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestWebhookReactions(t *testing.T) {
-	baseApp, adminToken, analystToken, baseAppCleanup := BaseApp(t)
-	defer baseAppCleanup()
+	t.Parallel()
 
 	server := NewRecordingServer()
 
 	go http.ListenAndServe("127.0.0.1:12345", server) //nolint:gosec,errcheck
 
-	testSets := []authMatrixText{
+	if err := WaitForStatus("http://127.0.0.1:12345/health", http.StatusOK, 5*time.Second); err != nil {
+		t.Fatal(err)
+	}
+
+	testSets := []catalystTest{
 		{
 			baseTest: BaseTest{
 				Name:           "TriggerWebhookReaction",
 				Method:         http.MethodGet,
+				RequestHeaders: map[string]string{"Authorization": "Bearer 1234567890"},
 				URL:            "/reaction/test",
-				TestAppFactory: AppFactory(baseApp),
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:            "Unauthorized",
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`Hello, World!`},
-				},
-				{
-					Name:            "Analyst",
-					RequestHeaders:  map[string]string{"Authorization": analystToken},
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`Hello, World!`},
-				},
-				{
-					Name:            "Admin",
-					RequestHeaders:  map[string]string{"Authorization": adminToken},
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`Hello, World!`},
 				},
@@ -45,26 +37,13 @@ func TestWebhookReactions(t *testing.T) {
 		},
 		{
 			baseTest: BaseTest{
-				Name:           "TriggerWebhookReaction2",
-				Method:         http.MethodGet,
-				URL:            "/reaction/test2",
-				TestAppFactory: AppFactory(baseApp),
+				Name:   "TriggerWebhookReaction2",
+				Method: http.MethodGet,
+				URL:    "/reaction/test2",
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				{
 					Name:            "Unauthorized",
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"test":true`},
-				},
-				{
-					Name:            "Analyst",
-					RequestHeaders:  map[string]string{"Authorization": analystToken},
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"test":true`},
-				},
-				{
-					Name:            "Admin",
-					RequestHeaders:  map[string]string{"Authorization": adminToken},
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"test":true`},
 				},
@@ -73,23 +52,31 @@ func TestWebhookReactions(t *testing.T) {
 	}
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
-			for _, authBasedExpectation := range testSet.authBasedExpectations {
-				scenario := mergeScenario(testSet.baseTest, authBasedExpectation)
-				scenario.Test(t)
+			t.Parallel()
+
+			for _, userTest := range testSet.userTests {
+				t.Run(userTest.Name, func(t *testing.T) {
+					t.Parallel()
+
+					runMatrixTest(t, testSet.baseTest, userTest)
+				})
 			}
 		})
 	}
 }
 
 func TestHookReactions(t *testing.T) {
-	baseApp, _, analystToken, baseAppCleanup := BaseApp(t)
-	defer baseAppCleanup()
+	t.Parallel()
 
 	server := NewRecordingServer()
 
 	go http.ListenAndServe("127.0.0.1:12346", server) //nolint:gosec,errcheck
 
-	testSets := []authMatrixText{
+	if err := WaitForStatus("http://127.0.0.1:12346/health", http.StatusOK, 5*time.Second); err != nil {
+		t.Fatal(err)
+	}
+
+	testSets := []catalystTest{
 		{
 			baseTest: BaseTest{
 				Name:           "TriggerHookReaction",
@@ -99,9 +86,8 @@ func TestHookReactions(t *testing.T) {
 				Body: s(map[string]any{
 					"name": "test",
 				}),
-				TestAppFactory: AppFactory(baseApp),
 			},
-			authBasedExpectations: []AuthBasedExpectation{
+			userTests: []UserTest{
 				// {
 				// 	Name:            "Unauthorized",
 				// 	ExpectedStatus:  http.StatusOK,
@@ -109,7 +95,7 @@ func TestHookReactions(t *testing.T) {
 				// },
 				{
 					Name:           "Analyst",
-					RequestHeaders: map[string]string{"Authorization": analystToken},
+					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"collectionName":"tickets"`,
@@ -133,12 +119,17 @@ func TestHookReactions(t *testing.T) {
 	}
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
-			for _, authBasedExpectation := range testSet.authBasedExpectations {
-				scenario := mergeScenario(testSet.baseTest, authBasedExpectation)
-				scenario.Test(t)
-			}
+			t.Parallel()
 
-			require.NotEmpty(t, server.Entries)
+			for _, userTest := range testSet.userTests {
+				t.Run(userTest.Name, func(t *testing.T) {
+					t.Parallel()
+
+					runMatrixTest(t, testSet.baseTest, userTest)
+
+					require.NotEmpty(t, server.Entries)
+				})
+			}
 		})
 	}
 }

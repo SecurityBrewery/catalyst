@@ -21,9 +21,9 @@ func reactionsUp(db dbx.Builder) error {
 		Schema: schema.NewSchema(
 			&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
 			&schema.SchemaField{Name: "trigger", Type: schema.FieldTypeSelect, Required: true, Options: &schema.SelectOptions{MaxSelect: 1, Values: triggers}},
-			&schema.SchemaField{Name: "triggerdata", Type: schema.FieldTypeJson, Required: true},
+			&schema.SchemaField{Name: "triggerdata", Type: schema.FieldTypeJson, Required: true, Options: &schema.JsonOptions{MaxSize: 50_000}},
 			&schema.SchemaField{Name: "action", Type: schema.FieldTypeSelect, Required: true, Options: &schema.SelectOptions{MaxSelect: 1, Values: reactions}},
-			&schema.SchemaField{Name: "actiondata", Type: schema.FieldTypeJson, Required: true},
+			&schema.SchemaField{Name: "actiondata", Type: schema.FieldTypeJson, Required: true, Options: &schema.JsonOptions{MaxSize: 50_000}},
 		),
 	}))
 }

@@ -14,7 +14,11 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: make build-ui
+      - run: |
+          bun install
+          mkdir -p dist
+          touch dist/index.html
+        working-directory: ui
 
       - run: make install
       - run: make fmt
@@ -28,12 +32,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
-      - uses: oven-sh/setup-bun@v1
 
-      - run: make build-ui
+      - run: |
+          mkdir -p ui/dist
+          touch ui/dist/index.html
 
       - uses: golangci/golangci-lint-action@v6
         with: { version: 'v1.59' }
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make build-ui
 
   test:
     name: Test
@@ -44,9 +60,9 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: make build-ui
-
-      - run: make test
+      - run: |
+          mkdir -p ui/dist
+          touch ui/dist/index.html
 
       - run: make test-coverage
 

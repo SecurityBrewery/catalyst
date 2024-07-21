@@ -15,8 +15,8 @@ type Request struct {
 	IsBase64Encoded bool        `json:"isBase64Encoded"`
 }
 
-// isJSON checks if the data is JSON.
-func isJSON(data []byte) bool {
+// IsJSON checks if the data is JSON.
+func IsJSON(data []byte) bool {
 	var msg json.RawMessage
 
 	return json.Unmarshal(data, &msg) == nil
