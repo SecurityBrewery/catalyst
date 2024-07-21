@@ -22,25 +22,14 @@ func TestWebhookReactions(t *testing.T) {
 	testSets := []catalystTest{
 		{
 			baseTest: BaseTest{
-				Name:   "TriggerWebhookReaction",
-				Method: http.MethodGet,
-				URL:    "/reaction/test",
+				Name:           "TriggerWebhookReaction",
+				Method:         http.MethodGet,
+				RequestHeaders: map[string]string{"Authorization": "Bearer 1234567890"},
+				URL:            "/reaction/test",
 			},
 			userTests: []UserTest{
 				{
 					Name:            "Unauthorized",
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`Hello, World!`},
-				},
-				{
-					Name:            "Analyst",
-					AuthRecord:      analystEmail,
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`Hello, World!`},
-				},
-				{
-					Name:            "Admin",
-					Admin:           adminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`Hello, World!`},
 				},
@@ -55,18 +44,6 @@ func TestWebhookReactions(t *testing.T) {
 			userTests: []UserTest{
 				{
 					Name:            "Unauthorized",
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"test":true`},
-				},
-				{
-					Name:            "Analyst",
-					AuthRecord:      analystEmail,
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"test":true`},
-				},
-				{
-					Name:            "Admin",
-					Admin:           adminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"test":true`},
 				},

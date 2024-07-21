@@ -94,7 +94,7 @@ func reactionTestData(t *testing.T, app core.App) {
 	record.SetId("r_reaction")
 	record.Set("name", "Reaction")
 	record.Set("trigger", "webhook")
-	record.Set("triggerdata", `{"path":"test"}`)
+	record.Set("triggerdata", `{"token":"1234567890","path":"test"}`)
 	record.Set("action", "python")
 	record.Set("actiondata", `{"requirements":"requests","script":"print('Hello, World!')"}`)
 
