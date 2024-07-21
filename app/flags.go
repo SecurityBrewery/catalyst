@@ -3,12 +3,30 @@ package app
 import (
 	"slices"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/spf13/cobra"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
+
+func HasFlag(app core.App, flag string) bool {
+	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName, dbx.HashExp{"name": flag})
+	if err != nil {
+		app.Logger().Error(err.Error())
+
+		return false
+	}
+
+	for _, r := range records {
+		if r.GetString("name") == flag {
+			return true
+		}
+	}
+
+	return false
+}
 
 func Flags(app core.App) ([]string, error) {
 	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)

@@ -117,7 +117,10 @@ watch(
 )
 
 const debouncedRefetch = debounce(refetch, 300)
-watch(searchValue, () => debouncedRefetch())
+watch(
+  () => searchValue.value,
+  () => debouncedRefetch()
+)
 watch([tab, props.selectedType, page, perPage], () => refetch())
 </script>
 
