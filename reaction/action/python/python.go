@@ -13,11 +13,11 @@ type Python struct {
 	Requirements string `json:"requirements"`
 	Script       string `json:"script"`
 
-	token string
+	env []string
 }
 
-func (a *Python) SetToken(token string) {
-	a.token = token
+func (a *Python) SetEnv(env []string) {
+	a.env = env
 }
 
 func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
@@ -101,10 +101,7 @@ func (a *Python) pythonRunScript(ctx context.Context, tempDir, payload string) (
 
 	cmd := exec.CommandContext(ctx, pythonPath, scriptPath, payload)
 
-	cmd.Env = []string{}
-	if a.token != "" {
-		cmd.Env = append(cmd.Env, "CATALYST_TOKEN="+a.token)
-	}
+	cmd.Env = a.env
 
 	return cmd.Output()
 }
