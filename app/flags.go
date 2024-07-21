@@ -96,3 +96,29 @@ func setFeatureFlagsCmd(app core.App) *cobra.Command {
 		},
 	}
 }
+
+func setAppURL(app core.App) *cobra.Command {
+	return &cobra.Command{
+		Use: "set-app-url",
+		Run: func(_ *cobra.Command, args []string) {
+			if len(args) != 1 {
+				app.Logger().Error("missing app url")
+
+				return
+			}
+
+			settings, err := app.Settings().Clone()
+			if err != nil {
+				app.Logger().Error(err.Error())
+
+				return
+			}
+
+			settings.Meta.AppUrl = args[0]
+
+			if err := app.Dao().SaveSettings(settings); err != nil {
+				app.Logger().Error(err.Error())
+			}
+		},
+	}
+}

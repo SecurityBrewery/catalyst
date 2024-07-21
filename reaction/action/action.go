@@ -28,7 +28,10 @@ func Run(ctx context.Context, app core.App, actionName, actionData, payload stri
 			return nil, fmt.Errorf("failed to get system token: %w", err)
 		}
 
-		a.SetToken(token)
+		a.SetEnv([]string{
+			"CATALYST_APP_URL=" + app.Settings().Meta.AppUrl,
+			"CATALYST_TOKEN=" + token,
+		})
 	}
 
 	return action.Run(ctx, payload)
@@ -39,7 +42,7 @@ type action interface {
 }
 
 type authenticatedAction interface {
-	SetToken(token string)
+	SetEnv(env []string)
 }
 
 func decode(actionName, actionData string) (action, error) {
