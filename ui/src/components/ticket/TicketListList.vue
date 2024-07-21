@@ -19,7 +19,7 @@ defineProps<{
       :key="item.id"
       :title="item.name"
       :created="item.created"
-      :subtitle="item.expand.owner.name"
+      :subtitle="item.expand.owner ? item.expand.owner.name : ''"
       :description="item.description ? item.description.substring(0, 300) : ''"
       :active="route.params.id === item.id"
       :to="`/tickets/${item.expand.type.id}/${item.id}`"
