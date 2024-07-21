@@ -62,7 +62,7 @@ func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
 }
 
 func pythonSetup(ctx context.Context, tempDir string) ([]byte, error) {
-	pythonPath, err := findExec("python", "python3")
+	pythonPath, err := findExec("python3", "python")
 	if err != nil {
 		return nil, fmt.Errorf("python or python3 binary not found, %w", err)
 	}
