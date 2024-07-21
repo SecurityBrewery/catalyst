@@ -29,8 +29,8 @@ func Run(ctx context.Context, app core.App, actionName, actionData, payload stri
 		}
 
 		a.SetEnv([]string{
-			fmt.Sprintf("CATALYST_APP_URL=%s", app.Settings().Meta.AppUrl),
-			fmt.Sprintf("CATALYST_TOKEN=%s", token),
+			"CATALYST_APP_URL=" + app.Settings().Meta.AppUrl,
+			"CATALYST_TOKEN=" + token,
 		})
 	}
 
