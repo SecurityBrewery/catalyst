@@ -24,9 +24,9 @@ onMounted(() => {
 })
 
 watch(
-  formdata,
-  (newVal) => {
-    model.value = { ...newVal }
+  () => formdata.value,
+  () => {
+    model.value = { ...formdata.value }
   },
   { deep: true }
 )

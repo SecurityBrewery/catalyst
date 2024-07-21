@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
@@ -60,10 +60,6 @@ onMounted(() => {
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
   })
 })
-
-onUnmounted(() => {
-  pb.collection('reactions').unsubscribe('*')
-})
 </script>
 
 <template>
@@ -72,7 +68,7 @@ onUnmounted(() => {
       <div class="flex items-center bg-background px-4 py-2">
         <h1 class="text-xl font-bold">Reactions</h1>
         <div class="ml-auto">
-          <Button variant="ghost" @click="openNew"> New Reaction </Button>
+          <Button variant="ghost" @click="openNew"> New Reaction</Button>
         </div>
       </div>
       <Separator />

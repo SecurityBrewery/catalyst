@@ -98,13 +98,16 @@ const state = ref({})
 const name = ref('')
 const description = ref('')
 
-watch(isOpen, () => {
-  if (isOpen.value) {
-    name.value = ''
-    description.value = ''
-    state.value = {}
+watch(
+  () => isOpen.value,
+  () => {
+    if (isOpen.value) {
+      name.value = ''
+      description.value = ''
+      state.value = {}
+    }
   }
-})
+)
 </script>
 
 <template>

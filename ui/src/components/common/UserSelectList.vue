@@ -41,7 +41,10 @@ const {
 
 const searchUserDebounced = debounce(() => refetch(), 300)
 
-watch(searchTerm, () => searchUserDebounced())
+watch(
+  () => searchTerm.value,
+  () => searchUserDebounced()
+)
 </script>
 
 <template>

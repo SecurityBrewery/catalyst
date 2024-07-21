@@ -3,6 +3,7 @@ import ActionPythonFormFields from '@/components/reaction/ActionPythonFormFields
 import ActionWebhookFormFields from '@/components/reaction/ActionWebhookFormFields.vue'
 import TriggerHookFormFields from '@/components/reaction/TriggerHookFormFields.vue'
 import TriggerWebhookFormFields from '@/components/reaction/TriggerWebhookFormFields.vue'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -25,9 +26,11 @@ import {
 } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
+import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
+import { pb } from '@/lib/pocketbase'
 import type { Reaction } from '@/lib/types'
 
 const submitDisabledReason = ref<string>('')
@@ -37,6 +40,24 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['submit'])
+
+const isDemo = ref(false)
+
+const { data: config } = useQuery({
+  queryKey: ['config'],
+  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+})
+
+watch(
+  () => config.value,
+  () => {
+    if (!config.value) return
+    if (config.value['flags'].includes('demo')) {
+      isDemo.value = true
+    }
+  },
+  { immediate: true }
+)
 
 defineRule('required', (value: string) => {
   if (!value || !value.length) {
@@ -161,35 +182,42 @@ const equalReaction = (values: Reaction, reaction?: Reaction): boolean => {
   )
 }
 
+const updateSubmitDisabledReason = () => {
+  if (isDemo.value) {
+    submitDisabledReason.value = 'Reactions cannot be created or edited in demo mode'
+
+    return
+  }
+
+  if (equalReaction(values, props.reaction)) {
+    submitDisabledReason.value = 'Make changes to save'
+
+    return
+  }
+
+  validate({ mode: 'silent' }).then((res) => {
+    if (res.valid) {
+      submitDisabledReason.value = ''
+    } else {
+      submitDisabledReason.value = 'Please fix the errors'
+    }
+  })
+}
+
+watch(
+  () => isDemo.value,
+  () => updateSubmitDisabledReason()
+)
+
 watch(
   () => props.reaction,
-  () => {
-    if (equalReaction(values, props.reaction)) {
-      submitDisabledReason.value = 'Make changes to save'
-    } else {
-      submitDisabledReason.value = ''
-    }
-  },
+  () => updateSubmitDisabledReason(),
   { immediate: true }
 )
 
 watch(
-  values,
-  () => {
-    if (equalReaction(values, props.reaction)) {
-      submitDisabledReason.value = 'Make changes to save'
-
-      return
-    }
-
-    validate({ mode: 'silent' }).then((res) => {
-      if (res.valid) {
-        submitDisabledReason.value = ''
-      } else {
-        submitDisabledReason.value = 'Please fix the errors'
-      }
-    })
-  },
+  () => values,
+  () => updateSubmitDisabledReason(),
   { deep: true, immediate: true }
 )
 
@@ -293,6 +321,10 @@ const curlExample = computed(() => {
       </CardContent>
     </Card>
 
+    <Alert v-if="isDemo" variant="destructive">
+      <AlertTitle>Cannot save</AlertTitle>
+      <AlertDescription>{{ submitDisabledReason }}</AlertDescription>
+    </Alert>
     <div class="flex gap-4">
       <TooltipProvider :delay-duration="0">
         <Tooltip>

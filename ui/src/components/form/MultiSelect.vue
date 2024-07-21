@@ -30,7 +30,10 @@ const open = ref(false)
 const searchTerm = ref('')
 const selectedItems = ref<string[]>(props.modelValue)
 
-watch(selectedItems.value, (value) => emit('update:modelValue', value))
+watch(
+  () => selectedItems.value,
+  (value) => emit('update:modelValue', value)
+)
 
 const filteredItems = computed(() => {
   if (!selectedItems.value) return props.items

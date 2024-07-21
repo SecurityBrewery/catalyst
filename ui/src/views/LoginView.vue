@@ -29,13 +29,16 @@ const { data: config } = useQuery({
   queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
 })
 
-watch(config, (newConfig) => {
-  if (!newConfig) return
-  if (newConfig['flags'].includes('demo') || newConfig['flags'].includes('dev')) {
-    mail.value = 'user@catalyst-soar.com'
-    password.value = '1234567890'
+watch(
+  () => config.value,
+  () => {
+    if (!config.value) return
+    if (config.value['flags'].includes('demo') || config.value['flags'].includes('dev')) {
+      mail.value = 'user@catalyst-soar.com'
+      password.value = '1234567890'
+    }
   }
-})
+)
 </script>
 
 <template>

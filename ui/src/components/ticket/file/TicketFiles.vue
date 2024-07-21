@@ -31,12 +31,16 @@ const { data: config } = useQuery({
   queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
 })
 
-watch(config, (newConfig) => {
-  if (!newConfig) return
-  if (newConfig['flags'].includes('demo')) {
-    isDemo.value = true
-  }
-})
+watch(
+  () => config.value,
+  (newConfig) => {
+    if (!newConfig) return
+    if (newConfig['flags'].includes('demo')) {
+      isDemo.value = true
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

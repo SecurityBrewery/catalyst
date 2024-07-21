@@ -52,11 +52,14 @@ const updateTimelineMutation = useMutation({
   onError: handleError
 })
 
-watch(time, () => {
-  if (time.value) {
-    updateTimelineMutation.mutate({ time: time.value })
+watch(
+  () => time.value,
+  () => {
+    if (time.value) {
+      updateTimelineMutation.mutate({ time: time.value })
+    }
   }
-})
+)
 
 const deleteTimelineItemMutation = useMutation({
   mutationFn: () => pb.collection('timeline').delete(props.timelineItem.id),

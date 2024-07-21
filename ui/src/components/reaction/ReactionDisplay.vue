@@ -38,32 +38,36 @@ const updateReactionMutation = useMutation({
 })
 
 onMounted(() => {
-  pb.collection('reactions').subscribe(props.id, (data) => {
-    if (data.action === 'delete') {
-      toast({
-        title: 'Reaction deleted',
-        description: 'The reaction has been deleted.',
-        variant: 'destructive'
-      })
+  if (props.id) {
+    pb.collection('reactions').subscribe(props.id, (data) => {
+      if (data.action === 'delete') {
+        toast({
+          title: 'Reaction deleted',
+          description: 'The reaction has been deleted.',
+          variant: 'destructive'
+        })
 
-      router.push({ name: 'reactions' })
+        router.push({ name: 'reactions' })
 
-      return
-    }
+        return
+      }
 
-    if (data.action === 'update') {
-      toast({
-        title: 'Reaction updated',
-        description: 'The reaction has been updated.'
-      })
+      if (data.action === 'update') {
+        toast({
+          title: 'Reaction updated',
+          description: 'The reaction has been updated.'
+        })
 
-      queryClient.invalidateQueries({ queryKey: ['reactions', props.id] })
-    }
-  })
+        queryClient.invalidateQueries({ queryKey: ['reactions', props.id] })
+      }
+    })
+  }
 })
 
 onUnmounted(() => {
-  pb.collection('reactions').unsubscribe(props.id)
+  if (props.id) {
+    pb.collection('reactions').unsubscribe(props.id)
+  }
 })
 </script>
 
