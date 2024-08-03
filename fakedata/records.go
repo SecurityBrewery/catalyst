@@ -128,7 +128,7 @@ func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*m
 		record.Set("description", fakeTicketDescription())
 		record.Set("open", gofakeit.Bool())
 		record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
-		record.Set("state", `{"tlp":"AMBER"}`)
+		record.Set("state", `{"severity":"Medium"}`)
 		record.Set("owner", random(users).GetId())
 
 		records = append(records, record)

@@ -1,6 +1,8 @@
 package migrations
 
 import (
+	"encoding/json"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
@@ -33,7 +35,16 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 	record.Set("singular", "Incident")
 	record.Set("plural", "Incidents")
 	record.Set("icon", "Flame")
-	record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
+	record.Set("schema", s(map[string]any{
+		"type": "object",
+		"properties": map[string]any{
+			"severity": map[string]any{
+				"title": "Severity",
+				"enum":  []string{"Low", "Medium", "High"},
+			},
+		},
+		"required": []string{"severity"},
+	}))
 
 	records = append(records, record)
 
@@ -42,9 +53,24 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 	record.Set("singular", "Alert")
 	record.Set("plural", "Alerts")
 	record.Set("icon", "AlertTriangle")
-	record.Set("schema", `{"type":"object","properties":{"severity":{"title":"Severity","type":"string"}},"required": ["severity"]}`)
+	record.Set("schema", s(map[string]any{
+		"type": "object",
+		"properties": map[string]any{
+			"severity": map[string]any{
+				"title": "Severity",
+				"enum":  []string{"Low", "Medium", "High"},
+			},
+		},
+		"required": []string{"severity"},
+	}))
 
 	records = append(records, record)
 
 	return records
+}
+
+func s(m map[string]any) string {
+	b, _ := json.Marshal(m)
+
+	return string(b)
 }
