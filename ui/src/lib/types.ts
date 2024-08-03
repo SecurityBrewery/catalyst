@@ -32,6 +32,16 @@ export interface Ticket {
   }
 }
 
+export interface SearchTicket {
+  id: string
+  name: string
+  created: string
+  description: string
+  open: boolean
+  type: string
+  owner_name: string
+}
+
 export interface Task {
   id: string
 
