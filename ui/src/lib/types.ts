@@ -126,6 +126,7 @@ export interface JSONSchema {
       title: string
       type: string
       description?: string
+      enum?: Array<string>
     }
   >
   required?: Array<string>
