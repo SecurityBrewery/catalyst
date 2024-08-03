@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
+import PasswordResetView from '@/views/PasswordResetView.vue'
 import ReactionView from '@/views/ReactionView.vue'
 import TicketView from '@/views/TicketView.vue'
 
@@ -13,14 +14,19 @@ const router = createRouter({
       redirect: '/dashboard'
     },
     {
-      path: '/reactions/:id?',
-      name: 'reactions',
-      component: ReactionView
-    },
-    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView
+    },
+    {
+      path: '/tickets/:type/:id?',
+      name: 'tickets',
+      component: TicketView
+    },
+    {
+      path: '/reactions/:id?',
+      name: 'reactions',
+      component: ReactionView
     },
     {
       path: '/login',
@@ -28,9 +34,9 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/tickets/:type/:id?',
-      name: 'tickets',
-      component: TicketView
+      path: '/password-reset',
+      name: 'password-reset',
+      component: PasswordResetView
     }
   ]
 })

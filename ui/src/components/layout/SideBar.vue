@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CatalystLogo from '@/components/common/CatalystLogo.vue'
 import IncidentNav from '@/components/sidebar/IncidentNav.vue'
 import NavList from '@/components/sidebar/NavList.vue'
 import UserDropDown from '@/components/sidebar/UserDropDown.vue'
@@ -14,16 +15,8 @@ const catalystStore = useCatalystStore()
 
 <template>
   <div class="flex h-[57px] items-center border-b bg-background">
-    <img
-      src="@/assets/flask.svg"
-      alt="Catalyst"
-      class="h-8 w-8 dark:hidden"
-      :class="{ 'flex-1': catalystStore.sidebarCollapsed, 'mx-3': !catalystStore.sidebarCollapsed }"
-    />
-    <img
-      src="@/assets/flask_white.svg"
-      alt="Catalyst"
-      class="hidden h-8 w-8 dark:flex"
+    <CatalystLogo
+      class="size-8"
       :class="{ 'flex-1': catalystStore.sidebarCollapsed, 'mx-3': !catalystStore.sidebarCollapsed }"
     />
     <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
