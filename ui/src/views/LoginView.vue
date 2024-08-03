@@ -11,6 +11,7 @@ import { pb } from '@/lib/pocketbase'
 
 const mail = ref('')
 const password = ref('')
+const errorTitle = ref('')
 const errorMessage = ref('')
 
 const login = () => {
@@ -20,6 +21,20 @@ const login = () => {
       window.location.href = '/ui/'
     })
     .catch((error) => {
+      errorTitle.value = 'Login failed'
+      errorMessage.value = error.message
+    })
+}
+
+const resetPassword = () => {
+  pb.collection('users')
+    .requestPasswordReset(mail.value)
+    .then(() => {
+      errorTitle.value = 'Password reset'
+      errorMessage.value = 'Password reset email sent'
+    })
+    .catch((error) => {
+      errorTitle.value = 'Password reset failed'
       errorMessage.value = error.message
     })
 }
@@ -48,9 +63,9 @@ watch(
         <CardTitle>Catalyst</CardTitle>
       </CardHeader>
       <CardContent class="flex flex-col gap-4">
-        <Alert v-if="errorMessage" variant="destructive" class="border-4 p-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{{ errorMessage }}</AlertDescription>
+        <Alert v-if="errorTitle || errorMessage" variant="destructive" class="border-4 p-4">
+          <AlertTitle v-if="errorTitle">{{ errorTitle }}</AlertTitle>
+          <AlertDescription v-if="errorMessage">{{ errorMessage }}</AlertDescription>
         </Alert>
         <Input
           v-model="mail"
@@ -66,7 +81,8 @@ watch(
           class="w-full"
           @keydown.enter="login"
         />
-        <Button variant="outline" class="w-full" @click="login"> Login</Button>
+        <Button variant="outline" class="w-full" @click="login">Login</Button>
+        <Button variant="outline" class="w-full" @click="resetPassword">Reset Password</Button>
       </CardContent>
     </Card>
   </div>
