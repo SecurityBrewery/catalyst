@@ -200,7 +200,6 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
               </PaginationListItem>
               <PaginationEllipsis v-else :key="item.type" :index="index" />
             </template>
-
             <PaginationNext />
             <PaginationLast />
           </PaginationList>
