@@ -48,6 +48,15 @@ dev:
 	go run . fake-data
 	go run . serve
 
+.PHONY: dev-10000
+dev-10000:
+	@echo "Running..."
+	rm -rf catalyst_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . set-feature-flags dev
+	go run . fake-data --users 100 --tickets 10000
+	go run . serve
+
 .PHONY: dev-ui
 serve-ui:
 	cd ui && bun dev --port 3000

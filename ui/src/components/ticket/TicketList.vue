@@ -17,9 +17,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { Info, LoaderCircle, Search } from 'lucide-vue-next'
+import { LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
@@ -28,7 +27,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import type { SearchTicket, Type } from '@/lib/types'
 
 const router = useRouter()
 const route = useRoute()
@@ -48,15 +47,13 @@ const filter = computed(() => {
     let raws: Array<string> = [
       'name ~ {:search}',
       'description ~ {:search}',
-      'owner.name ~ {:search}',
-      'owner.email ~ {:search}',
-      'links_via_ticket.name ~ {:search}',
-      'links_via_ticket.url ~ {:search}',
-      'tasks_via_ticket.name ~ {:search}',
-      'comments_via_ticket.message ~ {:search}',
-      'files_via_ticket.name ~ {:search}',
-      'timeline_via_ticket.message ~ {:search}',
-      'state.severity ~ {:search}'
+      'owner_name ~ {:search}',
+      'comment_messages ~ {:search}',
+      'file_names ~ {:search}',
+      'link_names ~ {:search}',
+      'link_urls ~ {:search}',
+      'task_names ~ {:search}',
+      'timeline_messages ~ {:search}'
     ]
 
     Object.keys(props.selectedType.schema.properties).forEach((key) => {
@@ -96,12 +93,10 @@ const {
   refetch
 } = useQuery({
   queryKey: ['tickets', filter.value],
-  queryFn: (): Promise<ListResult<Ticket>> =>
-    pb.collection('tickets').getList(page.value, perPage.value, {
+  queryFn: (): Promise<ListResult<SearchTicket>> =>
+    pb.collection('ticket_search').getList(page.value, perPage.value, {
       sort: '-created',
-      filter: filter.value,
-      expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
+      filter: filter.value
     })
 })
 
@@ -139,9 +134,9 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
     <Tabs v-model="tab" class="flex flex-1 flex-col overflow-hidden">
       <div class="flex items-center justify-between px-4 pt-2">
         <TabsList>
-          <TabsTrigger value="all"> All</TabsTrigger>
-          <TabsTrigger value="open"> Open</TabsTrigger>
-          <TabsTrigger value="closed"> Closed</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="open">Open</TabsTrigger>
+          <TabsTrigger value="closed">Closed</TabsTrigger>
         </TabsList>
         <!-- Button variant="outline" size="sm" class="h-7 gap-1 rounded-md px-3">
           <ListFilter class="h-3.5 w-3.5" />
@@ -155,23 +150,6 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
             <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
               <Search class="size-4 text-muted-foreground" />
             </span>
-
-            <div>
-              <TooltipProvider :delay-duration="0">
-                <Tooltip>
-                  <TooltipTrigger as-child>
-                    <Info class="ml-2 size-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p class="w-64">
-                      Search name, description, or owner. Links, tasks, comments, files, and
-                      timeline messages are also searched, but cause unreliable results if there are
-                      more than 1000 records.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
           </div>
         </form>
       </div>
@@ -222,7 +200,6 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
               </PaginationListItem>
               <PaginationEllipsis v-else :key="item.type" :index="index" />
             </template>
-
             <PaginationNext />
             <PaginationLast />
           </PaginationList>

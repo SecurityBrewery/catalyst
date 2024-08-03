@@ -2,6 +2,14 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 import { onMounted, ref, watch } from 'vue'
 
@@ -34,6 +42,26 @@ watch(
 
 <template>
   <div v-for="(property, key) in schema.properties" :key="key">
+    <FormField v-if="property.enum" :name="key" v-slot="{ componentField }" v-model="formdata[key]">
+      <FormItem>
+        <FormLabel :for="key" class="text-right">
+          {{ property.title }}
+        </FormLabel>
+        <Select :id="key" class="col-span-3" v-bind="componentField">
+          <SelectTrigger class="font-medium">
+            <SelectValue :placeholder="'Select a ' + property.title" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem v-for="option in property.enum" :key="option" :value="option">
+                {{ option }}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    </FormField>
     <FormField
       v-if="property.type === 'string'"
       :name="key"
