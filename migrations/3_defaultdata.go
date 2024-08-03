@@ -70,7 +70,7 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 }
 
 func s(m map[string]any) string {
-	b, _ := json.Marshal(m)
+	b, _ := json.Marshal(m) //nolint:errchkjson
 
 	return string(b)
 }
