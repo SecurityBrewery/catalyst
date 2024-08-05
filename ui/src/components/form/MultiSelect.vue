@@ -32,7 +32,8 @@ const selectedItems = ref<string[]>(props.modelValue)
 
 watch(
   () => selectedItems.value,
-  (value) => emit('update:modelValue', value)
+  (value) => emit('update:modelValue', value),
+  { deep: true }
 )
 
 const filteredItems = computed(() => {
