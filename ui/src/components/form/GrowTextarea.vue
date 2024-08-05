@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { Textarea } from '@/components/ui/textarea'
-
-import { useVModel } from '@vueuse/core'
 import { type HTMLAttributes, onMounted, ref } from 'vue'
 
 import { cn } from '@/lib/utils'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
-  defaultValue?: string | number
-  modelValue?: string | number
 }>()
 
-const emits = defineEmits<{
-  (e: 'update:modelValue', payload: string | number): void
-}>()
-
-const modelValue = useVModel(props, 'modelValue', emits, {
-  passive: true,
-  defaultValue: props.defaultValue
+const modelValue = defineModel<string>({
+  default: ''
 })
 
 const textarea = ref<HTMLElement | null>(null)
