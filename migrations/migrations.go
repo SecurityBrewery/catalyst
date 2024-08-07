@@ -12,4 +12,5 @@ func Register() {
 	migrations.Register(reactionsUp, reactionsDown, "1700000005_reactions.go")
 	migrations.Register(systemuserUp, systemuserDown, "1700000006_systemuser.go")
 	migrations.Register(searchViewUp, searchViewDown, "1700000007_search_view.go")
+	migrations.Register(dashboardCountsViewUpdateUp, dashboardCountsViewUpdateDown, "1700000008_dashboardview.go")
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PanelListElement from '@/components/common/PanelListElement.vue'
+import PanelListElement from '@/components/layout/PanelListElement.vue'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -42,16 +42,21 @@ const age = (ticket: Ticket) =>
       </div>
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
-        <Separator orientation="vertical" class="h-4" />
+        <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">{{ ticket.expand.type.singular }}</span>
-        <Separator orientation="vertical" class="h-4" />
+        <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }} days</span>
         <RouterLink
           :to="{
             name: 'tickets',
             params: { type: ticket.type, id: ticket.id }
           }"
-          :class="cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'ml-auto h-8')"
+          :class="
+            cn(
+              buttonVariants({ variant: 'outline', size: 'sm' }),
+              'h-8 w-full sm:ml-auto sm:w-auto'
+            )
+          "
         >
           <span class="flex flex-row items-center text-sm text-gray-500">
             Go to {{ ticket.name }}

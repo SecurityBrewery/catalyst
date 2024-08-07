@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import TicketListList from '@/components/ticket/TicketListList.vue'
 import TicketNewDialog from '@/components/ticket/TicketNewDialog.vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -14,7 +15,6 @@ import {
   PaginationNext,
   PaginationPrev
 } from '@/components/ui/pagination'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -106,7 +106,7 @@ watch(
     if (!route.params.id && ticketItems.value && ticketItems.value.items.length > 0) {
       router.push({
         name: 'tickets',
-        params: { type: props.selectedType.id, id: ticketItems.value.items[0].id }
+        params: { type: props.selectedType.id }
       })
     }
   }
@@ -121,90 +121,81 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
 </script>
 
 <template>
-  <div class="flex h-screen flex-col">
-    <div class="flex items-center bg-background px-4 py-2">
-      <h1 class="text-xl font-bold">
-        {{ selectedType?.plural }}
-      </h1>
-      <div class="ml-auto">
-        <TicketNewDialog :selectedType="selectedType" />
-      </div>
+  <ColumnHeader :title="selectedType?.plural">
+    <div class="ml-auto">
+      <TicketNewDialog :selectedType="selectedType" />
+    </div>
+  </ColumnHeader>
+  <Tabs v-model="tab" class="flex flex-1 flex-col overflow-hidden">
+    <div class="flex items-center justify-between px-2 pt-2">
+      <TabsList>
+        <TabsTrigger value="all">All</TabsTrigger>
+        <TabsTrigger value="open">Open</TabsTrigger>
+        <TabsTrigger value="closed">Closed</TabsTrigger>
+      </TabsList>
+      <!-- Button variant="outline" size="sm" class="h-7 gap-1 rounded-md px-3">
+        <ListFilter class="h-3.5 w-3.5" />
+        <span class="sr-only sm:not-sr-only">Filter</span>
+      </Button-->
+    </div>
+    <div class="p-2">
+      <form>
+        <div class="relative flex flex-row items-center">
+          <Input v-model="searchValue" placeholder="Search" @keydown.enter.prevent class="pl-8" />
+          <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
+            <Search class="size-4 text-muted-foreground" />
+          </span>
+        </div>
+      </form>
     </div>
     <Separator />
-    <Tabs v-model="tab" class="flex flex-1 flex-col overflow-hidden">
-      <div class="flex items-center justify-between px-4 pt-2">
-        <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="open">Open</TabsTrigger>
-          <TabsTrigger value="closed">Closed</TabsTrigger>
-        </TabsList>
-        <!-- Button variant="outline" size="sm" class="h-7 gap-1 rounded-md px-3">
-          <ListFilter class="h-3.5 w-3.5" />
-          <span class="sr-only sm:not-sr-only">Filter</span>
-        </Button-->
-      </div>
-      <div class="px-4 py-2">
-        <form>
-          <div class="relative flex flex-row items-center">
-            <Input v-model="searchValue" placeholder="Search" @keydown.enter.prevent class="pl-8" />
-            <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
-              <Search class="size-4 text-muted-foreground" />
-            </span>
-          </div>
-        </form>
-      </div>
-      <Separator />
-      <div v-if="isPending" class="flex h-full w-full items-center justify-center">
-        <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
-      </div>
-      <Alert v-else-if="isError" variant="destructive" class="mb-4 h-screen w-screen">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{{ error }}</AlertDescription>
-      </Alert>
-      <ScrollArea v-else-if="ticketItems" class="flex-1">
-        <TicketListList :tickets="ticketItems.items" />
-      </ScrollArea>
-      <Separator />
-      <div class="my-2 flex items-center justify-center">
-        <span class="text-xs text-muted-foreground">
-          {{ ticketItems ? ticketItems.items.length : '?' }} of
-          {{ ticketItems ? ticketItems.totalItems : '?' }} tickets
-        </span>
-      </div>
-      <div class="mb-4 flex items-center justify-center">
-        <Pagination
-          v-slot="{ page }"
-          :total="ticketItems ? ticketItems.totalItems : 0"
-          :itemsPerPage="perPage"
-          :sibling-count="0"
-          :default-page="1"
-          @update:page="page = $event"
-        >
-          <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-            <PaginationFirst />
-            <PaginationPrev />
+    <div v-if="isPending" class="flex h-full w-full items-center justify-center">
+      <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
+    </div>
+    <Alert v-else-if="isError" variant="destructive" class="mb-2 h-screen w-screen">
+      <AlertTitle>Error</AlertTitle>
+      <AlertDescription>{{ error }}</AlertDescription>
+    </Alert>
+    <div v-else-if="ticketItems" class="flex-1 overflow-y-auto overflow-x-hidden">
+      <TicketListList :tickets="ticketItems.items" />
+    </div>
+    <Separator />
+    <div class="my-2 flex items-center justify-center">
+      <span class="text-xs text-muted-foreground">
+        {{ ticketItems ? ticketItems.items.length : '?' }} of
+        {{ ticketItems ? ticketItems.totalItems : '?' }} tickets
+      </span>
+    </div>
+    <div class="mb-2 flex items-center justify-center">
+      <Pagination
+        v-slot="{ page }"
+        :total="ticketItems ? ticketItems.totalItems : 0"
+        :itemsPerPage="perPage"
+        :sibling-count="0"
+        :default-page="1"
+        @update:page="page = $event"
+      >
+        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+          <PaginationFirst />
+          <PaginationPrev />
 
-            <template v-for="(item, index) in items">
-              <PaginationListItem
-                v-if="item.type === 'page'"
-                :key="index"
-                :value="item.value"
-                as-child
-              >
-                <Button
-                  class="h-10 w-10 p-0"
-                  :variant="item.value === page ? 'default' : 'outline'"
-                >
-                  {{ item.value }}
-                </Button>
-              </PaginationListItem>
-              <PaginationEllipsis v-else :key="item.type" :index="index" />
-            </template>
-            <PaginationNext />
-            <PaginationLast />
-          </PaginationList>
-        </Pagination>
-      </div>
-    </Tabs>
-  </div>
+          <template v-for="(item, index) in items">
+            <PaginationListItem
+              v-if="item.type === 'page'"
+              :key="index"
+              :value="item.value"
+              as-child
+            >
+              <Button class="h-10 w-10 p-0" :variant="item.value === page ? 'default' : 'outline'">
+                {{ item.value }}
+              </Button>
+            </PaginationListItem>
+            <PaginationEllipsis v-else :key="item.type" :index="index" />
+          </template>
+          <PaginationNext />
+          <PaginationLast />
+        </PaginationList>
+      </Pagination>
+    </div>
+  </Tabs>
 </template>

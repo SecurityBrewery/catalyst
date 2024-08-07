@@ -2,6 +2,8 @@
 import TanView from '@/components/TanView.vue'
 import JSONSchemaFormFields from '@/components/form/JSONSchemaFormFields.vue'
 import DynamicMDEditor from '@/components/input/DynamicMDEditor.vue'
+import ColumnBody from '@/components/layout/ColumnBody.vue'
+import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import StatusIcon from '@/components/ticket/StatusIcon.vue'
 import TicketActionBar from '@/components/ticket/TicketActionBar.vue'
 import TicketCloseBar from '@/components/ticket/TicketCloseBar.vue'
@@ -15,14 +17,13 @@ import TicketTimeline from '@/components/ticket/timeline/TicketTimeline.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { Edit } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
@@ -100,87 +101,97 @@ const updateDescription = (value: string) => (message.value = value)
 </script>
 
 <template>
-  <TanView :isError="isError" :isPending="isPending" :error="error" :value="ticket">
-    <div v-if="ticket" class="flex h-full flex-col">
-      <TicketActionBar :ticket="ticket" />
-      <Separator />
-      <div class="flex w-full max-w-7xl flex-1 flex-col overflow-hidden xl:m-auto xl:flex-row">
-        <div class="flex flex-1 flex-col gap-4 px-4 pt-4">
-          <TicketHeader :ticket="ticket" />
-          <Card class="relative p-4">
-            <Button v-if="!editMode" variant="outline" class="float-right h-8 gap-2" @click="edit">
-              <Edit class="h-3.5 w-3.5" />
-              <span>Edit</span>
-            </Button>
-            <DynamicMDEditor
-              :modelValue="ticket.description"
-              @update:modelValue="updateDescription"
-              v-model:edit="editMode"
-              autofocus
-              placeholder="Type a description..."
-              @save="editDescriptionMutation.mutate"
-              class="min-h-14"
-            />
-          </Card>
-          <Separator />
-          <Tabs default-value="timeline" class="flex flex-1 flex-col overflow-hidden">
-            <TabsList>
-              <TabsTrigger value="timeline">
-                Timeline
-                <Badge
-                  v-if="
-                    ticket.expand.timeline_via_ticket &&
-                    ticket.expand.timeline_via_ticket.length > 0
-                  "
-                  variant="outline"
-                  class="ml-2"
-                >
-                  {{
-                    ticket.expand.timeline_via_ticket ? ticket.expand.timeline_via_ticket.length : 0
-                  }}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="tasks">
-                Tasks
-                <Badge
-                  v-if="ticket.expand.tasks_via_ticket && ticket.expand.tasks_via_ticket.length > 0"
-                  variant="outline"
-                  class="ml-2"
-                >
-                  {{ ticket.expand.tasks_via_ticket ? ticket.expand.tasks_via_ticket.length : 0 }}
-                  <StatusIcon :status="taskStatus" class="size-6" />
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="comments">
-                Comments
-                <Badge
-                  v-if="
-                    ticket.expand.comments_via_ticket &&
-                    ticket.expand.comments_via_ticket.length > 0
-                  "
-                  variant="outline"
-                  class="ml-2"
-                >
-                  {{
-                    ticket.expand.comments_via_ticket ? ticket.expand.comments_via_ticket.length : 0
-                  }}
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
-            <TicketTab value="timeline">
-              <TicketTimeline :ticket="ticket" :timeline="ticket.expand.timeline_via_ticket" />
-            </TicketTab>
-            <TicketTab value="tasks">
-              <TicketTasks :ticket="ticket" :tasks="ticket.expand.tasks_via_ticket" />
-            </TicketTab>
-            <TicketTab value="comments">
-              <TicketComments :ticket="ticket" :comments="ticket.expand.comments_via_ticket" />
-            </TicketTab>
-          </Tabs>
-          <Separator class="xl:hidden" />
-        </div>
-        <ScrollArea>
-          <div class="flex flex-initial flex-col gap-4 p-4 xl:w-96">
+  <TanView :isError="isError" :isPending="isPending" :error="error">
+    <template v-if="ticket">
+      <TicketActionBar :ticket="ticket" class="shrink-0" />
+      <ColumnBody>
+        <ColumnBodyContainer class="flex-col gap-4 xl:flex-row">
+          <div class="flex flex-1 flex-col gap-4">
+            <TicketHeader :ticket="ticket" />
+            <Card class="relative p-4">
+              <Button
+                v-if="!editMode"
+                variant="outline"
+                class="float-right h-8 gap-2"
+                @click="edit"
+              >
+                <Edit class="h-3.5 w-3.5" />
+                <span>Edit</span>
+              </Button>
+              <DynamicMDEditor
+                :modelValue="ticket.description"
+                @update:modelValue="updateDescription"
+                v-model:edit="editMode"
+                autofocus
+                placeholder="Type a description..."
+                @save="editDescriptionMutation.mutate"
+                class="min-h-14"
+              />
+            </Card>
+            <Separator />
+            <Tabs default-value="timeline" class="flex flex-1 flex-col">
+              <TabsList>
+                <TabsTrigger value="timeline">
+                  Timeline
+                  <Badge
+                    v-if="
+                      ticket.expand.timeline_via_ticket &&
+                      ticket.expand.timeline_via_ticket.length > 0
+                    "
+                    variant="outline"
+                    class="ml-2 hidden sm:inline-flex"
+                  >
+                    {{
+                      ticket.expand.timeline_via_ticket
+                        ? ticket.expand.timeline_via_ticket.length
+                        : 0
+                    }}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="tasks">
+                  Tasks
+                  <Badge
+                    v-if="
+                      ticket.expand.tasks_via_ticket && ticket.expand.tasks_via_ticket.length > 0
+                    "
+                    variant="outline"
+                    class="ml-2 hidden sm:inline-flex"
+                  >
+                    {{ ticket.expand.tasks_via_ticket ? ticket.expand.tasks_via_ticket.length : 0 }}
+                    <StatusIcon :status="taskStatus" class="size-6" />
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="comments">
+                  Comments
+                  <Badge
+                    v-if="
+                      ticket.expand.comments_via_ticket &&
+                      ticket.expand.comments_via_ticket.length > 0
+                    "
+                    variant="outline"
+                    class="ml-2 hidden sm:inline-flex"
+                  >
+                    {{
+                      ticket.expand.comments_via_ticket
+                        ? ticket.expand.comments_via_ticket.length
+                        : 0
+                    }}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+              <TicketTab value="timeline">
+                <TicketTimeline :ticket="ticket" :timeline="ticket.expand.timeline_via_ticket" />
+              </TicketTab>
+              <TicketTab value="tasks">
+                <TicketTasks :ticket="ticket" :tasks="ticket.expand.tasks_via_ticket" />
+              </TicketTab>
+              <TicketTab value="comments">
+                <TicketComments :ticket="ticket" :comments="ticket.expand.comments_via_ticket" />
+              </TicketTab>
+            </Tabs>
+            <Separator class="xl:hidden" />
+          </div>
+          <div class="flex flex-col gap-4 xl:w-96 xl:flex-initial">
             <div>
               <div class="flex h-10 flex-row items-center justify-between text-muted-foreground">
                 <span class="text-sm font-semibold"> Details </span>
@@ -196,10 +207,10 @@ const updateDescription = (value: string) => (message.value = value)
             <Separator />
             <TicketFiles :ticket="ticket" :files="ticket.expand.files_via_ticket" />
           </div>
-        </ScrollArea>
-      </div>
+        </ColumnBodyContainer>
+      </ColumnBody>
       <Separator />
-      <TicketCloseBar :ticket="ticket" />
-    </div>
+      <TicketCloseBar :ticket="ticket" class="shrink-0" />
+    </template>
   </TanView>
 </template>

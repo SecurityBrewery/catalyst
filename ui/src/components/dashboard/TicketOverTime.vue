@@ -43,7 +43,7 @@ const ticketsPerWeek = computed(() => {
 </script>
 
 <template>
-  <TanView :isError="isError" :isPending="isPending" :error="error" :value="tickets">
+  <TanView :isError="isError" :isPending="isPending" :error="error">
     <LineChart class="h-40" :data="ticketsPerWeek" index="week" :categories="['count']" />
   </TanView>
 </template>

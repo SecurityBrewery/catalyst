@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TanView from '@/components/TanView.vue'
+import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ThreeColumn from '@/components/layout/ThreeColumn.vue'
 import TicketDisplay from '@/components/ticket/TicketDisplay.vue'
 import TicketList from '@/components/ticket/TicketList.vue'
@@ -41,20 +42,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <ThreeColumn>
+  <ThreeColumn :show-details="!!id">
     <template #list>
-      <TanView :isError="isError" :isPending="isPending" :error="error" :value="selectedType">
+      <TanView :isError="isError" :isPending="isPending" :error="error">
         <TicketList v-if="selectedType" :key="selectedType.id" :selectedType="selectedType" />
       </TanView>
     </template>
     <template #single>
-      <TanView :isError="isError" :isPending="isPending" :error="error" :value="selectedType">
-        <div
-          v-if="!id"
-          class="flex h-full w-full items-center justify-center text-lg text-gray-500"
-        >
+      <TanView :isError="isError" :isPending="isPending" :error="error">
+        <ColumnBody v-if="!id" class="items-center justify-center text-lg text-gray-500">
           No ticket selected
-        </div>
+        </ColumnBody>
         <TicketDisplay v-else-if="selectedType" :key="id" :selectedType="selectedType" />
       </TanView>
     </template>

@@ -38,13 +38,13 @@ const updateName = (value: string) => {
     <DynamicInput :modelValue="ticket.name" @update:modelValue="updateName" class="-mx-1" />
   </span>
 
-  <div class="flex flex-row space-x-2 px-1 text-xs">
-    <div class="flex items-center gap-1 text-muted-foreground">
+  <div class="flex flex-col items-stretch gap-1 text-xs text-muted-foreground md:h-4 md:flex-row">
+    <div>
       Created:
       {{ format(new Date(ticket.created), 'PPpp') }}
     </div>
-    <Separator orientation="vertical" />
-    <div class="flex items-center gap-1 text-muted-foreground">
+    <Separator orientation="vertical" class="hidden md:block" />
+    <div>
       Updated:
       {{ format(new Date(ticket.updated), 'PPpp') }}
     </div>

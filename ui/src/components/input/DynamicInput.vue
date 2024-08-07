@@ -3,9 +3,6 @@ import ShortCut from '@/components/ShortCut.vue'
 
 import { ref } from 'vue'
 
-// import { Textarea } from '@/components/ui/textarea'
-// import { Input } from '@/components/ui/input'
-
 const model = defineModel({
   type: String
 })

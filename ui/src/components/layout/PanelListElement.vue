@@ -12,7 +12,7 @@ const props = defineProps<{
   <div
     :class="
       cn(
-        'flex w-full items-center border-t px-2 py-1 first:rounded-t first:border-none last:rounded-b',
+        'flex w-full flex-col items-start border-t px-2 py-1 first:rounded-t first:border-none last:rounded-b sm:flex-row sm:items-center',
         props.class
       )
     "
