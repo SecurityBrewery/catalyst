@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PanelListElement from '@/components/common/PanelListElement.vue'
 import DynamicMDEditor from '@/components/input/DynamicMDEditor.vue'
+import PanelListElement from '@/components/layout/PanelListElement.vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

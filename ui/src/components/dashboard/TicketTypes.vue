@@ -30,7 +30,7 @@ const namedTypes = computed(() => {
 </script>
 
 <template>
-  <TanView :isError="isError" :isPending="isPending" :error="error" :value="namedTypes">
+  <TanView :isError="isError" :isPending="isPending" :error="error">
     <div v-if="namedTypes" class="flex flex-1 items-center">
       <DonutChart index="plural" type="donut" category="count" :data="namedTypes" />
     </div>

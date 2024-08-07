@@ -239,7 +239,7 @@ const curlExample = computed(() => {
 </script>
 
 <template>
-  <form @submit="onSubmit" class="flex flex-col items-start gap-4">
+  <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
         <FormLabel for="name" class="text-right">Name</FormLabel>

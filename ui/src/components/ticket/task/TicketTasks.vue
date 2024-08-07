@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
-import PanelListElement from '@/components/common/PanelListElement.vue'
 import UserSelect from '@/components/common/UserSelect.vue'
 import DynamicInput from '@/components/input/DynamicInput.vue'
+import PanelListElement from '@/components/layout/PanelListElement.vue'
 import TaskAddDialog from '@/components/ticket/task/TaskAddDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -67,12 +67,14 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
     </Card>
     <Card v-else>
       <PanelListElement v-for="task in tasks" :key="task.id" class="pr-1">
-        <Checkbox :checked="!task.open" class="mr-2" @click="check(task)" />
-        <DynamicInput
-          :modelValue="task.name"
-          @update:modelValue="updateTaskName(task.id, $event)"
-          class="mr-2 flex-1"
-        />
+        <div class="flex flex-row items-center">
+          <Checkbox :checked="!task.open" class="mr-2" @click="check(task)" />
+          <DynamicInput
+            :modelValue="task.name"
+            @update:modelValue="updateTaskName(task.id, $event)"
+            class="mr-2 flex-1"
+          />
+        </div>
         <div class="ml-auto flex items-center">
           <UserSelect v-if="!task.expand.owner" @update:modelValue="update(task.id, $event)">
             <Button variant="outline" role="combobox" class="h-8">

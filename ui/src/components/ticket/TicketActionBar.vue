@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
+import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import TicketCloseDialog from '@/components/ticket/TicketCloseDialog.vue'
 import TicketUserSelect from '@/components/ticket/TicketUserSelect.vue'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { Check, CircleDot, Repeat } from 'lucide-vue-next'
+import { Check, ChevronLeft, CircleDot, Repeat } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
@@ -49,7 +50,7 @@ const changeTypeMutation = useMutation({
     }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
-    router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
+    // router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
   },
   onError: handleError
 })
@@ -74,74 +75,81 @@ const closeTicketDialogOpen = ref(false)
 </script>
 
 <template>
-  <div class="flex items-center justify-between bg-background p-2">
-    <div class="flex items-center gap-2">
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" :disabled="!ticket">
-                  <Icon :name="ticket.expand.type.icon" class="mr-2 size-4" />
-                  {{ ticket.expand.type.singular }}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  v-for="type in otherTypes"
-                  :key="type.id"
-                  class="cursor-pointer"
-                  @click="changeTypeMutation.mutate(type.id)"
-                >
-                  <Icon :name="type.icon" class="mr-2 size-4" />
-                  Convert to {{ type.singular }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>Change Type</TooltipContent>
-      </Tooltip>
-      <TicketCloseDialog v-model="closeTicketDialogOpen" :ticket="ticket" />
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" :disabled="!ticket">
-                  <CircleDot v-if="ticket.open" class="mr-2 h-4 w-4" />
-                  <Check v-else class="mr-2 h-4 w-4" />
-                  {{ ticket?.open ? 'Open' : 'Closed' }}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  v-if="ticket.open"
-                  class="cursor-pointer"
-                  @click="closeTicketDialogOpen = true"
-                >
-                  <Check class="mr-2 size-4" />
-                  Close Ticket
-                </DropdownMenuItem>
-                <DropdownMenuItem v-else class="cursor-pointer" @click="closeTicketMutation.mutate">
-                  <Repeat class="mr-2 size-4" />
-                  Reopen Ticket
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>Change Status</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger as-child>
-          <div>
-            <TicketUserSelect :key="ticket.owner" :uID="ticket.owner" :ticket="ticket" />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>Change User</TooltipContent>
-      </Tooltip>
-    </div>
+  <ColumnHeader>
+    <Button
+      @click="router.push({ name: 'tickets', params: { type: ticket.type } })"
+      variant="outline"
+      class="sm:hidden"
+    >
+      <ChevronLeft class="mr-2 size-4" />
+      Back
+    </Button>
+    <Tooltip>
+      <TooltipTrigger as-child>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" :disabled="!ticket">
+                <Icon :name="ticket.expand.type.icon" class="mr-2 size-4" />
+                {{ ticket.expand.type.singular }}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                v-for="type in otherTypes"
+                :key="type.id"
+                class="cursor-pointer"
+                @click="changeTypeMutation.mutate(type.id)"
+              >
+                <Icon :name="type.icon" class="mr-2 size-4" />
+                Convert to {{ type.singular }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>Change Type</TooltipContent>
+    </Tooltip>
+    <TicketCloseDialog v-model="closeTicketDialogOpen" :ticket="ticket" />
+    <Tooltip>
+      <TooltipTrigger as-child>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" :disabled="!ticket">
+                <CircleDot v-if="ticket.open" class="mr-2 h-4 w-4" />
+                <Check v-else class="mr-2 h-4 w-4" />
+                {{ ticket?.open ? 'Open' : 'Closed' }}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                v-if="ticket.open"
+                class="cursor-pointer"
+                @click="closeTicketDialogOpen = true"
+              >
+                <Check class="mr-2 size-4" />
+                Close Ticket
+              </DropdownMenuItem>
+              <DropdownMenuItem v-else class="cursor-pointer" @click="closeTicketMutation.mutate">
+                <Repeat class="mr-2 size-4" />
+                Reopen Ticket
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>Change Status</TooltipContent>
+    </Tooltip>
+    <Tooltip>
+      <TooltipTrigger as-child>
+        <div>
+          <TicketUserSelect :key="ticket.owner" :uID="ticket.owner" :ticket="ticket" />
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>Change User</TooltipContent>
+    </Tooltip>
+    <div class="-mx-1 flex-1" />
     <DeleteDialog
       v-if="ticket"
       :collection="'tickets'"
@@ -151,5 +159,5 @@ const closeTicketDialogOpen = ref(false)
       :to="{ name: 'tickets' }"
       :queryKey="['tickets']"
     />
-  </div>
+  </ColumnHeader>
 </template>

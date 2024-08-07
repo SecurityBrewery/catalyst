@@ -1,4 +1,5 @@
-<script setup lang="ts" xmlns="http://www.w3.org/1999/html">
+<script setup lang="ts">
+import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ThreeColumn from '@/components/layout/ThreeColumn.vue'
 import ReactionDisplay from '@/components/reaction/ReactionDisplay.vue'
 import ReactionList from '@/components/reaction/ReactionList.vue'
@@ -22,14 +23,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <ThreeColumn>
+  <ThreeColumn :show-details="!!id">
     <template #list>
       <ReactionList />
     </template>
     <template #single>
-      <div v-if="!id" class="flex h-full w-full items-center justify-center text-lg text-gray-500">
+      <ColumnBody v-if="!id" class="items-center justify-center text-lg text-gray-500">
         No reaction selected
-      </div>
+      </ColumnBody>
       <ReactionNew v-else-if="id === 'new'" key="new" />
       <ReactionDisplay v-else :key="id" :id="id" />
     </template>

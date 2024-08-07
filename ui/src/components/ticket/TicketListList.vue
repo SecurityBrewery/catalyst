@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ResourceListElement from '@/components/common/ResourceListElement.vue'
+import ResourceListElement from '@/components/layout/ResourceListElement.vue'
 
 import { useRoute } from 'vue-router'
 
@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="mt-2 flex w-full flex-1 flex-col gap-2 p-4 pt-0">
+  <div class="mt-2 flex w-full flex-1 flex-col gap-2 p-2 pt-0">
     <ResourceListElement
       v-for="item of tickets"
       :key="item.id"

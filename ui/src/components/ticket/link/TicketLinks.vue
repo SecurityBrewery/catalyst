@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
-import PanelListElement from '@/components/common/PanelListElement.vue'
+import PanelListElement from '@/components/layout/PanelListElement.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import LinkAddDialog from '@/components/ticket/link/LinkAddDialog.vue'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,12 @@ const dialogOpen = ref(false)
     >
       No links added yet.
     </div>
-    <PanelListElement v-for="link in links" :key="link.id" :title="link.url" class="pr-1">
+    <PanelListElement
+      v-for="link in links"
+      :key="link.id"
+      :title="link.url"
+      class="flex-row items-center pr-1"
+    >
       <a :href="link.url" target="_blank" class="flex flex-1 items-center overflow-hidden">
         <span class="mr-2 text-blue-500 underline">
           {{ link.name }}

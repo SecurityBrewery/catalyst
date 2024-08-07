@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -38,7 +39,7 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-2 bg-background p-2">
+  <ColumnHeader nowrap hideSeparator>
     <Input v-if="ticket.open" v-model="resolution" placeholder="Closing reason" />
     <div v-else class="flex-1">
       <p class="ml-2 text-gray-500">Closed: {{ ticket.resolution }}</p>
@@ -56,5 +57,5 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
           : 'Reopen ' + props.ticket.expand.type.singular
       }}
     </Button>
-  </div>
+  </ColumnHeader>
 </template>

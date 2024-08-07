@@ -7,17 +7,16 @@ defineProps<{
   isPending: boolean
   isError: boolean
   error: Error | null
-  value: any
 }>()
 </script>
 
 <template>
-  <div v-if="isPending" class="flex justify-center">
-    <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
+  <div v-if="isPending" class="flex h-full w-full">
+    <LoaderCircle class="m-auto h-16 w-16 animate-spin text-primary" />
   </div>
   <Alert v-else-if="isError" variant="destructive" class="mb-4">
     <AlertTitle>Error</AlertTitle>
     <AlertDescription>{{ error }}</AlertDescription>
   </Alert>
-  <slot v-else-if="value" />
+  <slot v-else />
 </template>

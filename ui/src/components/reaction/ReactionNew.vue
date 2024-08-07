@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import ColumnBody from '@/components/layout/ColumnBody.vue'
+import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
+import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
+
+import { ChevronLeft } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
@@ -24,14 +28,16 @@ const addReactionMutation = useMutation({
 </script>
 
 <template>
-  <div class="flex h-full flex-1 flex-col overflow-hidden">
-    <div class="flex min-h-14 items-center bg-background px-4 py-2"></div>
-    <Separator />
+  <ColumnHeader>
+    <Button @click="router.push({ name: 'reactions' })" variant="outline" class="sm:hidden">
+      <ChevronLeft class="mr-2 size-4" />
+      Back
+    </Button>
+  </ColumnHeader>
 
-    <ScrollArea class="flex-1">
-      <div class="flex max-w-[640px] flex-col gap-4 p-4">
-        <ReactionForm @submit="addReactionMutation.mutate" />
-      </div>
-    </ScrollArea>
-  </div>
+  <ColumnBody>
+    <ColumnBodyContainer small>
+      <ReactionForm @submit="addReactionMutation.mutate" />
+    </ColumnBodyContainer>
+  </ColumnBody>
 </template>

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import TanView from '@/components/TanView.vue'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
+import ColumnBody from '@/components/layout/ColumnBody.vue'
+import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
+import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
+
+import { ChevronLeft } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { onMounted, onUnmounted } from 'vue'
@@ -72,28 +76,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <TanView :isError="isError" :isPending="isPending" :error="error" :value="reaction">
-    <div class="flex h-full flex-1 flex-col overflow-hidden">
-      <div class="flex items-center bg-background px-4 py-2">
-        <div class="ml-auto">
-          <DeleteDialog
-            v-if="reaction"
-            collection="reactions"
-            :id="reaction.id"
-            :name="reaction.name"
-            :singular="'Reaction'"
-            :to="{ name: 'reactions' }"
-            :queryKey="['reactions']"
-          />
-        </div>
+  <TanView :isError="isError" :isPending="isPending" :error="error">
+    <ColumnHeader>
+      <Button @click="router.push({ name: 'reactions' })" variant="outline" class="sm:hidden">
+        <ChevronLeft class="mr-2 size-4" />
+        Back
+      </Button>
+      <div class="ml-auto">
+        <DeleteDialog
+          v-if="reaction"
+          collection="reactions"
+          :id="reaction.id"
+          :name="reaction.name"
+          :singular="'Reaction'"
+          :to="{ name: 'reactions' }"
+          :queryKey="['reactions']"
+        />
       </div>
-      <Separator />
+    </ColumnHeader>
 
-      <ScrollArea v-if="reaction" class="flex-1">
-        <div class="flex max-w-[640px] flex-col gap-4 p-4">
-          <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" />
-        </div>
-      </ScrollArea>
-    </div>
+    <ColumnBody v-if="reaction">
+      <ColumnBodyContainer small>
+        <ReactionForm :reaction="reaction" @submit="updateReactionMutation.mutate" />
+      </ColumnBodyContainer>
+    </ColumnBody>
   </TanView>
 </template>
