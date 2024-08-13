@@ -316,7 +316,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 
 	record := models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
-	record.Set("name", "Test Reaction")
+	record.Set("name", "Alert Ingest Webhook")
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", triggerWebhook)
 	record.Set("action", "python")
@@ -334,7 +334,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 
 	record = models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
-	record.Set("name", "Test Reaction 2")
+	record.Set("name", "Assign new Tickets")
 	record.Set("trigger", "hook")
 	record.Set("triggerdata", triggerHook)
 	record.Set("action", "python")
