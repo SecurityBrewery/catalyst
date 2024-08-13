@@ -227,7 +227,7 @@ const curlExample = computed(() => {
   let cmd = `curl`
 
   if (values.triggerdata.token) {
-    cmd += ` -H "Auth: Bearer ${values.triggerdata.token}"`
+    cmd += ` -H "Authorization: Bearer ${values.triggerdata.token}"`
   }
 
   if (values.triggerdata.path) {
