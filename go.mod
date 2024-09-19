@@ -11,6 +11,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/sjson v1.2.5
+	go.uber.org/multierr v1.11.0
 )
 
 require (

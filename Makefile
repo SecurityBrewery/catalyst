@@ -57,6 +57,6 @@ dev-10000:
 	go run . fake-data --users 100 --tickets 10000
 	go run . serve
 
-.PHONY: dev-ui
+.PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
