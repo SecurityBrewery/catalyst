@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.uber.org/multierr"
 	"log/slog"
 	"slices"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
+	"go.uber.org/multierr"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
