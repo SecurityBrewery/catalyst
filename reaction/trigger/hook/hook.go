@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/multierr"
 	"log/slog"
 	"slices"
 
@@ -70,43 +71,49 @@ func runHook(ctx context.Context, app core.App, collection, event string, record
 		return fmt.Errorf("failed to marshal webhook payload: %w", err)
 	}
 
-	hook, found, err := findByHookTrigger(app.Dao(), collection, event)
+	hooks, err := findByHookTrigger(app.Dao(), collection, event)
 	if err != nil {
 		return fmt.Errorf("failed to find hook by trigger: %w", err)
 	}
 
-	if !found {
+	if len(hooks) == 0 {
 		return nil
 	}
 
-	_, err = action.Run(ctx, app, hook.GetString("action"), hook.GetString("actiondata"), string(payload))
-	if err != nil {
-		return fmt.Errorf("failed to run hook reaction: %w", err)
+	var errs error
+
+	for _, hook := range hooks {
+		_, err = action.Run(ctx, app, hook.GetString("action"), hook.GetString("actiondata"), string(payload))
+		if err != nil {
+			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
+		}
 	}
 
-	return nil
+	return errs
 }
 
-func findByHookTrigger(dao *daos.Dao, collection, event string) (*models.Record, bool, error) {
+func findByHookTrigger(dao *daos.Dao, collection, event string) ([]*models.Record, error) {
 	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to find hook reaction: %w", err)
+		return nil, fmt.Errorf("failed to find hook reaction: %w", err)
 	}
 
 	if len(records) == 0 {
-		return nil, false, nil
+		return nil, nil
 	}
+
+	var matchedRecords []*models.Record
 
 	for _, record := range records {
 		var hook Hook
 		if err := json.Unmarshal([]byte(record.GetString("triggerdata")), &hook); err != nil {
-			return nil, false, err
+			return nil, err
 		}
 
 		if slices.Contains(hook.Collections, collection) && slices.Contains(hook.Events, event) {
-			return record, true, nil
+			matchedRecords = append(matchedRecords, record)
 		}
 	}
 
-	return nil, false, nil
+	return matchedRecords, nil
 }
