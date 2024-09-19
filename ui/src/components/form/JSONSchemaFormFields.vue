@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import isEqual from 'lodash.isequal'
 
 import { onMounted, ref, watch } from 'vue'
 
@@ -34,6 +35,11 @@ onMounted(() => {
 watch(
   () => formdata.value,
   () => {
+    const normFormdata = JSON.parse(JSON.stringify(formdata.value))
+    const normModel = JSON.parse(JSON.stringify(model.value))
+
+    if (isEqual(normFormdata, normModel)) return
+
     model.value = { ...formdata.value }
   },
   { deep: true }
