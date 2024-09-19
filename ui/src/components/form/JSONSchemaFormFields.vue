@@ -10,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import isEqual from 'lodash.isequal'
 
+import isEqual from 'lodash.isequal'
 import { onMounted, ref, watch } from 'vue'
 
 import type { JSONSchema } from '@/lib/types'
