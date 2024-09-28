@@ -14,7 +14,11 @@ const props = defineProps<{
 <template>
   <div
     :class="
-      cn('flex min-h-14 flex-wrap items-center gap-2 bg-background p-2', nowrap && 'flex-nowrap', props.class)
+      cn(
+        'flex min-h-14 flex-wrap items-center gap-2 bg-background p-2',
+        nowrap && 'flex-nowrap',
+        props.class
+      )
     "
   >
     <h1 v-if="title" class="text-xl font-bold">

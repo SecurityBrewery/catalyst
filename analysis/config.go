@@ -2,11 +2,13 @@ package analysis
 
 import (
 	"context"
-	"github.com/SecurityBrewery/catalyst-analysis/config"
-	"github.com/SecurityBrewery/catalyst/migrations"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/tidwall/gjson"
+
+	"github.com/SecurityBrewery/catalyst-analysis/config"
+	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
 type PocketbaseCredentialProvider struct {

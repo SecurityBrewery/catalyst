@@ -11,10 +11,7 @@ const props = defineProps<{
 <template>
   <div
     :class="
-      cn(
-        'flex w-full flex-col items-start px-2 py-1 sm:flex-row sm:items-center',
-        props.class
-      )
+      cn('flex w-full flex-col items-start px-2 py-1 sm:flex-row sm:items-center', props.class)
     "
   >
     <slot />

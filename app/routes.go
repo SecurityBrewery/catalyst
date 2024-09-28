@@ -1,8 +1,6 @@
 package app
 
 import (
-	"github.com/SecurityBrewery/catalyst-analysis/cmd/server/service"
-	"github.com/SecurityBrewery/catalyst-analysis/generated/api"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -11,6 +9,8 @@ import (
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 
+	"github.com/SecurityBrewery/catalyst-analysis/cmd/server/service"
+	"github.com/SecurityBrewery/catalyst-analysis/generated/api"
 	"github.com/SecurityBrewery/catalyst/analysis"
 	"github.com/SecurityBrewery/catalyst/ui"
 )

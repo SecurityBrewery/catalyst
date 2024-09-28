@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"fmt"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"

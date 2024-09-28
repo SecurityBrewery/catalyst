@@ -2,8 +2,10 @@ package analysis
 
 import (
 	"context"
-	"github.com/SecurityBrewery/catalyst-analysis/analysis"
+
 	"github.com/pocketbase/pocketbase/daos"
+
+	"github.com/SecurityBrewery/catalyst-analysis/analysis"
 )
 
 type Engine struct {

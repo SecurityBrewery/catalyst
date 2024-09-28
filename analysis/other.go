@@ -2,6 +2,7 @@ package analysis
 
 import (
 	"context"
+
 	"github.com/SecurityBrewery/catalyst-analysis/plugin"
 )
 

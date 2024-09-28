@@ -56,7 +56,7 @@ const groups: Ref<Record<string, Array<Resource>>> = computed(() => {
   <TicketPanel title="Resources" @add="dialogOpen = true">
     <ResourceAddDialog v-model="dialogOpen" :ticket="ticket" />
     <template v-for="(items, name) in groups" :key="name">
-      <h3 class="p-2 text-sm font-semibold bg-border">
+      <h3 class="bg-border p-2 text-sm font-semibold">
         {{ name }}
       </h3>
       <div

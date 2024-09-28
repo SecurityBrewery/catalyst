@@ -103,7 +103,6 @@ export interface Link {
   }
 }
 
-
 export interface Resource {
   id: string
 

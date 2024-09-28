@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/analysis"
 	"net/url"
 	"os"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 
+	"github.com/SecurityBrewery/catalyst/analysis"
 	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/reaction"
 	"github.com/SecurityBrewery/catalyst/webhook"
