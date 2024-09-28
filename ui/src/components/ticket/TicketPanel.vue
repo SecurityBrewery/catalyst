@@ -28,8 +28,24 @@ withDefaults(defineProps<Props>(), {
         <span class="sr-only">Add item</span>
       </Button>
     </div>
-    <Card v-if="$slots.default" class="p-0">
+    <Card v-if="$slots.default" class="panel-card p-0">
       <slot />
     </Card>
   </div>
 </template>
+
+<style>
+.panel-card > *:not(:last-child) {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.panel-card > *:first-child {
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.panel-card > *:last-child {
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+</style>

@@ -3,7 +3,8 @@ import { Separator } from '@/components/ui/separator'
 
 import { cn } from '@/lib/utils'
 
-defineProps<{
+const props = defineProps<{
+  class?: string
   title?: string
   nowrap?: boolean
   hideSeparator?: boolean
@@ -13,7 +14,7 @@ defineProps<{
 <template>
   <div
     :class="
-      cn('flex min-h-14 flex-wrap items-center gap-2 bg-background p-2', nowrap && 'flex-nowrap')
+      cn('flex min-h-14 flex-wrap items-center gap-2 bg-background p-2', nowrap && 'flex-nowrap', props.class)
     "
   >
     <h1 v-if="title" class="text-xl font-bold">

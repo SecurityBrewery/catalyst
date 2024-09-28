@@ -27,6 +27,7 @@ export interface Ticket {
     comments_via_ticket: Array<Comment>
     timeline_via_ticket: Array<TimelineItem>
     links_via_ticket: Array<Link>
+    resources_via_ticket: Array<Resource>
     files_via_ticket: Array<File>
     tasks_via_ticket: Array<Task>
   }
@@ -93,6 +94,28 @@ export interface Link {
   ticket: string
   name: string
   url: string
+
+  created: string
+  updated: string
+  expand: {
+    ticket: Ticket
+    owner: User
+  }
+}
+
+
+export interface Resource {
+  id: string
+
+  ticket: string
+  service: string
+  type: string
+  resource: string
+  name: string
+  icon: string
+  description: string
+  url: string
+  attributes: any
 
   created: string
   updated: string

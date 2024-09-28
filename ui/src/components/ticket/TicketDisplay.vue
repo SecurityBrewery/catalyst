@@ -12,6 +12,7 @@ import TicketTab from '@/components/ticket/TicketTab.vue'
 import TicketComments from '@/components/ticket/comment/TicketComments.vue'
 import TicketFiles from '@/components/ticket/file/TicketFiles.vue'
 import TicketLinks from '@/components/ticket/link/TicketLinks.vue'
+import TicketResources from '@/components/ticket/resource/TicketResources.vue'
 import TicketTasks from '@/components/ticket/task/TicketTasks.vue'
 import TicketTimeline from '@/components/ticket/timeline/TicketTimeline.vue'
 import { Badge } from '@/components/ui/badge'
@@ -52,7 +53,7 @@ const {
   queryFn: (): Promise<Ticket> =>
     pb.collection('tickets').getOne(id.value, {
       expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
+        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,resources_via_ticket,tasks_via_ticket.owner'
     })
 })
 
@@ -202,6 +203,8 @@ const updateDescription = (value: string) => (message.value = value)
                 :schema="selectedType.schema"
               />
             </div>
+            <Separator />
+            <TicketResources :ticket="ticket" :resources="ticket.expand.resources_via_ticket" />
             <Separator />
             <TicketLinks :ticket="ticket" :links="ticket.expand.links_via_ticket" />
             <Separator />

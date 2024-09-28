@@ -1,7 +1,10 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"github.com/SecurityBrewery/catalyst/analysis"
+	"net/url"
 	"os"
 	"strings"
 
@@ -26,12 +29,63 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	webhook.BindHooks(app)
 	reaction.BindHooks(app, test)
 
-	app.OnBeforeServe().Add(addRoutes())
+	ctx := context.Background()
+	engine := analysis.NewEngine(ctx, app.Dao())
+
+	app.OnBeforeServe().Add(addRoutes(engine))
 
 	app.OnAfterBootstrap().Add(func(e *core.BootstrapEvent) error {
 		if HasFlag(e.App, "demo") {
 			bindDemoHooks(e.App)
 		}
+
+		return nil
+	})
+
+	app.OnRecordBeforeCreateRequest("resources").Add(func(e *core.RecordCreateEvent) error {
+		e
+
+		if err := engine.SetDao(e.App.Dao()); err != nil {
+			return err
+		}
+
+		enrichments, err := engine.Enrich(
+			e.HttpContext.Request().Context(),
+			e.Record.GetString("value"),
+			1,
+		)
+		if err != nil || len(enrichments) == 0 {
+			urlx := ""
+			resourceType := "unknown"
+			icon := "Box"
+			if _, err := url.Parse(e.Record.GetString("value")); err == nil {
+				urlx = e.Record.GetString("value")
+				resourceType = "url"
+				icon = "Link"
+			}
+
+			e.Record.Set("service", "catalyst")
+			e.Record.Set("type", resourceType)
+			e.Record.Set("resource", e.Record.GetString("value"))
+			e.Record.Set("name", e.Record.GetString("value"))
+			e.Record.Set("icon", icon)
+			e.Record.Set("description", "")
+			e.Record.Set("url", urlx)
+			e.Record.Set("attributes", "")
+
+			return nil
+		}
+
+		enrichment := enrichments[0]
+
+		e.Record.Set("service", enrichment.ServiceID)
+		e.Record.Set("type", enrichment.Resource.Type)
+		e.Record.Set("resource", enrichment.Resource.ID)
+		e.Record.Set("name", enrichment.Resource.Name)
+		e.Record.Set("icon", enrichment.Resource.Icon)
+		e.Record.Set("description", enrichment.Resource.Description)
+		e.Record.Set("url", enrichment.Resource.URL)
+		e.Record.Set("attributes", enrichment.Resource.Attributes)
 
 		return nil
 	})
