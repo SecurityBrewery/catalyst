@@ -23,6 +23,11 @@ jobs:
 
       - run: make build-ui
 
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: "securitybrewery"
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
