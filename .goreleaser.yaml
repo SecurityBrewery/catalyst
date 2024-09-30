@@ -11,6 +11,15 @@ builds:
       - linux
       - darwin
 
+dockers:
+  - ids: [ catalyst ]
+    dockerfile: docker/goreleaser.Dockerfile
+    image_templates:
+      - "ghcr.io/securitybrewery/catalyst:latest"
+      - "ghcr.io/securitybrewery/catalyst:{{.Tag}}"
+      - "ghcr.io/securitybrewery/catalyst:v{{.Major}}"
+      - "ghcr.io/securitybrewery/catalyst:v{{.Major}}.{{.Minor}}"
+
 archives:
   - format: tar.gz
     # this name template makes the OS and Arch compatible with the results of `uname`.
