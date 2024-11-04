@@ -15,15 +15,11 @@ import { Input } from '@/components/ui/input'
     <FormItem>
       <FormLabel for="token" class="text-right">Token</FormLabel>
       <FormControl>
-        <Input
-          id="token"
-          class="col-span-3"
-          v-bind="componentField"
-          placeholder="Enter a token (e.g. 'xyz...')"
-        />
+        <Input id="token" class="col-span-3" v-bind="componentField" placeholder="Enter a token" />
       </FormControl>
       <FormDescription>
-        Optional. Include an authorization token in the request headers.
+        Optional. Include an authorization token in the request headers. Example:
+        <code>Bearer YOUR_TOKEN</code>
       </FormDescription>
       <FormMessage />
     </FormItem>
@@ -33,14 +29,11 @@ import { Input } from '@/components/ui/input'
     <FormItem>
       <FormLabel for="path" class="text-right">Path</FormLabel>
       <FormControl>
-        <Input
-          id="path"
-          class="col-span-3"
-          v-bind="componentField"
-          placeholder="Enter a path (e.g. 'action1')"
-        />
+        <Input id="path" class="col-span-3" v-bind="componentField" placeholder="Enter a path" />
       </FormControl>
-      <FormDescription> Specify the path to trigger the reaction. </FormDescription>
+      <FormDescription>
+        Specify the path to trigger the reaction. Example: <code>action1</code>
+      </FormDescription>
       <FormMessage />
     </FormItem>
   </FormField>

@@ -32,7 +32,9 @@ const subtitle = (reaction: Reaction) =>
   triggerNiceName(reaction) + ' to ' + reactionNiceName(reaction)
 
 const triggerNiceName = (reaction: Reaction) => {
-  if (reaction.trigger === 'hook') {
+  if (reaction.trigger === 'schedule') {
+    return 'Schedule'
+  } else if (reaction.trigger === 'hook') {
     return 'Collection Hook'
   } else if (reaction.trigger === 'webhook') {
     return 'HTTP / Webhook'
