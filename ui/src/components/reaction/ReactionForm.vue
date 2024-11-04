@@ -2,6 +2,7 @@
 import ActionPythonFormFields from '@/components/reaction/ActionPythonFormFields.vue'
 import ActionWebhookFormFields from '@/components/reaction/ActionWebhookFormFields.vue'
 import TriggerHookFormFields from '@/components/reaction/TriggerHookFormFields.vue'
+import TriggerScheduleFormFields from '@/components/reaction/TriggerScheduleFormFields.vue'
 import TriggerWebhookFormFields from '@/components/reaction/TriggerWebhookFormFields.vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -65,6 +66,25 @@ defineRule('required', (value: string) => {
   }
 
   return true
+})
+
+defineRule('triggerdata.expression', (value: string) => {
+  if (values.trigger !== 'schedule') {
+    return true
+  }
+  if (!value) {
+    return 'This field is required'
+  }
+  const macros = ['@yearly', '@annually', '@monthly', '@weekly', '@daily', '@midnight', '@hourly']
+  if (macros.includes(value)) {
+    return true
+  }
+  const expression =
+    /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/
+  if (value.match(expression)) {
+    return true
+  }
+  return 'Invalid cron expression'
 })
 
 defineRule('triggerdata.token', (value: string) => {
@@ -160,6 +180,7 @@ const { handleSubmit, validate, values } = useForm({
   validationSchema: {
     name: 'required',
     trigger: 'required',
+    'triggerdata.expression': 'triggerdata.expression',
     'triggerdata.token': 'triggerdata.token',
     'triggerdata.path': 'triggerdata.path',
     'triggerdata.collections': 'triggerdata.collections',
@@ -263,6 +284,7 @@ const curlExample = computed(() => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+                    <SelectItem value="schedule">Schedule</SelectItem>
                     <SelectItem value="webhook">HTTP / Webhook</SelectItem>
                     <SelectItem value="hook">Collection Hook</SelectItem>
                   </SelectGroup>
@@ -277,7 +299,8 @@ const curlExample = computed(() => {
           </FormItem>
         </FormField>
 
-        <TriggerWebhookFormFields v-if="values.trigger === 'webhook'" />
+        <TriggerScheduleFormFields v-if="values.trigger === 'schedule'" />
+        <TriggerWebhookFormFields v-else-if="values.trigger === 'webhook'" />
         <TriggerHookFormFields v-else-if="values.trigger === 'hook'" />
 
         <div v-if="values.trigger === 'webhook'">
