@@ -16,7 +16,7 @@ dockers:
     dockerfile: docker/Dockerfile
     image_templates:
       - "ghcr.io/securitybrewery/catalyst:main"
-      - "ghcr.io/securitybrewery/catalyst:latest"
+      - "{{if not .Prerelease}}ghcr.io/securitybrewery/catalyst:latest{{end}}"
       - "ghcr.io/securitybrewery/catalyst:{{.Tag}}"
 
 archives:
