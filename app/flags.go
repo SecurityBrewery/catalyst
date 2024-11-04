@@ -107,12 +107,7 @@ func setAppURL(app core.App) *cobra.Command {
 				return
 			}
 
-			settings, err := app.Settings().Clone()
-			if err != nil {
-				app.Logger().Error(err.Error())
-
-				return
-			}
+			settings := app.Settings()
 
 			settings.Meta.AppUrl = args[0]
 
