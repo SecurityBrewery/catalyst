@@ -39,6 +39,22 @@ build-ui:
 	cd ui && bun install
 	cd ui && bun build-only
 
+.PHONY: build
+build: build-ui
+	@echo "Building..."
+	go build -o catalyst .
+
+
+.PHONY: build-linux
+build-linux: build-ui
+	@echo "Building..."
+	GOOS=linux GOARCH=amd64 go build -o catalyst .
+
+.PHONY: docker
+docker: build-linux
+	@echo "Building Docker image..."
+	docker build -f docker/Dockerfile -t catalyst .
+
 .PHONY: dev
 dev:
 	@echo "Running..."

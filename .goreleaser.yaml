@@ -13,7 +13,7 @@ builds:
 
 dockers:
   - ids: [ catalyst ]
-    dockerfile: docker/goreleaser.Dockerfile
+    dockerfile: docker/Dockerfile
     image_templates:
       - "ghcr.io/securitybrewery/catalyst:main"
       - "ghcr.io/securitybrewery/catalyst:latest"

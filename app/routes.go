@@ -18,6 +18,13 @@ func addRoutes() func(*core.ServeEvent) error {
 			return c.Redirect(http.StatusFound, "/ui/")
 		})
 		e.Router.GET("/ui/*", staticFiles())
+		e.Router.GET("/health", func(c echo.Context) error {
+			if _, err := Flags(e.App); err != nil {
+				return err
+			}
+
+			return c.String(http.StatusOK, "OK")
+		})
 
 		e.Router.GET("/api/config", func(c echo.Context) error {
 			flags, err := Flags(e.App)
