@@ -248,6 +248,28 @@ func linkRecords(dao *daos.Dao, created time.Time, record *models.Record) []*mod
 	return records
 }
 
+const createTicketPy = `import sys
+import json
+import random
+import os
+
+from pocketbase import PocketBase
+
+# Connect to the PocketBase server
+client = PocketBase(os.environ["CATALYST_APP_URL"])
+client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
+
+newtickets = client.collection("tickets").get_list(1, 200, {"filter": 'name = "New Ticket"'})
+for ticket in newtickets.items:
+	client.collection("tickets").delete(ticket.id)
+
+# Create a new ticket
+client.collection("tickets").create({
+	"name": "New Ticket",
+	"type": "alert",
+	"open": True,
+})`
+
 const alertIngestPy = `import sys
 import json
 import random
@@ -294,8 +316,9 @@ client.collection("tickets").update(ticket["record"]["id"], {
 })`
 
 const (
-	triggerWebhook = `{"token":"1234567890","path":"webhook"}`
-	triggerHook    = `{"collections":["tickets"],"events":["create"]}`
+	triggerSchedule = `{"expression":"12 * * * *"}`
+	triggerWebhook  = `{"token":"1234567890","path":"webhook"}`
+	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
 )
 
 func reactionRecords(dao *daos.Dao) []*models.Record {
@@ -306,6 +329,24 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
+	createTicketActionData, err := json.Marshal(map[string]interface{}{
+		"requirements": "pocketbase",
+		"script":       createTicketPy,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	record := models.NewRecord(collection)
+	record.SetId("w_" + security.PseudorandomString(10))
+	record.Set("name", "Create New Ticket")
+	record.Set("trigger", "schedule")
+	record.Set("triggerdata", triggerSchedule)
+	record.Set("action", "python")
+	record.Set("actiondata", string(createTicketActionData))
+
+	records = append(records, record)
+
 	alertIngestActionData, err := json.Marshal(map[string]interface{}{
 		"requirements": "pocketbase",
 		"script":       alertIngestPy,
@@ -314,7 +355,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
-	record := models.NewRecord(collection)
+	record = models.NewRecord(collection)
 	record.SetId("w_" + security.PseudorandomString(10))
 	record.Set("name", "Alert Ingest Webhook")
 	record.Set("trigger", "webhook")
