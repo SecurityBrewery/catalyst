@@ -12,10 +12,8 @@ func fakeDataCmd(app core.App) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "fake-data",
-		Run: func(_ *cobra.Command, _ []string) {
-			if err := fakedata.Generate(app, userCount, ticketCount); err != nil {
-				app.Logger().Error(err.Error())
-			}
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return fakedata.Generate(app, userCount, ticketCount)
 		},
 	}
 

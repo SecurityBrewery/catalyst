@@ -23,31 +23,44 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 		DefaultDataDir: dir,
 	})
 
+	var appURL string
+	app.RootCmd.PersistentFlags().StringVar(&appURL, "app-url", "", "the app's URL")
+
+	var flags []string
+	app.RootCmd.PersistentFlags().StringSliceVar(&flags, "flags", nil, "feature flags")
+
+	_ = app.RootCmd.ParseFlags(os.Args[1:])
+
+	app.RootCmd.AddCommand(fakeDataCmd(app))
+
 	webhook.BindHooks(app)
 	reaction.BindHooks(app, test)
 
-	app.OnBeforeServe().Add(addRoutes())
-
 	app.OnAfterBootstrap().Add(func(e *core.BootstrapEvent) error {
+		if err := MigrateDBs(e.App); err != nil {
+			return err
+		}
+
+		if err := SetFlags(e.App, flags); err != nil {
+			return err
+		}
+
 		if HasFlag(e.App, "demo") {
 			bindDemoHooks(e.App)
 		}
 
-		return nil
+		if appURL != "" {
+			s := e.App.Settings()
+			s.Meta.AppUrl = appURL
+			if err := e.App.Dao().SaveSettings(s); err != nil {
+				return err
+			}
+		}
+
+		return e.App.RefreshSettings()
 	})
 
-	// Register additional commands
-	app.RootCmd.AddCommand(fakeDataCmd(app))
-	app.RootCmd.AddCommand(setFeatureFlagsCmd(app))
-	app.RootCmd.AddCommand(setAppURL(app))
-
-	if err := app.Bootstrap(); err != nil {
-		return nil, err
-	}
-
-	if err := MigrateDBs(app); err != nil {
-		return nil, err
-	}
+	app.OnBeforeServe().Add(addRoutes())
 
 	return app, nil
 }
