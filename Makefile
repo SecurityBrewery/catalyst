@@ -61,7 +61,7 @@ dev:
 	rm -rf catalyst_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data
-	go run . serve --app-url http://catalyst.localhost --flags dev
+	go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: dev-10000
 dev-10000:
@@ -69,7 +69,7 @@ dev-10000:
 	rm -rf catalyst_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data --users 100 --tickets 10000
-	go run . serve --app-url http://catalyst.localhost --flags dev
+	go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: serve-ui
 serve-ui:
