@@ -24,9 +24,11 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	})
 
 	var appURL string
+
 	app.RootCmd.PersistentFlags().StringVar(&appURL, "app-url", "", "the app's URL")
 
 	var flags []string
+
 	app.RootCmd.PersistentFlags().StringSliceVar(&flags, "flags", nil, "feature flags")
 
 	_ = app.RootCmd.ParseFlags(os.Args[1:])
@@ -52,6 +54,7 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 		if appURL != "" {
 			s := e.App.Settings()
 			s.Meta.AppUrl = appURL
+
 			if err := e.App.Dao().SaveSettings(s); err != nil {
 				return err
 			}

@@ -26,6 +26,10 @@ func App(t *testing.T) (*pocketbase.PocketBase, *Counter, func()) {
 		t.Fatal(err)
 	}
 
+	if err := baseApp.Bootstrap(); err != nil {
+		t.Fatal(fmt.Errorf("failed to bootstrap: %w", err))
+	}
+
 	baseApp.Settings().Logs.MaxDays = 0
 
 	defaultTestData(t, baseApp)
