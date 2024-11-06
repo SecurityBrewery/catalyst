@@ -6,7 +6,6 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
-	"github.com/spf13/cobra"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
@@ -84,36 +83,4 @@ func SetFlags(app core.App, args []string) error {
 	}
 
 	return nil
-}
-
-func setFeatureFlagsCmd(app core.App) *cobra.Command {
-	return &cobra.Command{
-		Use: "set-feature-flags",
-		Run: func(_ *cobra.Command, args []string) {
-			if err := SetFlags(app, args); err != nil {
-				app.Logger().Error(err.Error())
-			}
-		},
-	}
-}
-
-func setAppURL(app core.App) *cobra.Command {
-	return &cobra.Command{
-		Use: "set-app-url",
-		Run: func(_ *cobra.Command, args []string) {
-			if len(args) != 1 {
-				app.Logger().Error("missing app url")
-
-				return
-			}
-
-			settings := app.Settings()
-
-			settings.Meta.AppUrl = args[0]
-
-			if err := app.Dao().SaveSettings(settings); err != nil {
-				app.Logger().Error(err.Error())
-			}
-		},
-	}
 }
