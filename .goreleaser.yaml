@@ -18,6 +18,8 @@ dockers:
       - "ghcr.io/securitybrewery/catalyst:main"
       - "{{if not .Prerelease}}ghcr.io/securitybrewery/catalyst:latest{{end}}"
       - "ghcr.io/securitybrewery/catalyst:{{.Tag}}"
+    extra_files:
+      - docker/entrypoint.sh
 
 archives:
   - format: tar.gz
