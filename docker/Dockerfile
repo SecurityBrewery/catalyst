@@ -11,4 +11,6 @@ VOLUME /usr/local/bin/catalyst_data
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-CMD ["/usr/local/bin/catalyst", "serve", "--http", "0.0.0.0:8080"]
+COPY docker/entrypoint.sh /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
