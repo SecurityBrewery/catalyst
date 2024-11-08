@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -39,45 +38,12 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	reaction.BindHooks(app, test)
 
 	app.OnAfterBootstrap().Add(func(e *core.BootstrapEvent) error {
-		if err := MigrateDBs(e.App); err != nil {
-			return err
-		}
-
-		if err := SetFlags(e.App, flags); err != nil {
-			return err
-		}
-
-		if HasFlag(e.App, "demo") {
-			bindDemoHooks(e.App)
-		}
-
-		if appURL != "" {
-			s := e.App.Settings()
-			s.Meta.AppUrl = appURL
-
-			if err := e.App.Dao().SaveSettings(s); err != nil {
-				return err
-			}
-		}
-
-		return e.App.RefreshSettings()
+		return MigrateDBs(e.App)
 	})
 
-	app.OnBeforeServe().Add(addRoutes())
+	app.OnBeforeServe().Add(setupServer(appURL, flags))
 
 	return app, nil
-}
-
-func bindDemoHooks(app core.App) {
-	app.OnRecordBeforeCreateRequest("files", "reactions").Add(func(e *core.RecordCreateEvent) error {
-		return fmt.Errorf("cannot create %s in demo mode", e.Record.Collection().Name)
-	})
-	app.OnRecordBeforeUpdateRequest("files", "reactions").Add(func(e *core.RecordUpdateEvent) error {
-		return fmt.Errorf("cannot update %s in demo mode", e.Record.Collection().Name)
-	})
-	app.OnRecordBeforeDeleteRequest("files", "reactions").Add(func(e *core.RecordDeleteEvent) error {
-		return fmt.Errorf("cannot delete %s in demo mode", e.Record.Collection().Name)
-	})
 }
 
 func dev() bool {
