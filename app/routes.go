@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -12,8 +13,25 @@ import (
 	"github.com/SecurityBrewery/catalyst/ui"
 )
 
-func addRoutes() func(*core.ServeEvent) error {
+func setupServer(appURL string, flags []string) func(e *core.ServeEvent) error {
 	return func(e *core.ServeEvent) error {
+		if err := SetFlags(e.App, flags); err != nil {
+			return err
+		}
+
+		if HasFlag(e.App, "demo") {
+			bindDemoHooks(e.App)
+		}
+
+		if appURL != "" {
+			s := e.App.Settings()
+			s.Meta.AppUrl = appURL
+
+			if err := e.App.Dao().SaveSettings(s); err != nil {
+				return err
+			}
+		}
+
 		e.Router.GET("/", func(c echo.Context) error {
 			return c.Redirect(http.StatusFound, "/ui/")
 		})
@@ -37,8 +55,20 @@ func addRoutes() func(*core.ServeEvent) error {
 			})
 		})
 
-		return nil
+		return e.App.RefreshSettings()
 	}
+}
+
+func bindDemoHooks(app core.App) {
+	app.OnRecordBeforeCreateRequest("files", "reactions").Add(func(e *core.RecordCreateEvent) error {
+		return fmt.Errorf("cannot create %s in demo mode", e.Record.Collection().Name)
+	})
+	app.OnRecordBeforeUpdateRequest("files", "reactions").Add(func(e *core.RecordUpdateEvent) error {
+		return fmt.Errorf("cannot update %s in demo mode", e.Record.Collection().Name)
+	})
+	app.OnRecordBeforeDeleteRequest("files", "reactions").Add(func(e *core.RecordDeleteEvent) error {
+		return fmt.Errorf("cannot delete %s in demo mode", e.Record.Collection().Name)
+	})
 }
 
 func staticFiles() func(echo.Context) error {
