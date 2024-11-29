@@ -30,8 +30,14 @@ const {
   }
 })
 
-const age = (ticket: Ticket) =>
-  intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
+const age = (ticket: Ticket) => {
+  const days = intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
+
+  if (days === 0) return 'today'
+  if (days === 1) return 'yesterday'
+
+  return `${days} days`
+}
 </script>
 
 <template>
@@ -45,7 +51,7 @@ const age = (ticket: Ticket) =>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">{{ ticket.expand.type.singular }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }} days</span>
+        <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
         <RouterLink
           :to="{
             name: 'tickets',
