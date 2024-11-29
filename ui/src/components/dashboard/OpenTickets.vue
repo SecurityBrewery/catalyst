@@ -33,7 +33,7 @@ const {
 const age = (ticket: Ticket) => {
   const days = intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
 
-  if (days === 0) return 'today'
+  if (!days) return 'today'
   if (days === 1) return 'yesterday'
 
   return `${days} days`
