@@ -101,5 +101,19 @@ watch(
         </div>
       </FormItem>
     </FormField>
+    <FormField
+      v-else-if="property.type === 'integer'"
+      :name="key"
+      v-slot="{ componentField }"
+      v-model="formdata[key]"
+    >
+      <FormItem>
+        <FormLabel :for="key" class="text-right">
+          {{ property.title }}
+        </FormLabel>
+        <Input :id="key" class="col-span-3" type="number" v-bind="componentField" />
+        <FormMessage />
+      </FormItem>
+    </FormField>
   </div>
 </template>
