@@ -7,13 +7,8 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
 	"go.uber.org/multierr"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
@@ -26,52 +21,52 @@ type Hook struct {
 	Events      []string `json:"events"`
 }
 
-func BindHooks(pb *pocketbase.PocketBase, test bool) {
-	pb.App.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
-		return hook(e.HttpContext, pb.App, "create", e.Collection.Name, e.Record, test)
+func BindHooks(app core.App, test bool) {
+	app.OnRecordCreateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		return hook(e, app, "create", e.Collection.Name, e.Record, test)
 	})
-	pb.App.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
-		return hook(e.HttpContext, pb.App, "update", e.Collection.Name, e.Record, test)
+	app.OnRecordUpdateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		return hook(e, app, "update", e.Collection.Name, e.Record, test)
 	})
-	pb.App.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error {
-		return hook(e.HttpContext, pb.App, "delete", e.Collection.Name, e.Record, test)
+	app.OnRecordDeleteRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		return hook(e, app, "delete", e.Collection.Name, e.Record, test)
 	})
 }
 
-func hook(ctx echo.Context, app core.App, event, collection string, record *models.Record, test bool) error {
-	auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
-	admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
+func hook(req *core.RecordRequestEvent, app core.App, event, collection string, record *core.Record, test bool) error {
+	if err := req.Next(); err != nil {
+		return err
+	}
 
 	if !test {
-		go mustRunHook(app, collection, event, record, auth, admin)
+		go mustRunHook(app, collection, event, record, req.Auth)
 	} else {
-		mustRunHook(app, collection, event, record, auth, admin)
+		mustRunHook(app, collection, event, record, req.Auth)
 	}
 
 	return nil
 }
 
-func mustRunHook(app core.App, collection, event string, record, auth *models.Record, admin *models.Admin) {
+func mustRunHook(app core.App, collection, event string, record, auth *core.Record) {
 	ctx := context.Background()
 
-	if err := runHook(ctx, app, collection, event, record, auth, admin); err != nil {
+	if err := runHook(ctx, app, collection, event, record, auth); err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
 	}
 }
 
-func runHook(ctx context.Context, app core.App, collection, event string, record, auth *models.Record, admin *models.Admin) error {
+func runHook(ctx context.Context, app core.App, collection, event string, record, auth *core.Record) error {
 	payload, err := json.Marshal(&webhook.Payload{
 		Action:     event,
 		Collection: collection,
 		Record:     record,
 		Auth:       auth,
-		Admin:      admin,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal webhook payload: %w", err)
 	}
 
-	hooks, err := findByHookTrigger(app.Dao(), collection, event)
+	hooks, err := findByHookTrigger(app, collection, event)
 	if err != nil {
 		return fmt.Errorf("failed to find hook by trigger: %w", err)
 	}
@@ -92,8 +87,8 @@ func runHook(ctx context.Context, app core.App, collection, event string, record
 	return errs
 }
 
-func findByHookTrigger(dao *daos.Dao, collection, event string) ([]*models.Record, error) {
-	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
+func findByHookTrigger(dao core.App, collection, event string) ([]*core.Record, error) {
+	records, err := dao.FindAllRecords(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find hook reaction: %w", err)
 	}
@@ -102,7 +97,7 @@ func findByHookTrigger(dao *daos.Dao, collection, event string) ([]*models.Recor
 		return nil, nil
 	}
 
-	var matchedRecords []*models.Record
+	var matchedRecords []*core.Record
 
 	for _, record := range records {
 		var hook Hook

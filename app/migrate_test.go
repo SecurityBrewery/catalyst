@@ -16,7 +16,7 @@ func Test_MigrateDBsDown(t *testing.T) {
 	catalystApp, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
-	_, err := catalystApp.Dao().FindCollectionByNameOrId(migrations.ReactionCollectionName)
+	_, err := catalystApp.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	require.NoError(t, err)
 
 	require.NoError(t, app.MigrateDBsDown(catalystApp))

@@ -12,8 +12,8 @@ func fakeDataCmd(app core.App) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "fake-data",
-		RunE: func(_ *cobra.Command, _ []string) error {
-			return fakedata.Generate(app, userCount, ticketCount)
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return fakedata.Generate(cmd.Context(), app, userCount, ticketCount)
 		},
 	}
 

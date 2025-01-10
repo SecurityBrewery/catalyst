@@ -1,9 +1,7 @@
 package migrations
 
 import (
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 const dashboardCountsViewUpdateQuery = `SELECT id, count FROM (
@@ -16,28 +14,24 @@ const dashboardCountsViewUpdateQuery = `SELECT id, count FROM (
   SELECT 'reactions' as id, COUNT(reactions.id) as count FROM reactions
 ) as counts;`
 
-func dashboardCountsViewUpdateUp(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	collection, err := dao.FindCollectionByNameOrId(dashboardCountsViewName)
+func dashboardCountsViewUpdateUp(app core.App) error {
+	collection, err := app.FindCollectionByNameOrId(dashboardCountsViewName)
 	if err != nil {
 		return err
 	}
 
-	collection.Options = types.JsonMap{"query": dashboardCountsViewUpdateQuery}
+	collection.ViewQuery = dashboardCountsViewUpdateQuery
 
-	return dao.SaveCollection(collection)
+	return app.Save(collection)
 }
 
-func dashboardCountsViewUpdateDown(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	collection, err := dao.FindCollectionByNameOrId(dashboardCountsViewName)
+func dashboardCountsViewUpdateDown(app core.App) error {
+	collection, err := app.FindCollectionByNameOrId(dashboardCountsViewName)
 	if err != nil {
 		return err
 	}
 
-	collection.Options = types.JsonMap{"query": dashboardCountsViewQuery}
+	collection.ViewQuery = dashboardCountsViewQuery
 
-	return dao.SaveCollection(collection)
+	return app.Save(collection)
 }

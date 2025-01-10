@@ -37,11 +37,21 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	webhook.BindHooks(app)
 	reaction.BindHooks(app, test)
 
-	app.OnAfterBootstrap().Add(func(e *core.BootstrapEvent) error {
+	app.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
+		if err := e.Next(); err != nil {
+			return err
+		}
+
 		return MigrateDBs(e.App)
 	})
 
-	app.OnBeforeServe().Add(setupServer(appURL, flags))
+	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+		if err := setupServer(appURL, flags)(e); err != nil {
+			return err
+		}
+
+		return e.Next()
+	})
 
 	return app, nil
 }

@@ -1,22 +1,18 @@
 package migrations
 
 import (
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models/settings"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/types"
 )
 
-type baseUpFunc func(dao *daos.Dao) error
+type baseUpFunc func(app core.App) error
 
-func baseUp(db dbx.Builder) error {
-	dao := daos.New(db)
-
+func baseUp(app core.App) error {
 	for _, f := range []baseUpFunc{
 		settingsUp,
 		allowUserViewUp,
 	} {
-		if err := f(dao); err != nil {
+		if err := f(app); err != nil {
 			return err
 		}
 	}
@@ -24,16 +20,16 @@ func baseUp(db dbx.Builder) error {
 	return nil
 }
 
-func settingsUp(dao *daos.Dao) error {
-	s := settings.New()
+func settingsUp(app core.App) error {
+	s := app.Settings()
 	s.Meta.AppName = "Catalyst"
 	s.Meta.HideControls = false
 
-	return dao.SaveSettings(s)
+	return app.Save(s)
 }
 
-func allowUserViewUp(dao *daos.Dao) error {
-	collection, err := dao.FindCollectionByNameOrId(UserCollectionName)
+func allowUserViewUp(app core.App) error {
+	collection, err := app.FindCollectionByNameOrId(UserCollectionID)
 	if err != nil {
 		return err
 	}
@@ -41,11 +37,11 @@ func allowUserViewUp(dao *daos.Dao) error {
 	collection.ViewRule = types.Pointer("@request.auth.id != ''")
 	collection.ListRule = types.Pointer("@request.auth.id != ''")
 
-	return dao.SaveCollection(collection)
+	return app.Save(collection)
 }
 
-func baseDown(db dbx.Builder) error {
-	collection, err := daos.New(db).FindCollectionByNameOrId(UserCollectionName)
+func baseDown(app core.App) error {
+	collection, err := app.FindCollectionByNameOrId(UserCollectionID)
 	if err != nil {
 		return err
 	}
@@ -53,5 +49,5 @@ func baseDown(db dbx.Builder) error {
 	collection.ViewRule = types.Pointer("id = @request.auth.id")
 	collection.ListRule = types.Pointer("id = @request.auth.id")
 
-	return daos.New(db).SaveCollection(collection)
+	return app.Save(collection)
 }

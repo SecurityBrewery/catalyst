@@ -8,17 +8,12 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/migrations"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
 )
 
-const webhooksCollection = "webhooks"
+const webhooksCollectionName = "webhooks"
 
 type Webhook struct {
 	ID          string `db:"id"          json:"id"`
@@ -28,58 +23,51 @@ type Webhook struct {
 }
 
 func BindHooks(app core.App) {
-	migrations.Register(func(db dbx.Builder) error {
-		return daos.New(db).SaveCollection(&models.Collection{
-			Name:   webhooksCollection,
-			Type:   models.CollectionTypeBase,
-			System: true,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{
-					Name:     "name",
-					Type:     schema.FieldTypeText,
-					Required: true,
-				},
-				&schema.SchemaField{
-					Name:     "collection",
-					Type:     schema.FieldTypeText,
-					Required: true,
-				},
-				&schema.SchemaField{
-					Name:     "destination",
-					Type:     schema.FieldTypeUrl,
-					Required: true,
-				},
-			),
-		})
+	migrations.Register(func(app core.App) error {
+		webhooksCollection := core.NewBaseCollection(webhooksCollectionName)
+		webhooksCollection.System = true
+		webhooksCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+		webhooksCollection.Fields.Add(&core.TextField{Name: "collection", Required: true})
+		webhooksCollection.Fields.Add(&core.URLField{Name: "destination", Required: true})
+
+		return app.Save(webhooksCollection)
 	}, nil, "1690000000_webhooks.go")
 
-	app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
-		return event(app, "create", e.Collection.Name, e.Record, e.HttpContext)
+	app.OnRecordCreateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := e.Next(); err != nil {
+			return err
+		}
+
+		return event(app, "create", e.Collection.Name, e.Record, e)
 	})
-	app.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
-		return event(app, "update", e.Collection.Name, e.Record, e.HttpContext)
+	app.OnRecordUpdateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := e.Next(); err != nil {
+			return err
+		}
+
+		return event(app, "update", e.Collection.Name, e.Record, e)
 	})
-	app.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error {
-		return event(app, "delete", e.Collection.Name, e.Record, e.HttpContext)
+	app.OnRecordDeleteRequest().BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := e.Next(); err != nil {
+			return err
+		}
+
+		return event(app, "delete", e.Collection.Name, e.Record, e)
 	})
 }
 
 type Payload struct {
-	Action     string         `json:"action"`
-	Collection string         `json:"collection"`
-	Record     *models.Record `json:"record"`
-	Auth       *models.Record `json:"auth,omitempty"`
-	Admin      *models.Admin  `json:"admin,omitempty"`
+	Action     string       `json:"action"`
+	Collection string       `json:"collection"`
+	Record     *core.Record `json:"record"`
+	Auth       *core.Record `json:"auth,omitempty"`
 }
 
-func event(app core.App, event, collection string, record *models.Record, ctx echo.Context) error {
-	auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
-	admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
-
+func event(app core.App, event, collection string, record *core.Record, req *core.RecordRequestEvent) error {
 	var webhooks []Webhook
-	if err := app.Dao().DB().
+	if err := app.DB().
 		Select().
-		From(webhooksCollection).
+		From(webhooksCollectionName).
 		Where(dbx.HashExp{"collection": collection}).
 		All(&webhooks); err != nil {
 		return err
@@ -93,15 +81,14 @@ func event(app core.App, event, collection string, record *models.Record, ctx ec
 		Action:     event,
 		Collection: collection,
 		Record:     record,
-		Auth:       auth,
-		Admin:      admin,
+		Auth:       req.Auth,
 	})
 	if err != nil {
 		return err
 	}
 
 	for _, webhook := range webhooks {
-		if err := sendWebhook(ctx.Request().Context(), webhook, payload); err != nil {
+		if err := sendWebhook(req.Request.Context(), webhook, payload); err != nil {
 			app.Logger().Error("failed to send webhook", "action", event, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination, "error", err.Error())
 		} else {
 			app.Logger().Info("webhook sent", "action", event, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)

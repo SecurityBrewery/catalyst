@@ -3,10 +3,7 @@ package migrations
 import (
 	"fmt"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/types"
 )
 
@@ -21,103 +18,76 @@ const (
 	WebhookCollectionName  = "webhooks"
 	fileCollectionName     = "files"
 
-	UserCollectionName = "_pb_users_auth_"
+	UserCollectionID = "_pb_users_auth_"
 )
 
-func collectionsUp(db dbx.Builder) error {
-	collections := []*models.Collection{
-		internalCollection(&models.Collection{
-			Name: TypeCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "singular", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "plural", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "icon", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "schema", Type: schema.FieldTypeJson, Required: true, Options: &schema.JsonOptions{MaxSize: 50_000}},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: TicketCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "type", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: TypeCollectionName, MaxSelect: types.Pointer(1)}},
-				&schema.SchemaField{Name: "description", Type: schema.FieldTypeText},
-				&schema.SchemaField{Name: "open", Type: schema.FieldTypeBool},
-				&schema.SchemaField{Name: "resolution", Type: schema.FieldTypeText},
-				&schema.SchemaField{Name: "schema", Type: schema.FieldTypeJson, Options: &schema.JsonOptions{MaxSize: 50_000}},
-				&schema.SchemaField{Name: "state", Type: schema.FieldTypeJson, Options: &schema.JsonOptions{MaxSize: 50_000}},
-				&schema.SchemaField{Name: "owner", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: UserCollectionName, MaxSelect: types.Pointer(1)}},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: TaskCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "open", Type: schema.FieldTypeBool},
-				&schema.SchemaField{Name: "owner", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: UserCollectionName, MaxSelect: types.Pointer(1)}},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: CommentCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "author", Type: schema.FieldTypeRelation, Options: &schema.RelationOptions{CollectionId: UserCollectionName, MaxSelect: types.Pointer(1)}},
-				&schema.SchemaField{Name: "message", Type: schema.FieldTypeText, Required: true},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: TimelineCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "time", Type: schema.FieldTypeDate, Required: true},
-				&schema.SchemaField{Name: "message", Type: schema.FieldTypeText, Required: true},
-			),
-		}),
-		internalCollection(&models.Collection{
-			Name: LinkCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "url", Type: schema.FieldTypeUrl, Required: true},
-			),
-		}),
+func collectionsUp(app core.App) error {
+	typeCollection := core.NewBaseCollection(TypeCollectionName)
+	typeCollection.Fields.Add(&core.TextField{Name: "singular", Required: true})
+	typeCollection.Fields.Add(&core.TextField{Name: "plural", Required: true})
+	typeCollection.Fields.Add(&core.TextField{Name: "icon", Required: true})
+	typeCollection.Fields.Add(&core.JSONField{Name: "schema", Required: true, MaxSize: 50_000})
 
-		internalCollection(&models.Collection{
-			Name: fileCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "ticket", Type: schema.FieldTypeRelation, Required: true, Options: &schema.RelationOptions{CollectionId: TicketCollectionName, MaxSelect: types.Pointer(1), CascadeDelete: true}},
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-				&schema.SchemaField{Name: "size", Type: schema.FieldTypeNumber, Required: true},
-				&schema.SchemaField{Name: "blob", Type: schema.FieldTypeFile, Required: true, Options: &schema.FileOptions{MaxSelect: 1, MaxSize: 1024 * 1024 * 100}},
-			),
-		}),
-		{
-			BaseModel: models.BaseModel{
-				Id: FeatureCollectionName,
-			},
-			Name: FeatureCollectionName,
-			Type: models.CollectionTypeBase,
-			Schema: schema.NewSchema(
-				&schema.SchemaField{Name: "name", Type: schema.FieldTypeText, Required: true},
-			),
-			ListRule: types.Pointer("@request.auth.id != ''"),
-			ViewRule: types.Pointer("@request.auth.id != ''"),
-			Indexes: types.JsonArray[string]{
-				fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", FeatureCollectionName),
-			},
-		},
+	ticketCollection := core.NewBaseCollection(TicketCollectionName)
+	ticketCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+	ticketCollection.Fields.Add(&core.RelationField{Name: "type", CollectionId: typeCollection.Id, Required: true})
+	ticketCollection.Fields.Add(&core.TextField{Name: "description"})
+	ticketCollection.Fields.Add(&core.BoolField{Name: "open"})
+	ticketCollection.Fields.Add(&core.TextField{Name: "resolution"})
+	ticketCollection.Fields.Add(&core.JSONField{Name: "schema", MaxSize: 50_000})
+	ticketCollection.Fields.Add(&core.JSONField{Name: "state", MaxSize: 50_000})
+	ticketCollection.Fields.Add(&core.RelationField{Name: "owner", CollectionId: UserCollectionID})
+
+	taskCollection := core.NewBaseCollection(TaskCollectionName)
+	taskCollection.Fields.Add(&core.RelationField{Name: "ticket", CollectionId: ticketCollection.Id, Required: true})
+	taskCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+	taskCollection.Fields.Add(&core.BoolField{Name: "open"})
+	taskCollection.Fields.Add(&core.RelationField{Name: "owner", CollectionId: UserCollectionID})
+
+	commentCollection := core.NewBaseCollection(CommentCollectionName)
+	commentCollection.Fields.Add(&core.RelationField{Name: "ticket", CollectionId: ticketCollection.Id, Required: true})
+	commentCollection.Fields.Add(&core.RelationField{Name: "author", CollectionId: UserCollectionID})
+	commentCollection.Fields.Add(&core.TextField{Name: "message", Required: true})
+
+	timelineCollection := core.NewBaseCollection(TimelineCollectionName)
+	timelineCollection.Fields.Add(&core.RelationField{Name: "ticket", CollectionId: ticketCollection.Id, Required: true})
+	timelineCollection.Fields.Add(&core.DateField{Name: "time", Required: true})
+	timelineCollection.Fields.Add(&core.TextField{Name: "message", Required: true})
+
+	linkCollection := core.NewBaseCollection(LinkCollectionName)
+	linkCollection.Fields.Add(&core.RelationField{Name: "ticket", CollectionId: ticketCollection.Id, Required: true})
+	linkCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+	linkCollection.Fields.Add(&core.URLField{Name: "url", Required: true})
+
+	fileCollection := core.NewBaseCollection(fileCollectionName)
+	fileCollection.Fields.Add(&core.RelationField{Name: "ticket", CollectionId: ticketCollection.Id, Required: true})
+	fileCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+	fileCollection.Fields.Add(&core.NumberField{Name: "size", Required: true})
+	fileCollection.Fields.Add(&core.FileField{Name: "blob", Required: true, MaxSize: 1024 * 1024 * 100})
+
+	featureCollection := core.NewBaseCollection(FeatureCollectionName)
+	featureCollection.Fields.Add(&core.TextField{Name: "name", Required: true})
+	featureCollection.Fields.Add(&core.AutodateField{Name: "created", OnCreate: true})
+	featureCollection.Fields.Add(&core.AutodateField{Name: "updated", OnUpdate: true})
+	featureCollection.ListRule = types.Pointer("@request.auth.id != ''")
+	featureCollection.ViewRule = types.Pointer("@request.auth.id != ''")
+	featureCollection.Indexes = types.JSONArray[string]{
+		fmt.Sprintf("CREATE UNIQUE INDEX `unique_name` ON `%s` (`name`)", FeatureCollectionName),
 	}
 
-	dao := daos.New(db)
+	collections := []*core.Collection{
+		internalCollection(typeCollection),
+		internalCollection(ticketCollection),
+		internalCollection(taskCollection),
+		internalCollection(commentCollection),
+		internalCollection(timelineCollection),
+		internalCollection(linkCollection),
+		internalCollection(fileCollection),
+		featureCollection,
+	}
+
 	for _, c := range collections {
-		if err := dao.SaveCollection(c); err != nil {
+		if err := app.Save(c); err != nil {
 			return err
 		}
 	}
@@ -125,8 +95,10 @@ func collectionsUp(db dbx.Builder) error {
 	return nil
 }
 
-func internalCollection(c *models.Collection) *models.Collection {
-	c.Id = c.Name
+func internalCollection(c *core.Collection) *core.Collection {
+	c.Fields.Add(&core.AutodateField{Name: "created", OnCreate: true})
+	c.Fields.Add(&core.AutodateField{Name: "updated", OnUpdate: true})
+
 	c.ListRule = types.Pointer("@request.auth.id != ''")
 	c.ViewRule = types.Pointer("@request.auth.id != ''")
 	c.CreateRule = types.Pointer("@request.auth.id != ''")
@@ -136,7 +108,7 @@ func internalCollection(c *models.Collection) *models.Collection {
 	return c
 }
 
-func collectionsDown(db dbx.Builder) error {
+func collectionsDown(app core.App) error {
 	collections := []string{
 		fileCollectionName,
 		LinkCollectionName,
@@ -148,15 +120,13 @@ func collectionsDown(db dbx.Builder) error {
 		TypeCollectionName,
 	}
 
-	dao := daos.New(db)
-
 	for _, name := range collections {
-		id, err := dao.FindCollectionByNameOrId(name)
+		id, err := app.FindCollectionByNameOrId(name)
 		if err != nil {
 			return err
 		}
 
-		if err := dao.DeleteCollection(id); err != nil {
+		if err := app.Delete(id); err != nil {
 			return err
 		}
 	}

@@ -23,7 +23,7 @@ func TestReactionsCollection(t *testing.T) {
 						`"totalItems":0`,
 						`"items":[]`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
+					ExpectedEvents: []string{"OnRecordsListRequest"},
 				},
 				{
 					Name:           "Analyst",
@@ -36,7 +36,7 @@ func TestReactionsCollection(t *testing.T) {
 					NotExpectedContent: []string{
 						`"items":[]`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
+					ExpectedEvents: []string{"OnRecordsListRequest"},
 				},
 				{
 					Name:           "Admin",
@@ -49,7 +49,7 @@ func TestReactionsCollection(t *testing.T) {
 					NotExpectedContent: []string{
 						`"items":[]`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
+					ExpectedEvents: []string{"OnRecordsListRequest"},
 				},
 			},
 		},
@@ -74,6 +74,7 @@ func TestReactionsCollection(t *testing.T) {
 					ExpectedContent: []string{
 						`"message":"Failed to create record."`,
 					},
+					ExpectedEvents: []string{"OnRecordCreateRequest"},
 				},
 				{
 					Name:           "Analyst",
@@ -85,11 +86,9 @@ func TestReactionsCollection(t *testing.T) {
 					NotExpectedContent: []string{
 						`"items":[]`,
 					},
-					ExpectedEvents: map[string]int{
-						"OnModelAfterCreate":          1,
-						"OnModelBeforeCreate":         1,
-						"OnRecordAfterCreateRequest":  1,
-						"OnRecordBeforeCreateRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterCreateSuccess",
+						"OnRecordCreateRequest",
 					},
 				},
 				{
@@ -102,11 +101,9 @@ func TestReactionsCollection(t *testing.T) {
 					NotExpectedContent: []string{
 						`"items":[]`,
 					},
-					ExpectedEvents: map[string]int{
-						"OnModelAfterCreate":          1,
-						"OnModelBeforeCreate":         1,
-						"OnRecordAfterCreateRequest":  1,
-						"OnRecordBeforeCreateRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterCreateSuccess",
+						"OnRecordCreateRequest",
 					},
 				},
 			},
@@ -133,7 +130,7 @@ func TestReactionsCollection(t *testing.T) {
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
+					ExpectedEvents: []string{"OnRecordViewRequest"},
 				},
 				{
 					Name:           "Admin",
@@ -142,7 +139,7 @@ func TestReactionsCollection(t *testing.T) {
 					ExpectedContent: []string{
 						`"id":"r_reaction"`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
+					ExpectedEvents: []string{"OnRecordViewRequest"},
 				},
 			},
 		},
@@ -170,11 +167,9 @@ func TestReactionsCollection(t *testing.T) {
 						`"id":"r_reaction"`,
 						`"name":"update"`,
 					},
-					ExpectedEvents: map[string]int{
-						"OnModelAfterUpdate":          1,
-						"OnModelBeforeUpdate":         1,
-						"OnRecordAfterUpdateRequest":  1,
-						"OnRecordBeforeUpdateRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterUpdateSuccess",
+						"OnRecordUpdateRequest",
 					},
 				},
 				{
@@ -185,11 +180,9 @@ func TestReactionsCollection(t *testing.T) {
 						`"id":"r_reaction"`,
 						`"name":"update"`,
 					},
-					ExpectedEvents: map[string]int{
-						"OnModelAfterUpdate":          1,
-						"OnModelBeforeUpdate":         1,
-						"OnRecordAfterUpdateRequest":  1,
-						"OnRecordBeforeUpdateRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterUpdateSuccess",
+						"OnRecordUpdateRequest",
 					},
 				},
 			},
@@ -212,22 +205,18 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusNoContent,
-					ExpectedEvents: map[string]int{
-						"OnModelAfterDelete":          1,
-						"OnModelBeforeDelete":         1,
-						"OnRecordAfterDeleteRequest":  1,
-						"OnRecordBeforeDeleteRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterDeleteSuccess",
+						"OnRecordDeleteRequest",
 					},
 				},
 				{
 					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusNoContent,
-					ExpectedEvents: map[string]int{
-						"OnModelAfterDelete":          1,
-						"OnModelBeforeDelete":         1,
-						"OnRecordAfterDeleteRequest":  1,
-						"OnRecordBeforeDeleteRequest": 1,
+					ExpectedEvents: []string{
+						"OnModelAfterDeleteSuccess",
+						"OnRecordDeleteRequest",
 					},
 				},
 			},

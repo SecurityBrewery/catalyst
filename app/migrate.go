@@ -1,69 +1,19 @@
 package app
 
 import (
-	"strings"
-
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/migrations"
-	"github.com/pocketbase/pocketbase/migrations/logs"
-	"github.com/pocketbase/pocketbase/tools/migrate"
 )
 
-type migration struct {
-	db         *dbx.DB
-	migrations migrate.MigrationsList
-}
-
 func MigrateDBs(app core.App) error {
-	for _, m := range []migration{
-		{db: app.DB(), migrations: migrations.AppMigrations},
-		{db: app.LogsDB(), migrations: logs.LogsMigrations},
-	} {
-		runner, err := migrate.NewRunner(m.db, m.migrations)
-		if err != nil {
-			return err
-		}
-
-		if _, err := runner.Up(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func isIgnored(err error) bool {
-	// this fix ignores some errors that come from upstream migrations.
-	ignoreErrors := []string{
-		"1673167670_multi_match_migrate",
-		"1660821103_add_user_ip_column",
-	}
-
-	for _, ignore := range ignoreErrors {
-		if strings.Contains(err.Error(), ignore) {
-			return true
-		}
-	}
-
-	return false
+	return app.RunAllMigrations()
 }
 
 func MigrateDBsDown(app core.App) error {
-	for _, m := range []migration{
-		{db: app.DB(), migrations: migrations.AppMigrations},
-		{db: app.LogsDB(), migrations: logs.LogsMigrations},
+	for _, m := range []core.MigrationsList{
+		core.AppMigrations,
+		core.SystemMigrations,
 	} {
-		runner, err := migrate.NewRunner(m.db, m.migrations)
-		if err != nil {
-			return err
-		}
-
-		if _, err := runner.Down(len(m.migrations.Items())); err != nil {
-			if isIgnored(err) {
-				continue
-			}
-
+		if _, err := core.NewMigrationsRunner(app, m).Down(len(m.Items())); err != nil {
 			return err
 		}
 	}

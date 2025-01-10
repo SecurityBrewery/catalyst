@@ -1,6 +1,7 @@
 package fakedata
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -8,8 +9,6 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/security"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
@@ -20,7 +19,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(app core.App, userCount, ticketCount int) error {
+func Generate(ctx context.Context, app core.App, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -31,29 +30,29 @@ func Generate(app core.App, userCount, ticketCount int) error {
 
 	records, err := Records(app, userCount, ticketCount)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to generate fake records: %w", err)
 	}
 
 	for _, record := range records {
-		if err := app.Dao().SaveRecord(record); err != nil {
-			return err
+		if err := app.SaveNoValidateWithContext(ctx, record); err != nil {
+			return fmt.Errorf("failed to save fake record: %w", err)
 		}
 	}
 
 	return nil
 }
 
-func Records(app core.App, userCount int, ticketCount int) ([]*models.Record, error) {
-	types, err := app.Dao().FindRecordsByExpr(migrations.TypeCollectionName)
+func Records(app core.App, userCount int, ticketCount int) ([]*core.Record, error) {
+	types, err := app.FindAllRecords(migrations.TypeCollectionName)
 	if err != nil {
 		return nil, err
 	}
 
-	users := userRecords(app.Dao(), userCount)
-	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
-	reactions := reactionRecords(app.Dao())
+	users := userRecords(app, userCount)
+	tickets := ticketRecords(app, users, types, ticketCount)
+	reactions := reactionRecords(app)
 
-	var records []*models.Record
+	var records []*core.Record
 	records = append(records, users...)
 	records = append(records, types...)
 	records = append(records, tickets...)
@@ -62,35 +61,35 @@ func Records(app core.App, userCount int, ticketCount int) ([]*models.Record, er
 	return records, nil
 }
 
-func userRecords(dao *daos.Dao, count int) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionName)
+func userRecords(dao core.App, count int) []*core.Record {
+	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionID)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, count)
+	records := make([]*core.Record, 0, count)
 
 	// create the test user
-	if _, err := dao.FindRecordById(migrations.UserCollectionName, "u_test"); err != nil {
-		record := models.NewRecord(collection)
-		record.SetId("u_test")
-		_ = record.SetUsername("u_test")
-		_ = record.SetPassword("1234567890")
+	if _, err := dao.FindRecordById(migrations.UserCollectionID, "u_test"); err != nil {
+		record := core.NewRecord(collection)
+		record.Id = "u_test"
+		record.Set("username", "u_test")
+		record.SetPassword("1234567890")
 		record.Set("name", gofakeit.Name())
 		record.Set("email", "user@catalyst-soar.com")
-		_ = record.SetVerified(true)
+		record.SetVerified(true)
 
 		records = append(records, record)
 	}
 
 	for range count - 1 {
-		record := models.NewRecord(collection)
-		record.SetId("u_" + security.PseudorandomString(10))
-		_ = record.SetUsername("u_" + security.RandomStringWithAlphabet(5, "123456789"))
-		_ = record.SetPassword("1234567890")
+		record := core.NewRecord(collection)
+		record.Id = "u_" + security.PseudorandomString(10)
+		record.Set("username", "u_"+security.RandomStringWithAlphabet(5, "123456789"))
+		record.SetPassword("1234567890")
 		record.Set("name", gofakeit.Name())
 		record.Set("email", gofakeit.Username()+"@catalyst-soar.com")
-		_ = record.SetVerified(true)
+		record.SetVerified(true)
 
 		records = append(records, record)
 	}
@@ -98,13 +97,13 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 	return records
 }
 
-func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*models.Record {
+func ticketRecords(dao core.App, users, types []*core.Record, count int) []*core.Record {
 	collection, err := dao.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, count)
+	records := make([]*core.Record, 0, count)
 
 	created := time.Now()
 	number := gofakeit.Number(200*count, 300*count)
@@ -113,8 +112,8 @@ func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*m
 		number -= gofakeit.Number(100, 200)
 		created = created.Add(time.Duration(-gofakeit.Number(13, 37)) * time.Hour)
 
-		record := models.NewRecord(collection)
-		record.SetId("t_" + security.PseudorandomString(10))
+		record := core.NewRecord(collection)
+		record.Id = "t_" + security.PseudorandomString(10)
 
 		updated := gofakeit.DateRange(created, time.Now())
 
@@ -124,12 +123,12 @@ func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*m
 		record.Set("updated", updated.Format("2006-01-02T15:04:05Z"))
 
 		record.Set("name", fmt.Sprintf("%s-%d", strings.ToUpper(ticketType.GetString("singular")), number))
-		record.Set("type", ticketType.GetId())
+		record.Set("type", ticketType.Id)
 		record.Set("description", fakeTicketDescription())
 		record.Set("open", gofakeit.Bool())
 		record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
 		record.Set("state", `{"severity":"Medium"}`)
-		record.Set("owner", random(users).GetId())
+		record.Set("owner", random(users).Id)
 
 		records = append(records, record)
 
@@ -143,24 +142,24 @@ func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*m
 	return records
 }
 
-func commentRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) []*models.Record {
+func commentRecords(dao core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
 	commentCollection, err := dao.FindCollectionByNameOrId(migrations.CommentCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, 5)
+	records := make([]*core.Record, 0, 5)
 
 	for range gofakeit.IntN(5) {
 		commentCreated := gofakeit.DateRange(created, time.Now())
 		commentUpdated := gofakeit.DateRange(commentCreated, time.Now())
 
-		commentRecord := models.NewRecord(commentCollection)
-		commentRecord.SetId("c_" + security.PseudorandomString(10))
+		commentRecord := core.NewRecord(commentCollection)
+		commentRecord.Id = "c_" + security.PseudorandomString(10)
 		commentRecord.Set("created", commentCreated.Format("2006-01-02T15:04:05Z"))
 		commentRecord.Set("updated", commentUpdated.Format("2006-01-02T15:04:05Z"))
-		commentRecord.Set("ticket", record.GetId())
-		commentRecord.Set("author", random(users).GetId())
+		commentRecord.Set("ticket", record.Id)
+		commentRecord.Set("author", random(users).Id)
 		commentRecord.Set("message", fakeTicketComment())
 
 		records = append(records, commentRecord)
@@ -169,23 +168,23 @@ func commentRecords(dao *daos.Dao, users []*models.Record, created time.Time, re
 	return records
 }
 
-func timelineRecords(dao *daos.Dao, created time.Time, record *models.Record) []*models.Record {
+func timelineRecords(dao core.App, created time.Time, record *core.Record) []*core.Record {
 	timelineCollection, err := dao.FindCollectionByNameOrId(migrations.TimelineCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, 5)
+	records := make([]*core.Record, 0, 5)
 
 	for range gofakeit.IntN(5) {
 		timelineCreated := gofakeit.DateRange(created, time.Now())
 		timelineUpdated := gofakeit.DateRange(timelineCreated, time.Now())
 
-		timelineRecord := models.NewRecord(timelineCollection)
-		timelineRecord.SetId("tl_" + security.PseudorandomString(10))
+		timelineRecord := core.NewRecord(timelineCollection)
+		timelineRecord.Id = "tl_" + security.PseudorandomString(10)
 		timelineRecord.Set("created", timelineCreated.Format("2006-01-02T15:04:05Z"))
 		timelineRecord.Set("updated", timelineUpdated.Format("2006-01-02T15:04:05Z"))
-		timelineRecord.Set("ticket", record.GetId())
+		timelineRecord.Set("ticket", record.Id)
 		timelineRecord.Set("time", gofakeit.DateRange(created, time.Now()).Format("2006-01-02T15:04:05Z"))
 		timelineRecord.Set("message", fakeTicketTimelineMessage())
 
@@ -195,26 +194,26 @@ func timelineRecords(dao *daos.Dao, created time.Time, record *models.Record) []
 	return records
 }
 
-func taskRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) []*models.Record {
+func taskRecords(dao core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
 	taskCollection, err := dao.FindCollectionByNameOrId(migrations.TaskCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, 5)
+	records := make([]*core.Record, 0, 5)
 
 	for range gofakeit.IntN(5) {
 		taskCreated := gofakeit.DateRange(created, time.Now())
 		taskUpdated := gofakeit.DateRange(taskCreated, time.Now())
 
-		taskRecord := models.NewRecord(taskCollection)
-		taskRecord.SetId("ts_" + security.PseudorandomString(10))
+		taskRecord := core.NewRecord(taskCollection)
+		taskRecord.Id = "ts_" + security.PseudorandomString(10)
 		taskRecord.Set("created", taskCreated.Format("2006-01-02T15:04:05Z"))
 		taskRecord.Set("updated", taskUpdated.Format("2006-01-02T15:04:05Z"))
-		taskRecord.Set("ticket", record.GetId())
+		taskRecord.Set("ticket", record.Id)
 		taskRecord.Set("name", fakeTicketTask())
 		taskRecord.Set("open", gofakeit.Bool())
-		taskRecord.Set("owner", random(users).GetId())
+		taskRecord.Set("owner", random(users).Id)
 
 		records = append(records, taskRecord)
 	}
@@ -222,23 +221,23 @@ func taskRecords(dao *daos.Dao, users []*models.Record, created time.Time, recor
 	return records
 }
 
-func linkRecords(dao *daos.Dao, created time.Time, record *models.Record) []*models.Record {
+func linkRecords(dao core.App, created time.Time, record *core.Record) []*core.Record {
 	linkCollection, err := dao.FindCollectionByNameOrId(migrations.LinkCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	records := make([]*models.Record, 0, 5)
+	records := make([]*core.Record, 0, 5)
 
 	for range gofakeit.IntN(5) {
 		linkCreated := gofakeit.DateRange(created, time.Now())
 		linkUpdated := gofakeit.DateRange(linkCreated, time.Now())
 
-		linkRecord := models.NewRecord(linkCollection)
-		linkRecord.SetId("l_" + security.PseudorandomString(10))
+		linkRecord := core.NewRecord(linkCollection)
+		linkRecord.Id = "l_" + security.PseudorandomString(10)
 		linkRecord.Set("created", linkCreated.Format("2006-01-02T15:04:05Z"))
 		linkRecord.Set("updated", linkUpdated.Format("2006-01-02T15:04:05Z"))
-		linkRecord.Set("ticket", record.GetId())
+		linkRecord.Set("ticket", record.Id)
 		linkRecord.Set("url", gofakeit.URL())
 		linkRecord.Set("name", random([]string{"Blog", "Forum", "Wiki", "Documentation"}))
 
@@ -321,8 +320,8 @@ const (
 	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
 )
 
-func reactionRecords(dao *daos.Dao) []*models.Record {
-	var records []*models.Record
+func reactionRecords(dao core.App) []*core.Record {
+	var records []*core.Record
 
 	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	if err != nil {
@@ -337,8 +336,8 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
-	record := models.NewRecord(collection)
-	record.SetId("w_" + security.PseudorandomString(10))
+	record := core.NewRecord(collection)
+	record.Id = "w_" + security.PseudorandomString(10)
 	record.Set("name", "Create New Ticket")
 	record.Set("trigger", "schedule")
 	record.Set("triggerdata", triggerSchedule)
@@ -355,8 +354,8 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
-	record = models.NewRecord(collection)
-	record.SetId("w_" + security.PseudorandomString(10))
+	record = core.NewRecord(collection)
+	record.Id = "w_" + security.PseudorandomString(10)
 	record.Set("name", "Alert Ingest Webhook")
 	record.Set("trigger", "webhook")
 	record.Set("triggerdata", triggerWebhook)
@@ -373,8 +372,8 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		panic(err)
 	}
 
-	record = models.NewRecord(collection)
-	record.SetId("w_" + security.PseudorandomString(10))
+	record = core.NewRecord(collection)
+	record.Id = "w_" + security.PseudorandomString(10)
 	record.Set("name", "Assign new Tickets")
 	record.Set("trigger", "hook")
 	record.Set("triggerdata", triggerHook)

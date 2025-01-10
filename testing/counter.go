@@ -34,3 +34,10 @@ func (c *Counter) Count(name string) int {
 
 	return c.counts[name]
 }
+
+func (c *Counter) Counts() map[string]int {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
+	return c.counts
+}

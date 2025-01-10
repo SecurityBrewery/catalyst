@@ -7,13 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/tools/router"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
@@ -27,31 +24,31 @@ type Webhook struct {
 
 const prefix = "/reaction/"
 
-func BindHooks(pb *pocketbase.PocketBase) {
-	pb.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Any(prefix+"*", handle(e.App))
+func BindHooks(app core.App) {
+	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+		e.Router.Any(prefix, handle(e.App))
 
-		return nil
+		return e.Next()
 	})
 }
 
-func handle(app core.App) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		record, payload, apiErr := parseRequest(app.Dao(), c.Request())
+func handle(app core.App) func(e *core.RequestEvent) error {
+	return func(e *core.RequestEvent) error {
+		record, payload, apiErr := parseRequest(app, e.Request)
 		if apiErr != nil {
 			return apiErr
 		}
 
-		output, err := action.Run(c.Request().Context(), app, record.GetString("action"), record.GetString("actiondata"), string(payload))
+		output, err := action.Run(e.Request.Context(), app, record.GetString("action"), record.GetString("actiondata"), string(payload))
 		if err != nil {
 			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
 		}
 
-		return writeOutput(c, output)
+		return writeOutput(e, output)
 	}
 }
 
-func parseRequest(dao *daos.Dao, r *http.Request) (*models.Record, []byte, *apis.ApiError) {
+func parseRequest(dao core.App, r *http.Request) (*core.Record, []byte, *router.ApiError) {
 	if !strings.HasPrefix(r.URL.Path, prefix) {
 		return nil, nil, apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
 	}
@@ -96,8 +93,8 @@ func parseRequest(dao *daos.Dao, r *http.Request) (*models.Record, []byte, *apis
 	return record, payload, nil
 }
 
-func findByWebhookTrigger(dao *daos.Dao, path string) (*models.Record, *Webhook, bool, error) {
-	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "webhook"})
+func findByWebhookTrigger(app core.App, path string) (*core.Record, *Webhook, bool, error) {
+	records, err := app.FindAllRecords(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "webhook"})
 	if err != nil {
 		return nil, nil, false, err
 	}
@@ -120,12 +117,12 @@ func findByWebhookTrigger(dao *daos.Dao, path string) (*models.Record, *Webhook,
 	return nil, nil, false, nil
 }
 
-func writeOutput(c echo.Context, output []byte) error {
+func writeOutput(e *core.RequestEvent, output []byte) error {
 	var catalystResponse webhook.Response
 	if err := json.Unmarshal(output, &catalystResponse); err == nil && catalystResponse.StatusCode != 0 {
 		for key, values := range catalystResponse.Headers {
 			for _, value := range values {
-				c.Response().Header().Add(key, value)
+				e.Response.Header().Add(key, value)
 			}
 		}
 
@@ -140,8 +137,8 @@ func writeOutput(c echo.Context, output []byte) error {
 	}
 
 	if IsJSON(output) {
-		return c.JSON(http.StatusOK, json.RawMessage(output))
+		return e.JSON(http.StatusOK, json.RawMessage(output))
 	}
 
-	return c.String(http.StatusOK, string(output))
+	return e.String(http.StatusOK, string(output))
 }
