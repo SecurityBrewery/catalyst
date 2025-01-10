@@ -48,14 +48,14 @@ func handle(app core.App) func(e *core.RequestEvent) error {
 	}
 }
 
-func parseRequest(dao core.App, r *http.Request) (*core.Record, []byte, *router.ApiError) {
+func parseRequest(app core.App, r *http.Request) (*core.Record, []byte, *router.ApiError) {
 	if !strings.HasPrefix(r.URL.Path, prefix) {
 		return nil, nil, apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
 	}
 
 	reactionName := strings.TrimPrefix(r.URL.Path, prefix)
 
-	record, trigger, found, err := findByWebhookTrigger(dao, reactionName)
+	record, trigger, found, err := findByWebhookTrigger(app, reactionName)
 	if err != nil {
 		return nil, nil, apis.NewNotFoundError(err.Error(), nil)
 	}

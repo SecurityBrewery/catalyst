@@ -87,8 +87,8 @@ func runHook(ctx context.Context, app core.App, collection, event string, record
 	return errs
 }
 
-func findByHookTrigger(dao core.App, collection, event string) ([]*core.Record, error) {
-	records, err := dao.FindAllRecords(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
+func findByHookTrigger(app core.App, collection, event string) ([]*core.Record, error) {
+	records, err := app.FindAllRecords(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "hook"})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find hook reaction: %w", err)
 	}

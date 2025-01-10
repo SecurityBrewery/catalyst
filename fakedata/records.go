@@ -61,8 +61,8 @@ func Records(app core.App, userCount int, ticketCount int) ([]*core.Record, erro
 	return records, nil
 }
 
-func userRecords(dao core.App, count int) []*core.Record {
-	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionID)
+func userRecords(app core.App, count int) []*core.Record {
+	collection, err := app.FindCollectionByNameOrId(migrations.UserCollectionID)
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +70,7 @@ func userRecords(dao core.App, count int) []*core.Record {
 	records := make([]*core.Record, 0, count)
 
 	// create the test user
-	if _, err := dao.FindRecordById(migrations.UserCollectionID, "u_test"); err != nil {
+	if _, err := app.FindRecordById(migrations.UserCollectionID, "u_test"); err != nil {
 		record := core.NewRecord(collection)
 		record.Id = "u_test"
 		record.Set("username", "u_test")
@@ -97,8 +97,8 @@ func userRecords(dao core.App, count int) []*core.Record {
 	return records
 }
 
-func ticketRecords(dao core.App, users, types []*core.Record, count int) []*core.Record {
-	collection, err := dao.FindCollectionByNameOrId(migrations.TicketCollectionName)
+func ticketRecords(app core.App, users, types []*core.Record, count int) []*core.Record {
+	collection, err := app.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -133,17 +133,17 @@ func ticketRecords(dao core.App, users, types []*core.Record, count int) []*core
 		records = append(records, record)
 
 		// Add comments
-		records = append(records, commentRecords(dao, users, created, record)...)
-		records = append(records, timelineRecords(dao, created, record)...)
-		records = append(records, taskRecords(dao, users, created, record)...)
-		records = append(records, linkRecords(dao, created, record)...)
+		records = append(records, commentRecords(app, users, created, record)...)
+		records = append(records, timelineRecords(app, created, record)...)
+		records = append(records, taskRecords(app, users, created, record)...)
+		records = append(records, linkRecords(app, created, record)...)
 	}
 
 	return records
 }
 
-func commentRecords(dao core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
-	commentCollection, err := dao.FindCollectionByNameOrId(migrations.CommentCollectionName)
+func commentRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
+	commentCollection, err := app.FindCollectionByNameOrId(migrations.CommentCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -168,8 +168,8 @@ func commentRecords(dao core.App, users []*core.Record, created time.Time, recor
 	return records
 }
 
-func timelineRecords(dao core.App, created time.Time, record *core.Record) []*core.Record {
-	timelineCollection, err := dao.FindCollectionByNameOrId(migrations.TimelineCollectionName)
+func timelineRecords(app core.App, created time.Time, record *core.Record) []*core.Record {
+	timelineCollection, err := app.FindCollectionByNameOrId(migrations.TimelineCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -194,8 +194,8 @@ func timelineRecords(dao core.App, created time.Time, record *core.Record) []*co
 	return records
 }
 
-func taskRecords(dao core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
-	taskCollection, err := dao.FindCollectionByNameOrId(migrations.TaskCollectionName)
+func taskRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
+	taskCollection, err := app.FindCollectionByNameOrId(migrations.TaskCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -221,8 +221,8 @@ func taskRecords(dao core.App, users []*core.Record, created time.Time, record *
 	return records
 }
 
-func linkRecords(dao core.App, created time.Time, record *core.Record) []*core.Record {
-	linkCollection, err := dao.FindCollectionByNameOrId(migrations.LinkCollectionName)
+func linkRecords(app core.App, created time.Time, record *core.Record) []*core.Record {
+	linkCollection, err := app.FindCollectionByNameOrId(migrations.LinkCollectionName)
 	if err != nil {
 		panic(err)
 	}
@@ -320,10 +320,10 @@ const (
 	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
 )
 
-func reactionRecords(dao core.App) []*core.Record {
+func reactionRecords(app core.App) []*core.Record {
 	var records []*core.Record
 
-	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionCollectionName)
+	collection, err := app.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	if err != nil {
 		panic(err)
 	}
