@@ -18,6 +18,8 @@ Catalyst is an incident response platform.
 It can help to automate your alert handling and incident response procedures.
 
 ## Features
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSecurityBrewery%2Fcatalyst.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSecurityBrewery%2Fcatalyst?ref=badge_shield)
+
 
 ### Ticket (Alert & Incident) Management
 
@@ -85,3 +87,6 @@ Custom fields can be added to ticket types and are then available for all ticket
 ### More
 
 Catalyst supports a lot more features like: Links, Files, or Comments on tickets.
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSecurityBrewery%2Fcatalyst.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSecurityBrewery%2Fcatalyst?ref=badge_large)
