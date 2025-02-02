@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/types"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
@@ -41,8 +40,8 @@ func defaultData() map[string]map[string]map[string]any {
 				"type":        "alert",
 				"description": "Phishing email reported by several employees.",
 				"open":        true,
-				"schema":      types.JsonRaw(`{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`),
-				"state":       types.JsonRaw(`{"severity":"Medium"}`),
+				"schema":      types.JSONRaw(`{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`),
+				"state":       types.JSONRaw(`{"severity":"Medium"}`),
 				"owner":       "u_test",
 			},
 		},
@@ -89,19 +88,19 @@ func defaultData() map[string]map[string]map[string]any {
 				"updated":     dateTime(reactionUpdated),
 				"name":        "Create New Ticket",
 				"trigger":     "schedule",
-				"triggerdata": types.JsonRaw(triggerSchedule),
+				"triggerdata": types.JSONRaw(triggerSchedule),
 				"action":      "python",
-				"actiondata":  types.JsonRaw(createTicketActionData),
+				"actiondata":  types.JSONRaw(createTicketActionData),
 			},
 		},
 	}
 }
 
 func GenerateDefaultData(app core.App) error {
-	var records []*models.Record
+	var records []*core.Record
 
 	// users
-	userRecord, err := testUser(app.Dao())
+	userRecord, err := testUser(app)
 	if err != nil {
 		return err
 	}
@@ -110,14 +109,14 @@ func GenerateDefaultData(app core.App) error {
 
 	// records
 	for collectionName, collectionRecords := range defaultData() {
-		collection, err := app.Dao().FindCollectionByNameOrId(collectionName)
+		collection, err := app.FindCollectionByNameOrId(collectionName)
 		if err != nil {
 			return err
 		}
 
 		for id, fields := range collectionRecords {
-			record := models.NewRecord(collection)
-			record.SetId(id)
+			record := core.NewRecord(collection)
+			record.Id = id
 
 			for key, value := range fields {
 				record.Set(key, value)
@@ -128,7 +127,7 @@ func GenerateDefaultData(app core.App) error {
 	}
 
 	for _, record := range records {
-		if err := app.Dao().SaveRecord(record); err != nil {
+		if err := app.Save(record); err != nil {
 			return err
 		}
 	}
@@ -138,7 +137,7 @@ func GenerateDefaultData(app core.App) error {
 
 func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 	// users
-	userRecord, err := app.Dao().FindRecordById(migrations.UserCollectionName, "u_test")
+	userRecord, err := app.FindRecordById(migrations.UserCollectionID, "u_test")
 	if err != nil {
 		return fmt.Errorf("failed to find user record: %w", err)
 	}
@@ -147,8 +146,8 @@ func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 		return errors.New("user not found")
 	}
 
-	if userRecord.Username() != "u_test" {
-		return fmt.Errorf(`username does not match: got %q, want "u_test"`, userRecord.Username())
+	if userRecord.Get("username") != "u_test" {
+		return fmt.Errorf(`username does not match: got %q, want "u_test"`, userRecord.Get("username"))
 	}
 
 	if !userRecord.ValidatePassword("1234567890") {
@@ -170,7 +169,7 @@ func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 	// records
 	for collectionName, collectionRecords := range defaultData() {
 		for id, fields := range collectionRecords {
-			record, err := app.Dao().FindRecordById(collectionName, id)
+			record, err := app.FindRecordById(collectionName, id)
 			if err != nil {
 				return fmt.Errorf("failed to find record %s: %w", id, err)
 			}
@@ -182,7 +181,7 @@ func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 			for key, value := range fields {
 				got := record.Get(key)
 
-				if wantJSON, ok := value.(types.JsonRaw); ok {
+				if wantJSON, ok := value.(types.JSONRaw); ok {
 					if err := compareJSON(got, wantJSON); err != nil {
 						return fmt.Errorf("record field %q does not match: %w", key, err)
 					}
@@ -200,8 +199,8 @@ func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 	return nil
 }
 
-func compareJSON(got any, wantJSON types.JsonRaw) error {
-	gotJSON, ok := got.(types.JsonRaw)
+func compareJSON(got any, wantJSON types.JSONRaw) error {
+	gotJSON, ok := got.(types.JSONRaw)
 	if !ok {
 		return fmt.Errorf("got %T, want %T", got, wantJSON)
 	}

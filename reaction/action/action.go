@@ -6,10 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tokens"
-	"github.com/pocketbase/pocketbase/tools/security"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
@@ -29,7 +26,7 @@ func Run(ctx context.Context, app core.App, actionName, actionData, payload stri
 		}
 
 		a.SetEnv([]string{
-			"CATALYST_APP_URL=" + app.Settings().Meta.AppUrl,
+			"CATALYST_APP_URL=" + app.Settings().Meta.AppURL,
 			"CATALYST_TOKEN=" + token,
 		})
 	}
@@ -67,18 +64,10 @@ func decode(actionName, actionData string) (action, error) {
 }
 
 func systemToken(app core.App) (string, error) {
-	authRecord, err := app.Dao().FindAuthRecordByUsername(migrations.UserCollectionName, migrations.SystemUserID)
+	authRecord, err := app.FindRecordById(migrations.UserCollectionID, migrations.SystemUserID)
 	if err != nil {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return security.NewJWT(
-		jwt.MapClaims{
-			"id":           authRecord.Id,
-			"type":         tokens.TypeAuthRecord,
-			"collectionId": authRecord.Collection().Id,
-		},
-		authRecord.TokenKey()+app.Settings().RecordAuthToken.Secret,
-		int64(time.Second*60),
-	)
+	return authRecord.NewStaticAuthToken(time.Second * 60)
 }

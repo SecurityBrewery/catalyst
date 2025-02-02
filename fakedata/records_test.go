@@ -1,6 +1,7 @@
 package fakedata_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,6 +29,6 @@ func TestGenerate(t *testing.T) {
 	app, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
-	err := fakedata.Generate(app, 0, 0)
+	err := fakedata.Generate(context.Background(), app, 0, 0)
 	require.NoError(t, err)
 }

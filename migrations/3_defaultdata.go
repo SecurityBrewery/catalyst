@@ -3,17 +3,13 @@ package migrations
 import (
 	"encoding/json"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/core"
 )
 
-func defaultDataUp(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	for _, records := range [][]*models.Record{typeRecords(dao)} {
+func defaultDataUp(app core.App) error {
+	for _, records := range [][]*core.Record{typeRecords(app)} {
 		for _, record := range records {
-			if err := dao.SaveRecord(record); err != nil {
+			if err := app.SaveNoValidate(record); err != nil {
 				return err
 			}
 		}
@@ -22,16 +18,16 @@ func defaultDataUp(db dbx.Builder) error {
 	return nil
 }
 
-func typeRecords(dao *daos.Dao) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(TypeCollectionName)
+func typeRecords(app core.App) []*core.Record {
+	collection, err := app.FindCollectionByNameOrId(TypeCollectionName)
 	if err != nil {
 		panic(err)
 	}
 
-	var records []*models.Record
+	var records []*core.Record
 
-	record := models.NewRecord(collection)
-	record.SetId("incident")
+	record := core.NewRecord(collection)
+	record.Id = "incident"
 	record.Set("singular", "Incident")
 	record.Set("plural", "Incidents")
 	record.Set("icon", "Flame")
@@ -48,8 +44,8 @@ func typeRecords(dao *daos.Dao) []*models.Record {
 
 	records = append(records, record)
 
-	record = models.NewRecord(collection)
-	record.SetId("alert")
+	record = core.NewRecord(collection)
+	record.Id = "alert"
 	record.Set("singular", "Alert")
 	record.Set("plural", "Alerts")
 	record.Set("icon", "AlertTriangle")

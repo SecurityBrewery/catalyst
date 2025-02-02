@@ -3,26 +3,27 @@ package migrations
 import (
 	"fmt"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models/schema"
+	"github.com/pocketbase/pocketbase/core"
 )
 
-func reactionsUpdateUp(db dbx.Builder) error {
-	dao := daos.New(db)
-
+func reactionsUpdateUp(app core.App) error {
 	triggers := []string{"webhook", "hook", "schedule"}
 
-	col, err := dao.FindCollectionByNameOrId(ReactionCollectionName)
+	col, err := app.FindCollectionByNameOrId(ReactionCollectionName)
 	if err != nil {
 		return fmt.Errorf("failed to find collection %s: %w", ReactionCollectionName, err)
 	}
 
-	field := col.Schema.GetFieldByName("trigger")
+	field := col.Fields.GetByName("trigger")
 
-	field.Options = &schema.SelectOptions{MaxSelect: 1, Values: triggers}
+	selectField, ok := field.(*core.SelectField)
+	if !ok {
+		return fmt.Errorf("field %s is not a select field", field.GetName())
+	}
 
-	col.Schema.AddField(field)
+	selectField.Values = triggers
 
-	return dao.SaveCollection(col)
+	col.Fields.Add(field)
+
+	return app.Save(col)
 }

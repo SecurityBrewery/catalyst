@@ -1,8 +1,7 @@
 package migrations
 
 import (
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 const searchViewName = "ticket_search"
@@ -33,17 +32,15 @@ LEFT JOIN users ON users.id = tickets.owner
 GROUP BY tickets.id
 `
 
-func searchViewUp(db dbx.Builder) error {
-	return daos.New(db).SaveCollection(internalView(searchViewName, searchViewQuery))
+func searchViewUp(app core.App) error {
+	return app.Save(internalView(searchViewName, searchViewQuery))
 }
 
-func searchViewDown(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	id, err := dao.FindCollectionByNameOrId(searchViewName)
+func searchViewDown(app core.App) error {
+	id, err := app.FindCollectionByNameOrId(searchViewName)
 	if err != nil {
 		return err
 	}
 
-	return dao.DeleteCollection(id)
+	return app.Delete(id)
 }

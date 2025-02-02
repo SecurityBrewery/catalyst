@@ -85,6 +85,7 @@ func TestHookReactions(t *testing.T) {
 				URL:            "/api/collections/tickets/records",
 				Body: s(map[string]any{
 					"name": "test",
+					"type": "incident",
 				}),
 			},
 			userTests: []UserTest{
@@ -101,11 +102,9 @@ func TestHookReactions(t *testing.T) {
 						`"collectionName":"tickets"`,
 						`"name":"test"`,
 					},
-					ExpectedEvents: map[string]int{
-						"OnModelAfterCreate":          1,
-						"OnModelBeforeCreate":         1,
-						"OnRecordAfterCreateRequest":  1,
-						"OnRecordBeforeCreateRequest": 1,
+					ExpectedEvents: []string{
+						"OnRecordCreateRequest",
+						"OnModelAfterCreateSuccess",
 					},
 				},
 				// {

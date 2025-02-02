@@ -3,7 +3,6 @@ package testing
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -28,7 +27,7 @@ type UserTest struct {
 	ExpectedStatus     int
 	ExpectedContent    []string
 	NotExpectedContent []string
-	ExpectedEvents     map[string]int
+	ExpectedEvents     []string
 }
 
 type catalystTest struct {
@@ -42,56 +41,67 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	baseApp, counter, baseAppCleanup := App(t)
 	defer baseAppCleanup()
 
-	server, err := apis.InitApi(baseApp)
-	require.NoError(t, err)
+	server, err := apis.NewRouter(baseApp)
+	require.NoErrorf(t, err, "failed to create router: %v", err)
 
-	if err := baseApp.OnBeforeServe().Trigger(&core.ServeEvent{
+	err = baseApp.OnServe().Trigger(&core.ServeEvent{
 		App:    baseApp,
 		Router: server,
-	}); err != nil {
-		t.Fatal(fmt.Errorf("failed to trigger OnBeforeServe: %w", err))
-	}
+	}, func(event *core.ServeEvent) error {
+		recorder := httptest.NewRecorder()
+		body := bytes.NewBufferString(baseTest.Body)
+		req := httptest.NewRequest(baseTest.Method, baseTest.URL, body)
 
-	recorder := httptest.NewRecorder()
-	body := bytes.NewBufferString(baseTest.Body)
-	req := httptest.NewRequest(baseTest.Method, baseTest.URL, body)
+		for k, v := range baseTest.RequestHeaders {
+			req.Header.Set(k, v)
+		}
 
-	for k, v := range baseTest.RequestHeaders {
-		req.Header.Set(k, v)
-	}
+		if userTest.AuthRecord != "" {
+			token, err := generateRecordToken(t, baseApp, userTest.AuthRecord)
+			require.NoErrorf(t, err, "failed to generate record token: %v", err)
 
-	if userTest.AuthRecord != "" {
-		token, err := generateRecordToken(t, baseApp, userTest.AuthRecord)
-		require.NoError(t, err)
+			req.Header.Set("Authorization", token)
+		}
 
-		req.Header.Set("Authorization", token)
-	}
+		if userTest.Admin != "" {
+			token, err := generateAdminToken(t, baseApp, userTest.Admin)
+			require.NoErrorf(t, err, "failed to generate admin token: %v", err)
 
-	if userTest.Admin != "" {
-		token, err := generateAdminToken(t, baseApp, userTest.Admin)
-		require.NoError(t, err)
+			req.Header.Set("Authorization", token)
+		}
 
-		req.Header.Set("Authorization", token)
-	}
+		mux, err := event.Router.BuildMux()
+		require.NoErrorf(t, err, "failed to build mux: %v", err)
 
-	server.ServeHTTP(recorder, req)
+		mux.ServeHTTP(recorder, req)
 
-	res := recorder.Result()
-	defer res.Body.Close()
+		res := recorder.Result()
+		defer res.Body.Close()
 
-	assert.Equal(t, userTest.ExpectedStatus, res.StatusCode)
+		assert.Equal(t, userTest.ExpectedStatus, res.StatusCode)
 
-	for _, expectedContent := range userTest.ExpectedContent {
-		assert.Contains(t, recorder.Body.String(), expectedContent)
-	}
+		for _, expectedContent := range userTest.ExpectedContent {
+			assert.Containsf(t, recorder.Body.String(), expectedContent, "expected content not found: %s", expectedContent)
+		}
 
-	for _, notExpectedContent := range userTest.NotExpectedContent {
-		assert.NotContains(t, recorder.Body.String(), notExpectedContent)
-	}
+		for _, notExpectedContent := range userTest.NotExpectedContent {
+			assert.NotContainsf(t, recorder.Body.String(), notExpectedContent, "unexpected content found: %s", notExpectedContent)
+		}
 
-	for event, count := range userTest.ExpectedEvents {
-		assert.Equal(t, count, counter.Count(event))
-	}
+		var seenEvents []string
+
+		for name, count := range counter.Counts() {
+			if count > 0 {
+				seenEvents = append(seenEvents, name)
+			}
+		}
+
+		assert.ElementsMatchf(t, userTest.ExpectedEvents, seenEvents, "expected events not found: %v", userTest.ExpectedEvents)
+
+		return nil
+	})
+
+	require.NoErrorf(t, err, "failed to trigger serve event: %v", err)
 }
 
 func b(data map[string]any) []byte {

@@ -1,37 +1,31 @@
 package migrations
 
 import (
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 const SystemUserID = "system"
 
-func systemuserUp(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	collection, err := dao.FindCollectionByNameOrId(UserCollectionName)
+func systemuserUp(app core.App) error {
+	collection, err := app.FindCollectionByNameOrId(UserCollectionID)
 	if err != nil {
 		return err
 	}
 
-	record := models.NewRecord(collection)
-	record.SetId(SystemUserID)
+	record := core.NewRecord(collection)
+	record.Id = SystemUserID
 	record.Set("name", "system")
 	record.Set("username", "system")
 	record.Set("verified", true)
 
-	return dao.SaveRecord(record)
+	return app.SaveNoValidate(record)
 }
 
-func systemuserDown(db dbx.Builder) error {
-	dao := daos.New(db)
-
-	record, err := dao.FindRecordById(UserCollectionName, SystemUserID)
+func systemuserDown(app core.App) error {
+	record, err := app.FindRecordById(UserCollectionID, SystemUserID)
 	if err != nil {
 		return err
 	}
 
-	return dao.DeleteRecord(record)
+	return app.Delete(record)
 }

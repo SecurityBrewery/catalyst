@@ -8,10 +8,7 @@ import (
 	"time"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/cron"
 	"go.uber.org/multierr"
 
@@ -23,7 +20,7 @@ type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func Start(pb *pocketbase.PocketBase) {
+func Start(app core.App) {
 	scheduler := cron.New()
 
 	if err := scheduler.Add("reactions", "* * * * *", func() {
@@ -31,7 +28,7 @@ func Start(pb *pocketbase.PocketBase) {
 
 		moment := cron.NewMoment(time.Now())
 
-		if err := runSchedule(ctx, pb.App, moment); err != nil {
+		if err := runSchedule(ctx, app, moment); err != nil {
 			slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
 		}
 	}); err != nil {
@@ -44,7 +41,7 @@ func Start(pb *pocketbase.PocketBase) {
 func runSchedule(ctx context.Context, app core.App, moment *cron.Moment) error {
 	var errs error
 
-	records, err := findByScheduleTrigger(app.Dao(), moment)
+	records, err := findByScheduleTrigger(app, moment)
 	if err != nil {
 		errs = multierr.Append(errs, fmt.Errorf("failed to find schedule reaction: %w", err))
 	}
@@ -63,8 +60,8 @@ func runSchedule(ctx context.Context, app core.App, moment *cron.Moment) error {
 	return errs
 }
 
-func findByScheduleTrigger(dao *daos.Dao, moment *cron.Moment) ([]*models.Record, error) {
-	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "schedule"})
+func findByScheduleTrigger(app core.App, moment *cron.Moment) ([]*core.Record, error) {
+	records, err := app.FindAllRecords(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "schedule"})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find schedule reaction: %w", err)
 	}
@@ -75,7 +72,7 @@ func findByScheduleTrigger(dao *daos.Dao, moment *cron.Moment) ([]*models.Record
 
 	var errs error
 
-	var matchedRecords []*models.Record
+	var matchedRecords []*core.Record
 
 	for _, record := range records {
 		var schedule Schedule

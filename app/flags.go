@@ -5,13 +5,12 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
 
 	"github.com/SecurityBrewery/catalyst/migrations"
 )
 
 func HasFlag(app core.App, flag string) bool {
-	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName, dbx.HashExp{"name": flag})
+	records, err := app.FindAllRecords(migrations.FeatureCollectionName, dbx.HashExp{"name": flag})
 	if err != nil {
 		app.Logger().Error(err.Error())
 
@@ -28,7 +27,7 @@ func HasFlag(app core.App, flag string) bool {
 }
 
 func Flags(app core.App) ([]string, error) {
-	records, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
+	records, err := app.FindAllRecords(migrations.FeatureCollectionName)
 	if err != nil {
 		return nil, err
 	}
@@ -43,12 +42,12 @@ func Flags(app core.App) ([]string, error) {
 }
 
 func SetFlags(app core.App, args []string) error {
-	featureCollection, err := app.Dao().FindCollectionByNameOrId(migrations.FeatureCollectionName)
+	featureCollection, err := app.FindCollectionByNameOrId(migrations.FeatureCollectionName)
 	if err != nil {
 		return err
 	}
 
-	featureRecords, err := app.Dao().FindRecordsByExpr(migrations.FeatureCollectionName)
+	featureRecords, err := app.FindAllRecords(migrations.FeatureCollectionName)
 	if err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func SetFlags(app core.App, args []string) error {
 	for _, featureRecord := range featureRecords {
 		// remove feature flags that are not in the args
 		if !slices.Contains(args, featureRecord.GetString("name")) {
-			if err := app.Dao().DeleteRecord(featureRecord); err != nil {
+			if err := app.Delete(featureRecord); err != nil {
 				return err
 			}
 
@@ -74,10 +73,10 @@ func SetFlags(app core.App, args []string) error {
 		}
 
 		// add feature flags that are not in the args
-		record := models.NewRecord(featureCollection)
+		record := core.NewRecord(featureCollection)
 		record.Set("name", arg)
 
-		if err := app.Dao().SaveRecord(record); err != nil {
+		if err := app.Save(record); err != nil {
 			return err
 		}
 	}
