@@ -49,38 +49,45 @@ func Records(app core.App, userCount int, ticketCount int) ([]*models.Record, er
 		return nil, err
 	}
 
-	users := userRecords(app.Dao(), userCount)
-	tickets := ticketRecords(app.Dao(), users, types, ticketCount)
-	reactions := reactionRecords(app.Dao())
+	users, err := userRecords(app.Dao(), userCount)
+	if err != nil {
+		return nil, err
+	}
+
+	tickets, err := ticketRecords(app.Dao(), users, types, ticketCount)
+	if err != nil {
+		return nil, err
+	}
+
+	reactions, err := reactionRecords(app.Dao())
+	if err != nil {
+		return nil, err
+	}
 
 	var records []*models.Record
 	records = append(records, users...)
-	records = append(records, types...)
 	records = append(records, tickets...)
 	records = append(records, reactions...)
 
 	return records, nil
 }
 
-func userRecords(dao *daos.Dao, count int) []*models.Record {
-	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionName)
-	if err != nil {
-		panic(err)
-	}
-
+func userRecords(dao *daos.Dao, count int) ([]*models.Record, error) {
 	records := make([]*models.Record, 0, count)
 
 	// create the test user
 	if _, err := dao.FindRecordById(migrations.UserCollectionName, "u_test"); err != nil {
-		record := models.NewRecord(collection)
-		record.SetId("u_test")
-		_ = record.SetUsername("u_test")
-		_ = record.SetPassword("1234567890")
-		record.Set("name", gofakeit.Name())
-		record.Set("email", "user@catalyst-soar.com")
-		_ = record.SetVerified(true)
+		testUser, err := testUser(dao)
+		if err != nil {
+			return nil, err
+		}
 
-		records = append(records, record)
+		records = append(records, testUser)
+	}
+
+	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionName)
+	if err != nil {
+		return nil, err
 	}
 
 	for range count - 1 {
@@ -95,13 +102,30 @@ func userRecords(dao *daos.Dao, count int) []*models.Record {
 		records = append(records, record)
 	}
 
-	return records
+	return records, nil
 }
 
-func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*models.Record {
+func testUser(dao *daos.Dao) (*models.Record, error) {
+	collection, err := dao.FindCollectionByNameOrId(migrations.UserCollectionName)
+	if err != nil {
+		return nil, err
+	}
+
+	record := models.NewRecord(collection)
+	record.SetId("u_test")
+	_ = record.SetUsername("u_test")
+	_ = record.SetPassword("1234567890")
+	record.Set("name", gofakeit.Name())
+	record.Set("email", "user@catalyst-soar.com")
+	_ = record.SetVerified(true)
+
+	return record, nil
+}
+
+func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) ([]*models.Record, error) {
 	collection, err := dao.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*models.Record, 0, count)
@@ -134,19 +158,42 @@ func ticketRecords(dao *daos.Dao, users, types []*models.Record, count int) []*m
 		records = append(records, record)
 
 		// Add comments
-		records = append(records, commentRecords(dao, users, created, record)...)
-		records = append(records, timelineRecords(dao, created, record)...)
-		records = append(records, taskRecords(dao, users, created, record)...)
-		records = append(records, linkRecords(dao, created, record)...)
+		comments, err := commentRecords(dao, users, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, comments...)
+
+		timelines, err := timelineRecords(dao, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, timelines...)
+
+		tasks, err := taskRecords(dao, users, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, tasks...)
+
+		links, err := linkRecords(dao, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, links...)
 	}
 
-	return records
+	return records, nil
 }
 
-func commentRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) []*models.Record {
+func commentRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) ([]*models.Record, error) {
 	commentCollection, err := dao.FindCollectionByNameOrId(migrations.CommentCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*models.Record, 0, 5)
@@ -166,13 +213,13 @@ func commentRecords(dao *daos.Dao, users []*models.Record, created time.Time, re
 		records = append(records, commentRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func timelineRecords(dao *daos.Dao, created time.Time, record *models.Record) []*models.Record {
+func timelineRecords(dao *daos.Dao, created time.Time, record *models.Record) ([]*models.Record, error) {
 	timelineCollection, err := dao.FindCollectionByNameOrId(migrations.TimelineCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*models.Record, 0, 5)
@@ -192,13 +239,13 @@ func timelineRecords(dao *daos.Dao, created time.Time, record *models.Record) []
 		records = append(records, timelineRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func taskRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) []*models.Record {
+func taskRecords(dao *daos.Dao, users []*models.Record, created time.Time, record *models.Record) ([]*models.Record, error) {
 	taskCollection, err := dao.FindCollectionByNameOrId(migrations.TaskCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*models.Record, 0, 5)
@@ -219,13 +266,13 @@ func taskRecords(dao *daos.Dao, users []*models.Record, created time.Time, recor
 		records = append(records, taskRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func linkRecords(dao *daos.Dao, created time.Time, record *models.Record) []*models.Record {
+func linkRecords(dao *daos.Dao, created time.Time, record *models.Record) ([]*models.Record, error) {
 	linkCollection, err := dao.FindCollectionByNameOrId(migrations.LinkCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*models.Record, 0, 5)
@@ -245,7 +292,7 @@ func linkRecords(dao *daos.Dao, created time.Time, record *models.Record) []*mod
 		records = append(records, linkRecord)
 	}
 
-	return records
+	return records, nil
 }
 
 const createTicketPy = `import sys
@@ -321,12 +368,12 @@ const (
 	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
 )
 
-func reactionRecords(dao *daos.Dao) []*models.Record {
+func reactionRecords(dao *daos.Dao) ([]*models.Record, error) {
 	var records []*models.Record
 
 	collection, err := dao.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	createTicketActionData, err := json.Marshal(map[string]interface{}{
@@ -334,7 +381,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		"script":       createTicketPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record := models.NewRecord(collection)
@@ -352,7 +399,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		"script":       alertIngestPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record = models.NewRecord(collection)
@@ -370,7 +417,7 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 		"script":       assignTicketsPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record = models.NewRecord(collection)
@@ -383,5 +430,5 @@ func reactionRecords(dao *daos.Dao) []*models.Record {
 
 	records = append(records, record)
 
-	return records
+	return records, nil
 }
