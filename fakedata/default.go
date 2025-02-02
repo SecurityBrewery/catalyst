@@ -136,7 +136,7 @@ func GenerateDefaultData(app core.App) error {
 	return nil
 }
 
-func ValidateDefaultData(app core.App) error { //nolint:cyclop
+func ValidateDefaultData(app core.App) error { //nolint:cyclop,gocognit
 	// users
 	userRecord, err := app.Dao().FindRecordById(migrations.UserCollectionName, "u_test")
 	if err != nil {
@@ -145,6 +145,26 @@ func ValidateDefaultData(app core.App) error { //nolint:cyclop
 
 	if userRecord == nil {
 		return errors.New("user not found")
+	}
+
+	if userRecord.Username() != "u_test" {
+		return fmt.Errorf(`username does not match: got %q, want "u_test"`, userRecord.Username())
+	}
+
+	if !userRecord.ValidatePassword("1234567890") {
+		return errors.New("password does not match")
+	}
+
+	if userRecord.Get("name") != "Test User" {
+		return fmt.Errorf(`name does not match: got %q, want "Test User"`, userRecord.Get("name"))
+	}
+
+	if userRecord.Get("email") != "user@catalyst-soar.com" {
+		return fmt.Errorf(`email does not match: got %q, want "user@catalyst-soar.com"`, userRecord.Get("email"))
+	}
+
+	if !userRecord.Verified() {
+		return errors.New("user is not verified")
 	}
 
 	// records

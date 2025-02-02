@@ -115,7 +115,7 @@ func testUser(dao *daos.Dao) (*models.Record, error) {
 	record.SetId("u_test")
 	_ = record.SetUsername("u_test")
 	_ = record.SetPassword("1234567890")
-	record.Set("name", gofakeit.Name())
+	record.Set("name", "Test User")
 	record.Set("email", "user@catalyst-soar.com")
 	_ = record.SetVerified(true)
 
