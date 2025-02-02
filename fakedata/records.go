@@ -48,38 +48,45 @@ func Records(app core.App, userCount int, ticketCount int) ([]*core.Record, erro
 		return nil, err
 	}
 
-	users := userRecords(app, userCount)
-	tickets := ticketRecords(app, users, types, ticketCount)
-	reactions := reactionRecords(app)
+	users, err := userRecords(app, userCount)
+	if err != nil {
+		return nil, err
+	}
+
+	tickets, err := ticketRecords(app, users, types, ticketCount)
+	if err != nil {
+		return nil, err
+	}
+
+	reactions, err := reactionRecords(app)
+	if err != nil {
+		return nil, err
+	}
 
 	var records []*core.Record
 	records = append(records, users...)
-	records = append(records, types...)
 	records = append(records, tickets...)
 	records = append(records, reactions...)
 
 	return records, nil
 }
 
-func userRecords(app core.App, count int) []*core.Record {
-	collection, err := app.FindCollectionByNameOrId(migrations.UserCollectionID)
-	if err != nil {
-		panic(err)
-	}
-
+func userRecords(app core.App, count int) ([]*core.Record, error) {
 	records := make([]*core.Record, 0, count)
 
 	// create the test user
 	if _, err := app.FindRecordById(migrations.UserCollectionID, "u_test"); err != nil {
-		record := core.NewRecord(collection)
-		record.Id = "u_test"
-		record.Set("username", "u_test")
-		record.SetPassword("1234567890")
-		record.Set("name", gofakeit.Name())
-		record.Set("email", "user@catalyst-soar.com")
-		record.SetVerified(true)
+		testUser, err := testUser(app)
+		if err != nil {
+			return nil, err
+		}
 
-		records = append(records, record)
+		records = append(records, testUser)
+	}
+
+	collection, err := app.FindCollectionByNameOrId(migrations.UserCollectionID)
+	if err != nil {
+		return nil, err
 	}
 
 	for range count - 1 {
@@ -94,13 +101,30 @@ func userRecords(app core.App, count int) []*core.Record {
 		records = append(records, record)
 	}
 
-	return records
+	return records, nil
 }
 
-func ticketRecords(app core.App, users, types []*core.Record, count int) []*core.Record {
+func testUser(app core.App) (*core.Record, error) {
+	collection, err := app.FindCollectionByNameOrId(migrations.UserCollectionID)
+	if err != nil {
+		return nil, err
+	}
+
+	record := core.NewRecord(collection)
+	record.Id = "u_test"
+	record.Set("username", "u_test")
+	record.SetPassword("1234567890")
+	record.Set("name", "Test User")
+	record.Set("email", "user@catalyst-soar.com")
+	record.SetVerified(true)
+
+	return record, nil
+}
+
+func ticketRecords(app core.App, users, types []*core.Record, count int) ([]*core.Record, error) {
 	collection, err := app.FindCollectionByNameOrId(migrations.TicketCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*core.Record, 0, count)
@@ -133,19 +157,42 @@ func ticketRecords(app core.App, users, types []*core.Record, count int) []*core
 		records = append(records, record)
 
 		// Add comments
-		records = append(records, commentRecords(app, users, created, record)...)
-		records = append(records, timelineRecords(app, created, record)...)
-		records = append(records, taskRecords(app, users, created, record)...)
-		records = append(records, linkRecords(app, created, record)...)
+		comments, err := commentRecords(app, users, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, comments...)
+
+		timelines, err := timelineRecords(app, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, timelines...)
+
+		tasks, err := taskRecords(app, users, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, tasks...)
+
+		links, err := linkRecords(app, created, record)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, links...)
 	}
 
-	return records
+	return records, nil
 }
 
-func commentRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
+func commentRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) ([]*core.Record, error) {
 	commentCollection, err := app.FindCollectionByNameOrId(migrations.CommentCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*core.Record, 0, 5)
@@ -165,13 +212,13 @@ func commentRecords(app core.App, users []*core.Record, created time.Time, recor
 		records = append(records, commentRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func timelineRecords(app core.App, created time.Time, record *core.Record) []*core.Record {
+func timelineRecords(app core.App, created time.Time, record *core.Record) ([]*core.Record, error) {
 	timelineCollection, err := app.FindCollectionByNameOrId(migrations.TimelineCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*core.Record, 0, 5)
@@ -191,13 +238,13 @@ func timelineRecords(app core.App, created time.Time, record *core.Record) []*co
 		records = append(records, timelineRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func taskRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) []*core.Record {
+func taskRecords(app core.App, users []*core.Record, created time.Time, record *core.Record) ([]*core.Record, error) {
 	taskCollection, err := app.FindCollectionByNameOrId(migrations.TaskCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*core.Record, 0, 5)
@@ -218,13 +265,13 @@ func taskRecords(app core.App, users []*core.Record, created time.Time, record *
 		records = append(records, taskRecord)
 	}
 
-	return records
+	return records, nil
 }
 
-func linkRecords(app core.App, created time.Time, record *core.Record) []*core.Record {
+func linkRecords(app core.App, created time.Time, record *core.Record) ([]*core.Record, error) {
 	linkCollection, err := app.FindCollectionByNameOrId(migrations.LinkCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	records := make([]*core.Record, 0, 5)
@@ -244,7 +291,7 @@ func linkRecords(app core.App, created time.Time, record *core.Record) []*core.R
 		records = append(records, linkRecord)
 	}
 
-	return records
+	return records, nil
 }
 
 const createTicketPy = `import sys
@@ -320,12 +367,12 @@ const (
 	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
 )
 
-func reactionRecords(app core.App) []*core.Record {
+func reactionRecords(app core.App) ([]*core.Record, error) {
 	var records []*core.Record
 
 	collection, err := app.FindCollectionByNameOrId(migrations.ReactionCollectionName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	createTicketActionData, err := json.Marshal(map[string]interface{}{
@@ -333,7 +380,7 @@ func reactionRecords(app core.App) []*core.Record {
 		"script":       createTicketPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record := core.NewRecord(collection)
@@ -351,7 +398,7 @@ func reactionRecords(app core.App) []*core.Record {
 		"script":       alertIngestPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record = core.NewRecord(collection)
@@ -369,7 +416,7 @@ func reactionRecords(app core.App) []*core.Record {
 		"script":       assignTicketsPy,
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	record = core.NewRecord(collection)
@@ -382,5 +429,5 @@ func reactionRecords(app core.App) []*core.Record {
 
 	records = append(records, record)
 
-	return records
+	return records, nil
 }

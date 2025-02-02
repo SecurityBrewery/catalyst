@@ -35,4 +35,7 @@ pb_data
 catalyst
 catalyst_data
 
+# ignore changes, needs to be disabled when adding new upgrade tests
+upgradetest
+
 coverage.out

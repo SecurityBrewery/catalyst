@@ -33,6 +33,7 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 	_ = app.RootCmd.ParseFlags(os.Args[1:])
 
 	app.RootCmd.AddCommand(fakeDataCmd(app))
+	app.RootCmd.AddCommand(defaultDataCmd(app))
 
 	webhook.BindHooks(app)
 	reaction.BindHooks(app, test)
