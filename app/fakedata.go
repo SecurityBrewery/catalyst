@@ -23,3 +23,14 @@ func fakeDataCmd(app core.App) *cobra.Command {
 
 	return cmd
 }
+
+func defaultDataCmd(app core.App) *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "default-data",
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return fakedata.GenerateDefaultData(app)
+		},
+	}
+
+	return cmd
+}

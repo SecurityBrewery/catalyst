@@ -71,6 +71,11 @@ dev-10000:
 	go run . fake-data --users 100 --tickets 10000
 	go run . serve --app-url http://localhost:8090 --flags dev
 
+.PHONY: default-data
+default-data:
+	rm -rf catalyst_data
+	go run . default-data
+
 .PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
