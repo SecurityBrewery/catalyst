@@ -48,5 +48,5 @@ func App(dir string, test bool) (*pocketbase.PocketBase, error) {
 }
 
 func dev() bool {
-	return strings.HasPrefix(os.Args[0], os.TempDir())
+	return strings.Contains(os.Args[0], os.TempDir()) || strings.Contains(os.Args[0], "go-build")
 }

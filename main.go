@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app2"
 )
 
 func main() {
-	catalyst, err := app.App("./catalyst_data", false)
+	catalyst, err := app2.App("./catalyst_data", false)
 	if err != nil {
 		log.Fatal(err)
 	}

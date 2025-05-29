@@ -1,0 +1,1145 @@
+openapi: 3.0.3
+info:
+  title: Ticketing System API
+  version: 1.0.0
+paths:
+  /comments:
+    get:
+      summary: List all comments
+      responses:
+        '200':
+          description: A list of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comments'
+    post:
+      summary: Create a new comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comments'
+      responses:
+        '201':
+          description: Comments created
+  /comments/{id}:
+    get:
+      summary: Get a single comment by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comments'
+    put:
+      summary: Update a comment by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comments'
+      responses:
+        '200':
+          description: Comments updated
+    delete:
+      summary: Delete a comment by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Comments deleted
+  /features:
+    get:
+      summary: List all features
+      responses:
+        '200':
+          description: A list of features
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Features'
+    post:
+      summary: Create a new feature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Features'
+      responses:
+        '201':
+          description: Features created
+  /features/{id}:
+    get:
+      summary: Get a single feature by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single feature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Features'
+    put:
+      summary: Update a feature by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Features'
+      responses:
+        '200':
+          description: Features updated
+    delete:
+      summary: Delete a feature by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Features deleted
+  /files:
+    get:
+      summary: List all files
+      responses:
+        '200':
+          description: A list of files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Files'
+    post:
+      summary: Create a new file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Files'
+      responses:
+        '201':
+          description: Files created
+  /files/{id}:
+    get:
+      summary: Get a single file by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Files'
+    put:
+      summary: Update a file by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Files'
+      responses:
+        '200':
+          description: Files updated
+    delete:
+      summary: Delete a file by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Files deleted
+  /links:
+    get:
+      summary: List all links
+      responses:
+        '200':
+          description: A list of links
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Links'
+    post:
+      summary: Create a new link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Links'
+      responses:
+        '201':
+          description: Links created
+  /links/{id}:
+    get:
+      summary: Get a single link by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single link
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Links'
+    put:
+      summary: Update a link by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Links'
+      responses:
+        '200':
+          description: Links updated
+    delete:
+      summary: Delete a link by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Links deleted
+  /reactions:
+    get:
+      summary: List all reactions
+      responses:
+        '200':
+          description: A list of reactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reactions'
+    post:
+      summary: Create a new reaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reactions'
+      responses:
+        '201':
+          description: Reactions created
+  /reactions/{id}:
+    get:
+      summary: Get a single reaction by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single reaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reactions'
+    put:
+      summary: Update a reaction by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reactions'
+      responses:
+        '200':
+          description: Reactions updated
+    delete:
+      summary: Delete a reaction by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Reactions deleted
+  /tasks:
+    get:
+      summary: List all tasks
+      responses:
+        '200':
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tasks'
+    post:
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tasks'
+      responses:
+        '201':
+          description: Tasks created
+  /tasks/{id}:
+    get:
+      summary: Get a single task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tasks'
+    put:
+      summary: Update a task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tasks'
+      responses:
+        '200':
+          description: Tasks updated
+    delete:
+      summary: Delete a task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tasks deleted
+  /tickets:
+    get:
+      summary: List all tickets
+      responses:
+        '200':
+          description: A list of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tickets'
+    post:
+      summary: Create a new ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tickets'
+      responses:
+        '201':
+          description: Tickets created
+  /tickets/{id}:
+    get:
+      summary: Get a single ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tickets'
+    put:
+      summary: Update a ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tickets'
+      responses:
+        '200':
+          description: Tickets updated
+    delete:
+      summary: Delete a ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tickets deleted
+  /timeline:
+    get:
+      summary: List all timeline
+      responses:
+        '200':
+          description: A list of timeline
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Timeline'
+    post:
+      summary: Create a new timelin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Timeline'
+      responses:
+        '201':
+          description: Timeline created
+  /timeline/{id}:
+    get:
+      summary: Get a single timelin by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single timelin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeline'
+    put:
+      summary: Update a timelin by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Timeline'
+      responses:
+        '200':
+          description: Timeline updated
+    delete:
+      summary: Delete a timelin by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Timeline deleted
+  /types:
+    get:
+      summary: List all types
+      responses:
+        '200':
+          description: A list of types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Types'
+    post:
+      summary: Create a new type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Types'
+      responses:
+        '201':
+          description: Types created
+  /types/{id}:
+    get:
+      summary: Get a single type by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Types'
+    put:
+      summary: Update a type by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Types'
+      responses:
+        '200':
+          description: Types updated
+    delete:
+      summary: Delete a type by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Types deleted
+  /users:
+    get:
+      summary: List all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Users'
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '201':
+          description: Users created
+  /users/{id}:
+    get:
+      summary: Get a single user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+    put:
+      summary: Update a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: Users updated
+    delete:
+      summary: Delete a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Users deleted
+  /webhooks:
+    get:
+      summary: List all webhooks
+      responses:
+        '200':
+          description: A list of webhooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Webhooks'
+    post:
+      summary: Create a new webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Webhooks'
+      responses:
+        '201':
+          description: Webhooks created
+  /webhooks/{id}:
+    get:
+      summary: Get a single webhook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks'
+    put:
+      summary: Update a webhook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Webhooks'
+      responses:
+        '200':
+          description: Webhooks updated
+    delete:
+      summary: Delete a webhook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Webhooks deleted
+  /dashboard_counts:
+    get:
+      summary: Get dashboard summary counts
+      responses:
+        '200':
+          description: Dashboard count data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardCounts'
+  /sidebar:
+    get:
+      summary: Get sidebar data
+      responses:
+        '200':
+          description: Sidebar content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sidebar'
+  /ticket_search:
+    get:
+      summary: Search tickets with full join data
+      responses:
+        '200':
+          description: Search results with aggregated data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketSearch'
+components:
+  schemas:
+    Comments:
+      type: object
+      properties:
+        author:
+          type: string
+        created:
+          type: string
+        id:
+          type: string
+        message:
+          type: string
+        ticket:
+          type: string
+        updated:
+          type: string
+      required:
+        - author
+        - created
+        - id
+        - message
+        - ticket
+        - updated
+    Features:
+      type: object
+      properties:
+        created:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        updated:
+          type: string
+      required:
+        - created
+        - id
+        - name
+        - updated
+    Files:
+      type: object
+      properties:
+        blob:
+          type: string
+        created:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        size:
+          type: number
+        ticket:
+          type: string
+        updated:
+          type: string
+      required:
+        - blob
+        - created
+        - id
+        - name
+        - size
+        - ticket
+        - updated
+    Links:
+      type: object
+      properties:
+        created:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        ticket:
+          type: string
+        updated:
+          type: string
+        url:
+          type: string
+      required:
+        - created
+        - id
+        - name
+        - ticket
+        - updated
+        - url
+    Reactions:
+      type: object
+      properties:
+        action:
+          type: string
+        actiondata:
+          type: object
+        created:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        trigger:
+          type: string
+        triggerdata:
+          type: object
+        updated:
+          type: string
+      required:
+        - action
+        - actiondata
+        - created
+        - id
+        - name
+        - trigger
+        - triggerdata
+        - updated
+    Tasks:
+      type: object
+      properties:
+        created:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        open:
+          type: boolean
+        owner:
+          type: string
+        ticket:
+          type: string
+        updated:
+          type: string
+      required:
+        - created
+        - id
+        - name
+        - open
+        - owner
+        - ticket
+        - updated
+    Tickets:
+      type: object
+      properties:
+        created:
+          type: string
+        description:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        open:
+          type: boolean
+        owner:
+          type: string
+        resolution:
+          type: string
+        schema:
+          type: object
+        state:
+          type: object
+        type:
+          type: string
+        updated:
+          type: string
+      required:
+        - created
+        - description
+        - id
+        - name
+        - open
+        - owner
+        - resolution
+        - schema
+        - state
+        - type
+        - updated
+    Timeline:
+      type: object
+      properties:
+        created:
+          type: string
+        id:
+          type: string
+        message:
+          type: string
+        ticket:
+          type: string
+        time:
+          type: string
+        updated:
+          type: string
+      required:
+        - created
+        - id
+        - message
+        - ticket
+        - time
+        - updated
+    Types:
+      type: object
+      properties:
+        created:
+          type: string
+        icon:
+          type: string
+        id:
+          type: string
+        plural:
+          type: string
+        schema:
+          type: object
+        singular:
+          type: string
+        updated:
+          type: string
+      required:
+        - created
+        - icon
+        - id
+        - plural
+        - schema
+        - singular
+        - updated
+    Users:
+      type: object
+      properties:
+        avatar:
+          type: string
+        created:
+          type: string
+        email:
+          type: string
+        emailVisibility:
+          type: boolean
+        id:
+          type: string
+        lastLoginAlertSentAt:
+          type: string
+        lastResetSentAt:
+          type: string
+        lastVerificationSentAt:
+          type: string
+        name:
+          type: string
+        passwordHash:
+          type: string
+        tokenKey:
+          type: string
+        updated:
+          type: string
+        username:
+          type: string
+        verified:
+          type: boolean
+      required:
+        - avatar
+        - created
+        - email
+        - emailVisibility
+        - id
+        - lastLoginAlertSentAt
+        - lastResetSentAt
+        - lastVerificationSentAt
+        - name
+        - passwordHash
+        - tokenKey
+        - updated
+        - username
+        - verified
+    Webhooks:
+      type: object
+      properties:
+        collection:
+          type: string
+        created:
+          type: string
+        destination:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        updated:
+          type: string
+      required:
+        - collection
+        - created
+        - destination
+        - id
+        - name
+        - updated
+    DashboardCounts:
+      type: object
+      properties:
+        id:
+          type: string
+        count:
+          type: number
+      required:
+        - id
+        - count
+    Sidebar:
+      type: object
+      properties:
+        id:
+          type: string
+        singular:
+          type: string
+        plural:
+          type: string
+        icon:
+          type: string
+        count:
+          type: number
+      required:
+        - id
+        - singular
+        - plural
+        - icon
+        - count
+    TicketSearch:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        created:
+          type: string
+        description:
+          type: string
+        open:
+          type: boolean
+        type:
+          type: string
+        state:
+          type: object
+        owner_name:
+          type: string
+        comment_messages:
+          type: string
+        file_names:
+          type: string
+        link_names:
+          type: string
+        link_urls:
+          type: string
+        task_names:
+          type: string
+        timeline_messages:
+          type: string
+      required:
+        - id
+        - name
+        - created
+        - description
+        - open
+        - type
+        - state
+        - owner_name
+        - comment_messages
+        - file_names
+        - link_names
+        - link_urls
+        - task_names
+        - timeline_messages

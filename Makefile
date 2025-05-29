@@ -79,3 +79,19 @@ default-data:
 .PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
+
+.PHONY: tailwindcss
+tailwindcss:
+	@echo "TailwindCSS..."
+	# tailwindcss -i ./css/in.css -o ./static/output.css --cwd api/ui
+	@echo "Done."
+
+.PHONY: sqlc
+sqlc:
+	@echo "SQLC..."
+	cd app2/database && sqlc generate
+	@echo "Done."
+
+.PHONY: generate
+generate: sqlc tailwindcss
+	cd app2 && oapi-codegen --config=openapi/config.yml openapi/openapi.yml
