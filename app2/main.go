@@ -2,9 +2,12 @@ package app2
 
 import (
 	"context"
+	"net/http"
+	"path/filepath"
+
 	"github.com/SecurityBrewery/catalyst/app2/database"
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
-	"path/filepath"
+	"github.com/SecurityBrewery/catalyst/app2/openapi"
 )
 
 func App(filename string, _ bool) (*App2, error) {
@@ -12,6 +15,15 @@ func App(filename string, _ bool) (*App2, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	service := &Service{
+		Queries: queries,
+	}
+
+	mux := http.NewServeMux()
+
+	apiHandler := openapi.Handler(openapi.NewStrictHandler(service, nil))
+	mux.Handle("/api/", http.StripPrefix("/api", apiHandler))
 
 	return &App2{
 		Queries: queries,

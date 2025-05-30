@@ -89,9 +89,15 @@ tailwindcss:
 .PHONY: sqlc
 sqlc:
 	@echo "SQLC..."
-	cd app2/database && sqlc generate
+	cd app2/database && go tool sqlc generate
+	@echo "Done."
+
+.PHONY: openapi
+openapi:
+	@echo "OpenAPI..."
+	cd app2 && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
+	openapi-generator generate -i api.yaml -g typescript-fetch -o ui/src/client
 	@echo "Done."
 
 .PHONY: generate
-generate: sqlc tailwindcss
-	cd app2 && oapi-codegen --config=openapi/config.yml openapi/openapi.yml
+generate: sqlc tailwindcss openapi
