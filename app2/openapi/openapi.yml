@@ -24,7 +24,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Ticket" } } } } }
+        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTicket" } } } } }
     post:
       summary: Create a new ticket
       operationId: createTicket
@@ -38,7 +38,7 @@ paths:
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+        "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTicket" } } } }
     patch:
       summary: Update a ticket by ID
       operationId: updateTicket
@@ -63,7 +63,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Comment" } } } } }
+        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedComment" } } } } }
     post:
       summary: Create a new comment
       operationId: createComment
@@ -77,7 +77,7 @@ paths:
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+        "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedComment" } } } }
     patch:
       summary: Update a comment by ID
       operationId: updateComment
@@ -180,7 +180,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } } } } }
+        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTask" } } } } }
     post:
       summary: Create a new task
       operationId: createTask
@@ -194,7 +194,7 @@ paths:
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+        "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTask" } } } }
     patch:
       summary: Update a task by ID
       operationId: updateTask
@@ -477,6 +477,17 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "ticket", "author", "message", "created", "updated" ]
+    ExtendedComment:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+        author_name: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "ticket", "author", "message", "author_name", "created", "updated" ]
     NewFeature:
       type: object
       properties:
@@ -591,6 +602,20 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "ticket", "name", "open", "owner", "created", "updated" ]
+    ExtendedTask:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        owner_name: { "type": "string" }
+        ticket_name: { "type": "string" }
+        ticket_type: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "ticket", "name", "open", "owner", "owner_name", "ticket_name", "ticket_type", "created", "updated" ]
     NewTicket:
       type: object
       properties:
@@ -629,6 +654,24 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "type", "name", "description", "open", "owner", "resolution", "schema", "state", "created", "updated" ]
+    ExtendedTicket:
+      type: object
+      properties:
+        id: { "type": "string" }
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+        owner_name: { "type": "string" }
+        type_singular: { "type": "string" }
+        type_plural: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "type", "name", "description", "open", "owner", "resolution", "schema", "state", "owner_name", "type_singular", "type_plural", "created", "updated" ]
     NewTimelineEntry:
       type: object
       properties:

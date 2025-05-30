@@ -4,9 +4,11 @@ VALUES (@name, @description, @open, @owner, @resolution, @schema, @state, @type)
 RETURNING *;
 
 -- name: Ticket :one
-SELECT *
+SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-WHERE id = @id;
+LEFT JOIN users ON users.id = tickets.owner
+LEFT JOIN types ON types.id = tickets.type
+WHERE tickets.id = @id;
 
 -- name: UpdateTicket :one
 UPDATE tickets
@@ -27,9 +29,11 @@ FROM tickets
 WHERE id = @id;
 
 -- name: ListTickets :many
-SELECT *
+SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-ORDER BY created DESC
+LEFT JOIN users ON users.id = tickets.owner
+LEFT JOIN types ON types.id = tickets.type
+ORDER BY tickets.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -58,9 +62,10 @@ VALUES (@author, @message, @ticket)
 RETURNING *;
 
 -- name: GetComment :one
-SELECT *
+SELECT comments.*, users.name as author_name
 FROM comments
-WHERE id = @id;
+LEFT JOIN users ON users.id = comments.author
+WHERE comments.id = @id;
 
 -- name: UpdateComment :one
 UPDATE comments
@@ -74,10 +79,11 @@ FROM comments
 WHERE id = @id;
 
 -- name: ListComments :many
-SELECT *
+SELECT comments.*, users.name as author_name
 FROM comments
+LEFT JOIN users ON users.id = comments.author
 WHERE ticket = @ticket OR @ticket = ''
-ORDER BY created DESC
+ORDER BY comments.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -106,7 +112,7 @@ WHERE id = @id;
 -- name: ListFeatures :many
 SELECT *
 FROM features
-ORDER BY created DESC;
+ORDER BY features.created DESC;
 
 ------------------------------------------------------------------
 
@@ -138,7 +144,7 @@ WHERE id = @id;
 SELECT *
 FROM files
 WHERE ticket = @ticket OR @ticket = ''
-ORDER BY created DESC
+ORDER BY files.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -170,7 +176,7 @@ WHERE id = @id;
 SELECT *
 FROM links
 WHERE ticket = @ticket OR @ticket = ''
-ORDER BY created DESC
+ORDER BY links.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -204,7 +210,7 @@ WHERE id = @id;
 -- name: ListReactions :many
 SELECT *
 FROM reactions
-ORDER BY created DESC
+ORDER BY reactions.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -215,9 +221,11 @@ VALUES (@name, @open, @owner, @ticket)
 RETURNING *;
 
 -- name: GetTask :one
-SELECT *
+SELECT tasks.*, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
-WHERE id = @id;
+LEFT JOIN users ON users.id = tasks.owner
+LEFT JOIN tickets ON tickets.id = tasks.ticket
+WHERE tasks.id = @id;
 
 -- name: UpdateTask :one
 UPDATE tasks
@@ -234,10 +242,12 @@ FROM tasks
 WHERE id = @id;
 
 -- name: ListTasks :many
-SELECT *
+SELECT tasks.*, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
+LEFT JOIN users ON users.id = tasks.owner
+LEFT JOIN tickets ON tickets.id = tasks.ticket
 WHERE ticket = @ticket OR @ticket = ''
-ORDER BY created DESC
+ORDER BY tasks.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -269,7 +279,7 @@ WHERE id = @id;
 SELECT *
 FROM timeline
 WHERE ticket = @ticket OR @ticket = ''
-ORDER BY created DESC
+ORDER BY timeline.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
@@ -335,7 +345,7 @@ WHERE id = @id;
 -- name: ListUsers :many
 SELECT *
 FROM users
-ORDER BY created DESC
+ORDER BY users.created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------

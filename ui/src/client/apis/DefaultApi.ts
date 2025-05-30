@@ -18,6 +18,9 @@ import type {
   Comment,
   CommentUpdate,
   DashboardCounts,
+  ExtendedComment,
+  ExtendedTask,
+  ExtendedTicket,
   Feature,
   FileUpdate,
   Link,
@@ -57,6 +60,12 @@ import {
     CommentUpdateToJSON,
     DashboardCountsFromJSON,
     DashboardCountsToJSON,
+    ExtendedCommentFromJSON,
+    ExtendedCommentToJSON,
+    ExtendedTaskFromJSON,
+    ExtendedTaskToJSON,
+    ExtendedTicketFromJSON,
+    ExtendedTicketToJSON,
     FeatureFromJSON,
     FeatureToJSON,
     FileUpdateFromJSON,
@@ -1129,7 +1138,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a single comment by ID
      */
-    async getCommentRaw(requestParameters: GetCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Comment>> {
+    async getCommentRaw(requestParameters: GetCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExtendedComment>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1148,13 +1157,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CommentFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ExtendedCommentFromJSON(jsonValue));
     }
 
     /**
      * Get a single comment by ID
      */
-    async getComment(requestParameters: GetCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Comment> {
+    async getComment(requestParameters: GetCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExtendedComment> {
         const response = await this.getCommentRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1350,7 +1359,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a single task by ID
      */
-    async getTaskRaw(requestParameters: GetTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Task>> {
+    async getTaskRaw(requestParameters: GetTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExtendedTask>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1369,13 +1378,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => TaskFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ExtendedTaskFromJSON(jsonValue));
     }
 
     /**
      * Get a single task by ID
      */
-    async getTask(requestParameters: GetTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Task> {
+    async getTask(requestParameters: GetTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExtendedTask> {
         const response = await this.getTaskRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1383,7 +1392,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get a single ticket by ID
      */
-    async getTicketRaw(requestParameters: GetTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Ticket>> {
+    async getTicketRaw(requestParameters: GetTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExtendedTicket>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1402,13 +1411,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => TicketFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ExtendedTicketFromJSON(jsonValue));
     }
 
     /**
      * Get a single ticket by ID
      */
-    async getTicket(requestParameters: GetTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Ticket> {
+    async getTicket(requestParameters: GetTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExtendedTicket> {
         const response = await this.getTicketRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1548,7 +1557,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all comments
      */
-    async listCommentsRaw(requestParameters: ListCommentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Comment>>> {
+    async listCommentsRaw(requestParameters: ListCommentsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ExtendedComment>>> {
         const queryParameters: any = {};
 
         if (requestParameters['ticket'] != null) {
@@ -1572,13 +1581,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CommentFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ExtendedCommentFromJSON));
     }
 
     /**
      * List all comments
      */
-    async listComments(requestParameters: ListCommentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Comment>> {
+    async listComments(requestParameters: ListCommentsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ExtendedComment>> {
         const response = await this.listCommentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1730,7 +1739,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all tasks
      */
-    async listTasksRaw(requestParameters: ListTasksRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Task>>> {
+    async listTasksRaw(requestParameters: ListTasksRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ExtendedTask>>> {
         const queryParameters: any = {};
 
         if (requestParameters['ticket'] != null) {
@@ -1754,13 +1763,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TaskFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ExtendedTaskFromJSON));
     }
 
     /**
      * List all tasks
      */
-    async listTasks(requestParameters: ListTasksRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Task>> {
+    async listTasks(requestParameters: ListTasksRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ExtendedTask>> {
         const response = await this.listTasksRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1768,7 +1777,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * List all tickets
      */
-    async listTicketsRaw(requestParameters: ListTicketsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Ticket>>> {
+    async listTicketsRaw(requestParameters: ListTicketsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ExtendedTicket>>> {
         const queryParameters: any = {};
 
         if (requestParameters['offset'] != null) {
@@ -1788,13 +1797,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TicketFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ExtendedTicketFromJSON));
     }
 
     /**
      * List all tickets
      */
-    async listTickets(requestParameters: ListTicketsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Ticket>> {
+    async listTickets(requestParameters: ListTicketsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ExtendedTicket>> {
         const response = await this.listTicketsRaw(requestParameters, initOverrides);
         return await response.value();
     }

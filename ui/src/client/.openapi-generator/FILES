@@ -4,6 +4,9 @@ index.ts
 models/Comment.ts
 models/CommentUpdate.ts
 models/DashboardCounts.ts
+models/ExtendedComment.ts
+models/ExtendedTask.ts
+models/ExtendedTicket.ts
 models/Feature.ts
 models/FileUpdate.ts
 models/Link.ts

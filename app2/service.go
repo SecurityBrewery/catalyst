@@ -27,15 +27,16 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 		return nil, err
 	}
 
-	var response []openapi.Comment
+	var response []openapi.ExtendedComment
 	for _, comment := range comments {
-		response = append(response, openapi.Comment{
-			Author:  comment.Author,
-			Created: comment.Created,
-			Id:      comment.ID,
-			Message: comment.Message,
-			Ticket:  comment.Ticket,
-			Updated: comment.Updated,
+		response = append(response, openapi.ExtendedComment{
+			Author:     comment.Author,
+			Created:    comment.Created,
+			Id:         comment.ID,
+			Message:    comment.Message,
+			Ticket:     comment.Ticket,
+			Updated:    comment.Updated,
+			AuthorName: comment.AuthorName.String,
 		})
 	}
 
@@ -467,16 +468,19 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 		return nil, err
 	}
 
-	var response []openapi.Task
+	var response []openapi.ExtendedTask
 	for _, task := range tasks {
-		response = append(response, openapi.Task{
-			Id:      task.ID,
-			Name:    task.Name,
-			Created: task.Created,
-			Updated: task.Updated,
-			Open:    task.Open,
-			Owner:   task.Owner,
-			Ticket:  task.Ticket,
+		response = append(response, openapi.ExtendedTask{
+			Id:         task.ID,
+			Name:       task.Name,
+			Created:    task.Created,
+			Updated:    task.Updated,
+			Open:       task.Open,
+			Owner:      task.Owner,
+			Ticket:     task.Ticket,
+			OwnerName:  task.OwnerName.String,
+			TicketName: task.TicketName.String,
+			TicketType: task.TicketType.String,
 		})
 	}
 
@@ -518,13 +522,16 @@ func (s *Service) GetTask(ctx context.Context, request openapi.GetTaskRequestObj
 	}
 
 	return openapi.GetTask200JSONResponse{
-		Id:      task.ID,
-		Name:    task.Name,
-		Created: task.Created,
-		Updated: task.Updated,
-		Open:    task.Open,
-		Owner:   task.Owner,
-		Ticket:  task.Ticket,
+		Id:         task.ID,
+		Name:       task.Name,
+		Created:    task.Created,
+		Updated:    task.Updated,
+		Open:       task.Open,
+		Owner:      task.Owner,
+		Ticket:     task.Ticket,
+		OwnerName:  task.OwnerName.String,
+		TicketName: task.TicketName.String,
+		TicketType: task.TicketType.String,
 	}, nil
 }
 
@@ -568,7 +575,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 				Description: ticket.Description,
 				Open:        ticket.Open,
 				Type:        ticket.Type,
-				// State:       ticket.State,
+				// State:       ticket.State, // TODO
 			})
 		}
 	} else {
@@ -589,7 +596,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 				Description: ticket.Description,
 				Open:        ticket.Open,
 				Type:        ticket.Type,
-				// State:       ticket.State,
+				// State:       ticket.State, // TODO
 			})
 		}
 	}
@@ -606,13 +613,23 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 		return nil, err
 	}
 
-	var response []openapi.Ticket
+	var response []openapi.ExtendedTicket
 	for _, ticket := range tickets {
-		response = append(response, openapi.Ticket{
+		response = append(response, openapi.ExtendedTicket{
 			Id:          ticket.ID,
 			Name:        ticket.Name,
 			Description: ticket.Description,
 			Owner:       ticket.Owner,
+			OwnerName:   ticket.OwnerName.String,
+			Type:        ticket.Type,
+			Open:        ticket.Open,
+			Resolution:  ticket.Resolution,
+			Created:     ticket.Created,
+			Updated:     ticket.Updated,
+			// Schema:       ticket.Schema, // TODO
+			// State:        ticket.State, // TODO
+			TypePlural:   ticket.TypePlural.String,
+			TypeSingular: ticket.TypeSingular.String,
 		})
 	}
 
@@ -673,6 +690,9 @@ func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketReques
 		Resolution:  ticket.Resolution,
 		Type:        ticket.Type,
 		// State:       ticket.State, // TODO
+		OwnerName:    ticket.OwnerName.String,
+		TypePlural:   ticket.TypePlural.String,
+		TypeSingular: ticket.TypeSingular.String,
 	}, nil
 }
 

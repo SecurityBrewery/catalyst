@@ -20,7 +20,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models/Ticket'
+import type { ExtendedTicket, Ticket } from '@/client/models'
 import type { Type } from '@/client/models/Type'
 import { handleError } from '@/lib/utils'
 
@@ -28,7 +28,7 @@ const queryClient = useQueryClient()
 const router = useRouter()
 
 const props = defineProps<{
-  ticket: Ticket
+  ticket: ExtendedTicket
 }>()
 
 const {
@@ -63,6 +63,8 @@ const closeTicketMutation = useMutation({
   onError: handleError
 })
 
+const ticketType = computed(() => types.value?.find((t) => t.id === props.ticket.type))
+
 const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type)) // TODO
 
 const closeTicketDialogOpen = ref(false)
@@ -84,8 +86,8 @@ const closeTicketDialogOpen = ref(false)
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button variant="outline" :disabled="!ticket">
-                <Icon :name="ticket.type" class="mr-2 size-4" />
-                {{ ticket.type }} <!-- TODO -->
+                <Icon :name="ticketType?.icon ?? ''" class="mr-2 size-4" />
+                {{ ticketType?.singular }}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -138,7 +140,7 @@ const closeTicketDialogOpen = ref(false)
     <Tooltip>
       <TooltipTrigger as-child>
         <div>
-          <TicketUserSelect :key="ticket.owner" :uID="ticket.owner" :ticket="ticket" />
+          <TicketUserSelect :key="ticket.owner" :ticket="ticket" />
         </div>
       </TooltipTrigger>
       <TooltipContent>Change User</TooltipContent>

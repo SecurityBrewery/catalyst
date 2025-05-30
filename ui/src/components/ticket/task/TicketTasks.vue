@@ -13,29 +13,29 @@ import { Trash2, User2 } from 'lucide-vue-next'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import { api } from '@/api'
-import type { Task, Ticket, User } from '@/client/models'
+import type { ExtendedTask, Task, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
 const props = defineProps<{
   ticket: Ticket
-  tasks?: Array<Task>
+  tasks?: Array<ExtendedTask>
 }>()
 
 const setTaskOwnerMutation = useMutation({
-  mutationFn: (update: { id: string; user: User }): Promise<Task> =>
+  mutationFn: (update: { id: string; owner: string }): Promise<Task> =>
     api.updateTask({
       id: update.id,
       taskUpdate: {
-        owner: update.user.id
+        owner: update.owner
       }
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
   onError: handleError
 })
 
-const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, user })
+const update = (id: string, userID: string) => setTaskOwnerMutation.mutate({ id, owner: userID })
 
 const checkMutation = useMutation({
   mutationFn: (task: Task): Promise<Task> =>
@@ -93,12 +93,12 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           </UserSelect>
           <UserSelect
             v-else
-            :modelValue="task.owner.id"
+            :modelValue="task.owner"
             @update:modelValue="update(task.id, $event)"
           >
             <Button variant="outline" role="combobox" class="mr-2 h-8">
               <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              {{ task.owner }} <!-- TODO -->
+              {{ task.ownerName }}
             </Button>
           </UserSelect>
           <DeleteDialog

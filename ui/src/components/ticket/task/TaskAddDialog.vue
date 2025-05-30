@@ -21,7 +21,7 @@ const props = defineProps<{
 }>()
 
 const name = ref('')
-const owner = ref<User | undefined>(undefined) // pb.authStore.model // TODO
+const owner = ref<string | undefined>(undefined) // pb.authStore.model // TODO
 const isOpen = ref(false)
 
 const addTaskMutation = useMutation({
@@ -32,7 +32,7 @@ const addTaskMutation = useMutation({
         ticket: props.ticket.id,
         name: name.value,
         open: true,
-        owner: owner.value ? owner.value.id : '' // pb.authStore.model.id // TODO
+        owner: owner.value ? owner.value : '' // pb.authStore.model.id // TODO
       }
     })
   },

@@ -36,6 +36,49 @@ type DashboardCounts struct {
 	Id    string `json:"id"`
 }
 
+// ExtendedComment defines model for ExtendedComment.
+type ExtendedComment struct {
+	Author     string `json:"author"`
+	AuthorName string `json:"author_name"`
+	Created    string `json:"created"`
+	Id         string `json:"id"`
+	Message    string `json:"message"`
+	Ticket     string `json:"ticket"`
+	Updated    string `json:"updated"`
+}
+
+// ExtendedTask defines model for ExtendedTask.
+type ExtendedTask struct {
+	Created    string `json:"created"`
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	Open       bool   `json:"open"`
+	Owner      string `json:"owner"`
+	OwnerName  string `json:"owner_name"`
+	Ticket     string `json:"ticket"`
+	TicketName string `json:"ticket_name"`
+	TicketType string `json:"ticket_type"`
+	Updated    string `json:"updated"`
+}
+
+// ExtendedTicket defines model for ExtendedTicket.
+type ExtendedTicket struct {
+	Created      string                 `json:"created"`
+	Description  string                 `json:"description"`
+	Id           string                 `json:"id"`
+	Name         string                 `json:"name"`
+	Open         bool                   `json:"open"`
+	Owner        string                 `json:"owner"`
+	OwnerName    string                 `json:"owner_name"`
+	Resolution   string                 `json:"resolution"`
+	Schema       map[string]interface{} `json:"schema"`
+	State        map[string]interface{} `json:"state"`
+	Type         string                 `json:"type"`
+	TypePlural   string                 `json:"type_plural"`
+	TypeSingular string                 `json:"type_singular"`
+	Updated      string                 `json:"updated"`
+}
+
 // Feature defines model for Feature.
 type Feature struct {
 	Created string `json:"created"`
@@ -2761,7 +2804,7 @@ type ListCommentsResponseObject interface {
 	VisitListCommentsResponse(w http.ResponseWriter) error
 }
 
-type ListComments200JSONResponse []Comment
+type ListComments200JSONResponse []ExtendedComment
 
 func (response ListComments200JSONResponse) VisitListCommentsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2811,7 +2854,7 @@ type GetCommentResponseObject interface {
 	VisitGetCommentResponse(w http.ResponseWriter) error
 }
 
-type GetComment200JSONResponse Comment
+type GetComment200JSONResponse ExtendedComment
 
 func (response GetComment200JSONResponse) VisitGetCommentResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3200,7 +3243,7 @@ type ListTasksResponseObject interface {
 	VisitListTasksResponse(w http.ResponseWriter) error
 }
 
-type ListTasks200JSONResponse []Task
+type ListTasks200JSONResponse []ExtendedTask
 
 func (response ListTasks200JSONResponse) VisitListTasksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3250,7 +3293,7 @@ type GetTaskResponseObject interface {
 	VisitGetTaskResponse(w http.ResponseWriter) error
 }
 
-type GetTask200JSONResponse Task
+type GetTask200JSONResponse ExtendedTask
 
 func (response GetTask200JSONResponse) VisitGetTaskResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3302,7 +3345,7 @@ type ListTicketsResponseObject interface {
 	VisitListTicketsResponse(w http.ResponseWriter) error
 }
 
-type ListTickets200JSONResponse []Ticket
+type ListTickets200JSONResponse []ExtendedTicket
 
 func (response ListTickets200JSONResponse) VisitListTicketsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3352,7 +3395,7 @@ type GetTicketResponseObject interface {
 	VisitGetTicketResponse(w http.ResponseWriter) error
 }
 
-type GetTicket200JSONResponse Ticket
+type GetTicket200JSONResponse ExtendedTicket
 
 func (response GetTicket200JSONResponse) VisitGetTicketResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")

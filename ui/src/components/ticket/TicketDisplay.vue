@@ -27,7 +27,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { api } from '@/api'
-import type { Comment, File, Link, Ticket, Task, TimelineEntry, Type } from '@/client/models'
+import type { ExtendedComment, ModelFile, Link, ExtendedTicket, ExtendedTask, TimelineEntry, Ticket, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const route = useRoute()
@@ -49,7 +49,7 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets', id.value],
-  queryFn: (): Promise<Ticket> => api.getTicket({ id: id.value })
+  queryFn: (): Promise<ExtendedTicket> => api.getTicket({ id: id.value })
 })
 
 const {
@@ -67,7 +67,7 @@ const {
   isError: tasksError
 } = useQuery({
   queryKey: ['tasks', id.value],
-  queryFn: (): Promise<Array<Task>> => api.listTasks({ ticket: id.value })
+  queryFn: (): Promise<Array<ExtendedTask>> => api.listTasks({ ticket: id.value })
 })
 
 const {
@@ -76,7 +76,7 @@ const {
   isError: commentsError
 } = useQuery({
   queryKey: ['comments', id.value],
-  queryFn: (): Promise<Array<Comment>> => api.listComments({ ticket: id.value })
+  queryFn: (): Promise<Array<ExtendedComment>> => api.listComments({ ticket: id.value })
 }) 
 
 const {
@@ -85,7 +85,7 @@ const {
   isError: filesError
 } = useQuery({
   queryKey: ['files', id.value],
-  queryFn: (): Promise<Array<File>> => api.listFiles({ ticket: id.value })
+  queryFn: (): Promise<Array<ModelFile>> => api.listFiles({ ticket: id.value })
 })
 
 const {

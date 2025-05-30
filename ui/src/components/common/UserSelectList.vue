@@ -15,10 +15,9 @@ import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
 import { api } from '@/api'
-import type { User } from '@/client/models'
 import { cn } from '@/lib/utils'
 
-const user = defineModel<User>()
+const userID = defineModel<string | undefined>()
 
 const open = ref(false)
 const searchTerm = ref('')
@@ -48,7 +47,7 @@ watch(
 </script>
 
 <template>
-  <Command v-model="user" v-model:search-term="searchTerm">
+  <Command v-model="userID" v-model:search-term="searchTerm">
     <CommandInput placeholder="Search user..." />
     <CommandEmpty>
       <span v-if="usersIsPending"> Loading... </span>
@@ -60,12 +59,12 @@ watch(
         <CommandItem
           v-for="u in users"
           :key="u.id"
-          :value="u"
+          :value="u.id"
           @select="open = false"
           class="cursor-pointer"
         >
           <Check
-            :class="cn('mr-2 h-4 w-4', user && user.id === u.id ? 'opacity-100' : 'opacity-0')"
+            :class="cn('mr-2 h-4 w-4', userID && userID === u.id ? 'opacity-100' : 'opacity-0')"
           />
           {{ u.name }}
         </CommandItem>

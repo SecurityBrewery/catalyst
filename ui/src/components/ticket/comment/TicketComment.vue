@@ -25,13 +25,13 @@ import format from 'date-fns/format'
 import { ref } from 'vue'
 
 import { api } from '@/api'
-import type { Comment } from '@/client/models'
+import type { ExtendedComment } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
 const props = defineProps<{
-  comment: Comment
+  comment: ExtendedComment
 }>()
 
 const isOpen = ref(false)
@@ -68,8 +68,7 @@ const save = () => editCommentMutation.mutate()
     <div class="flex items-start justify-between">
       <div class="flex flex-col gap-1 text-sm">
         <div class="font-semibold">
-          {{ comment.author }}
-          <!-- TODO -->
+          {{ comment.authorName }}
         </div>
         <div class="text-xs text-muted-foreground">
           {{ format(new Date(comment.created), 'PPpp') }}

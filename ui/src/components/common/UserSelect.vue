@@ -4,9 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { ref } from 'vue'
 
-import type { User } from '@/client/models'
-
-const user = defineModel<User>()
+const userID = defineModel<string | undefined>()
 
 const open = ref(false)
 </script>
@@ -17,7 +15,7 @@ const open = ref(false)
       <slot />
     </PopoverTrigger>
     <PopoverContent class="w-[150px] p-0">
-      <UserSelectList v-model="user" :key="user ? user.id : 'unassigned'" :user="user" />
+      <UserSelectList v-model="userID" :key="userID ? userID : 'unassigned'" :userID="userID" />
     </PopoverContent>
   </Popover>
 </template>

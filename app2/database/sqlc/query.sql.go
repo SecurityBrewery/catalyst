@@ -540,14 +540,25 @@ func (q *Queries) FindSession(ctx context.Context, token string) (Session, error
 }
 
 const getComment = `-- name: GetComment :one
-SELECT author, created, id, message, ticket, updated
+SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
 FROM comments
-WHERE id = ?1
+LEFT JOIN users ON users.id = comments.author
+WHERE comments.id = ?1
 `
 
-func (q *Queries) GetComment(ctx context.Context, id string) (Comment, error) {
+type GetCommentRow struct {
+	Author     string         `json:"author"`
+	Created    string         `json:"created"`
+	ID         string         `json:"id"`
+	Message    string         `json:"message"`
+	Ticket     string         `json:"ticket"`
+	Updated    string         `json:"updated"`
+	AuthorName sql.NullString `json:"author_name"`
+}
+
+func (q *Queries) GetComment(ctx context.Context, id string) (GetCommentRow, error) {
 	row := q.db.QueryRowContext(ctx, getComment, id)
-	var i Comment
+	var i GetCommentRow
 	err := row.Scan(
 		&i.Author,
 		&i.Created,
@@ -555,6 +566,7 @@ func (q *Queries) GetComment(ctx context.Context, id string) (Comment, error) {
 		&i.Message,
 		&i.Ticket,
 		&i.Updated,
+		&i.AuthorName,
 	)
 	return i, err
 }
@@ -705,14 +717,29 @@ func (q *Queries) GetSidebar(ctx context.Context) ([]Sidebar, error) {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT created, id, name, open, owner, ticket, updated
+SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
-WHERE id = ?1
+LEFT JOIN users ON users.id = tasks.owner
+LEFT JOIN tickets ON tickets.id = tasks.ticket
+WHERE tasks.id = ?1
 `
 
-func (q *Queries) GetTask(ctx context.Context, id string) (Task, error) {
+type GetTaskRow struct {
+	Created    string         `json:"created"`
+	ID         string         `json:"id"`
+	Name       string         `json:"name"`
+	Open       bool           `json:"open"`
+	Owner      string         `json:"owner"`
+	Ticket     string         `json:"ticket"`
+	Updated    string         `json:"updated"`
+	OwnerName  sql.NullString `json:"owner_name"`
+	TicketName sql.NullString `json:"ticket_name"`
+	TicketType sql.NullString `json:"ticket_type"`
+}
+
+func (q *Queries) GetTask(ctx context.Context, id string) (GetTaskRow, error) {
 	row := q.db.QueryRowContext(ctx, getTask, id)
-	var i Task
+	var i GetTaskRow
 	err := row.Scan(
 		&i.Created,
 		&i.ID,
@@ -721,6 +748,9 @@ func (q *Queries) GetTask(ctx context.Context, id string) (Task, error) {
 		&i.Owner,
 		&i.Ticket,
 		&i.Updated,
+		&i.OwnerName,
+		&i.TicketName,
+		&i.TicketType,
 	)
 	return i, err
 }
@@ -815,10 +845,11 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 }
 
 const listComments = `-- name: ListComments :many
-SELECT author, created, id, message, ticket, updated
+SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
 FROM comments
+LEFT JOIN users ON users.id = comments.author
 WHERE ticket = ?1 OR ?1 = ''
-ORDER BY created DESC
+ORDER BY comments.created DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -828,15 +859,25 @@ type ListCommentsParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]Comment, error) {
+type ListCommentsRow struct {
+	Author     string         `json:"author"`
+	Created    string         `json:"created"`
+	ID         string         `json:"id"`
+	Message    string         `json:"message"`
+	Ticket     string         `json:"ticket"`
+	Updated    string         `json:"updated"`
+	AuthorName sql.NullString `json:"author_name"`
+}
+
+func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]ListCommentsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listComments, arg.Ticket, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Comment
+	var items []ListCommentsRow
 	for rows.Next() {
-		var i Comment
+		var i ListCommentsRow
 		if err := rows.Scan(
 			&i.Author,
 			&i.Created,
@@ -844,6 +885,7 @@ func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]C
 			&i.Message,
 			&i.Ticket,
 			&i.Updated,
+			&i.AuthorName,
 		); err != nil {
 			return nil, err
 		}
@@ -861,7 +903,7 @@ func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]C
 const listFeatures = `-- name: ListFeatures :many
 SELECT created, id, name, updated
 FROM features
-ORDER BY created DESC
+ORDER BY features.created DESC
 `
 
 func (q *Queries) ListFeatures(ctx context.Context) ([]Feature, error) {
@@ -896,7 +938,7 @@ const listFiles = `-- name: ListFiles :many
 SELECT blob, created, id, name, size, ticket, updated
 FROM files
 WHERE ticket = ?1 OR ?1 = ''
-ORDER BY created DESC
+ORDER BY files.created DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -941,7 +983,7 @@ const listLinks = `-- name: ListLinks :many
 SELECT created, id, name, ticket, updated, url
 FROM links
 WHERE ticket = ?1 OR ?1 = ''
-ORDER BY created DESC
+ORDER BY links.created DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -984,7 +1026,7 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]Link, e
 const listReactions = `-- name: ListReactions :many
 SELECT "action", actiondata, created, id, name, "trigger", triggerdata, updated
 FROM reactions
-ORDER BY created DESC
+ORDER BY reactions.created DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -1088,10 +1130,12 @@ func (q *Queries) ListSearchTickets(ctx context.Context, arg ListSearchTicketsPa
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT created, id, name, open, owner, ticket, updated
+SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
+LEFT JOIN users ON users.id = tasks.owner
+LEFT JOIN tickets ON tickets.id = tasks.ticket
 WHERE ticket = ?1 OR ?1 = ''
-ORDER BY created DESC
+ORDER BY tasks.created DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -1101,15 +1145,28 @@ type ListTasksParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Task, error) {
+type ListTasksRow struct {
+	Created    string         `json:"created"`
+	ID         string         `json:"id"`
+	Name       string         `json:"name"`
+	Open       bool           `json:"open"`
+	Owner      string         `json:"owner"`
+	Ticket     string         `json:"ticket"`
+	Updated    string         `json:"updated"`
+	OwnerName  sql.NullString `json:"owner_name"`
+	TicketName sql.NullString `json:"ticket_name"`
+	TicketType sql.NullString `json:"ticket_type"`
+}
+
+func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTasksRow, error) {
 	rows, err := q.db.QueryContext(ctx, listTasks, arg.Ticket, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Task
+	var items []ListTasksRow
 	for rows.Next() {
-		var i Task
+		var i ListTasksRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.ID,
@@ -1118,6 +1175,9 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Task, e
 			&i.Owner,
 			&i.Ticket,
 			&i.Updated,
+			&i.OwnerName,
+			&i.TicketName,
+			&i.TicketType,
 		); err != nil {
 			return nil, err
 		}
@@ -1133,9 +1193,11 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Task, e
 }
 
 const listTickets = `-- name: ListTickets :many
-SELECT created, description, id, name, open, owner, resolution, schema, state, type, updated
+SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-ORDER BY created DESC
+LEFT JOIN users ON users.id = tickets.owner
+LEFT JOIN types ON types.id = tickets.type
+ORDER BY tickets.created DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -1144,15 +1206,32 @@ type ListTicketsParams struct {
 	Limit  int64 `json:"limit"`
 }
 
-func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Ticket, error) {
+type ListTicketsRow struct {
+	Created      string         `json:"created"`
+	Description  string         `json:"description"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Open         bool           `json:"open"`
+	Owner        string         `json:"owner"`
+	Resolution   string         `json:"resolution"`
+	Schema       interface{}    `json:"schema"`
+	State        interface{}    `json:"state"`
+	Type         string         `json:"type"`
+	Updated      string         `json:"updated"`
+	OwnerName    sql.NullString `json:"owner_name"`
+	TypeSingular sql.NullString `json:"type_singular"`
+	TypePlural   sql.NullString `json:"type_plural"`
+}
+
+func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]ListTicketsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listTickets, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Ticket
+	var items []ListTicketsRow
 	for rows.Next() {
-		var i Ticket
+		var i ListTicketsRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.Description,
@@ -1165,6 +1244,9 @@ func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Tic
 			&i.State,
 			&i.Type,
 			&i.Updated,
+			&i.OwnerName,
+			&i.TypeSingular,
+			&i.TypePlural,
 		); err != nil {
 			return nil, err
 		}
@@ -1183,7 +1265,7 @@ const listTimeline = `-- name: ListTimeline :many
 SELECT created, id, message, ticket, time, updated
 FROM timeline
 WHERE ticket = ?1 OR ?1 = ''
-ORDER BY created DESC
+ORDER BY timeline.created DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -1263,7 +1345,7 @@ func (q *Queries) ListTypes(ctx context.Context) ([]Type, error) {
 const listUsers = `-- name: ListUsers :many
 SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
-ORDER BY created DESC
+ORDER BY users.created DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -1424,14 +1506,33 @@ func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([
 }
 
 const ticket = `-- name: Ticket :one
-SELECT created, description, id, name, open, owner, resolution, schema, state, type, updated
+SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-WHERE id = ?1
+LEFT JOIN users ON users.id = tickets.owner
+LEFT JOIN types ON types.id = tickets.type
+WHERE tickets.id = ?1
 `
 
-func (q *Queries) Ticket(ctx context.Context, id string) (Ticket, error) {
+type TicketRow struct {
+	Created      string         `json:"created"`
+	Description  string         `json:"description"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Open         bool           `json:"open"`
+	Owner        string         `json:"owner"`
+	Resolution   string         `json:"resolution"`
+	Schema       interface{}    `json:"schema"`
+	State        interface{}    `json:"state"`
+	Type         string         `json:"type"`
+	Updated      string         `json:"updated"`
+	OwnerName    sql.NullString `json:"owner_name"`
+	TypeSingular sql.NullString `json:"type_singular"`
+	TypePlural   sql.NullString `json:"type_plural"`
+}
+
+func (q *Queries) Ticket(ctx context.Context, id string) (TicketRow, error) {
 	row := q.db.QueryRowContext(ctx, ticket, id)
-	var i Ticket
+	var i TicketRow
 	err := row.Scan(
 		&i.Created,
 		&i.Description,
@@ -1444,6 +1545,9 @@ func (q *Queries) Ticket(ctx context.Context, id string) (Ticket, error) {
 		&i.State,
 		&i.Type,
 		&i.Updated,
+		&i.OwnerName,
+		&i.TypeSingular,
+		&i.TypePlural,
 	)
 	return i, err
 }
