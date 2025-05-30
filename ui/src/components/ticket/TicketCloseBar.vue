@@ -10,14 +10,14 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models/Ticket'
+import type { ExtendedTicket, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 const router = useRouter()
 
 const props = defineProps<{
-  ticket: Ticket
+  ticket: ExtendedTicket
 }>()
 
 const resolution = ref(props.ticket.resolution)
@@ -51,8 +51,9 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
     >
       <Check v-if="ticket.open" class="mr-2 h-4 w-4" />
       <Repeat v-else class="mr-2 h-4 w-4" />
-      {{ ticket?.open ? 'Close ' + props.ticket.type : 'Reopen ' + props.ticket.type
-      }}<!-- TODO -->
+      {{
+        ticket?.open ? 'Close ' + props.ticket.typeSingular : 'Reopen ' + props.ticket.typeSingular
+      }}
     </Button>
   </ColumnHeader>
 </template>

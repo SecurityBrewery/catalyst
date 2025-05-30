@@ -44,7 +44,7 @@ func (s *Service) HandleUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if authErr != nil {
-		scimUnauthorized(w, authErr.Error())
+		_, _ = w.Write([]byte("null"))
 
 		return
 	}

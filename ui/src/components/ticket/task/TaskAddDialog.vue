@@ -23,7 +23,8 @@ const props = defineProps<{
 }>()
 
 const name = ref('')
-const owner = ref<string | undefined>(authStore.user?.id)
+const ownerID = ref<string | undefined>(authStore.user?.id)
+const ownerName = ref<string | undefined>(authStore.user?.name)
 const isOpen = ref(false)
 
 const addTaskMutation = useMutation({
@@ -34,20 +35,24 @@ const addTaskMutation = useMutation({
         ticket: props.ticket.id,
         name: name.value,
         open: true,
-        owner: owner.value ? owner.value : authStore.user?.id
+        owner: ownerID.value ? ownerID.value : ''
       }
     })
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
     name.value = ''
-    owner.value = authStore.user?.id
     isOpen.value = false
   },
   onError: handleError
 })
 
-const submitDisabled = computed(() => !name.value || !owner.value)
+const submitDisabled = computed(() => !name.value || !ownerID.value)
+
+const select = (user: User) => {
+  ownerID.value = user.id
+  ownerName.value = user.name
+}
 </script>
 
 <template>
@@ -64,13 +69,7 @@ const submitDisabled = computed(() => !name.value || !owner.value)
       @keydown.meta.enter="addTaskMutation.mutate"
       @keydown.ctrl.enter="addTaskMutation.mutate"
     />
-    <UserSelect v-model="owner">
-      <Button variant="outline" role="combobox">
-        <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-        {{ owner }}
-        <!-- TODO -->
-      </Button>
-    </UserSelect>
+    <UserSelect :userID="ownerID" :userName="ownerName" @select="select" />
     <Button variant="outline" @click="isOpen = false"> Cancel</Button>
     <Button :disabled="submitDisabled" @click="addTaskMutation.mutate">
       Save

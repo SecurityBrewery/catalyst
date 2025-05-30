@@ -12,8 +12,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { CircleUser } from 'lucide-vue-next'
 
-import { onMounted } from 'vue'
-
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
 
@@ -26,20 +24,8 @@ const variant = 'secondary'
 const authStore = useAuthStore()
 
 const logout = () => {
-  fetch('/auth/logout', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
   window.location.href = '/auth/local/logout'
 }
-
-onMounted(() => {
-  if (!authStore.user) {
-    window.location.href = '/ui/login'
-  }
-})
 </script>
 
 <template>

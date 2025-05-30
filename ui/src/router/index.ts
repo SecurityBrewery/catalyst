@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useAuthStore } from '@/store/auth'
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
 import PasswordResetView from '@/views/PasswordResetView.vue'
@@ -11,34 +12,50 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      redirect: '/dashboard',
+      meta: { requiresAuth: true }
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/tickets/:type/:id?',
       name: 'tickets',
-      component: TicketView
+      component: TicketView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/reactions/:id?',
       name: 'reactions',
-      component: ReactionView
+      component: ReactionView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: { requiresAuth: false }
     },
     {
       path: '/password-reset',
       name: 'password-reset',
-      component: PasswordResetView
+      component: PasswordResetView,
+      meta: { requiresAuth: false }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router

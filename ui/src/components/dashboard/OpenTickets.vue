@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models'
+import type { ExtendedTicket } from '@/client/models'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
 
@@ -23,7 +23,7 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets', 'dashboard'],
-  queryFn: (): Promise<Array<Ticket>> => {
+  queryFn: (): Promise<Array<ExtendedTicket>> => {
     return api
       .listTickets()
       .then((tickets) =>
@@ -32,7 +32,7 @@ const {
   }
 })
 
-const age = (ticket: Ticket) => {
+const age = (ticket: ExtendedTicket) => {
   const days = intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
 
   if (!days) return 'today'
@@ -51,8 +51,7 @@ const age = (ticket: Ticket) => {
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">{{ ticket.type }}</span>
-        <!-- TODO: singular -->
+        <span class="text-sm text-muted-foreground">{{ ticket.typeSingular }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
         <RouterLink

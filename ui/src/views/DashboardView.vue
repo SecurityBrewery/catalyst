@@ -12,13 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ExternalLink } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 import { api } from '@/api'
-import { useAuthStore } from '@/store/auth'
-
-const authStore = useAuthStore()
 
 const {
   isPending,
@@ -40,12 +35,6 @@ const count = (id: string) => {
 
   return s[0].count
 }
-
-onMounted(() => {
-  if (!authStore.user) {
-    router.push({ name: 'login' })
-  }
-})
 </script>
 
 <template>

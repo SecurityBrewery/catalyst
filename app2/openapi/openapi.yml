@@ -449,6 +449,8 @@ paths:
       operationId: searchTickets
       parameters:
         - { "name": "query", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "type", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "open", "in": "query", "required": false, "schema": { "type": "boolean" } }
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:

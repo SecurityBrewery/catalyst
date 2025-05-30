@@ -6,17 +6,13 @@ import TicketDisplay from '@/components/ticket/TicketDisplay.vue'
 import TicketList from '@/components/ticket/TicketList.vue'
 
 import { useQuery } from '@tanstack/vue-query'
-import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { api } from '@/api'
 import type { Type } from '@/client/models'
-import { useAuthStore } from '@/store/auth'
-
-const authStore = useAuthStore()
 
 const route = useRoute()
-const router = useRouter()
 
 const id = computed(() => route.params.id as string)
 const type = computed(() => route.params.type as string)
@@ -38,12 +34,6 @@ watch(
   () => type.value,
   () => refetch()
 )
-
-onMounted(() => {
-  if (!authStore.user) {
-    router.push({ name: 'login' })
-  }
-})
 </script>
 
 <template>

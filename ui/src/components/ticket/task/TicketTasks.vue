@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 
-import { Trash2, User2 } from 'lucide-vue-next'
+import { Trash2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import { api } from '@/api'
-import type { ExtendedTask, Task, Ticket } from '@/client/models'
+import type { ExtendedTask, Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -31,11 +31,11 @@ const setTaskOwnerMutation = useMutation({
         owner: update.owner
       }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] }),
   onError: handleError
 })
 
-const update = (id: string, userID: string) => setTaskOwnerMutation.mutate({ id, owner: userID })
+const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, owner: user.id })
 
 const checkMutation = useMutation({
   mutationFn: (task: Task): Promise<Task> =>
@@ -45,7 +45,7 @@ const checkMutation = useMutation({
         open: !task.open
       }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] }),
   onError: handleError
 })
 
@@ -85,25 +85,18 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           />
         </div>
         <div class="ml-auto flex items-center">
-          <UserSelect v-if="!task.owner" @update:modelValue="update(task.id, $event)">
-            <Button variant="outline" role="combobox" class="h-8">
-              <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              Unassigned
-            </Button>
-          </UserSelect>
-          <UserSelect v-else :modelValue="task.owner" @update:modelValue="update(task.id, $event)">
-            <Button variant="outline" role="combobox" class="mr-2 h-8">
-              <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              {{ task.ownerName }}
-            </Button>
-          </UserSelect>
+          <UserSelect
+            :userID="task.owner"
+            :userName="task.ownerName"
+            @select="update(task.id, $event)"
+          />
           <DeleteDialog
             v-if="task"
             collection="tasks"
             :id="task.id"
             :name="task.name"
             :singular="'Task'"
-            :queryKey="['tickets', ticket.id]"
+            :queryKey="['tasks', ticket.id]"
           >
             <Button variant="ghost" size="icon" class="h-8 w-8">
               <Trash2 class="size-4" />

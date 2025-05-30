@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import UserSelect from '@/components/common/UserSelect.vue'
-import { Button } from '@/components/ui/button'
-
-import { User2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import { api } from '@/api'
-import type { ExtendedTicket, Ticket } from '@/client/models'
+import type { ExtendedTicket, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -23,20 +20,9 @@ const setTicketOwnerMutation = useMutation({
   onError: handleError
 })
 
-const update = (userID: string) => setTicketOwnerMutation.mutate(userID)
+const update = (user: User) => setTicketOwnerMutation.mutate(user.id)
 </script>
 
 <template>
-  <UserSelect v-if="!ticket.owner" @update:modelValue="update">
-    <Button variant="outline" role="combobox">
-      <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-      Unassigned
-    </Button>
-  </UserSelect>
-  <UserSelect v-else :modelValue="ticket.owner" @update:modelValue="update">
-    <Button variant="outline" role="combobox">
-      <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-      {{ ticket.ownerName }}
-    </Button>
-  </UserSelect>
+  <UserSelect :userID="ticket.owner" :userName="ticket.ownerName" @select="update" />
 </template>

@@ -492,6 +492,7 @@ func (s *Service) GetSidebar(ctx context.Context, request openapi.GetSidebarRequ
 
 func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksRequestObject) (openapi.ListTasksResponseObject, error) {
 	tasks, err := s.Queries.ListTasks(ctx, sqlc.ListTasksParams{
+		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -592,51 +593,30 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 }
 
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
-	var response []openapi.TicketSearch
+	tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
+		Query:  toNullString(request.Params.Query),
+		Type:   toNullString(request.Params.Type),
+		Open:   toNullBool(request.Params.Open),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	if request.Params.Query == nil || *request.Params.Query == "" {
-		tickets, err := s.Queries.ListSearchTickets(ctx, sqlc.ListSearchTicketsParams{
-			Offset: toInt64(request.Params.Offset, defaultOffset),
-			Limit:  toInt64(request.Params.Limit, defaultLimit),
+	response := []openapi.TicketSearch{}
+
+	for _, ticket := range tickets {
+		response = append(response, openapi.TicketSearch{
+			Created:     ticket.Created,
+			Description: ticket.Description,
+			Id:          ticket.ID,
+			Name:        ticket.Name,
+			Open:        ticket.Open,
+			OwnerName:   ticket.OwnerName.String,
+			State:       unmarshal(ticket.State),
+			Type:        ticket.Type,
 		})
-		if err != nil {
-			return nil, err
-		}
-
-		for _, ticket := range tickets {
-			response = append(response, openapi.TicketSearch{
-				Created:     ticket.Created,
-				Description: ticket.Description,
-				Id:          ticket.ID,
-				Name:        ticket.Name,
-				Open:        ticket.Open,
-				OwnerName:   ticket.OwnerName.String,
-				State:       unmarshal(ticket.State),
-				Type:        ticket.Type,
-			})
-		}
-	} else {
-		tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
-			Query:  toNullString(request.Params.Query),
-			Offset: toInt64(request.Params.Offset, defaultOffset),
-			Limit:  toInt64(request.Params.Limit, defaultLimit),
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		for _, ticket := range tickets {
-			response = append(response, openapi.TicketSearch{
-				Created:     ticket.Created,
-				Description: ticket.Description,
-				Id:          ticket.ID,
-				Name:        ticket.Name,
-				Open:        ticket.Open,
-				OwnerName:   ticket.OwnerName.String,
-				State:       unmarshal(ticket.State),
-				Type:        ticket.Type,
-			})
-		}
 	}
 
 	return openapi.SearchTickets200JSONResponse(response), nil

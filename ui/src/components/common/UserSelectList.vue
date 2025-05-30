@@ -15,11 +15,13 @@ import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
 import { api } from '@/api'
+import type { User } from '@/client'
 import { cn } from '@/lib/utils'
 
-const userID = defineModel<string | undefined>()
+defineProps<{
+  userID: string | undefined
+}>()
 
-const open = ref(false)
 const searchTerm = ref('')
 
 const {
@@ -34,7 +36,12 @@ const {
     api
       .listUsers()
       .then((users) =>
-        users.filter((user) => user.name.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        users.filter(
+          (user) =>
+            user.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+            user.username.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.value.toLowerCase())
+        )
       )
 })
 
@@ -44,10 +51,14 @@ watch(
   () => searchTerm.value,
   () => searchUserDebounced()
 )
+
+const emit = defineEmits<{
+  (e: 'select', value: User): void
+}>()
 </script>
 
 <template>
-  <Command v-model="userID" v-model:search-term="searchTerm">
+  <Command v-model:search-term="searchTerm">
     <CommandInput placeholder="Search user..." />
     <CommandEmpty>
       <span v-if="usersIsPending"> Loading... </span>
@@ -59,8 +70,8 @@ watch(
         <CommandItem
           v-for="u in users"
           :key="u.id"
-          :value="u.id"
-          @select="open = false"
+          :value="u"
+          @select="emit('select', u)"
           class="cursor-pointer"
         >
           <Check

@@ -324,6 +324,8 @@ export interface ListWebhooksRequest {
 
 export interface SearchTicketsRequest {
   query?: string
+  type?: string
+  open?: boolean
   offset?: number
   limit?: number
 }
@@ -2442,6 +2444,14 @@ export class DefaultApi extends runtime.BaseAPI {
 
     if (requestParameters['query'] != null) {
       queryParameters['query'] = requestParameters['query']
+    }
+
+    if (requestParameters['type'] != null) {
+      queryParameters['type'] = requestParameters['type']
+    }
+
+    if (requestParameters['open'] != null) {
+      queryParameters['open'] = requestParameters['open']
     }
 
     if (requestParameters['offset'] != null) {

@@ -49,11 +49,20 @@ const {
   error,
   refetch
 } = useQuery({
-  queryKey: ['tickets', searchValue.value],
+  queryKey: [
+    'tickets',
+    searchValue.value,
+    tab.value,
+    props.selectedType.id,
+    page.value,
+    perPage.value
+  ],
   queryFn: (): Promise<Array<TicketSearch>> =>
     api.searchTickets({
+      type: props.selectedType.id,
       query: searchValue.value,
-      offset: page.value,
+      open: tab.value === 'open' ? true : tab.value === 'closed' ? false : undefined,
+      offset: page.value - 1 * perPage.value,
       limit: perPage.value
     })
 })

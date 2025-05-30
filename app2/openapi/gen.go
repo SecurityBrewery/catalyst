@@ -423,6 +423,8 @@ type ListTasksParams struct {
 // SearchTicketsParams defines parameters for SearchTickets.
 type SearchTicketsParams struct {
 	Query  *string `form:"query,omitempty" json:"query,omitempty"`
+	Type   *string `form:"type,omitempty" json:"type,omitempty"`
+	Open   *bool   `form:"open,omitempty" json:"open,omitempty"`
 	Offset *int    `form:"offset,omitempty" json:"offset,omitempty"`
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
@@ -1843,6 +1845,22 @@ func (siw *ServerInterfaceWrapper) SearchTickets(w http.ResponseWriter, r *http.
 	err = runtime.BindQueryParameter("form", true, false, "query", r.URL.Query(), &params.Query)
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "query", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "type", r.URL.Query(), &params.Type)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "type", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "open" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "open", r.URL.Query(), &params.Open)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "open", Err: err})
 		return
 	}
 

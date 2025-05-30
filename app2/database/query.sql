@@ -400,18 +400,6 @@ FROM dashboard_counts;
 SELECT *
 FROM sidebar;
 
--- name: ListSearchTickets :many
-SELECT id,
-       name,
-       created,
-       description,
-       open,
-       type,
-       state,
-       owner_name
-FROM ticket_search
-LIMIT @limit OFFSET @offset;
-
 -- name: SearchTickets :many
 SELECT id,
        name,
@@ -422,12 +410,14 @@ SELECT id,
        state,
        owner_name
 FROM ticket_search
-WHERE name LIKE '%' || @query || '%'
+WHERE (@query = '' OR (name LIKE '%' || @query || '%'
    OR description LIKE '%' || @query || '%'
    OR comment_messages LIKE '%' || @query || '%'
    OR file_names LIKE '%' || @query || '%'
    OR link_names LIKE '%' || @query || '%'
    OR link_urls LIKE '%' || @query || '%'
    OR task_names LIKE '%' || @query || '%'
-   OR timeline_messages LIKE '%' || @query || '%'
+   OR timeline_messages LIKE '%' || @query || '%'))
+    AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+    AND (sqlc.narg('open') IS NULL OR open = sqlc.narg('open'))
 LIMIT @limit OFFSET @offset;

@@ -52,8 +52,7 @@ const {
             "
           >
             <span class="flex flex-row items-center text-sm text-gray-500">
-              Go to {{ task.ticket }}
-              <!-- TODO: name -->
+              Go to {{ task.ticketName }}
               <ChevronRight class="ml-2 h-4 w-4" />
             </span>
           </RouterLink>

@@ -8,7 +8,6 @@ import ReactionNew from '@/components/reaction/ReactionNew.vue'
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { api } from '@/api'
 import { useAuthStore } from '@/store/auth'
 
 const authStore = useAuthStore()
@@ -17,12 +16,6 @@ const route = useRoute()
 const router = useRouter()
 
 const id = computed(() => route.params.id as string)
-
-onMounted(() => {
-  if (!authStore.user) {
-    router.push({ name: 'login' })
-  }
-})
 </script>
 
 <template>
