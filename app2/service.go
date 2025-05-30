@@ -8,23 +8,28 @@ import (
 	"github.com/SecurityBrewery/catalyst/app2/openapi"
 )
 
+const (
+	defaultLimit  = 10
+	defaultOffset = 0
+)
+
 type Service struct {
 	Queries *sqlc.Queries
 }
 
 func (s *Service) ListComments(ctx context.Context, request openapi.ListCommentsRequestObject) (openapi.ListCommentsResponseObject, error) {
 	comments, err := s.Queries.ListComments(ctx, sqlc.ListCommentsParams{
-		Ticket: *request.Params.Ticket,
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Ticket: toString(request.Params.Ticket, ""),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Comments
+	var response []openapi.Comment
 	for _, comment := range comments {
-		response = append(response, openapi.Comments{
+		response = append(response, openapi.Comment{
 			Author:  comment.Author,
 			Created: comment.Created,
 			Id:      comment.ID,
@@ -110,9 +115,9 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 		return nil, err
 	}
 
-	var response []openapi.Features
+	var response []openapi.Feature
 	for _, feature := range features {
-		response = append(response, openapi.Features{
+		response = append(response, openapi.Feature{
 			Id:      feature.ID,
 			Name:    feature.Name,
 			Created: feature.Created,
@@ -169,17 +174,17 @@ func (s *Service) UpdateFeature(ctx context.Context, request openapi.UpdateFeatu
 
 func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesRequestObject) (openapi.ListFilesResponseObject, error) {
 	files, err := s.Queries.ListFiles(ctx, sqlc.ListFilesParams{
-		Ticket: *request.Params.Ticket,
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Ticket: toString(request.Params.Ticket, ""),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Files
+	var response []openapi.File
 	for _, file := range files {
-		response = append(response, openapi.Files{
+		response = append(response, openapi.File{
 			Id:      file.ID,
 			Name:    file.Name,
 			Created: file.Created,
@@ -243,17 +248,17 @@ func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequ
 
 func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksRequestObject) (openapi.ListLinksResponseObject, error) {
 	links, err := s.Queries.ListLinks(ctx, sqlc.ListLinksParams{
-		Ticket: *request.Params.Ticket,
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Ticket: toString(request.Params.Ticket, ""),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Links
+	var response []openapi.Link
 	for _, link := range links {
-		response = append(response, openapi.Links{
+		response = append(response, openapi.Link{
 			Id:      link.ID,
 			Name:    link.Name,
 			Created: link.Created,
@@ -319,16 +324,16 @@ func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequ
 
 func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactionsRequestObject) (openapi.ListReactionsResponseObject, error) {
 	reactions, err := s.Queries.ListReactions(ctx, sqlc.ListReactionsParams{
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Reactions
+	var response []openapi.Reaction
 	for _, reaction := range reactions {
-		response = append(response, openapi.Reactions{
+		response = append(response, openapi.Reaction{
 			Id:      reaction.ID,
 			Name:    reaction.Name,
 			Created: reaction.Created,
@@ -415,17 +420,16 @@ func (s *Service) GetSidebar(ctx context.Context, request openapi.GetSidebarRequ
 
 func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksRequestObject) (openapi.ListTasksResponseObject, error) {
 	tasks, err := s.Queries.ListTasks(ctx, sqlc.ListTasksParams{
-		Ticket: *request.Params.Ticket,
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Tasks
+	var response []openapi.Task
 	for _, task := range tasks {
-		response = append(response, openapi.Tasks{
+		response = append(response, openapi.Task{
 			Id:      task.ID,
 			Name:    task.Name,
 			Created: task.Created,
@@ -496,8 +500,8 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
 	tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
 		Query:  sql.NullString{String: request.Params.Query, Valid: true},
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
@@ -520,16 +524,16 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 
 func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRequestObject) (openapi.ListTicketsResponseObject, error) {
 	tickets, err := s.Queries.ListTickets(ctx, sqlc.ListTicketsParams{
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Tickets
+	var response []openapi.Ticket
 	for _, ticket := range tickets {
-		response = append(response, openapi.Tickets{
+		response = append(response, openapi.Ticket{
 			Id:          ticket.ID,
 			Name:        ticket.Name,
 			Description: ticket.Description,
@@ -606,17 +610,17 @@ func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicket
 
 func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimelineRequestObject) (openapi.ListTimelineResponseObject, error) {
 	timeline, err := s.Queries.ListTimeline(ctx, sqlc.ListTimelineParams{
-		Ticket: *request.Params.Ticket,
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Ticket: toString(request.Params.Ticket, ""),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Timeline
+	var response []openapi.TimelineEntry
 	for _, timeline := range timeline {
-		response = append(response, openapi.Timeline{
+		response = append(response, openapi.TimelineEntry{
 			Id:      timeline.ID,
 			Message: timeline.Message,
 			Created: timeline.Created,
@@ -681,17 +685,14 @@ func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTime
 }
 
 func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesRequestObject) (openapi.ListTypesResponseObject, error) {
-	types, err := s.Queries.ListTypes(ctx, sqlc.ListTypesParams{
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
-	})
+	types, err := s.Queries.ListTypes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Types
+	var response []openapi.Type
 	for _, t := range types {
-		response = append(response, openapi.Types{
+		response = append(response, openapi.Type{
 			Id:       t.ID,
 			Created:  t.Created,
 			Updated:  t.Updated,
@@ -760,16 +761,16 @@ func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequ
 
 func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersRequestObject) (openapi.ListUsersResponseObject, error) {
 	users, err := s.Queries.ListUsers(ctx, sqlc.ListUsersParams{
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Users
+	var response []openapi.User
 	for _, user := range users {
-		response = append(response, openapi.Users{
+		response = append(response, openapi.User{
 			Id: user.ID,
 		})
 	}
@@ -834,16 +835,16 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {
 	webhooks, err := s.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
-		Offset: int64(*request.Params.Offset),
-		Limit:  int64(*request.Params.Limit),
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var response []openapi.Webhooks
+	var response []openapi.Webhook
 	for _, webhook := range webhooks {
-		response = append(response, openapi.Webhooks{
+		response = append(response, openapi.Webhook{
 			Id:   webhook.ID,
 			Name: webhook.Name,
 		})
@@ -902,4 +903,18 @@ func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebho
 	}
 
 	return openapi.UpdateWebhook200Response{}, nil
+}
+
+func toString(value *string, defaultValue string) string {
+	if value == nil {
+		return defaultValue
+	}
+	return *value
+}
+
+func toInt64(value *int, defaultValue int64) int64 {
+	if value == nil {
+		return defaultValue
+	}
+	return int64(*value)
 }

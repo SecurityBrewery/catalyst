@@ -63,6 +63,15 @@ dev:
 	go run . fake-data
 	go run . serve --app-url http://localhost:8090 --flags dev
 
+
+.PHONY: dev2
+dev2:
+	@echo "Running..."
+	rm -rf catalyst_data
+	mkdir -p catalyst_data
+	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
+	go run .
+
 .PHONY: dev-10000
 dev-10000:
 	@echo "Running..."
@@ -96,7 +105,7 @@ sqlc:
 openapi:
 	@echo "OpenAPI..."
 	cd app2 && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
-	openapi-generator generate -i api.yaml -g typescript-fetch -o ui/src/client
+	openapi-generator generate -i app2/openapi/openapi.yml -g typescript-fetch -o ui/src/client
 	@echo "Done."
 
 .PHONY: generate

@@ -14,8 +14,8 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
-// Comments defines model for Comments.
-type Comments struct {
+// Comment defines model for Comment.
+type Comment struct {
 	Author  string `json:"author"`
 	Created string `json:"created"`
 	Id      string `json:"id"`
@@ -30,16 +30,16 @@ type DashboardCounts struct {
 	Id    string `json:"id"`
 }
 
-// Features defines model for Features.
-type Features struct {
+// Feature defines model for Feature.
+type Feature struct {
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Name    string `json:"name"`
 	Updated string `json:"updated"`
 }
 
-// Files defines model for Files.
-type Files struct {
+// File defines model for File.
+type File struct {
 	Blob    string `json:"blob"`
 	Created string `json:"created"`
 	Id      string `json:"id"`
@@ -49,8 +49,8 @@ type Files struct {
 	Updated string `json:"updated"`
 }
 
-// Links defines model for Links.
-type Links struct {
+// Link defines model for Link.
+type Link struct {
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Name    string `json:"name"`
@@ -59,8 +59,8 @@ type Links struct {
 	Url     string `json:"url"`
 }
 
-// Reactions defines model for Reactions.
-type Reactions struct {
+// Reaction defines model for Reaction.
+type Reaction struct {
 	Action      string                 `json:"action"`
 	Actiondata  map[string]interface{} `json:"actiondata"`
 	Created     string                 `json:"created"`
@@ -80,8 +80,8 @@ type Sidebar struct {
 	Singular string `json:"singular"`
 }
 
-// Tasks defines model for Tasks.
-type Tasks struct {
+// Task defines model for Task.
+type Task struct {
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Name    string `json:"name"`
@@ -91,19 +91,8 @@ type Tasks struct {
 	Updated string `json:"updated"`
 }
 
-// TicketSearch defines model for TicketSearch.
-type TicketSearch struct {
-	Created     string                 `json:"created"`
-	Description string                 `json:"description"`
-	Id          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Open        bool                   `json:"open"`
-	State       map[string]interface{} `json:"state"`
-	Type        string                 `json:"type"`
-}
-
-// Tickets defines model for Tickets.
-type Tickets struct {
+// Ticket defines model for Ticket.
+type Ticket struct {
 	Created     string                 `json:"created"`
 	Description string                 `json:"description"`
 	Id          string                 `json:"id"`
@@ -117,8 +106,19 @@ type Tickets struct {
 	Updated     string                 `json:"updated"`
 }
 
-// Timeline defines model for Timeline.
-type Timeline struct {
+// TicketSearch defines model for TicketSearch.
+type TicketSearch struct {
+	Created     string                 `json:"created"`
+	Description string                 `json:"description"`
+	Id          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Open        bool                   `json:"open"`
+	State       map[string]interface{} `json:"state"`
+	Type        string                 `json:"type"`
+}
+
+// TimelineEntry defines model for TimelineEntry.
+type TimelineEntry struct {
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Message string `json:"message"`
@@ -127,8 +127,8 @@ type Timeline struct {
 	Updated string `json:"updated"`
 }
 
-// Types defines model for Types.
-type Types struct {
+// Type defines model for Type.
+type Type struct {
 	Created  string                 `json:"created"`
 	Icon     string                 `json:"icon"`
 	Id       string                 `json:"id"`
@@ -138,8 +138,8 @@ type Types struct {
 	Updated  string                 `json:"updated"`
 }
 
-// Users defines model for Users.
-type Users struct {
+// User defines model for User.
+type User struct {
 	Avatar                 string `json:"avatar"`
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
@@ -156,8 +156,8 @@ type Users struct {
 	Verified               bool   `json:"verified"`
 }
 
-// Webhooks defines model for Webhooks.
-type Webhooks struct {
+// Webhook defines model for Webhook.
+type Webhook struct {
 	Collection  string `json:"collection"`
 	Created     string `json:"created"`
 	Destination string `json:"destination"`
@@ -175,9 +175,8 @@ type ListCommentsParams struct {
 
 // ListFeaturesParams defines parameters for ListFeatures.
 type ListFeaturesParams struct {
-	Ticket *string `form:"ticket,omitempty" json:"ticket,omitempty"`
-	Offset *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // ListFilesParams defines parameters for ListFiles.
@@ -246,70 +245,70 @@ type ListWebhooksParams struct {
 }
 
 // CreateCommentJSONRequestBody defines body for CreateComment for application/json ContentType.
-type CreateCommentJSONRequestBody = Comments
+type CreateCommentJSONRequestBody = Comment
 
 // UpdateCommentJSONRequestBody defines body for UpdateComment for application/json ContentType.
-type UpdateCommentJSONRequestBody = Comments
+type UpdateCommentJSONRequestBody = Comment
 
 // CreateFeatureJSONRequestBody defines body for CreateFeature for application/json ContentType.
-type CreateFeatureJSONRequestBody = Features
+type CreateFeatureJSONRequestBody = Feature
 
 // UpdateFeatureJSONRequestBody defines body for UpdateFeature for application/json ContentType.
-type UpdateFeatureJSONRequestBody = Features
+type UpdateFeatureJSONRequestBody = Feature
 
 // CreateFileJSONRequestBody defines body for CreateFile for application/json ContentType.
-type CreateFileJSONRequestBody = Files
+type CreateFileJSONRequestBody = File
 
 // UpdateFileJSONRequestBody defines body for UpdateFile for application/json ContentType.
-type UpdateFileJSONRequestBody = Files
+type UpdateFileJSONRequestBody = File
 
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.
-type CreateLinkJSONRequestBody = Links
+type CreateLinkJSONRequestBody = Link
 
 // UpdateLinkJSONRequestBody defines body for UpdateLink for application/json ContentType.
-type UpdateLinkJSONRequestBody = Links
+type UpdateLinkJSONRequestBody = Link
 
 // CreateReactionJSONRequestBody defines body for CreateReaction for application/json ContentType.
-type CreateReactionJSONRequestBody = Reactions
+type CreateReactionJSONRequestBody = Reaction
 
 // UpdateReactionJSONRequestBody defines body for UpdateReaction for application/json ContentType.
-type UpdateReactionJSONRequestBody = Reactions
+type UpdateReactionJSONRequestBody = Reaction
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
-type CreateTaskJSONRequestBody = Tasks
+type CreateTaskJSONRequestBody = Task
 
 // UpdateTaskJSONRequestBody defines body for UpdateTask for application/json ContentType.
-type UpdateTaskJSONRequestBody = Tasks
+type UpdateTaskJSONRequestBody = Task
 
 // CreateTicketJSONRequestBody defines body for CreateTicket for application/json ContentType.
-type CreateTicketJSONRequestBody = Tickets
+type CreateTicketJSONRequestBody = Ticket
 
 // UpdateTicketJSONRequestBody defines body for UpdateTicket for application/json ContentType.
-type UpdateTicketJSONRequestBody = Tickets
+type UpdateTicketJSONRequestBody = Ticket
 
 // CreateTimelineJSONRequestBody defines body for CreateTimeline for application/json ContentType.
-type CreateTimelineJSONRequestBody = Timeline
+type CreateTimelineJSONRequestBody = TimelineEntry
 
 // UpdateTimelineJSONRequestBody defines body for UpdateTimeline for application/json ContentType.
-type UpdateTimelineJSONRequestBody = Timeline
+type UpdateTimelineJSONRequestBody = TimelineEntry
 
 // CreateTypeJSONRequestBody defines body for CreateType for application/json ContentType.
-type CreateTypeJSONRequestBody = Types
+type CreateTypeJSONRequestBody = Type
 
 // UpdateTypeJSONRequestBody defines body for UpdateType for application/json ContentType.
-type UpdateTypeJSONRequestBody = Types
+type UpdateTypeJSONRequestBody = Type
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody = Users
+type CreateUserJSONRequestBody = User
 
 // UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = Users
+type UpdateUserJSONRequestBody = User
 
 // CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
-type CreateWebhookJSONRequestBody = Webhooks
+type CreateWebhookJSONRequestBody = Webhook
 
 // UpdateWebhookJSONRequestBody defines body for UpdateWebhook for application/json ContentType.
-type UpdateWebhookJSONRequestBody = Webhooks
+type UpdateWebhookJSONRequestBody = Webhook
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -427,19 +426,19 @@ type ServerInterface interface {
 	// Update a ticket by ID
 	// (PUT /tickets/{id})
 	UpdateTicket(w http.ResponseWriter, r *http.Request, id string)
-	// List all timeline
+	// List all timeline items
 	// (GET /timeline)
 	ListTimeline(w http.ResponseWriter, r *http.Request, params ListTimelineParams)
-	// Create a new timelin
+	// Create a new timeline item
 	// (POST /timeline)
 	CreateTimeline(w http.ResponseWriter, r *http.Request)
-	// Delete a timelin by ID
+	// Delete a timeline item by ID
 	// (DELETE /timeline/{id})
 	DeleteTimeline(w http.ResponseWriter, r *http.Request, id string)
-	// Get a single timelin by ID
+	// Get a single timeline item by ID
 	// (GET /timeline/{id})
 	GetTimeline(w http.ResponseWriter, r *http.Request, id string)
-	// Update a timelin by ID
+	// Update a timeline item by ID
 	// (PUT /timeline/{id})
 	UpdateTimeline(w http.ResponseWriter, r *http.Request, id string)
 	// List all types
@@ -721,31 +720,31 @@ func (_ Unimplemented) UpdateTicket(w http.ResponseWriter, r *http.Request, id s
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// List all timeline
+// List all timeline items
 // (GET /timeline)
 func (_ Unimplemented) ListTimeline(w http.ResponseWriter, r *http.Request, params ListTimelineParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Create a new timelin
+// Create a new timeline item
 // (POST /timeline)
 func (_ Unimplemented) CreateTimeline(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Delete a timelin by ID
+// Delete a timeline item by ID
 // (DELETE /timeline/{id})
 func (_ Unimplemented) DeleteTimeline(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Get a single timelin by ID
+// Get a single timeline item by ID
 // (GET /timeline/{id})
 func (_ Unimplemented) GetTimeline(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Update a timelin by ID
+// Update a timeline item by ID
 // (PUT /timeline/{id})
 func (_ Unimplemented) UpdateTimeline(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -1003,14 +1002,6 @@ func (siw *ServerInterfaceWrapper) ListFeatures(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListFeaturesParams
-
-	// ------------- Optional query parameter "ticket" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "ticket", r.URL.Query(), &params.Ticket)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket", Err: err})
-		return
-	}
 
 	// ------------- Optional query parameter "offset" -------------
 
@@ -2639,7 +2630,7 @@ type ListCommentsResponseObject interface {
 	VisitListCommentsResponse(w http.ResponseWriter) error
 }
 
-type ListComments200JSONResponse []Comments
+type ListComments200JSONResponse []Comment
 
 func (response ListComments200JSONResponse) VisitListCommentsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2688,7 +2679,7 @@ type GetCommentResponseObject interface {
 	VisitGetCommentResponse(w http.ResponseWriter) error
 }
 
-type GetComment200JSONResponse Comments
+type GetComment200JSONResponse Comment
 
 func (response GetComment200JSONResponse) VisitGetCommentResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2738,7 +2729,7 @@ type ListFeaturesResponseObject interface {
 	VisitListFeaturesResponse(w http.ResponseWriter) error
 }
 
-type ListFeatures200JSONResponse []Features
+type ListFeatures200JSONResponse []Feature
 
 func (response ListFeatures200JSONResponse) VisitListFeaturesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2787,7 +2778,7 @@ type GetFeatureResponseObject interface {
 	VisitGetFeatureResponse(w http.ResponseWriter) error
 }
 
-type GetFeature200JSONResponse Features
+type GetFeature200JSONResponse Feature
 
 func (response GetFeature200JSONResponse) VisitGetFeatureResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2821,7 +2812,7 @@ type ListFilesResponseObject interface {
 	VisitListFilesResponse(w http.ResponseWriter) error
 }
 
-type ListFiles200JSONResponse []Files
+type ListFiles200JSONResponse []File
 
 func (response ListFiles200JSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2870,7 +2861,7 @@ type GetFileResponseObject interface {
 	VisitGetFileResponse(w http.ResponseWriter) error
 }
 
-type GetFile200JSONResponse Files
+type GetFile200JSONResponse File
 
 func (response GetFile200JSONResponse) VisitGetFileResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2904,7 +2895,7 @@ type ListLinksResponseObject interface {
 	VisitListLinksResponse(w http.ResponseWriter) error
 }
 
-type ListLinks200JSONResponse []Links
+type ListLinks200JSONResponse []Link
 
 func (response ListLinks200JSONResponse) VisitListLinksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2953,7 +2944,7 @@ type GetLinkResponseObject interface {
 	VisitGetLinkResponse(w http.ResponseWriter) error
 }
 
-type GetLink200JSONResponse Links
+type GetLink200JSONResponse Link
 
 func (response GetLink200JSONResponse) VisitGetLinkResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2987,7 +2978,7 @@ type ListReactionsResponseObject interface {
 	VisitListReactionsResponse(w http.ResponseWriter) error
 }
 
-type ListReactions200JSONResponse []Reactions
+type ListReactions200JSONResponse []Reaction
 
 func (response ListReactions200JSONResponse) VisitListReactionsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3036,7 +3027,7 @@ type GetReactionResponseObject interface {
 	VisitGetReactionResponse(w http.ResponseWriter) error
 }
 
-type GetReaction200JSONResponse Reactions
+type GetReaction200JSONResponse Reaction
 
 func (response GetReaction200JSONResponse) VisitGetReactionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3086,7 +3077,7 @@ type ListTasksResponseObject interface {
 	VisitListTasksResponse(w http.ResponseWriter) error
 }
 
-type ListTasks200JSONResponse []Tasks
+type ListTasks200JSONResponse []Task
 
 func (response ListTasks200JSONResponse) VisitListTasksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3135,7 +3126,7 @@ type GetTaskResponseObject interface {
 	VisitGetTaskResponse(w http.ResponseWriter) error
 }
 
-type GetTask200JSONResponse Tasks
+type GetTask200JSONResponse Task
 
 func (response GetTask200JSONResponse) VisitGetTaskResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3186,7 +3177,7 @@ type ListTicketsResponseObject interface {
 	VisitListTicketsResponse(w http.ResponseWriter) error
 }
 
-type ListTickets200JSONResponse []Tickets
+type ListTickets200JSONResponse []Ticket
 
 func (response ListTickets200JSONResponse) VisitListTicketsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3235,7 +3226,7 @@ type GetTicketResponseObject interface {
 	VisitGetTicketResponse(w http.ResponseWriter) error
 }
 
-type GetTicket200JSONResponse Tickets
+type GetTicket200JSONResponse Ticket
 
 func (response GetTicket200JSONResponse) VisitGetTicketResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3269,7 +3260,7 @@ type ListTimelineResponseObject interface {
 	VisitListTimelineResponse(w http.ResponseWriter) error
 }
 
-type ListTimeline200JSONResponse []Timeline
+type ListTimeline200JSONResponse []TimelineEntry
 
 func (response ListTimeline200JSONResponse) VisitListTimelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3318,7 +3309,7 @@ type GetTimelineResponseObject interface {
 	VisitGetTimelineResponse(w http.ResponseWriter) error
 }
 
-type GetTimeline200JSONResponse Timeline
+type GetTimeline200JSONResponse TimelineEntry
 
 func (response GetTimeline200JSONResponse) VisitGetTimelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3352,7 +3343,7 @@ type ListTypesResponseObject interface {
 	VisitListTypesResponse(w http.ResponseWriter) error
 }
 
-type ListTypes200JSONResponse []Types
+type ListTypes200JSONResponse []Type
 
 func (response ListTypes200JSONResponse) VisitListTypesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3401,7 +3392,7 @@ type GetTypeResponseObject interface {
 	VisitGetTypeResponse(w http.ResponseWriter) error
 }
 
-type GetType200JSONResponse Types
+type GetType200JSONResponse Type
 
 func (response GetType200JSONResponse) VisitGetTypeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3435,7 +3426,7 @@ type ListUsersResponseObject interface {
 	VisitListUsersResponse(w http.ResponseWriter) error
 }
 
-type ListUsers200JSONResponse []Users
+type ListUsers200JSONResponse []User
 
 func (response ListUsers200JSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3484,7 +3475,7 @@ type GetUserResponseObject interface {
 	VisitGetUserResponse(w http.ResponseWriter) error
 }
 
-type GetUser200JSONResponse Users
+type GetUser200JSONResponse User
 
 func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3518,7 +3509,7 @@ type ListWebhooksResponseObject interface {
 	VisitListWebhooksResponse(w http.ResponseWriter) error
 }
 
-type ListWebhooks200JSONResponse []Webhooks
+type ListWebhooks200JSONResponse []Webhook
 
 func (response ListWebhooks200JSONResponse) VisitListWebhooksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3567,7 +3558,7 @@ type GetWebhookResponseObject interface {
 	VisitGetWebhookResponse(w http.ResponseWriter) error
 }
 
-type GetWebhook200JSONResponse Webhooks
+type GetWebhook200JSONResponse Webhook
 
 func (response GetWebhook200JSONResponse) VisitGetWebhookResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -3709,19 +3700,19 @@ type StrictServerInterface interface {
 	// Update a ticket by ID
 	// (PUT /tickets/{id})
 	UpdateTicket(ctx context.Context, request UpdateTicketRequestObject) (UpdateTicketResponseObject, error)
-	// List all timeline
+	// List all timeline items
 	// (GET /timeline)
 	ListTimeline(ctx context.Context, request ListTimelineRequestObject) (ListTimelineResponseObject, error)
-	// Create a new timelin
+	// Create a new timeline item
 	// (POST /timeline)
 	CreateTimeline(ctx context.Context, request CreateTimelineRequestObject) (CreateTimelineResponseObject, error)
-	// Delete a timelin by ID
+	// Delete a timeline item by ID
 	// (DELETE /timeline/{id})
 	DeleteTimeline(ctx context.Context, request DeleteTimelineRequestObject) (DeleteTimelineResponseObject, error)
-	// Get a single timelin by ID
+	// Get a single timeline item by ID
 	// (GET /timeline/{id})
 	GetTimeline(ctx context.Context, request GetTimelineRequestObject) (GetTimelineResponseObject, error)
-	// Update a timelin by ID
+	// Update a timeline item by ID
 	// (PUT /timeline/{id})
 	UpdateTimeline(ctx context.Context, request UpdateTimelineRequestObject) (UpdateTimelineResponseObject, error)
 	// List all types

@@ -1,9 +1,16 @@
 package app2
 
 import (
-	"context"
+	"log/slog"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"path/filepath"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/martian/v3/cors"
 
 	"github.com/SecurityBrewery/catalyst/app2/database"
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
@@ -16,15 +23,6 @@ func App(filename string, _ bool) (*App2, error) {
 		return nil, err
 	}
 
-	service := &Service{
-		Queries: queries,
-	}
-
-	mux := http.NewServeMux()
-
-	apiHandler := openapi.Handler(openapi.NewStrictHandler(service, nil))
-	mux.Handle("/api/", http.StripPrefix("/api", apiHandler))
-
 	return &App2{
 		Queries: queries,
 	}, nil
@@ -35,21 +33,36 @@ type App2 struct {
 }
 
 func (a *App2) Start() error {
-	ctx := context.Background()
+	service := &Service{
+		Queries: a.Queries,
+	}
 
-	tickets, err := a.Queries.ListTickets(ctx, sqlc.ListTicketsParams{
-		Limit:  10,
-		Offset: 0,
+	r := chi.NewRouter()
+	r.Use(func(next http.Handler) http.Handler {
+		return http.Handler(cors.NewHandler(next))
 	})
-	if err != nil {
-		return err
-	}
+	r.Use(middleware.Timeout(time.Second * 60))
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	for _, ticket := range tickets {
-		// Process each ticket as needed
-		// For example, you could print the ticket ID
-		println("Ticket ID:", ticket.ID)
-	}
+	apiHandler := openapi.Handler(openapi.NewStrictHandler(service, nil))
+	r.Mount("/api", http.StripPrefix("/api", apiHandler))
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/ui/", http.StatusFound)
+	})
+	r.Get("/ui/*", staticFiles)
 
-	return nil
+	return http.ListenAndServe(":8090", r)
+}
+
+func staticFiles(w http.ResponseWriter, r *http.Request) {
+	slog.InfoContext(r.Context(), "staticFiles", "path", r.URL.Path)
+
+	u, _ := url.Parse("http://localhost:3000/")
+
+	r.Host = r.URL.Host
+
+	httputil.NewSingleHostReverseProxy(u).ServeHTTP(w, r)
 }

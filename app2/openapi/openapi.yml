@@ -3,616 +3,615 @@ info:
   title: Ticketing System API
   version: 1.0.0
 servers:
-   - description: Ticketing System API
-     url: '{scheme}://{address}:{port}'
-     variables:
-       address:
-         default: localhost
-       port:
-         default: "8081"
-       scheme:
-         default: http
-         enum:
-           - https
-           - http
+  - description: Ticketing System API
+    url: '{scheme}://{address}:{port}'
+    variables:
+      address:
+        default: localhost
+      port:
+        default: "8081"
+      scheme:
+        default: http
+        enum:
+          - https
+          - http
 paths:
-  /comments:
-    get:
-      summary: List all comments
-      operationId: listComments
-      parameters: 
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of comments", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Comments"}}}}}
-    post:
-      summary: Create a new comment
-      operationId: createComment
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Comments"}}}}
-      responses:
-        "201": {"description": "Comments created"}
-  /comments/{id}:
-    get:
-      summary: Get a single comment by ID
-      operationId: getComment
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single comment", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Comments"}}}}
-    put:
-      summary: Update a comment by ID
-      operationId: updateComment
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Comments"}}}}
-      responses:
-        "200": {"description": "Comments updated"}
-    delete:
-      summary: Delete a comment by ID
-      operationId: deleteComment
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Comments deleted"}
-  /features:
-    get:
-      summary: List all features
-      operationId: listFeatures
-      parameters:
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of features", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Features"}}}}}
-    post:
-      summary: Create a new feature
-      operationId: createFeature
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Features"}}}}
-      responses:
-        "201": {"description": "Features created"}
-  /features/{id}:
-    get:
-      summary: Get a single feature by ID
-      operationId: getFeature
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single feature", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Features"}}}}
-    put:
-      summary: Update a feature by ID
-      operationId: updateFeature
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Features"}}}}
-      responses:
-        "200": {"description": "Features updated"}
-    delete:
-      summary: Delete a feature by ID
-      operationId: deleteFeature
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Features deleted"}
-  /files:
-    get:
-      summary: List all files
-      operationId: listFiles
-      parameters:
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of files", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Files"}}}}}
-    post:
-      summary: Create a new file
-      operationId: createFile
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Files"}}}}
-      responses:
-        "201": {"description": "Files created"}
-  /files/{id}:
-    get:
-      summary: Get a single file by ID
-      operationId: getFile
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single file", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Files"}}}}
-    put:
-      summary: Update a file by ID
-      operationId: updateFile
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Files"}}}}
-      responses:
-        "200": {"description": "Files updated"}
-    delete:
-      summary: Delete a file by ID
-      operationId: deleteFile
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Files deleted"}
-  /links:
-    get:
-      summary: List all links
-      operationId: listLinks
-      parameters:
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of links", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Links"}}}}}
-    post:
-      summary: Create a new link
-      operationId: createLink
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Links"}}}}
-      responses:
-        "201": {"description": "Links created"}
-  /links/{id}:
-    get:
-      summary: Get a single link by ID
-      operationId: getLink
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single link", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Links"}}}}
-    put:
-      summary: Update a link by ID
-      operationId: updateLink
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Links"}}}}
-      responses:
-        "200": {"description": "Links updated"}
-    delete:
-      summary: Delete a link by ID
-      operationId: deleteLink
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Links deleted"}
-  /reactions:
-    get:
-      summary: List all reactions
-      operationId: listReactions
-      parameters:
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of reactions", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Reactions"}}}}}
-    post:
-      summary: Create a new reaction
-      operationId: createReaction
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Reactions"}}}}
-      responses:
-        "201": {"description": "Reactions created"}
-  /reactions/{id}:
-    get:
-      summary: Get a single reaction by ID
-      operationId: getReaction
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single reaction", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Reactions"}}}}
-    put:
-      summary: Update a reaction by ID
-      operationId: updateReaction
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Reactions"}}}}
-      responses:
-        "200": {"description": "Reactions updated"}
-    delete:
-      summary: Delete a reaction by ID
-      operationId: deleteReaction
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Reactions deleted"}
-  /tasks:
-    get:
-      summary: List all tasks
-      operationId: listTasks
-      parameters:
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
-      responses:
-        "200": {"description": "A list of tasks", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Tasks"}}}}}
-    post:
-      summary: Create a new task
-      operationId: createTask
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tasks"}}}}
-      responses:
-        "201": {"description": "Tasks created"}
-  /tasks/{id}:
-    get:
-      summary: Get a single task by ID
-      operationId: getTask
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "200": {"description": "A single task", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tasks"}}}}
-    put:
-      summary: Update a task by ID
-      operationId: updateTask
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tasks"}}}}
-      responses:
-        "200": {"description": "Tasks updated"}
-    delete:
-      summary: Delete a task by ID
-      operationId: deleteTask
-      parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      responses:
-        "204": {"description": "Tasks deleted"}
   /tickets:
     get:
       summary: List all tickets
       operationId: listTickets
       parameters:
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "A list of tickets", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Tickets"}}}}}
+        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Ticket" } } } } }
     post:
       summary: Create a new ticket
       operationId: createTicket
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tickets"}}}}
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
       responses:
-        "201": {"description": "Tickets created"}
+        "201": { "description": "Tickets created" }
   /tickets/{id}:
     get:
       summary: Get a single ticket by ID
       operationId: getTicket
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": {"description": "A single ticket", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tickets"}}}}
+        "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
     put:
       summary: Update a ticket by ID
       operationId: updateTicket
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Tickets"}}}}
-      responses:
-        "200": {"description": "Tickets updated"}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+      responses:  
+        "200": { "description": "Tickets updated" }
     delete:
       summary: Delete a ticket by ID
       operationId: deleteTicket
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": {"description": "Tickets deleted"}
+        "204": { "description": "Tickets deleted" }
+  /comments:
+    get:
+      summary: List all comments
+      operationId: listComments
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Comment" } } } } }
+    post:
+      summary: Create a new comment
+      operationId: createComment
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      responses:
+        "201": { "description": "Comment created" }
+  /comments/{id}:
+    get:
+      summary: Get a single comment by ID
+      operationId: getComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+    put:
+      summary: Update a comment by ID
+      operationId: updateComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      responses:
+        "200": { "description": "Comment updated" }
+    delete:
+      summary: Delete a comment by ID
+      operationId: deleteComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Comment deleted" }
+  /files:
+    get:
+      summary: List all files
+      operationId: listFiles
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of files", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/File" } } } } }
+    post:
+      summary: Create a new file
+      operationId: createFile
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      responses:
+        "201": { "description": "File created" }
+  /files/{id}:
+    get:
+      summary: Get a single file by ID
+      operationId: getFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single file", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+    put:
+      summary: Update a file by ID
+      operationId: updateFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      responses:
+        "200": { "description": "File updated" }
+    delete:
+      summary: Delete a file by ID
+      operationId: deleteFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "File deleted" }
+  /links:
+    get:
+      summary: List all links
+      operationId: listLinks
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of links", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } } } } }
+    post:
+      summary: Create a new link
+      operationId: createLink
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      responses:
+        "201": { "description": "Link created" }
+  /links/{id}:
+    get:
+      summary: Get a single link by ID
+      operationId: getLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single link", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+    put:
+      summary: Update a link by ID
+      operationId: updateLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      responses:
+        "200": { "description": "Link updated" }
+    delete:
+      summary: Delete a link by ID
+      operationId: deleteLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Link deleted" }
+  /tasks:
+    get:
+      summary: List all tasks
+      operationId: listTasks
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } } } } }
+    post:
+      summary: Create a new task
+      operationId: createTask
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      responses:
+        "201": { "description": "Task created" }
+  /tasks/{id}:
+    get:
+      summary: Get a single task by ID
+      operationId: getTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+    put:
+      summary: Update a task by ID
+      operationId: updateTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      responses:
+        "200": { "description": "Task updated" }
+    delete:
+      summary: Delete a task by ID
+      operationId: deleteTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Task deleted" }
   /timeline:
     get:
-      summary: List all timeline
+      summary: List all timeline items
       operationId: listTimeline
       parameters:
-        - {"name": "ticket", "in": "query", "required": false, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "A list of timeline", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Timeline"}}}}}
+        "200": { "description": "A list of timeline items", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEntry" } } } } }
     post:
-      summary: Create a new timelin
+      summary: Create a new timeline item
       operationId: createTimeline
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Timeline"}}}}
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
       responses:
-        "201": {"description": "Timeline created"}
+        "201": { "description": "Timeline item created" }
   /timeline/{id}:
     get:
-      summary: Get a single timelin by ID
+      summary: Get a single timeline item by ID
       operationId: getTimeline
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }  
       responses:
-        "200": {"description": "A single timelin", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Timeline"}}}}
+        "200": { "description": "A single timeline item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
     put:
-      summary: Update a timelin by ID
+      summary: Update a timeline item by ID
       operationId: updateTimeline
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Timeline"}}}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
       responses:
-        "200": {"description": "Timeline updated"}
+        "200": { "description": "Timeline item updated" }
     delete:
-      summary: Delete a timelin by ID
+      summary: Delete a timeline item by ID
       operationId: deleteTimeline
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": {"description": "Timeline deleted"}
+        "204": { "description": "Timeline item deleted" }
+  /features:
+    get:
+      summary: List all features
+      operationId: listFeatures
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of features", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Feature" } } } } }
+    post:
+      summary: Create a new feature
+      operationId: createFeature
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
+      responses:
+        "201": { "description": "Features created" }
+  /features/{id}:
+    get:
+      summary: Get a single feature by ID
+      operationId: getFeature
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single feature", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
+    put:
+      summary: Update a feature by ID
+      operationId: updateFeature
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
+      responses:
+        "200": { "description": "Features updated" }
+    delete:
+      summary: Delete a feature by ID
+      operationId: deleteFeature
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Features deleted" }
+  /reactions:
+    get:
+      summary: List all reactions
+      operationId: listReactions
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of reactions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Reaction" } } } } }
+    post:
+      summary: Create a new reaction
+      operationId: createReaction
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      responses:
+        "201": { "description": "Reactions created" }
+  /reactions/{id}:
+    get:
+      summary: Get a single reaction by ID
+      operationId: getReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single reaction", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+    put:
+      summary: Update a reaction by ID
+      operationId: updateReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      responses:
+        "200": { "description": "Reactions updated" }
+    delete:
+      summary: Delete a reaction by ID
+      operationId: deleteReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Reactions deleted" }
   /types:
     get:
       summary: List all types
       operationId: listTypes
       parameters:
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "A list of types", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Types"}}}}}
+        "200": { "description": "A list of types", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Type" } } } } }
     post:
       summary: Create a new type
       operationId: createType
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Types"}}}}
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
       responses:
-        "201": {"description": "Types created"}
+        "201": { "description": "Types created" }
   /types/{id}:
     get:
       summary: Get a single type by ID
       operationId: getType
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": {"description": "A single type", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Types"}}}}
+        "200": { "description": "A single type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
     put:
       summary: Update a type by ID
       operationId: updateType
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Types"}}}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
       responses:
-        "200": {"description": "Types updated"}
+        "200": { "description": "Types updated" }
     delete:
       summary: Delete a type by ID
       operationId: deleteType
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": {"description": "Types deleted"}
+        "204": { "description": "Types deleted" }
   /users:
     get:
       summary: List all users
       operationId: listUsers
       parameters:
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "A list of users", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Users"}}}}}
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } }
     post:
       summary: Create a new user
       operationId: createUser
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Users"}}}}
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
       responses:
-        "201": {"description": "Users created"}
+        "201": { "description": "Users created" }
   /users/{id}:
     get:
       summary: Get a single user by ID
       operationId: getUser
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": {"description": "A single user", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Users"}}}}
+        "200": { "description": "A single user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
     put:
       summary: Update a user by ID
       operationId: updateUser
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Users"}}}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
       responses:
-        "200": {"description": "Users updated"}
+        "200": { "description": "Users updated" }
     delete:
       summary: Delete a user by ID
       operationId: deleteUser
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": {"description": "Users deleted"}
+        "204": { "description": "Users deleted" }
   /webhooks:
     get:
       summary: List all webhooks
       operationId: listWebhooks
       parameters:
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "A list of webhooks", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Webhooks"}}}}}
+        "200": { "description": "A list of webhooks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Webhook" } } } } }
     post:
       summary: Create a new webhook
       operationId: createWebhook
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Webhooks"}}}}
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
       responses:
-        "201": {"description": "Webhooks created"}
+        "201": { "description": "Webhooks created" }
   /webhooks/{id}:
     get:
       summary: Get a single webhook by ID
       operationId: getWebhook
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": {"description": "A single webhook", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Webhooks"}}}}
+        "200": { "description": "A single webhook", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
     put:
       summary: Update a webhook by ID
       operationId: updateWebhook
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
-      requestBody: {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Webhooks"}}}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
       responses:
-        "200": {"description": "Webhooks updated"}
+        "200": { "description": "Webhooks updated" }
     delete:
       summary: Delete a webhook by ID
       operationId: deleteWebhook
       parameters:
-        - {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": {"description": "Webhooks deleted"}
+        "204": { "description": "Webhooks deleted" }
   /dashboard_counts:
     get:
       summary: Get dashboard summary counts
       operationId: getDashboardCounts
       responses:
-        "200": {"description": "Dashboard count data", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/DashboardCounts"}}}}}
+        "200": { "description": "Dashboard count data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/DashboardCounts" } } } } }
   /sidebar:
     get:
       summary: Get sidebar data
       operationId: getSidebar
       responses:
-        "200": {"description": "Sidebar content", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Sidebar"}}}}}
+        "200": { "description": "Sidebar content", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Sidebar" } } } } }
   /ticket_search:
     get:
       summary: Search tickets with full join data
       operationId: searchTickets
       parameters:
-        - {"name": "query", "in": "query", "required": true, "schema": {"type": "string"}}
-        - {"name": "offset", "in": "query", "required": false, "schema": {"type": "integer", "default": 0}}
-        - {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 10}}
+        - { "name": "query", "in": "query", "required": true, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": {"description": "Search results with aggregated data", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/TicketSearch"}}}}}
+        "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } } }
 components:
   schemas:
-    Comments:
+    Comment:
       type: object
       properties:
-        author: {"type": "string"}
-        created: {"type": "string"}
-        id: {"type": "string"}
-        message: {"type": "string"}
-        ticket: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["author", "created", "id", "message", "ticket", "updated"]
-    Features:
+        author: { "type": "string" }
+        created: { "type": "string" }
+        id: { "type": "string" }
+        message: { "type": "string" }
+        ticket: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "author", "created", "id", "message", "ticket", "updated" ]
+    Feature:
       type: object
       properties:
-        created: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["created", "id", "name", "updated"]
-    Files:
+        created: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "created", "id", "name", "updated" ]
+    File:
       type: object
       properties:
-        blob: {"type": "string"}
-        created: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        size: {"type": "integer"}
-        ticket: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["blob", "created", "id", "name", "size", "ticket", "updated"]
-    Links:
+        blob: { "type": "string" }
+        created: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        size: { "type": "integer" }
+        ticket: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "blob", "created", "id", "name", "size", "ticket", "updated" ]
+    Link:
       type: object
       properties:
-        created: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        ticket: {"type": "string"}
-        updated: {"type": "string"}
-        url: {"type": "string"}
-      required: ["created", "id", "name", "ticket", "updated", "url"]
-    Reactions:
+        created: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        ticket: { "type": "string" }
+        updated: { "type": "string" }
+        url: { "type": "string" }
+      required: [ "created", "id", "name", "ticket", "updated", "url" ]
+    Reaction:
       type: object
       properties:
-        action: {"type": "string"}
-        actiondata: {"type": "object"}
-        created: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        trigger: {"type": "string"}
-        triggerdata: {"type": "object"}
-        updated: {"type": "string"}
-      required: ["action", "actiondata", "created", "id", "name", "trigger", "triggerdata", "updated"]
-    Tasks:
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        created: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
+        updated: { "type": "string" }
+      required: [ "action", "actiondata", "created", "id", "name", "trigger", "triggerdata", "updated" ]
+    Task:
       type: object
       properties:
-        created: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        open: {"type": "boolean"}
-        owner: {"type": "string"}
-        ticket: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["created", "id", "name", "open", "owner", "ticket", "updated"]
-    Tickets:
+        created: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        ticket: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "created", "id", "name", "open", "owner", "ticket", "updated" ]
+    Ticket:
       type: object
       properties:
-        created: {"type": "string"}
-        description: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        open: {"type": "boolean"}
-        owner: {"type": "string"}
-        resolution: {"type": "string"}
-        schema: {"type": "object"}
-        state: {"type": "object"}
-        type: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["created", "description", "id", "name", "open", "owner", "resolution", "schema", "state", "type", "updated"]
-    Timeline:
+        created: { "type": "string" }
+        description: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+        type: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "created", "description", "id", "name", "open", "owner", "resolution", "schema", "state", "type", "updated" ]
+    TimelineEntry:
       type: object
       properties:
-        created: {"type": "string"}
-        id: {"type": "string"}
-        message: {"type": "string"}
-        ticket: {"type": "string"}
-        time: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["created", "id", "message", "ticket", "time", "updated"]
-    Types:
+        created: { "type": "string" }
+        id: { "type": "string" }
+        message: { "type": "string" }
+        ticket: { "type": "string" }
+        time: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "created", "id", "message", "ticket", "time", "updated" ]
+    Type:
       type: object
       properties:
-        created: {"type": "string"}
-        icon: {"type": "string"}
-        id: {"type": "string"}
-        plural: {"type": "string"}
-        schema: {"type": "object"}
-        singular: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["created", "icon", "id", "plural", "schema", "singular", "updated"]
-    Users:
+        created: { "type": "string" }
+        icon: { "type": "string" }
+        id: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "created", "icon", "id", "plural", "schema", "singular", "updated" ]
+    User:
       type: object
       properties:
-        avatar: {"type": "string"}
-        created: {"type": "string"}
-        email: {"type": "string"}
-        emailVisibility: {"type": "boolean"}
-        id: {"type": "string"}
-        lastLoginAlertSentAt: {"type": "string"}
-        lastResetSentAt: {"type": "string"}
-        lastVerificationSentAt: {"type": "string"}
-        name: {"type": "string"}
-        passwordHash: {"type": "string"}
-        tokenKey: {"type": "string"}
-        updated: {"type": "string"}
-        username: {"type": "string"}
-        verified: {"type": "boolean"}
-      required: ["avatar", "created", "email", "emailVisibility", "id", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "passwordHash", "tokenKey", "updated", "username", "verified"]
-    Webhooks:
+        avatar: { "type": "string" }
+        created: { "type": "string" }
+        email: { "type": "string" }
+        emailVisibility: { "type": "boolean" }
+        id: { "type": "string" }
+        lastLoginAlertSentAt: { "type": "string" }
+        lastResetSentAt: { "type": "string" }
+        lastVerificationSentAt: { "type": "string" }
+        name: { "type": "string" }
+        passwordHash: { "type": "string" }
+        tokenKey: { "type": "string" }
+        updated: { "type": "string" }
+        username: { "type": "string" }
+        verified: { "type": "boolean" }
+      required: [ "avatar", "created", "email", "emailVisibility", "id", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "passwordHash", "tokenKey", "updated", "username", "verified" ]
+    Webhook:
       type: object
       properties:
-        collection: {"type": "string"}
-        created: {"type": "string"}
-        destination: {"type": "string"}
-        id: {"type": "string"}
-        name: {"type": "string"}
-        updated: {"type": "string"}
-      required: ["collection", "created", "destination", "id", "name", "updated"]
+        collection: { "type": "string" }
+        created: { "type": "string" }
+        destination: { "type": "string" }
+        id: { "type": "string" }
+        name: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "collection", "created", "destination", "id", "name", "updated" ]
     DashboardCounts:
       type: object
       properties:
-        id: {"type": "string"}
-        count: {"type": "integer"}
-      required: ["id", "count"]
+        id: { "type": "string" }
+        count: { "type": "integer" }
+      required: [ "id", "count" ]
     Sidebar:
       type: object
       properties:
-        id: {"type": "string"}
-        singular: {"type": "string"}
-        plural: {"type": "string"}
-        icon: {"type": "string"}
-        count: {"type": "integer"}
-      required: ["id", "singular", "plural", "icon", "count"]
+        id: { "type": "string" }
+        singular: { "type": "string" }
+        plural: { "type": "string" }
+        icon: { "type": "string" }
+        count: { "type": "integer" }
+      required: [ "id", "singular", "plural", "icon", "count" ]
     TicketSearch:
       type: object
       properties:
-        id: {"type": "string"}
-        name: {"type": "string"}
-        created: {"type": "string"}
-        description: {"type": "string"}
-        open: {"type": "boolean"}
-        type: {"type": "string"}
-        state: {"type": "object"}
-      required: ["id", "name", "created", "description", "open", "type", "state", "owner_name", "comment_messages", "file_names", "link_names", "link_urls", "task_names", "timeline_messages"]
+        id: { "type": "string" }
+        name: { "type": "string" }
+        created: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        type: { "type": "string" }
+        state: { "type": "object" }
+      required: [ "id", "name", "created", "description", "open", "type", "state", "owner_name", "comment_messages", "file_names", "link_names", "link_urls", "task_names", "timeline_messages" ]

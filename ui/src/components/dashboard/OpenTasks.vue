@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { pb } from '@/lib/pocketbase'
 import type { Task } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Configuration, DefaultApi, type Tasks } from '@/client'
 
 const {
   isPending,
@@ -19,7 +20,13 @@ const {
   error
 } = useQuery({
   queryKey: ['tasks'],
-  queryFn: (): Promise<Array<Task>> => {
+  queryFn: (): Promise<Array<Tasks>> => {
+    const config = new Configuration({
+      basePath: 'http://localhost:8090/api',
+    })
+    const api = new DefaultApi(config)
+    return api.listTasks({})
+
     if (!pb.authStore.model) return Promise.reject('Not authenticated')
     return pb.collection('tasks').getFullList({
       sort: '-created',

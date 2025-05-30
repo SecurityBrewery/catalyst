@@ -72,7 +72,7 @@ WHERE id = @id;
 -- name: ListComments :many
 SELECT *
 FROM comments
-WHERE ticket = @ticket
+WHERE ticket = @ticket OR @ticket = ''
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
@@ -126,7 +126,7 @@ WHERE id = @id;
 -- name: ListFiles :many
 SELECT *
 FROM files
-WHERE ticket = @ticket
+WHERE ticket = @ticket OR @ticket = ''
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
@@ -154,7 +154,7 @@ WHERE id = @id;
 -- name: ListLinks :many
 SELECT *
 FROM links
-WHERE ticket = @ticket
+WHERE ticket = @ticket OR @ticket = ''
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
@@ -209,7 +209,7 @@ WHERE id = @id;
 -- name: ListTasks :many
 SELECT *
 FROM tasks
-WHERE ticket = @ticket
+WHERE ticket = @ticket OR @ticket = ''
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
@@ -237,7 +237,7 @@ WHERE id = @id;
 -- name: ListTimeline :many
 SELECT *
 FROM timeline
-WHERE ticket = @ticket
+WHERE ticket = @ticket OR @ticket = ''
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
@@ -265,8 +265,7 @@ WHERE id = @id;
 -- name: ListTypes :many
 SELECT *
 FROM types
-ORDER BY created DESC
-LIMIT @limit OFFSET @offset;
+ORDER BY created DESC;
 
 ------------------------------------------------------------------
 

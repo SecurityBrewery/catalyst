@@ -36,7 +36,7 @@ watch(
 
 onMounted(() => {
   if (!pb.authStore.model) {
-    router.push({ name: 'login' })
+    // router.push({ name: 'login' })
   }
 })
 </script>

@@ -36,12 +36,14 @@ const logout = () => {
 }
 
 onMounted(() => {
+  /*
   pb.collection('users')
     .authRefresh()
     .catch(() => {
-      pb.authStore.clear()
-      window.location.href = '/ui/login'
+      // pb.authStore.clear()
+      // window.location.href = '/ui/login'
     })
+   */
 })
 </script>
 

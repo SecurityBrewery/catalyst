@@ -16,6 +16,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { pb } from '@/lib/pocketbase'
+import { Configuration, DefaultApi } from '@/client'
 
 const router = useRouter()
 
@@ -26,7 +27,13 @@ const {
   error
 } = useQuery({
   queryKey: ['dashboard_counts'],
-  queryFn: (): Promise<Array<any>> => pb.collection('dashboard_counts').getFullList()
+  queryFn: (): Promise<Array<any>> => {
+    const config = new Configuration({
+      basePath: 'http://localhost:8090/api',
+    })
+    const api = new DefaultApi(config)
+    return api.getDashboardCounts()
+  }
 })
 
 const count = (id: string) => {
@@ -39,9 +46,9 @@ const count = (id: string) => {
 }
 
 onMounted(() => {
-  if (!pb.authStore.model) {
+  /*if (!pb.authStore.model) {
     router.push({ name: 'login' })
-  }
+  }*/
 })
 </script>
 
@@ -50,8 +57,7 @@ onMounted(() => {
     <ColumnHeader title="Dashboard" />
     <ColumnBody>
       <ColumnBodyContainer
-        class="grid grid-cols-1 grid-rows-[100px_100px_100px_100px] md:grid-cols-2 md:grid-rows-[100px_100px] xl:grid-cols-4 xl:grid-rows-[100px]"
-      >
+        class="grid grid-cols-1 grid-rows-[100px_100px_100px_100px] md:grid-cols-2 md:grid-rows-[100px_100px] xl:grid-cols-4 xl:grid-rows-[100px]">
         <Card>
           <CardHeader>
             <CardTitle>{{ count('tasks') }}</CardTitle>
@@ -81,19 +87,12 @@ onMounted(() => {
             <CardTitle> Catalyst</CardTitle>
           </CardHeader>
           <CardContent class="flex flex-1 flex-col gap-1">
-            <a
-              href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook"
-              target="_blank"
-              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
-            >
+            <a href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook" target="_blank"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent">
               Open Catalyst Handbook
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>
-            <a
-              href="/_/"
-              target="_blank"
-              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
-            >
+            <a href="/_/" target="_blank" class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent">
               Open Admin Interface
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>

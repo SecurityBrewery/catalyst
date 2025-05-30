@@ -724,7 +724,7 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 const listComments = `-- name: ListComments :many
 SELECT author, created, id, message, ticket, updated
 FROM comments
-WHERE ticket = ?1
+WHERE ticket = ?1 OR ?1 = ''
 ORDER BY created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -802,7 +802,7 @@ func (q *Queries) ListFeatures(ctx context.Context) ([]Feature, error) {
 const listFiles = `-- name: ListFiles :many
 SELECT blob, created, id, name, size, ticket, updated
 FROM files
-WHERE ticket = ?1
+WHERE ticket = ?1 OR ?1 = ''
 ORDER BY created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -847,7 +847,7 @@ func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]File, e
 const listLinks = `-- name: ListLinks :many
 SELECT created, id, name, ticket, updated, url
 FROM links
-WHERE ticket = ?1
+WHERE ticket = ?1 OR ?1 = ''
 ORDER BY created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -935,7 +935,7 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 const listTasks = `-- name: ListTasks :many
 SELECT created, id, name, open, owner, ticket, updated
 FROM tasks
-WHERE ticket = ?1
+WHERE ticket = ?1 OR ?1 = ''
 ORDER BY created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -1027,7 +1027,7 @@ func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Tic
 const listTimeline = `-- name: ListTimeline :many
 SELECT created, id, message, ticket, time, updated
 FROM timeline
-WHERE ticket = ?1
+WHERE ticket = ?1 OR ?1 = ''
 ORDER BY created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -1072,16 +1072,10 @@ const listTypes = `-- name: ListTypes :many
 SELECT created, icon, id, plural, schema, singular, updated
 FROM types
 ORDER BY created DESC
-LIMIT ?2 OFFSET ?1
 `
 
-type ListTypesParams struct {
-	Offset int64 `json:"offset"`
-	Limit  int64 `json:"limit"`
-}
-
-func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]Type, error) {
-	rows, err := q.db.QueryContext(ctx, listTypes, arg.Offset, arg.Limit)
+func (q *Queries) ListTypes(ctx context.Context) ([]Type, error) {
+	rows, err := q.db.QueryContext(ctx, listTypes)
 	if err != nil {
 		return nil, err
 	}

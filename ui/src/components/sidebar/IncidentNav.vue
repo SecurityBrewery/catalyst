@@ -12,6 +12,7 @@ import { useRoute } from 'vue-router'
 import { pb } from '@/lib/pocketbase'
 import type { Type } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Configuration, DefaultApi } from '@/client'
 
 const route = useRoute()
 
@@ -26,7 +27,13 @@ const {
   error
 } = useQuery({
   queryKey: ['sidebar'],
-  queryFn: (): Promise<Array<any>> => pb.collection('sidebar').getFullList()
+  queryFn: (): Promise<Array<any>> => {
+    const config = new Configuration({
+      basePath: 'http://localhost:8090/api',
+    })
+    const api = new DefaultApi(config)
+    return api.getSidebar()
+  }
 })
 
 const variant = (t: Type): 'default' | 'ghost' => (route.params.type === t.id ? 'default' : 'ghost')

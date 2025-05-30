@@ -17,7 +17,7 @@ const id = computed(() => route.params.id as string)
 
 onMounted(() => {
   if (!pb.authStore.model) {
-    router.push({ name: 'login' })
+    // router.push({ name: 'login' })
   }
 })
 </script>
