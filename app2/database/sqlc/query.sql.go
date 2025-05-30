@@ -71,10 +71,10 @@ VALUES (?1, ?2, ?3, ?4)
 `
 
 type CreateFileParams struct {
-	Name   string  `json:"name"`
-	Blob   string  `json:"blob"`
-	Size   float64 `json:"size"`
-	Ticket string  `json:"ticket"`
+	Name   string `json:"name"`
+	Blob   string `json:"blob"`
+	Size   int64  `json:"size"`
+	Ticket string `json:"ticket"`
 }
 
 // ----------------------------------------------------------------
@@ -1280,95 +1280,145 @@ func (q *Queries) Ticket(ctx context.Context, id string) (Ticket, error) {
 	return i, err
 }
 
-const updateComment = `-- name: UpdateComment :exec
+const updateComment = `-- name: UpdateComment :one
 UPDATE comments
-SET message = ?1
+SET message = coalesce(?1, message)
 WHERE id = ?2
+RETURNING author, created, id, message, ticket, updated
 `
 
 type UpdateCommentParams struct {
-	Message string `json:"message"`
-	ID      string `json:"id"`
+	Message sql.NullString `json:"message"`
+	ID      string         `json:"id"`
 }
 
-func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) error {
-	_, err := q.db.ExecContext(ctx, updateComment, arg.Message, arg.ID)
-	return err
+func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comment, error) {
+	row := q.db.QueryRowContext(ctx, updateComment, arg.Message, arg.ID)
+	var i Comment
+	err := row.Scan(
+		&i.Author,
+		&i.Created,
+		&i.ID,
+		&i.Message,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateFeature = `-- name: UpdateFeature :exec
+const updateFeature = `-- name: UpdateFeature :one
 UPDATE features
-SET name = ?1
+SET name = coalesce(?1, name)
 WHERE id = ?2
+RETURNING created, id, name, updated
 `
 
 type UpdateFeatureParams struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
+	Name sql.NullString `json:"name"`
+	ID   string         `json:"id"`
 }
 
-func (q *Queries) UpdateFeature(ctx context.Context, arg UpdateFeatureParams) error {
-	_, err := q.db.ExecContext(ctx, updateFeature, arg.Name, arg.ID)
-	return err
+func (q *Queries) UpdateFeature(ctx context.Context, arg UpdateFeatureParams) (Feature, error) {
+	row := q.db.QueryRowContext(ctx, updateFeature, arg.Name, arg.ID)
+	var i Feature
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateFile = `-- name: UpdateFile :exec
+const updateFile = `-- name: UpdateFile :one
 UPDATE files
-SET name = ?1, blob = ?2, size = ?3
+SET 
+    name = coalesce(?1, name), 
+    blob = coalesce(?2, blob), 
+    size = coalesce(?3, size)
 WHERE id = ?4
+RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type UpdateFileParams struct {
-	Name string  `json:"name"`
-	Blob string  `json:"blob"`
-	Size float64 `json:"size"`
-	ID   string  `json:"id"`
+	Name sql.NullString `json:"name"`
+	Blob sql.NullString `json:"blob"`
+	Size sql.NullInt64  `json:"size"`
+	ID   string         `json:"id"`
 }
 
-func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) error {
-	_, err := q.db.ExecContext(ctx, updateFile,
+func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error) {
+	row := q.db.QueryRowContext(ctx, updateFile,
 		arg.Name,
 		arg.Blob,
 		arg.Size,
 		arg.ID,
 	)
-	return err
+	var i File
+	err := row.Scan(
+		&i.Blob,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Size,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateLink = `-- name: UpdateLink :exec
+const updateLink = `-- name: UpdateLink :one
 UPDATE links
-SET name = ?1, url = ?2
+SET 
+    name = coalesce(?1, name), 
+    url = coalesce(?2, url)
 WHERE id = ?3
+RETURNING created, id, name, ticket, updated, url
 `
 
 type UpdateLinkParams struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-	ID   string `json:"id"`
+	Name sql.NullString `json:"name"`
+	Url  sql.NullString `json:"url"`
+	ID   string         `json:"id"`
 }
 
-func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) error {
-	_, err := q.db.ExecContext(ctx, updateLink, arg.Name, arg.Url, arg.ID)
-	return err
+func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) (Link, error) {
+	row := q.db.QueryRowContext(ctx, updateLink, arg.Name, arg.Url, arg.ID)
+	var i Link
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Ticket,
+		&i.Updated,
+		&i.Url,
+	)
+	return i, err
 }
 
-const updateReaction = `-- name: UpdateReaction :exec
+const updateReaction = `-- name: UpdateReaction :one
 UPDATE reactions
-SET name = ?1, action = ?2, actiondata = ?3, trigger = ?4, triggerdata = ?5
+SET 
+    name = coalesce(?1, name), 
+    action = coalesce(?2, action), 
+    actiondata = coalesce(?3, actiondata), 
+    trigger = coalesce(?4, trigger), 
+    triggerdata = coalesce(?5, triggerdata)
 WHERE id = ?6
+RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updated
 `
 
 type UpdateReactionParams struct {
-	Name        string      `json:"name"`
-	Action      string      `json:"action"`
-	Actiondata  interface{} `json:"actiondata"`
-	Trigger     string      `json:"trigger"`
-	Triggerdata interface{} `json:"triggerdata"`
-	ID          string      `json:"id"`
+	Name        sql.NullString `json:"name"`
+	Action      sql.NullString `json:"action"`
+	Actiondata  interface{}    `json:"actiondata"`
+	Trigger     sql.NullString `json:"trigger"`
+	Triggerdata interface{}    `json:"triggerdata"`
+	ID          string         `json:"id"`
 }
 
-func (q *Queries) UpdateReaction(ctx context.Context, arg UpdateReactionParams) error {
-	_, err := q.db.ExecContext(ctx, updateReaction,
+func (q *Queries) UpdateReaction(ctx context.Context, arg UpdateReactionParams) (Reaction, error) {
+	row := q.db.QueryRowContext(ctx, updateReaction,
 		arg.Name,
 		arg.Action,
 		arg.Actiondata,
@@ -1376,59 +1426,85 @@ func (q *Queries) UpdateReaction(ctx context.Context, arg UpdateReactionParams) 
 		arg.Triggerdata,
 		arg.ID,
 	)
-	return err
+	var i Reaction
+	err := row.Scan(
+		&i.Action,
+		&i.Actiondata,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Trigger,
+		&i.Triggerdata,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateTask = `-- name: UpdateTask :exec
+const updateTask = `-- name: UpdateTask :one
 UPDATE tasks
-SET name = ?1, open = ?2, owner = ?3
+SET 
+    name = coalesce(?1, name), 
+    open = coalesce(?2, open), 
+    owner = coalesce(?3, owner)
 WHERE id = ?4
+RETURNING created, id, name, open, owner, ticket, updated
 `
 
 type UpdateTaskParams struct {
-	Name  string `json:"name"`
-	Open  bool   `json:"open"`
-	Owner string `json:"owner"`
-	ID    string `json:"id"`
+	Name  sql.NullString `json:"name"`
+	Open  sql.NullBool   `json:"open"`
+	Owner sql.NullString `json:"owner"`
+	ID    string         `json:"id"`
 }
 
-func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, updateTask,
+func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, updateTask,
 		arg.Name,
 		arg.Open,
 		arg.Owner,
 		arg.ID,
 	)
-	return err
+	var i Task
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Open,
+		&i.Owner,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateTicket = `-- name: UpdateTicket :exec
+const updateTicket = `-- name: UpdateTicket :one
 UPDATE tickets
-SET name = ?1,
-    description = ?2,
-    open = ?3,
-    owner = ?4,
-    resolution = ?5,
-    schema = ?6,
-    state = ?7,
-    type = ?8
+SET name = coalesce(?1, name),
+    description = coalesce(?2, description),
+    open = coalesce(?3, open),
+    owner = coalesce(?4, owner),
+    resolution = coalesce(?5, resolution),
+    schema = coalesce(?6, schema),
+    state = coalesce(?7, state),
+    type = coalesce(?8, type)
 WHERE id = ?9
+RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
 `
 
 type UpdateTicketParams struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Open        bool        `json:"open"`
-	Owner       string      `json:"owner"`
-	Resolution  string      `json:"resolution"`
-	Schema      interface{} `json:"schema"`
-	State       interface{} `json:"state"`
-	Type        string      `json:"type"`
-	ID          string      `json:"id"`
+	Name        sql.NullString `json:"name"`
+	Description sql.NullString `json:"description"`
+	Open        sql.NullBool   `json:"open"`
+	Owner       sql.NullString `json:"owner"`
+	Resolution  sql.NullString `json:"resolution"`
+	Schema      interface{}    `json:"schema"`
+	State       interface{}    `json:"state"`
+	Type        sql.NullString `json:"type"`
+	ID          string         `json:"id"`
 }
 
-func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) error {
-	_, err := q.db.ExecContext(ctx, updateTicket,
+func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (Ticket, error) {
+	row := q.db.QueryRowContext(ctx, updateTicket,
 		arg.Name,
 		arg.Description,
 		arg.Open,
@@ -1439,68 +1515,115 @@ func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) erro
 		arg.Type,
 		arg.ID,
 	)
-	return err
+	var i Ticket
+	err := row.Scan(
+		&i.Created,
+		&i.Description,
+		&i.ID,
+		&i.Name,
+		&i.Open,
+		&i.Owner,
+		&i.Resolution,
+		&i.Schema,
+		&i.State,
+		&i.Type,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateTimeline = `-- name: UpdateTimeline :exec
+const updateTimeline = `-- name: UpdateTimeline :one
 UPDATE timeline
-SET message = ?1, time = ?2
+SET 
+    message = coalesce(?1, message), 
+    time = coalesce(?2, time)
 WHERE id = ?3
+RETURNING created, id, message, ticket, time, updated
 `
 
 type UpdateTimelineParams struct {
-	Message string `json:"message"`
-	Time    string `json:"time"`
-	ID      string `json:"id"`
+	Message sql.NullString `json:"message"`
+	Time    sql.NullString `json:"time"`
+	ID      string         `json:"id"`
 }
 
-func (q *Queries) UpdateTimeline(ctx context.Context, arg UpdateTimelineParams) error {
-	_, err := q.db.ExecContext(ctx, updateTimeline, arg.Message, arg.Time, arg.ID)
-	return err
+func (q *Queries) UpdateTimeline(ctx context.Context, arg UpdateTimelineParams) (Timeline, error) {
+	row := q.db.QueryRowContext(ctx, updateTimeline, arg.Message, arg.Time, arg.ID)
+	var i Timeline
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Message,
+		&i.Ticket,
+		&i.Time,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateType = `-- name: UpdateType :exec
+const updateType = `-- name: UpdateType :one
 UPDATE types
-SET singular = ?1, plural = ?2, icon = ?3, schema = ?4
+SET 
+    singular = coalesce(?1, singular), 
+    plural = coalesce(?2, plural), 
+    icon = coalesce(?3, icon), 
+    schema = coalesce(?4, schema)
 WHERE id = ?5
+RETURNING created, icon, id, plural, schema, singular, updated
 `
 
 type UpdateTypeParams struct {
-	Singular string      `json:"singular"`
-	Plural   string      `json:"plural"`
-	Icon     string      `json:"icon"`
-	Schema   interface{} `json:"schema"`
-	ID       string      `json:"id"`
+	Singular sql.NullString `json:"singular"`
+	Plural   sql.NullString `json:"plural"`
+	Icon     sql.NullString `json:"icon"`
+	Schema   interface{}    `json:"schema"`
+	ID       string         `json:"id"`
 }
 
-func (q *Queries) UpdateType(ctx context.Context, arg UpdateTypeParams) error {
-	_, err := q.db.ExecContext(ctx, updateType,
+func (q *Queries) UpdateType(ctx context.Context, arg UpdateTypeParams) (Type, error) {
+	row := q.db.QueryRowContext(ctx, updateType,
 		arg.Singular,
 		arg.Plural,
 		arg.Icon,
 		arg.Schema,
 		arg.ID,
 	)
-	return err
+	var i Type
+	err := row.Scan(
+		&i.Created,
+		&i.Icon,
+		&i.ID,
+		&i.Plural,
+		&i.Schema,
+		&i.Singular,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET name = ?1, email = ?2, username = ?3, passwordHash = ?4, tokenKey = ?5
+SET 
+    name = coalesce(?1, name), 
+    email = coalesce(?2, email), 
+    username = coalesce(?3, username), 
+    passwordHash = coalesce(?4, passwordHash), 
+    tokenKey = coalesce(?5, tokenKey)
 WHERE id = ?6
+RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type UpdateUserParams struct {
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	Username     string `json:"username"`
-	PasswordHash string `json:"passwordHash"`
-	TokenKey     string `json:"tokenKey"`
-	ID           string `json:"id"`
+	Name         sql.NullString `json:"name"`
+	Email        sql.NullString `json:"email"`
+	Username     sql.NullString `json:"username"`
+	PasswordHash sql.NullString `json:"passwordHash"`
+	TokenKey     sql.NullString `json:"tokenKey"`
+	ID           string         `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.Name,
 		arg.Email,
 		arg.Username,
@@ -1508,28 +1631,58 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 		arg.TokenKey,
 		arg.ID,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.Avatar,
+		&i.Created,
+		&i.Email,
+		&i.Emailvisibility,
+		&i.ID,
+		&i.Lastloginalertsentat,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Name,
+		&i.Passwordhash,
+		&i.Tokenkey,
+		&i.Updated,
+		&i.Username,
+		&i.Verified,
+	)
+	return i, err
 }
 
-const updateWebhook = `-- name: UpdateWebhook :exec
+const updateWebhook = `-- name: UpdateWebhook :one
 UPDATE webhooks
-SET name = ?1, collection = ?2, destination = ?3
+SET 
+    name = coalesce(?1, name), 
+    collection = coalesce(?2, collection), 
+    destination = coalesce(?3, destination)
 WHERE id = ?4
+RETURNING collection, created, destination, id, name, updated
 `
 
 type UpdateWebhookParams struct {
-	Name        string `json:"name"`
-	Collection  string `json:"collection"`
-	Destination string `json:"destination"`
-	ID          string `json:"id"`
+	Name        sql.NullString `json:"name"`
+	Collection  sql.NullString `json:"collection"`
+	Destination sql.NullString `json:"destination"`
+	ID          string         `json:"id"`
 }
 
-func (q *Queries) UpdateWebhook(ctx context.Context, arg UpdateWebhookParams) error {
-	_, err := q.db.ExecContext(ctx, updateWebhook,
+func (q *Queries) UpdateWebhook(ctx context.Context, arg UpdateWebhookParams) (Webhook, error) {
+	row := q.db.QueryRowContext(ctx, updateWebhook,
 		arg.Name,
 		arg.Collection,
 		arg.Destination,
 		arg.ID,
 	)
-	return err
+	var i Webhook
+	err := row.Scan(
+		&i.Collection,
+		&i.Created,
+		&i.Destination,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
+	return i, err
 }

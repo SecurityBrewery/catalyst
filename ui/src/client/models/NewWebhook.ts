@@ -16,96 +16,69 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Webhook
+ * @interface NewWebhook
  */
-export interface Webhook {
+export interface NewWebhook {
     /**
      * 
      * @type {string}
-     * @memberof Webhook
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Webhook
+     * @memberof NewWebhook
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Webhook
+     * @memberof NewWebhook
      */
     collection: string;
     /**
      * 
      * @type {string}
-     * @memberof Webhook
+     * @memberof NewWebhook
      */
     destination: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Webhook
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Webhook
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the Webhook interface.
+ * Check if a given object implements the NewWebhook interface.
  */
-export function instanceOfWebhook(value: object): value is Webhook {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewWebhook(value: object): value is NewWebhook {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('collection' in value) || value['collection'] === undefined) return false;
     if (!('destination' in value) || value['destination'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function WebhookFromJSON(json: any): Webhook {
-    return WebhookFromJSONTyped(json, false);
+export function NewWebhookFromJSON(json: any): NewWebhook {
+    return NewWebhookFromJSONTyped(json, false);
 }
 
-export function WebhookFromJSONTyped(json: any, ignoreDiscriminator: boolean): Webhook {
+export function NewWebhookFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewWebhook {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'name': json['name'],
         'collection': json['collection'],
         'destination': json['destination'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function WebhookToJSON(json: any): Webhook {
-    return WebhookToJSONTyped(json, false);
+export function NewWebhookToJSON(json: any): NewWebhook {
+    return NewWebhookToJSONTyped(json, false);
 }
 
-export function WebhookToJSONTyped(value?: Webhook | null, ignoreDiscriminator: boolean = false): any {
+export function NewWebhookToJSONTyped(value?: NewWebhook | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'name': value['name'],
         'collection': value['collection'],
         'destination': value['destination'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 

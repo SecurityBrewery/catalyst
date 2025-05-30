@@ -24,6 +24,12 @@ type Comment struct {
 	Updated string `json:"updated"`
 }
 
+// CommentUpdate defines model for CommentUpdate.
+type CommentUpdate struct {
+	Author  *string `json:"author,omitempty"`
+	Message *string `json:"message,omitempty"`
+}
+
 // DashboardCounts defines model for DashboardCounts.
 type DashboardCounts struct {
 	Count int    `json:"count"`
@@ -49,6 +55,13 @@ type File struct {
 	Updated string `json:"updated"`
 }
 
+// FileUpdate defines model for FileUpdate.
+type FileUpdate struct {
+	Blob *string `json:"blob,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Size *int    `json:"size,omitempty"`
+}
+
 // Link defines model for Link.
 type Link struct {
 	Created string `json:"created"`
@@ -57,6 +70,102 @@ type Link struct {
 	Ticket  string `json:"ticket"`
 	Updated string `json:"updated"`
 	Url     string `json:"url"`
+}
+
+// LinkUpdate defines model for LinkUpdate.
+type LinkUpdate struct {
+	Name *string `json:"name,omitempty"`
+	Url  *string `json:"url,omitempty"`
+}
+
+// NewComment defines model for NewComment.
+type NewComment struct {
+	Author  string `json:"author"`
+	Message string `json:"message"`
+	Ticket  string `json:"ticket"`
+}
+
+// NewFeature defines model for NewFeature.
+type NewFeature struct {
+	Name string `json:"name"`
+}
+
+// NewFile defines model for NewFile.
+type NewFile struct {
+	Blob   string `json:"blob"`
+	Name   string `json:"name"`
+	Size   int    `json:"size"`
+	Ticket string `json:"ticket"`
+}
+
+// NewLink defines model for NewLink.
+type NewLink struct {
+	Name   string `json:"name"`
+	Ticket string `json:"ticket"`
+	Url    string `json:"url"`
+}
+
+// NewReaction defines model for NewReaction.
+type NewReaction struct {
+	Action      string                 `json:"action"`
+	Actiondata  map[string]interface{} `json:"actiondata"`
+	Name        string                 `json:"name"`
+	Trigger     string                 `json:"trigger"`
+	Triggerdata map[string]interface{} `json:"triggerdata"`
+}
+
+// NewTask defines model for NewTask.
+type NewTask struct {
+	Name   string `json:"name"`
+	Open   bool   `json:"open"`
+	Owner  string `json:"owner"`
+	Ticket string `json:"ticket"`
+}
+
+// NewTicket defines model for NewTicket.
+type NewTicket struct {
+	Description string                 `json:"description"`
+	Name        string                 `json:"name"`
+	Open        bool                   `json:"open"`
+	Owner       string                 `json:"owner"`
+	Resolution  string                 `json:"resolution"`
+	Schema      map[string]interface{} `json:"schema"`
+	State       map[string]interface{} `json:"state"`
+	Type        string                 `json:"type"`
+}
+
+// NewTimelineEntry defines model for NewTimelineEntry.
+type NewTimelineEntry struct {
+	Message string `json:"message"`
+	Ticket  string `json:"ticket"`
+	Time    string `json:"time"`
+}
+
+// NewType defines model for NewType.
+type NewType struct {
+	Icon     string                 `json:"icon"`
+	Plural   string                 `json:"plural"`
+	Schema   map[string]interface{} `json:"schema"`
+	Singular string                 `json:"singular"`
+}
+
+// NewUser defines model for NewUser.
+type NewUser struct {
+	Avatar          string `json:"avatar"`
+	Email           string `json:"email"`
+	EmailVisibility bool   `json:"emailVisibility"`
+	Name            string `json:"name"`
+	Password        string `json:"password"`
+	PasswordConfirm string `json:"passwordConfirm"`
+	Username        string `json:"username"`
+	Verified        bool   `json:"verified"`
+}
+
+// NewWebhook defines model for NewWebhook.
+type NewWebhook struct {
+	Collection  string `json:"collection"`
+	Destination string `json:"destination"`
+	Name        string `json:"name"`
 }
 
 // Reaction defines model for Reaction.
@@ -69,6 +178,15 @@ type Reaction struct {
 	Trigger     string                 `json:"trigger"`
 	Triggerdata map[string]interface{} `json:"triggerdata"`
 	Updated     string                 `json:"updated"`
+}
+
+// ReactionUpdate defines model for ReactionUpdate.
+type ReactionUpdate struct {
+	Action      *string                 `json:"action,omitempty"`
+	Actiondata  *map[string]interface{} `json:"actiondata,omitempty"`
+	Name        *string                 `json:"name,omitempty"`
+	Trigger     *string                 `json:"trigger,omitempty"`
+	Triggerdata *map[string]interface{} `json:"triggerdata,omitempty"`
 }
 
 // Sidebar defines model for Sidebar.
@@ -91,6 +209,13 @@ type Task struct {
 	Updated string `json:"updated"`
 }
 
+// TaskUpdate defines model for TaskUpdate.
+type TaskUpdate struct {
+	Name  *string `json:"name,omitempty"`
+	Open  *bool   `json:"open,omitempty"`
+	Owner *string `json:"owner,omitempty"`
+}
+
 // Ticket defines model for Ticket.
 type Ticket struct {
 	Created     string                 `json:"created"`
@@ -108,13 +233,33 @@ type Ticket struct {
 
 // TicketSearch defines model for TicketSearch.
 type TicketSearch struct {
-	Created     string                 `json:"created"`
-	Description string                 `json:"description"`
-	Id          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Open        bool                   `json:"open"`
-	State       map[string]interface{} `json:"state"`
-	Type        string                 `json:"type"`
+	CommentMessages  []string               `json:"comment_messages"`
+	Created          string                 `json:"created"`
+	Description      string                 `json:"description"`
+	FileNames        []string               `json:"file_names"`
+	Id               string                 `json:"id"`
+	LinkNames        []string               `json:"link_names"`
+	LinkUrls         []string               `json:"link_urls"`
+	Name             string                 `json:"name"`
+	Open             bool                   `json:"open"`
+	OwnerName        string                 `json:"owner_name"`
+	State            map[string]interface{} `json:"state"`
+	TaskNames        []string               `json:"task_names"`
+	TimelineMessages []string               `json:"timeline_messages"`
+	Type             string                 `json:"type"`
+	Updated          string                 `json:"updated"`
+}
+
+// TicketUpdate defines model for TicketUpdate.
+type TicketUpdate struct {
+	Description *string                 `json:"description,omitempty"`
+	Name        *string                 `json:"name,omitempty"`
+	Open        *bool                   `json:"open,omitempty"`
+	Owner       *string                 `json:"owner,omitempty"`
+	Resolution  *string                 `json:"resolution,omitempty"`
+	Schema      *map[string]interface{} `json:"schema,omitempty"`
+	State       *map[string]interface{} `json:"state,omitempty"`
+	Type        *string                 `json:"type,omitempty"`
 }
 
 // TimelineEntry defines model for TimelineEntry.
@@ -127,6 +272,12 @@ type TimelineEntry struct {
 	Updated string `json:"updated"`
 }
 
+// TimelineEntryUpdate defines model for TimelineEntryUpdate.
+type TimelineEntryUpdate struct {
+	Message *string `json:"message,omitempty"`
+	Time    *string `json:"time,omitempty"`
+}
+
 // Type defines model for Type.
 type Type struct {
 	Created  string                 `json:"created"`
@@ -136,6 +287,14 @@ type Type struct {
 	Schema   map[string]interface{} `json:"schema"`
 	Singular string                 `json:"singular"`
 	Updated  string                 `json:"updated"`
+}
+
+// TypeUpdate defines model for TypeUpdate.
+type TypeUpdate struct {
+	Icon     *string                 `json:"icon,omitempty"`
+	Plural   *string                 `json:"plural,omitempty"`
+	Schema   *map[string]interface{} `json:"schema,omitempty"`
+	Singular *string                 `json:"singular,omitempty"`
 }
 
 // User defines model for User.
@@ -156,6 +315,18 @@ type User struct {
 	Verified               bool   `json:"verified"`
 }
 
+// UserUpdate defines model for UserUpdate.
+type UserUpdate struct {
+	Avatar          *string `json:"avatar,omitempty"`
+	Email           *string `json:"email,omitempty"`
+	EmailVisibility *bool   `json:"emailVisibility,omitempty"`
+	Name            *string `json:"name,omitempty"`
+	Password        *string `json:"password,omitempty"`
+	PasswordConfirm *string `json:"passwordConfirm,omitempty"`
+	Username        *string `json:"username,omitempty"`
+	Verified        *bool   `json:"verified,omitempty"`
+}
+
 // Webhook defines model for Webhook.
 type Webhook struct {
 	Collection  string `json:"collection"`
@@ -164,6 +335,13 @@ type Webhook struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`
 	Updated     string `json:"updated"`
+}
+
+// WebhookUpdate defines model for WebhookUpdate.
+type WebhookUpdate struct {
+	Collection  *string `json:"collection,omitempty"`
+	Destination *string `json:"destination,omitempty"`
+	Name        *string `json:"name,omitempty"`
 }
 
 // ListCommentsParams defines parameters for ListComments.
@@ -245,70 +423,67 @@ type ListWebhooksParams struct {
 }
 
 // CreateCommentJSONRequestBody defines body for CreateComment for application/json ContentType.
-type CreateCommentJSONRequestBody = Comment
+type CreateCommentJSONRequestBody = NewComment
 
 // UpdateCommentJSONRequestBody defines body for UpdateComment for application/json ContentType.
-type UpdateCommentJSONRequestBody = Comment
+type UpdateCommentJSONRequestBody = CommentUpdate
 
 // CreateFeatureJSONRequestBody defines body for CreateFeature for application/json ContentType.
-type CreateFeatureJSONRequestBody = Feature
-
-// UpdateFeatureJSONRequestBody defines body for UpdateFeature for application/json ContentType.
-type UpdateFeatureJSONRequestBody = Feature
+type CreateFeatureJSONRequestBody = NewFeature
 
 // CreateFileJSONRequestBody defines body for CreateFile for application/json ContentType.
-type CreateFileJSONRequestBody = File
+type CreateFileJSONRequestBody = NewFile
 
 // UpdateFileJSONRequestBody defines body for UpdateFile for application/json ContentType.
-type UpdateFileJSONRequestBody = File
+type UpdateFileJSONRequestBody = FileUpdate
 
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.
-type CreateLinkJSONRequestBody = Link
+type CreateLinkJSONRequestBody = NewLink
 
 // UpdateLinkJSONRequestBody defines body for UpdateLink for application/json ContentType.
-type UpdateLinkJSONRequestBody = Link
+type UpdateLinkJSONRequestBody = LinkUpdate
 
 // CreateReactionJSONRequestBody defines body for CreateReaction for application/json ContentType.
-type CreateReactionJSONRequestBody = Reaction
+type CreateReactionJSONRequestBody = NewReaction
 
 // UpdateReactionJSONRequestBody defines body for UpdateReaction for application/json ContentType.
-type UpdateReactionJSONRequestBody = Reaction
+type UpdateReactionJSONRequestBody = ReactionUpdate
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
-type CreateTaskJSONRequestBody = Task
+type CreateTaskJSONRequestBody = NewTask
 
 // UpdateTaskJSONRequestBody defines body for UpdateTask for application/json ContentType.
-type UpdateTaskJSONRequestBody = Task
+type UpdateTaskJSONRequestBody = TaskUpdate
 
 // CreateTicketJSONRequestBody defines body for CreateTicket for application/json ContentType.
 type CreateTicketJSONRequestBody = Ticket
 
 // UpdateTicketJSONRequestBody defines body for UpdateTicket for application/json ContentType.
-type UpdateTicketJSONRequestBody = Ticket
+type UpdateTicketJSONRequestBody = TicketUpdate
 
 // CreateTimelineJSONRequestBody defines body for CreateTimeline for application/json ContentType.
-type CreateTimelineJSONRequestBody = TimelineEntry
+type CreateTimelineJSONRequestBody = NewTimelineEntry
 
 // UpdateTimelineJSONRequestBody defines body for UpdateTimeline for application/json ContentType.
-type UpdateTimelineJSONRequestBody = TimelineEntry
+type UpdateTimelineJSONRequestBody = TimelineEntryUpdate
 
 // CreateTypeJSONRequestBody defines body for CreateType for application/json ContentType.
-type CreateTypeJSONRequestBody = Type
+type CreateTypeJSONRequestBody = NewType
 
 // UpdateTypeJSONRequestBody defines body for UpdateType for application/json ContentType.
-type UpdateTypeJSONRequestBody = Type
+type UpdateTypeJSONRequestBody = TypeUpdate
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody = User
+type CreateUserJSONRequestBody = NewUser
 
 // UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = User
+type UpdateUserJSONRequestBody = UserUpdate
 
 // CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
-type CreateWebhookJSONRequestBody = Webhook
+type CreateWebhookJSONRequestBody = NewWebhook
 
 // UpdateWebhookJSONRequestBody defines body for UpdateWebhook for application/json ContentType.
-type UpdateWebhookJSONRequestBody = Webhook
+type UpdateWebhookJSONRequestBody = WebhookUpdate
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -325,7 +500,7 @@ type ServerInterface interface {
 	// (GET /comments/{id})
 	GetComment(w http.ResponseWriter, r *http.Request, id string)
 	// Update a comment by ID
-	// (PUT /comments/{id})
+	// (PATCH /comments/{id})
 	UpdateComment(w http.ResponseWriter, r *http.Request, id string)
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
@@ -342,9 +517,6 @@ type ServerInterface interface {
 	// Get a single feature by ID
 	// (GET /features/{id})
 	GetFeature(w http.ResponseWriter, r *http.Request, id string)
-	// Update a feature by ID
-	// (PUT /features/{id})
-	UpdateFeature(w http.ResponseWriter, r *http.Request, id string)
 	// List all files
 	// (GET /files)
 	ListFiles(w http.ResponseWriter, r *http.Request, params ListFilesParams)
@@ -358,7 +530,7 @@ type ServerInterface interface {
 	// (GET /files/{id})
 	GetFile(w http.ResponseWriter, r *http.Request, id string)
 	// Update a file by ID
-	// (PUT /files/{id})
+	// (PATCH /files/{id})
 	UpdateFile(w http.ResponseWriter, r *http.Request, id string)
 	// List all links
 	// (GET /links)
@@ -373,7 +545,7 @@ type ServerInterface interface {
 	// (GET /links/{id})
 	GetLink(w http.ResponseWriter, r *http.Request, id string)
 	// Update a link by ID
-	// (PUT /links/{id})
+	// (PATCH /links/{id})
 	UpdateLink(w http.ResponseWriter, r *http.Request, id string)
 	// List all reactions
 	// (GET /reactions)
@@ -388,7 +560,7 @@ type ServerInterface interface {
 	// (GET /reactions/{id})
 	GetReaction(w http.ResponseWriter, r *http.Request, id string)
 	// Update a reaction by ID
-	// (PUT /reactions/{id})
+	// (PATCH /reactions/{id})
 	UpdateReaction(w http.ResponseWriter, r *http.Request, id string)
 	// Get sidebar data
 	// (GET /sidebar)
@@ -406,7 +578,7 @@ type ServerInterface interface {
 	// (GET /tasks/{id})
 	GetTask(w http.ResponseWriter, r *http.Request, id string)
 	// Update a task by ID
-	// (PUT /tasks/{id})
+	// (PATCH /tasks/{id})
 	UpdateTask(w http.ResponseWriter, r *http.Request, id string)
 	// Search tickets with full join data
 	// (GET /ticket_search)
@@ -424,7 +596,7 @@ type ServerInterface interface {
 	// (GET /tickets/{id})
 	GetTicket(w http.ResponseWriter, r *http.Request, id string)
 	// Update a ticket by ID
-	// (PUT /tickets/{id})
+	// (PATCH /tickets/{id})
 	UpdateTicket(w http.ResponseWriter, r *http.Request, id string)
 	// List all timeline items
 	// (GET /timeline)
@@ -439,7 +611,7 @@ type ServerInterface interface {
 	// (GET /timeline/{id})
 	GetTimeline(w http.ResponseWriter, r *http.Request, id string)
 	// Update a timeline item by ID
-	// (PUT /timeline/{id})
+	// (PATCH /timeline/{id})
 	UpdateTimeline(w http.ResponseWriter, r *http.Request, id string)
 	// List all types
 	// (GET /types)
@@ -454,7 +626,7 @@ type ServerInterface interface {
 	// (GET /types/{id})
 	GetType(w http.ResponseWriter, r *http.Request, id string)
 	// Update a type by ID
-	// (PUT /types/{id})
+	// (PATCH /types/{id})
 	UpdateType(w http.ResponseWriter, r *http.Request, id string)
 	// List all users
 	// (GET /users)
@@ -469,7 +641,7 @@ type ServerInterface interface {
 	// (GET /users/{id})
 	GetUser(w http.ResponseWriter, r *http.Request, id string)
 	// Update a user by ID
-	// (PUT /users/{id})
+	// (PATCH /users/{id})
 	UpdateUser(w http.ResponseWriter, r *http.Request, id string)
 	// List all webhooks
 	// (GET /webhooks)
@@ -484,7 +656,7 @@ type ServerInterface interface {
 	// (GET /webhooks/{id})
 	GetWebhook(w http.ResponseWriter, r *http.Request, id string)
 	// Update a webhook by ID
-	// (PUT /webhooks/{id})
+	// (PATCH /webhooks/{id})
 	UpdateWebhook(w http.ResponseWriter, r *http.Request, id string)
 }
 
@@ -517,7 +689,7 @@ func (_ Unimplemented) GetComment(w http.ResponseWriter, r *http.Request, id str
 }
 
 // Update a comment by ID
-// (PUT /comments/{id})
+// (PATCH /comments/{id})
 func (_ Unimplemented) UpdateComment(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -552,12 +724,6 @@ func (_ Unimplemented) GetFeature(w http.ResponseWriter, r *http.Request, id str
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Update a feature by ID
-// (PUT /features/{id})
-func (_ Unimplemented) UpdateFeature(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // List all files
 // (GET /files)
 func (_ Unimplemented) ListFiles(w http.ResponseWriter, r *http.Request, params ListFilesParams) {
@@ -583,7 +749,7 @@ func (_ Unimplemented) GetFile(w http.ResponseWriter, r *http.Request, id string
 }
 
 // Update a file by ID
-// (PUT /files/{id})
+// (PATCH /files/{id})
 func (_ Unimplemented) UpdateFile(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -613,7 +779,7 @@ func (_ Unimplemented) GetLink(w http.ResponseWriter, r *http.Request, id string
 }
 
 // Update a link by ID
-// (PUT /links/{id})
+// (PATCH /links/{id})
 func (_ Unimplemented) UpdateLink(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -643,7 +809,7 @@ func (_ Unimplemented) GetReaction(w http.ResponseWriter, r *http.Request, id st
 }
 
 // Update a reaction by ID
-// (PUT /reactions/{id})
+// (PATCH /reactions/{id})
 func (_ Unimplemented) UpdateReaction(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -679,7 +845,7 @@ func (_ Unimplemented) GetTask(w http.ResponseWriter, r *http.Request, id string
 }
 
 // Update a task by ID
-// (PUT /tasks/{id})
+// (PATCH /tasks/{id})
 func (_ Unimplemented) UpdateTask(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -715,7 +881,7 @@ func (_ Unimplemented) GetTicket(w http.ResponseWriter, r *http.Request, id stri
 }
 
 // Update a ticket by ID
-// (PUT /tickets/{id})
+// (PATCH /tickets/{id})
 func (_ Unimplemented) UpdateTicket(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -745,7 +911,7 @@ func (_ Unimplemented) GetTimeline(w http.ResponseWriter, r *http.Request, id st
 }
 
 // Update a timeline item by ID
-// (PUT /timeline/{id})
+// (PATCH /timeline/{id})
 func (_ Unimplemented) UpdateTimeline(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -775,7 +941,7 @@ func (_ Unimplemented) GetType(w http.ResponseWriter, r *http.Request, id string
 }
 
 // Update a type by ID
-// (PUT /types/{id})
+// (PATCH /types/{id})
 func (_ Unimplemented) UpdateType(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -805,7 +971,7 @@ func (_ Unimplemented) GetUser(w http.ResponseWriter, r *http.Request, id string
 }
 
 // Update a user by ID
-// (PUT /users/{id})
+// (PATCH /users/{id})
 func (_ Unimplemented) UpdateUser(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -835,7 +1001,7 @@ func (_ Unimplemented) GetWebhook(w http.ResponseWriter, r *http.Request, id str
 }
 
 // Update a webhook by ID
-// (PUT /webhooks/{id})
+// (PATCH /webhooks/{id})
 func (_ Unimplemented) UpdateWebhook(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -1085,31 +1251,6 @@ func (siw *ServerInterfaceWrapper) GetFeature(w http.ResponseWriter, r *http.Req
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFeature(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateFeature operation middleware
-func (siw *ServerInterfaceWrapper) UpdateFeature(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateFeature(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2457,7 +2598,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/comments/{id}", wrapper.GetComment)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/comments/{id}", wrapper.UpdateComment)
+		r.Patch(options.BaseURL+"/comments/{id}", wrapper.UpdateComment)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/dashboard_counts", wrapper.GetDashboardCounts)
@@ -2475,9 +2616,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/features/{id}", wrapper.GetFeature)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/features/{id}", wrapper.UpdateFeature)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/files", wrapper.ListFiles)
 	})
 	r.Group(func(r chi.Router) {
@@ -2490,7 +2628,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/files/{id}", wrapper.GetFile)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/files/{id}", wrapper.UpdateFile)
+		r.Patch(options.BaseURL+"/files/{id}", wrapper.UpdateFile)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/links", wrapper.ListLinks)
@@ -2505,7 +2643,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/links/{id}", wrapper.GetLink)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/links/{id}", wrapper.UpdateLink)
+		r.Patch(options.BaseURL+"/links/{id}", wrapper.UpdateLink)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/reactions", wrapper.ListReactions)
@@ -2520,7 +2658,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/reactions/{id}", wrapper.GetReaction)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/reactions/{id}", wrapper.UpdateReaction)
+		r.Patch(options.BaseURL+"/reactions/{id}", wrapper.UpdateReaction)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/sidebar", wrapper.GetSidebar)
@@ -2538,7 +2676,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/tasks/{id}", wrapper.GetTask)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/tasks/{id}", wrapper.UpdateTask)
+		r.Patch(options.BaseURL+"/tasks/{id}", wrapper.UpdateTask)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ticket_search", wrapper.SearchTickets)
@@ -2556,7 +2694,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/tickets/{id}", wrapper.GetTicket)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/tickets/{id}", wrapper.UpdateTicket)
+		r.Patch(options.BaseURL+"/tickets/{id}", wrapper.UpdateTicket)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/timeline", wrapper.ListTimeline)
@@ -2571,7 +2709,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/timeline/{id}", wrapper.GetTimeline)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/timeline/{id}", wrapper.UpdateTimeline)
+		r.Patch(options.BaseURL+"/timeline/{id}", wrapper.UpdateTimeline)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/types", wrapper.ListTypes)
@@ -2586,7 +2724,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/types/{id}", wrapper.GetType)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/types/{id}", wrapper.UpdateType)
+		r.Patch(options.BaseURL+"/types/{id}", wrapper.UpdateType)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/users", wrapper.ListUsers)
@@ -2601,7 +2739,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/users/{id}", wrapper.GetUser)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/users/{id}", wrapper.UpdateUser)
+		r.Patch(options.BaseURL+"/users/{id}", wrapper.UpdateUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/webhooks", wrapper.ListWebhooks)
@@ -2616,7 +2754,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/webhooks/{id}", wrapper.GetWebhook)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/webhooks/{id}", wrapper.UpdateWebhook)
+		r.Patch(options.BaseURL+"/webhooks/{id}", wrapper.UpdateWebhook)
 	})
 
 	return r
@@ -2697,12 +2835,13 @@ type UpdateCommentResponseObject interface {
 	VisitUpdateCommentResponse(w http.ResponseWriter) error
 }
 
-type UpdateComment200Response struct {
-}
+type UpdateComment200JSONResponse Comment
 
-func (response UpdateComment200Response) VisitUpdateCommentResponse(w http.ResponseWriter) error {
+func (response UpdateComment200JSONResponse) VisitUpdateCommentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetDashboardCountsRequestObject struct {
@@ -2787,23 +2926,6 @@ func (response GetFeature200JSONResponse) VisitGetFeatureResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateFeatureRequestObject struct {
-	Id   string `json:"id"`
-	Body *UpdateFeatureJSONRequestBody
-}
-
-type UpdateFeatureResponseObject interface {
-	VisitUpdateFeatureResponse(w http.ResponseWriter) error
-}
-
-type UpdateFeature200Response struct {
-}
-
-func (response UpdateFeature200Response) VisitUpdateFeatureResponse(w http.ResponseWriter) error {
-	w.WriteHeader(200)
-	return nil
-}
-
 type ListFilesRequestObject struct {
 	Params ListFilesParams
 }
@@ -2879,12 +3001,13 @@ type UpdateFileResponseObject interface {
 	VisitUpdateFileResponse(w http.ResponseWriter) error
 }
 
-type UpdateFile200Response struct {
-}
+type UpdateFile200JSONResponse File
 
-func (response UpdateFile200Response) VisitUpdateFileResponse(w http.ResponseWriter) error {
+func (response UpdateFile200JSONResponse) VisitUpdateFileResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListLinksRequestObject struct {
@@ -2962,12 +3085,13 @@ type UpdateLinkResponseObject interface {
 	VisitUpdateLinkResponse(w http.ResponseWriter) error
 }
 
-type UpdateLink200Response struct {
-}
+type UpdateLink200JSONResponse Link
 
-func (response UpdateLink200Response) VisitUpdateLinkResponse(w http.ResponseWriter) error {
+func (response UpdateLink200JSONResponse) VisitUpdateLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListReactionsRequestObject struct {
@@ -3045,12 +3169,13 @@ type UpdateReactionResponseObject interface {
 	VisitUpdateReactionResponse(w http.ResponseWriter) error
 }
 
-type UpdateReaction200Response struct {
-}
+type UpdateReaction200JSONResponse Reaction
 
-func (response UpdateReaction200Response) VisitUpdateReactionResponse(w http.ResponseWriter) error {
+func (response UpdateReaction200JSONResponse) VisitUpdateReactionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetSidebarRequestObject struct {
@@ -3144,12 +3269,13 @@ type UpdateTaskResponseObject interface {
 	VisitUpdateTaskResponse(w http.ResponseWriter) error
 }
 
-type UpdateTask200Response struct {
-}
+type UpdateTask200JSONResponse Task
 
-func (response UpdateTask200Response) VisitUpdateTaskResponse(w http.ResponseWriter) error {
+func (response UpdateTask200JSONResponse) VisitUpdateTaskResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type SearchTicketsRequestObject struct {
@@ -3244,12 +3370,13 @@ type UpdateTicketResponseObject interface {
 	VisitUpdateTicketResponse(w http.ResponseWriter) error
 }
 
-type UpdateTicket200Response struct {
-}
+type UpdateTicket200JSONResponse Ticket
 
-func (response UpdateTicket200Response) VisitUpdateTicketResponse(w http.ResponseWriter) error {
+func (response UpdateTicket200JSONResponse) VisitUpdateTicketResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListTimelineRequestObject struct {
@@ -3327,12 +3454,13 @@ type UpdateTimelineResponseObject interface {
 	VisitUpdateTimelineResponse(w http.ResponseWriter) error
 }
 
-type UpdateTimeline200Response struct {
-}
+type UpdateTimeline200JSONResponse TimelineEntry
 
-func (response UpdateTimeline200Response) VisitUpdateTimelineResponse(w http.ResponseWriter) error {
+func (response UpdateTimeline200JSONResponse) VisitUpdateTimelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListTypesRequestObject struct {
@@ -3410,12 +3538,13 @@ type UpdateTypeResponseObject interface {
 	VisitUpdateTypeResponse(w http.ResponseWriter) error
 }
 
-type UpdateType200Response struct {
-}
+type UpdateType200JSONResponse Type
 
-func (response UpdateType200Response) VisitUpdateTypeResponse(w http.ResponseWriter) error {
+func (response UpdateType200JSONResponse) VisitUpdateTypeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListUsersRequestObject struct {
@@ -3493,12 +3622,13 @@ type UpdateUserResponseObject interface {
 	VisitUpdateUserResponse(w http.ResponseWriter) error
 }
 
-type UpdateUser200Response struct {
-}
+type UpdateUser200JSONResponse User
 
-func (response UpdateUser200Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+func (response UpdateUser200JSONResponse) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListWebhooksRequestObject struct {
@@ -3576,12 +3706,13 @@ type UpdateWebhookResponseObject interface {
 	VisitUpdateWebhookResponse(w http.ResponseWriter) error
 }
 
-type UpdateWebhook200Response struct {
-}
+type UpdateWebhook200JSONResponse Webhook
 
-func (response UpdateWebhook200Response) VisitUpdateWebhookResponse(w http.ResponseWriter) error {
+func (response UpdateWebhook200JSONResponse) VisitUpdateWebhookResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // StrictServerInterface represents all server handlers.
@@ -3599,7 +3730,7 @@ type StrictServerInterface interface {
 	// (GET /comments/{id})
 	GetComment(ctx context.Context, request GetCommentRequestObject) (GetCommentResponseObject, error)
 	// Update a comment by ID
-	// (PUT /comments/{id})
+	// (PATCH /comments/{id})
 	UpdateComment(ctx context.Context, request UpdateCommentRequestObject) (UpdateCommentResponseObject, error)
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
@@ -3616,9 +3747,6 @@ type StrictServerInterface interface {
 	// Get a single feature by ID
 	// (GET /features/{id})
 	GetFeature(ctx context.Context, request GetFeatureRequestObject) (GetFeatureResponseObject, error)
-	// Update a feature by ID
-	// (PUT /features/{id})
-	UpdateFeature(ctx context.Context, request UpdateFeatureRequestObject) (UpdateFeatureResponseObject, error)
 	// List all files
 	// (GET /files)
 	ListFiles(ctx context.Context, request ListFilesRequestObject) (ListFilesResponseObject, error)
@@ -3632,7 +3760,7 @@ type StrictServerInterface interface {
 	// (GET /files/{id})
 	GetFile(ctx context.Context, request GetFileRequestObject) (GetFileResponseObject, error)
 	// Update a file by ID
-	// (PUT /files/{id})
+	// (PATCH /files/{id})
 	UpdateFile(ctx context.Context, request UpdateFileRequestObject) (UpdateFileResponseObject, error)
 	// List all links
 	// (GET /links)
@@ -3647,7 +3775,7 @@ type StrictServerInterface interface {
 	// (GET /links/{id})
 	GetLink(ctx context.Context, request GetLinkRequestObject) (GetLinkResponseObject, error)
 	// Update a link by ID
-	// (PUT /links/{id})
+	// (PATCH /links/{id})
 	UpdateLink(ctx context.Context, request UpdateLinkRequestObject) (UpdateLinkResponseObject, error)
 	// List all reactions
 	// (GET /reactions)
@@ -3662,7 +3790,7 @@ type StrictServerInterface interface {
 	// (GET /reactions/{id})
 	GetReaction(ctx context.Context, request GetReactionRequestObject) (GetReactionResponseObject, error)
 	// Update a reaction by ID
-	// (PUT /reactions/{id})
+	// (PATCH /reactions/{id})
 	UpdateReaction(ctx context.Context, request UpdateReactionRequestObject) (UpdateReactionResponseObject, error)
 	// Get sidebar data
 	// (GET /sidebar)
@@ -3680,7 +3808,7 @@ type StrictServerInterface interface {
 	// (GET /tasks/{id})
 	GetTask(ctx context.Context, request GetTaskRequestObject) (GetTaskResponseObject, error)
 	// Update a task by ID
-	// (PUT /tasks/{id})
+	// (PATCH /tasks/{id})
 	UpdateTask(ctx context.Context, request UpdateTaskRequestObject) (UpdateTaskResponseObject, error)
 	// Search tickets with full join data
 	// (GET /ticket_search)
@@ -3698,7 +3826,7 @@ type StrictServerInterface interface {
 	// (GET /tickets/{id})
 	GetTicket(ctx context.Context, request GetTicketRequestObject) (GetTicketResponseObject, error)
 	// Update a ticket by ID
-	// (PUT /tickets/{id})
+	// (PATCH /tickets/{id})
 	UpdateTicket(ctx context.Context, request UpdateTicketRequestObject) (UpdateTicketResponseObject, error)
 	// List all timeline items
 	// (GET /timeline)
@@ -3713,7 +3841,7 @@ type StrictServerInterface interface {
 	// (GET /timeline/{id})
 	GetTimeline(ctx context.Context, request GetTimelineRequestObject) (GetTimelineResponseObject, error)
 	// Update a timeline item by ID
-	// (PUT /timeline/{id})
+	// (PATCH /timeline/{id})
 	UpdateTimeline(ctx context.Context, request UpdateTimelineRequestObject) (UpdateTimelineResponseObject, error)
 	// List all types
 	// (GET /types)
@@ -3728,7 +3856,7 @@ type StrictServerInterface interface {
 	// (GET /types/{id})
 	GetType(ctx context.Context, request GetTypeRequestObject) (GetTypeResponseObject, error)
 	// Update a type by ID
-	// (PUT /types/{id})
+	// (PATCH /types/{id})
 	UpdateType(ctx context.Context, request UpdateTypeRequestObject) (UpdateTypeResponseObject, error)
 	// List all users
 	// (GET /users)
@@ -3743,7 +3871,7 @@ type StrictServerInterface interface {
 	// (GET /users/{id})
 	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
 	// Update a user by ID
-	// (PUT /users/{id})
+	// (PATCH /users/{id})
 	UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
 	// List all webhooks
 	// (GET /webhooks)
@@ -3758,7 +3886,7 @@ type StrictServerInterface interface {
 	// (GET /webhooks/{id})
 	GetWebhook(ctx context.Context, request GetWebhookRequestObject) (GetWebhookResponseObject, error)
 	// Update a webhook by ID
-	// (PUT /webhooks/{id})
+	// (PATCH /webhooks/{id})
 	UpdateWebhook(ctx context.Context, request UpdateWebhookRequestObject) (UpdateWebhookResponseObject, error)
 }
 
@@ -4059,39 +4187,6 @@ func (sh *strictHandler) GetFeature(w http.ResponseWriter, r *http.Request, id s
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetFeatureResponseObject); ok {
 		if err := validResponse.VisitGetFeatureResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// UpdateFeature operation middleware
-func (sh *strictHandler) UpdateFeature(w http.ResponseWriter, r *http.Request, id string) {
-	var request UpdateFeatureRequestObject
-
-	request.Id = id
-
-	var body UpdateFeatureJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.UpdateFeature(ctx, request.(UpdateFeatureRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "UpdateFeature")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(UpdateFeatureResponseObject); ok {
-		if err := validResponse.VisitUpdateFeatureResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -16,105 +16,78 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Type
+ * @interface NewType
  */
-export interface Type {
+export interface NewType {
     /**
      * 
      * @type {string}
-     * @memberof Type
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Type
+     * @memberof NewType
      */
     icon: string;
     /**
      * 
      * @type {string}
-     * @memberof Type
+     * @memberof NewType
      */
     plural: string;
     /**
      * 
      * @type {object}
-     * @memberof Type
+     * @memberof NewType
      */
     schema: object;
     /**
      * 
      * @type {string}
-     * @memberof Type
+     * @memberof NewType
      */
     singular: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Type
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Type
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the Type interface.
+ * Check if a given object implements the NewType interface.
  */
-export function instanceOfType(value: object): value is Type {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewType(value: object): value is NewType {
     if (!('icon' in value) || value['icon'] === undefined) return false;
     if (!('plural' in value) || value['plural'] === undefined) return false;
     if (!('schema' in value) || value['schema'] === undefined) return false;
     if (!('singular' in value) || value['singular'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function TypeFromJSON(json: any): Type {
-    return TypeFromJSONTyped(json, false);
+export function NewTypeFromJSON(json: any): NewType {
+    return NewTypeFromJSONTyped(json, false);
 }
 
-export function TypeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Type {
+export function NewTypeFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewType {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'icon': json['icon'],
         'plural': json['plural'],
         'schema': json['schema'],
         'singular': json['singular'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function TypeToJSON(json: any): Type {
-    return TypeToJSONTyped(json, false);
+export function NewTypeToJSON(json: any): NewType {
+    return NewTypeToJSONTyped(json, false);
 }
 
-export function TypeToJSONTyped(value?: Type | null, ignoreDiscriminator: boolean = false): any {
+export function NewTypeToJSONTyped(value?: NewType | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'icon': value['icon'],
         'plural': value['plural'],
         'schema': value['schema'],
         'singular': value['singular'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 

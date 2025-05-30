@@ -8,10 +8,9 @@ import { ChevronRight } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task } from '@/lib/types'
+import { api } from '@/api'
+import type { Task } from '@/client/models/Task'
 import { cn } from '@/lib/utils'
-import { Configuration, DefaultApi, type Tasks } from '@/client'
 
 const {
   isPending,
@@ -20,19 +19,8 @@ const {
   error
 } = useQuery({
   queryKey: ['tasks'],
-  queryFn: (): Promise<Array<Tasks>> => {
-    const config = new Configuration({
-      basePath: 'http://localhost:8090/api',
-    })
-    const api = new DefaultApi(config)
-    return api.listTasks({})
-
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('tasks').getFullList({
-      sort: '-created',
-      filter: pb.filter(`open = true && owner = {:owner}`, { owner: pb.authStore.model.id }),
-      expand: 'owner,ticket'
-    })
+  queryFn: (): Promise<Array<Task>> => {
+    return api.listTasks().then((tasks) => tasks.filter((task) => task.open)) // TODO: filter by owner
   }
 })
 </script>
@@ -49,7 +37,7 @@ const {
           <RouterLink
             :to="{
               name: 'tickets',
-              params: { type: task.expand.ticket.type, id: task.expand.ticket.id }
+              params: { type: 'alert', id: task.ticket } // TODO: type
             }"
             :class="
               cn(
@@ -59,7 +47,7 @@ const {
             "
           >
             <span class="flex flex-row items-center text-sm text-gray-500">
-              Go to {{ task.expand.ticket.name }}
+              Go to {{ task.ticket }} <!-- TODO: name -->
               <ChevronRight class="ml-2 h-4 w-4" />
             </span>
           </RouterLink>

@@ -24,19 +24,7 @@ export interface TimelineEntry {
      * @type {string}
      * @memberof TimelineEntry
      */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TimelineEntry
-     */
     id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TimelineEntry
-     */
-    message: string;
     /**
      * 
      * @type {string}
@@ -48,7 +36,19 @@ export interface TimelineEntry {
      * @type {string}
      * @memberof TimelineEntry
      */
+    message: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TimelineEntry
+     */
     time: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TimelineEntry
+     */
+    created: string;
     /**
      * 
      * @type {string}
@@ -61,11 +61,11 @@ export interface TimelineEntry {
  * Check if a given object implements the TimelineEntry interface.
  */
 export function instanceOfTimelineEntry(value: object): value is TimelineEntry {
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('message' in value) || value['message'] === undefined) return false;
     if (!('ticket' in value) || value['ticket'] === undefined) return false;
+    if (!('message' in value) || value['message'] === undefined) return false;
     if (!('time' in value) || value['time'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
@@ -80,11 +80,11 @@ export function TimelineEntryFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'created': json['created'],
         'id': json['id'],
-        'message': json['message'],
         'ticket': json['ticket'],
+        'message': json['message'],
         'time': json['time'],
+        'created': json['created'],
         'updated': json['updated'],
     };
 }
@@ -100,11 +100,11 @@ export function TimelineEntryToJSONTyped(value?: TimelineEntry | null, ignoreDis
 
     return {
         
-        'created': value['created'],
         'id': value['id'],
-        'message': value['message'],
         'ticket': value['ticket'],
+        'message': value['message'],
         'time': value['time'],
+        'created': value['created'],
         'updated': value['updated'],
     };
 }

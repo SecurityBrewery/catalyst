@@ -30,13 +30,13 @@ type Feature struct {
 }
 
 type File struct {
-	Blob    string  `json:"blob"`
-	Created string  `json:"created"`
-	ID      string  `json:"id"`
-	Name    string  `json:"name"`
-	Size    float64 `json:"size"`
-	Ticket  string  `json:"ticket"`
-	Updated string  `json:"updated"`
+	Blob    string `json:"blob"`
+	Created string `json:"created"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`
+	Ticket  string `json:"ticket"`
+	Updated string `json:"updated"`
 }
 
 type Link struct {

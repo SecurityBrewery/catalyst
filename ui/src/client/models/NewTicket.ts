@@ -16,82 +16,63 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Ticket
+ * @interface NewTicket
  */
-export interface Ticket {
+export interface NewTicket {
     /**
      * 
      * @type {string}
-     * @memberof Ticket
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     type: string;
     /**
      * 
      * @type {string}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     description: string;
     /**
      * 
      * @type {boolean}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     open: boolean;
     /**
      * 
      * @type {string}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     owner: string;
     /**
      * 
      * @type {string}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     resolution: string;
     /**
      * 
      * @type {object}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     schema: object;
     /**
      * 
      * @type {object}
-     * @memberof Ticket
+     * @memberof NewTicket
      */
     state: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof Ticket
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Ticket
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the Ticket interface.
+ * Check if a given object implements the NewTicket interface.
  */
-export function instanceOfTicket(value: object): value is Ticket {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewTicket(value: object): value is NewTicket {
     if (!('type' in value) || value['type'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
@@ -100,22 +81,19 @@ export function instanceOfTicket(value: object): value is Ticket {
     if (!('resolution' in value) || value['resolution'] === undefined) return false;
     if (!('schema' in value) || value['schema'] === undefined) return false;
     if (!('state' in value) || value['state'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function TicketFromJSON(json: any): Ticket {
-    return TicketFromJSONTyped(json, false);
+export function NewTicketFromJSON(json: any): NewTicket {
+    return NewTicketFromJSONTyped(json, false);
 }
 
-export function TicketFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ticket {
+export function NewTicketFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewTicket {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'type': json['type'],
         'name': json['name'],
         'description': json['description'],
@@ -124,23 +102,20 @@ export function TicketFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ti
         'resolution': json['resolution'],
         'schema': json['schema'],
         'state': json['state'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function TicketToJSON(json: any): Ticket {
-    return TicketToJSONTyped(json, false);
+export function NewTicketToJSON(json: any): NewTicket {
+    return NewTicketToJSONTyped(json, false);
 }
 
-export function TicketToJSONTyped(value?: Ticket | null, ignoreDiscriminator: boolean = false): any {
+export function NewTicketToJSONTyped(value?: NewTicket | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'type': value['type'],
         'name': value['name'],
         'description': value['description'],
@@ -149,8 +124,6 @@ export function TicketToJSONTyped(value?: Ticket | null, ignoreDiscriminator: bo
         'resolution': value['resolution'],
         'schema': value['schema'],
         'state': value['state'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 

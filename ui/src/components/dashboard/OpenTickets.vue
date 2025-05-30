@@ -9,8 +9,8 @@ import { ChevronRight } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models/Ticket'
 import { cn } from '@/lib/utils'
 
 const {
@@ -21,12 +21,7 @@ const {
 } = useQuery({
   queryKey: ['tickets', 'dashboard'],
   queryFn: (): Promise<Array<Ticket>> => {
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('tickets').getFullList({
-      sort: '-created',
-      filter: pb.filter(`open = true && owner = {:owner}`, { owner: pb.authStore.model.id }),
-      expand: 'owner,type'
-    })
+    return api.listTickets().then((tickets) => tickets.filter((ticket) => ticket.open)) // TODO: filter by owner
   }
 })
 
@@ -49,7 +44,7 @@ const age = (ticket: Ticket) => {
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">{{ ticket.expand.type.singular }}</span>
+        <span class="text-sm text-muted-foreground">{{ ticket.type }}</span> <!-- TODO: singular -->
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
         <RouterLink

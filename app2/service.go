@@ -81,15 +81,21 @@ func (s *Service) GetComment(ctx context.Context, request openapi.GetCommentRequ
 }
 
 func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateCommentRequestObject) (openapi.UpdateCommentResponseObject, error) {
-	err := s.Queries.UpdateComment(ctx, sqlc.UpdateCommentParams{
-		Message: request.Body.Message,
+	comment, err := s.Queries.UpdateComment(ctx, sqlc.UpdateCommentParams{
+		Message: toNullString(request.Body.Message),
 		ID:      request.Id,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateComment200Response{}, nil
+	return openapi.UpdateComment200JSONResponse{
+		Id:      comment.ID,
+		Author:  comment.Author,
+		Created: comment.Created,
+		Updated: comment.Updated,
+		Message: comment.Message,
+	}, nil
 }
 
 func (s *Service) GetDashboardCounts(ctx context.Context, request openapi.GetDashboardCountsRequestObject) (openapi.GetDashboardCountsResponseObject, error) {
@@ -160,18 +166,6 @@ func (s *Service) GetFeature(ctx context.Context, request openapi.GetFeatureRequ
 	}, nil
 }
 
-func (s *Service) UpdateFeature(ctx context.Context, request openapi.UpdateFeatureRequestObject) (openapi.UpdateFeatureResponseObject, error) {
-	err := s.Queries.UpdateFeature(ctx, sqlc.UpdateFeatureParams{
-		ID:   request.Id,
-		Name: request.Body.Name,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return openapi.UpdateFeature200Response{}, nil
-}
-
 func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesRequestObject) (openapi.ListFilesResponseObject, error) {
 	files, err := s.Queries.ListFiles(ctx, sqlc.ListFilesParams{
 		Ticket: toString(request.Params.Ticket, ""),
@@ -199,7 +193,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	_, err := s.Queries.CreateFile(ctx, sqlc.CreateFileParams{
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
-		Size:   float64(request.Body.Size),
+		Size:   int64(request.Body.Size),
 		Ticket: request.Body.Ticket,
 	})
 	if err != nil {
@@ -233,17 +227,22 @@ func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObj
 }
 
 func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequestObject) (openapi.UpdateFileResponseObject, error) {
-	err := s.Queries.UpdateFile(ctx, sqlc.UpdateFileParams{
+	file, err := s.Queries.UpdateFile(ctx, sqlc.UpdateFileParams{
 		ID:   request.Id,
-		Name: request.Body.Name,
-		Blob: request.Body.Blob,
-		Size: float64(request.Body.Size),
+		Name: toNullString(request.Body.Name),
+		Blob: toNullString(request.Body.Blob),
+		Size: toNullInt64(request.Body.Size),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateFile200Response{}, nil
+	return openapi.UpdateFile200JSONResponse{
+		Id:      file.ID,
+		Name:    file.Name,
+		Created: file.Created,
+		Updated: file.Updated,
+	}, nil
 }
 
 func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksRequestObject) (openapi.ListLinksResponseObject, error) {
@@ -310,16 +309,22 @@ func (s *Service) GetLink(ctx context.Context, request openapi.GetLinkRequestObj
 }
 
 func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequestObject) (openapi.UpdateLinkResponseObject, error) {
-	err := s.Queries.UpdateLink(ctx, sqlc.UpdateLinkParams{
+	link, err := s.Queries.UpdateLink(ctx, sqlc.UpdateLinkParams{
 		ID:   request.Id,
-		Name: request.Body.Name,
-		Url:  request.Body.Url,
+		Name: toNullString(request.Body.Name),
+		Url:  toNullString(request.Body.Url),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateLink200Response{}, nil
+	return openapi.UpdateLink200JSONResponse{
+		Id:      link.ID,
+		Name:    link.Name,
+		Created: link.Created,
+		Updated: link.Updated,
+		Url:     link.Url,
+	}, nil
 }
 
 func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactionsRequestObject) (openapi.ListReactionsResponseObject, error) {
@@ -385,17 +390,23 @@ func (s *Service) GetReaction(ctx context.Context, request openapi.GetReactionRe
 }
 
 func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReactionRequestObject) (openapi.UpdateReactionResponseObject, error) {
-	err := s.Queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
+	reaction, err := s.Queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
 		ID:      request.Id,
-		Name:    request.Body.Name,
-		Action:  request.Body.Action,
-		Trigger: request.Body.Trigger,
+		Name:    toNullString(request.Body.Name),
+		Action:  toNullString(request.Body.Action),
+		Trigger: toNullString(request.Body.Trigger),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateReaction200Response{}, nil
+	return openapi.UpdateReaction200JSONResponse{
+		Id:      reaction.ID,
+		Name:    reaction.Name,
+		Created: reaction.Created,
+		Updated: reaction.Updated,
+		Action:  reaction.Action,
+	}, nil
 }
 
 func (s *Service) GetSidebar(ctx context.Context, request openapi.GetSidebarRequestObject) (openapi.GetSidebarResponseObject, error) {
@@ -484,17 +495,23 @@ func (s *Service) GetTask(ctx context.Context, request openapi.GetTaskRequestObj
 }
 
 func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequestObject) (openapi.UpdateTaskResponseObject, error) {
-	err := s.Queries.UpdateTask(ctx, sqlc.UpdateTaskParams{
+	task, err := s.Queries.UpdateTask(ctx, sqlc.UpdateTaskParams{
 		ID:    request.Id,
-		Name:  request.Body.Name,
-		Open:  request.Body.Open,
-		Owner: request.Body.Owner,
+		Name:  toNullString(request.Body.Name),
+		Open:  toNullBool(request.Body.Open),
+		Owner: toNullString(request.Body.Owner),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateTask200Response{}, nil
+	return openapi.UpdateTask200JSONResponse{
+		Id:      task.ID,
+		Name:    task.Name,
+		Created: task.Created,
+		Updated: task.Updated,
+		Open:    task.Open,
+	}, nil
 }
 
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
@@ -586,26 +603,31 @@ func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketReques
 		Open:        ticket.Open,
 		Resolution:  ticket.Resolution,
 		Type:        ticket.Type,
-		// State:       ticket.State,
+		// State:       ticket.State, // TODO
 	}, nil
 }
 
 func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicketRequestObject) (openapi.UpdateTicketResponseObject, error) {
-	err := s.Queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
+	ticket, err := s.Queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
 		ID:          request.Id,
-		Name:        request.Body.Name,
-		Description: request.Body.Description,
-		Owner:       request.Body.Owner,
-		Open:        request.Body.Open,
-		Resolution:  request.Body.Resolution,
-		Type:        request.Body.Type,
-		State:       request.Body.State,
+		Name:        toNullString(request.Body.Name),
+		Description: toNullString(request.Body.Description),
+		Owner:       toNullString(request.Body.Owner),
+		Open:        toNullBool(request.Body.Open),
+		Resolution:  toNullString(request.Body.Resolution),
+		Type:        toNullString(request.Body.Type),
+		// State:       toNullString(request.Body.State), // TODO
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateTicket200Response{}, nil
+	return openapi.UpdateTicket200JSONResponse{
+		Id:          ticket.ID,
+		Name:        ticket.Name,
+		Description: ticket.Description,
+		Owner:       ticket.Owner,
+	}, nil
 }
 
 func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimelineRequestObject) (openapi.ListTimelineResponseObject, error) {
@@ -672,16 +694,22 @@ func (s *Service) GetTimeline(ctx context.Context, request openapi.GetTimelineRe
 }
 
 func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTimelineRequestObject) (openapi.UpdateTimelineResponseObject, error) {
-	err := s.Queries.UpdateTimeline(ctx, sqlc.UpdateTimelineParams{
+	timeline, err := s.Queries.UpdateTimeline(ctx, sqlc.UpdateTimelineParams{
 		ID:      request.Id,
-		Message: request.Body.Message,
-		Time:    request.Body.Time,
+		Message: toNullString(request.Body.Message),
+		Time:    toNullString(request.Body.Time),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateTimeline200Response{}, nil
+	return openapi.UpdateTimeline200JSONResponse{
+		Id:      timeline.ID,
+		Message: timeline.Message,
+		Created: timeline.Created,
+		Updated: timeline.Updated,
+		Time:    timeline.Time,
+	}, nil
 }
 
 func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesRequestObject) (openapi.ListTypesResponseObject, error) {
@@ -745,18 +773,25 @@ func (s *Service) GetType(ctx context.Context, request openapi.GetTypeRequestObj
 }
 
 func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequestObject) (openapi.UpdateTypeResponseObject, error) {
-	err := s.Queries.UpdateType(ctx, sqlc.UpdateTypeParams{
+	t, err := s.Queries.UpdateType(ctx, sqlc.UpdateTypeParams{
 		ID:       request.Id,
-		Icon:     request.Body.Icon,
-		Plural:   request.Body.Plural,
-		Singular: request.Body.Singular,
+		Icon:     toNullString(request.Body.Icon),
+		Plural:   toNullString(request.Body.Plural),
+		Singular: toNullString(request.Body.Singular),
 		Schema:   request.Body.Schema,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateType200Response{}, nil
+	return openapi.UpdateType200JSONResponse{
+		Id:       t.ID,
+		Created:  t.Created,
+		Updated:  t.Updated,
+		Icon:     t.Icon,
+		Plural:   t.Plural,
+		Singular: t.Singular,
+	}, nil
 }
 
 func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersRequestObject) (openapi.ListUsersResponseObject, error) {
@@ -780,11 +815,11 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
 	_, err := s.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		Email:        request.Body.Email,
-		Username:     request.Body.Username,
-		TokenKey:     request.Body.TokenKey,
-		Name:         request.Body.Name,
-		PasswordHash: request.Body.PasswordHash,
+		Email:    request.Body.Email,
+		Username: request.Body.Username,
+		// TokenKey:     request.Body.TokenKey, // TODO
+		Name: request.Body.Name,
+		// PasswordHash: request.Body.PasswordHash, // TODO
 	})
 	if err != nil {
 		return nil, err
@@ -818,19 +853,25 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 }
 
 func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequestObject) (openapi.UpdateUserResponseObject, error) {
-	err := s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
-		ID:           request.Id,
-		Name:         request.Body.Name,
-		Email:        request.Body.Email,
-		Username:     request.Body.Username,
-		TokenKey:     request.Body.TokenKey,
-		PasswordHash: request.Body.PasswordHash,
+	user, err := s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+		ID:       request.Id,
+		Name:     toNullString(request.Body.Name),
+		Email:    toNullString(request.Body.Email),
+		Username: toNullString(request.Body.Username),
+		// TokenKey:     toNullString(request.Body.TokenKey), // TODO
+		// PasswordHash: toNullString(request.Body.PasswordHash), // TODO
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateUser200Response{}, nil
+	return openapi.UpdateUser200JSONResponse{
+		Id:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		Username: user.Username,
+		Verified: user.Verified,
+	}, nil
 }
 
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {
@@ -892,17 +933,24 @@ func (s *Service) GetWebhook(ctx context.Context, request openapi.GetWebhookRequ
 }
 
 func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebhookRequestObject) (openapi.UpdateWebhookResponseObject, error) {
-	err := s.Queries.UpdateWebhook(ctx, sqlc.UpdateWebhookParams{
+	webhook, err := s.Queries.UpdateWebhook(ctx, sqlc.UpdateWebhookParams{
 		ID:          request.Id,
-		Name:        request.Body.Name,
-		Destination: request.Body.Destination,
-		Collection:  request.Body.Collection,
+		Name:        toNullString(request.Body.Name),
+		Destination: toNullString(request.Body.Destination),
+		Collection:  toNullString(request.Body.Collection),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.UpdateWebhook200Response{}, nil
+	return openapi.UpdateWebhook200JSONResponse{
+		Id:          webhook.ID,
+		Name:        webhook.Name,
+		Created:     webhook.Created,
+		Updated:     webhook.Updated,
+		Destination: webhook.Destination,
+		Collection:  webhook.Collection,
+	}, nil
 }
 
 func toString(value *string, defaultValue string) string {
@@ -912,9 +960,30 @@ func toString(value *string, defaultValue string) string {
 	return *value
 }
 
+func toNullString(value *string) sql.NullString {
+	if value == nil {
+		return sql.NullString{}
+	}
+	return sql.NullString{String: *value, Valid: true}
+}
+
 func toInt64(value *int, defaultValue int64) int64 {
 	if value == nil {
 		return defaultValue
 	}
 	return int64(*value)
+}
+
+func toNullInt64(value *int) sql.NullInt64 {
+	if value == nil {
+		return sql.NullInt64{}
+	}
+	return sql.NullInt64{Int64: int64(*value), Valid: true}
+}
+
+func toNullBool(value *bool) sql.NullBool {
+	if value == nil {
+		return sql.NullBool{}
+	}
+	return sql.NullBool{Bool: *value, Valid: true}
 }

@@ -19,8 +19,8 @@ import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket, Type } from '@/client/models/Ticket'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -34,16 +34,18 @@ const isOpen = ref(false)
 
 const addTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> => {
-    if (!pb.authStore.model) return Promise.reject('Not logged in')
+    // if (!pb.authStore.model) return Promise.reject('Not logged in') // TODO
 
-    return pb.collection('tickets').create({
-      name: name.value,
-      description: description.value,
-      open: true,
-      type: props.selectedType.id,
-      schema: props.selectedType.schema,
-      state: state.value,
-      owner: pb.authStore.model.id
+    return api.createTicket({
+      ticket: {
+        name: name.value,
+        description: description.value,
+        open: true,
+        type: props.selectedType.id,
+        schema: props.selectedType.schema,
+        state: state.value,
+        owner: '' // TODO
+      }
     })
   },
   onSuccess: (data: Ticket) => {

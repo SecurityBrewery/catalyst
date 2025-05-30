@@ -16,105 +16,78 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ModelFile
+ * @interface NewFile
  */
-export interface ModelFile {
+export interface NewFile {
     /**
      * 
      * @type {string}
-     * @memberof ModelFile
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelFile
+     * @memberof NewFile
      */
     ticket: string;
     /**
      * 
      * @type {string}
-     * @memberof ModelFile
+     * @memberof NewFile
      */
     blob: string;
     /**
      * 
      * @type {string}
-     * @memberof ModelFile
+     * @memberof NewFile
      */
     name: string;
     /**
      * 
      * @type {number}
-     * @memberof ModelFile
+     * @memberof NewFile
      */
     size: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelFile
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelFile
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the ModelFile interface.
+ * Check if a given object implements the NewFile interface.
  */
-export function instanceOfModelFile(value: object): value is ModelFile {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewFile(value: object): value is NewFile {
     if (!('ticket' in value) || value['ticket'] === undefined) return false;
     if (!('blob' in value) || value['blob'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('size' in value) || value['size'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function ModelFileFromJSON(json: any): ModelFile {
-    return ModelFileFromJSONTyped(json, false);
+export function NewFileFromJSON(json: any): NewFile {
+    return NewFileFromJSONTyped(json, false);
 }
 
-export function ModelFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelFile {
+export function NewFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewFile {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'ticket': json['ticket'],
         'blob': json['blob'],
         'name': json['name'],
         'size': json['size'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function ModelFileToJSON(json: any): ModelFile {
-    return ModelFileToJSONTyped(json, false);
+export function NewFileToJSON(json: any): NewFile {
+    return NewFileToJSONTyped(json, false);
 }
 
-export function ModelFileToJSONTyped(value?: ModelFile | null, ignoreDiscriminator: boolean = false): any {
+export function NewFileToJSONTyped(value?: NewFile | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'ticket': value['ticket'],
         'blob': value['blob'],
         'name': value['name'],
         'size': value['size'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 

@@ -24,19 +24,19 @@ export interface Comment {
      * @type {string}
      * @memberof Comment
      */
-    author: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Comment
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Comment
-     */
     id: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Comment
+     */
+    ticket: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Comment
+     */
+    author: string;
     /**
      * 
      * @type {string}
@@ -48,7 +48,7 @@ export interface Comment {
      * @type {string}
      * @memberof Comment
      */
-    ticket: string;
+    created: string;
     /**
      * 
      * @type {string}
@@ -61,11 +61,11 @@ export interface Comment {
  * Check if a given object implements the Comment interface.
  */
 export function instanceOfComment(value: object): value is Comment {
-    if (!('author' in value) || value['author'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('message' in value) || value['message'] === undefined) return false;
     if (!('ticket' in value) || value['ticket'] === undefined) return false;
+    if (!('author' in value) || value['author'] === undefined) return false;
+    if (!('message' in value) || value['message'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
@@ -80,11 +80,11 @@ export function CommentFromJSONTyped(json: any, ignoreDiscriminator: boolean): C
     }
     return {
         
-        'author': json['author'],
-        'created': json['created'],
         'id': json['id'],
-        'message': json['message'],
         'ticket': json['ticket'],
+        'author': json['author'],
+        'message': json['message'],
+        'created': json['created'],
         'updated': json['updated'],
     };
 }
@@ -100,11 +100,11 @@ export function CommentToJSONTyped(value?: Comment | null, ignoreDiscriminator: 
 
     return {
         
-        'author': value['author'],
-        'created': value['created'],
         'id': value['id'],
-        'message': value['message'],
         'ticket': value['ticket'],
+        'author': value['author'],
+        'message': value['message'],
+        'created': value['created'],
         'updated': value['updated'],
     };
 }

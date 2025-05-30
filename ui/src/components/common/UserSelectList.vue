@@ -14,8 +14,8 @@ import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { User } from '@/lib/types'
+import { api } from '@/api'
+import type { User } from '@/client/models/User'
 import { cn } from '@/lib/utils'
 
 const user = defineModel<User>()
@@ -32,11 +32,7 @@ const {
 } = useQuery({
   queryKey: ['users', 'search', searchTerm.value],
   queryFn: () =>
-    pb.collection('users').getFullList({
-      sort: 'name',
-      perPage: 5,
-      filter: pb.filter(`name ~ {:search}`, { search: searchTerm.value })
-    })
+    api.listUsers().then((users) => users.filter((user) => user.name.toLowerCase().includes(searchTerm.value.toLowerCase())))
 })
 
 const searchUserDebounced = debounce(() => refetch(), 300)

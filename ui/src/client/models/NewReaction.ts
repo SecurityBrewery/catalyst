@@ -16,114 +16,87 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Reaction
+ * @interface NewReaction
  */
-export interface Reaction {
+export interface NewReaction {
     /**
      * 
      * @type {string}
-     * @memberof Reaction
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Reaction
+     * @memberof NewReaction
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Reaction
+     * @memberof NewReaction
      */
     action: string;
     /**
      * 
      * @type {object}
-     * @memberof Reaction
+     * @memberof NewReaction
      */
     actiondata: object;
     /**
      * 
      * @type {string}
-     * @memberof Reaction
+     * @memberof NewReaction
      */
     trigger: string;
     /**
      * 
      * @type {object}
-     * @memberof Reaction
+     * @memberof NewReaction
      */
     triggerdata: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof Reaction
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Reaction
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the Reaction interface.
+ * Check if a given object implements the NewReaction interface.
  */
-export function instanceOfReaction(value: object): value is Reaction {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewReaction(value: object): value is NewReaction {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('action' in value) || value['action'] === undefined) return false;
     if (!('actiondata' in value) || value['actiondata'] === undefined) return false;
     if (!('trigger' in value) || value['trigger'] === undefined) return false;
     if (!('triggerdata' in value) || value['triggerdata'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function ReactionFromJSON(json: any): Reaction {
-    return ReactionFromJSONTyped(json, false);
+export function NewReactionFromJSON(json: any): NewReaction {
+    return NewReactionFromJSONTyped(json, false);
 }
 
-export function ReactionFromJSONTyped(json: any, ignoreDiscriminator: boolean): Reaction {
+export function NewReactionFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewReaction {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'name': json['name'],
         'action': json['action'],
         'actiondata': json['actiondata'],
         'trigger': json['trigger'],
         'triggerdata': json['triggerdata'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function ReactionToJSON(json: any): Reaction {
-    return ReactionToJSONTyped(json, false);
+export function NewReactionToJSON(json: any): NewReaction {
+    return NewReactionToJSONTyped(json, false);
 }
 
-export function ReactionToJSONTyped(value?: Reaction | null, ignoreDiscriminator: boolean = false): any {
+export function NewReactionToJSONTyped(value?: NewReaction | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'name': value['name'],
         'action': value['action'],
         'actiondata': value['actiondata'],
         'trigger': value['trigger'],
         'triggerdata': value['triggerdata'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 

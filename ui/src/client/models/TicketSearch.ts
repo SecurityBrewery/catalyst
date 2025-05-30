@@ -36,12 +36,6 @@ export interface TicketSearch {
      * @type {string}
      * @memberof TicketSearch
      */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TicketSearch
-     */
     description: string;
     /**
      * 
@@ -61,6 +55,60 @@ export interface TicketSearch {
      * @memberof TicketSearch
      */
     state: object;
+    /**
+     * 
+     * @type {string}
+     * @memberof TicketSearch
+     */
+    ownerName: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    commentMessages: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    fileNames: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    linkNames: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    linkUrls: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    taskNames: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TicketSearch
+     */
+    timelineMessages: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof TicketSearch
+     */
+    created: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TicketSearch
+     */
+    updated: string;
 }
 
 /**
@@ -69,11 +117,19 @@ export interface TicketSearch {
 export function instanceOfTicketSearch(value: object): value is TicketSearch {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
     if (!('open' in value) || value['open'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
     if (!('state' in value) || value['state'] === undefined) return false;
+    if (!('ownerName' in value) || value['ownerName'] === undefined) return false;
+    if (!('commentMessages' in value) || value['commentMessages'] === undefined) return false;
+    if (!('fileNames' in value) || value['fileNames'] === undefined) return false;
+    if (!('linkNames' in value) || value['linkNames'] === undefined) return false;
+    if (!('linkUrls' in value) || value['linkUrls'] === undefined) return false;
+    if (!('taskNames' in value) || value['taskNames'] === undefined) return false;
+    if (!('timelineMessages' in value) || value['timelineMessages'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
+    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
@@ -89,11 +145,19 @@ export function TicketSearchFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'id': json['id'],
         'name': json['name'],
-        'created': json['created'],
         'description': json['description'],
         'open': json['open'],
         'type': json['type'],
         'state': json['state'],
+        'ownerName': json['owner_name'],
+        'commentMessages': json['comment_messages'],
+        'fileNames': json['file_names'],
+        'linkNames': json['link_names'],
+        'linkUrls': json['link_urls'],
+        'taskNames': json['task_names'],
+        'timelineMessages': json['timeline_messages'],
+        'created': json['created'],
+        'updated': json['updated'],
     };
 }
 
@@ -110,11 +174,19 @@ export function TicketSearchToJSONTyped(value?: TicketSearch | null, ignoreDiscr
         
         'id': value['id'],
         'name': value['name'],
-        'created': value['created'],
         'description': value['description'],
         'open': value['open'],
         'type': value['type'],
         'state': value['state'],
+        'owner_name': value['ownerName'],
+        'comment_messages': value['commentMessages'],
+        'file_names': value['fileNames'],
+        'link_names': value['linkNames'],
+        'link_urls': value['linkUrls'],
+        'task_names': value['taskNames'],
+        'timeline_messages': value['timelineMessages'],
+        'created': value['created'],
+        'updated': value['updated'],
     };
 }
 

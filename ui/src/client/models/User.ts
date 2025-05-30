@@ -24,13 +24,19 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    avatar: string;
+    id: string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    created: string;
+    username: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    avatar: string;
     /**
      * 
      * @type {string}
@@ -43,12 +49,6 @@ export interface User {
      * @memberof User
      */
     emailVisibility: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    id: string;
     /**
      * 
      * @type {string}
@@ -87,42 +87,42 @@ export interface User {
     tokenKey: string;
     /**
      * 
-     * @type {string}
-     * @memberof User
-     */
-    updated: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    username: string;
-    /**
-     * 
      * @type {boolean}
      * @memberof User
      */
     verified: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    created: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    updated: string;
 }
 
 /**
  * Check if a given object implements the User interface.
  */
 export function instanceOfUser(value: object): value is User {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('username' in value) || value['username'] === undefined) return false;
     if (!('avatar' in value) || value['avatar'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('emailVisibility' in value) || value['emailVisibility'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
     if (!('lastLoginAlertSentAt' in value) || value['lastLoginAlertSentAt'] === undefined) return false;
     if (!('lastResetSentAt' in value) || value['lastResetSentAt'] === undefined) return false;
     if (!('lastVerificationSentAt' in value) || value['lastVerificationSentAt'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('passwordHash' in value) || value['passwordHash'] === undefined) return false;
     if (!('tokenKey' in value) || value['tokenKey'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
-    if (!('username' in value) || value['username'] === undefined) return false;
     if (!('verified' in value) || value['verified'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
+    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
@@ -136,20 +136,20 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     }
     return {
         
+        'id': json['id'],
+        'username': json['username'],
         'avatar': json['avatar'],
-        'created': json['created'],
         'email': json['email'],
         'emailVisibility': json['emailVisibility'],
-        'id': json['id'],
         'lastLoginAlertSentAt': json['lastLoginAlertSentAt'],
         'lastResetSentAt': json['lastResetSentAt'],
         'lastVerificationSentAt': json['lastVerificationSentAt'],
         'name': json['name'],
         'passwordHash': json['passwordHash'],
         'tokenKey': json['tokenKey'],
-        'updated': json['updated'],
-        'username': json['username'],
         'verified': json['verified'],
+        'created': json['created'],
+        'updated': json['updated'],
     };
 }
 
@@ -164,20 +164,20 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
 
     return {
         
+        'id': value['id'],
+        'username': value['username'],
         'avatar': value['avatar'],
-        'created': value['created'],
         'email': value['email'],
         'emailVisibility': value['emailVisibility'],
-        'id': value['id'],
         'lastLoginAlertSentAt': value['lastLoginAlertSentAt'],
         'lastResetSentAt': value['lastResetSentAt'],
         'lastVerificationSentAt': value['lastVerificationSentAt'],
         'name': value['name'],
         'passwordHash': value['passwordHash'],
         'tokenKey': value['tokenKey'],
-        'updated': value['updated'],
-        'username': value['username'],
         'verified': value['verified'],
+        'created': value['created'],
+        'updated': value['updated'],
     };
 }
 

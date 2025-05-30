@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS files
     id      TEXT    default ('r' || lower(hex(randomblob(7)))) not null
         primary key,
     name    TEXT    default ''                                 not null,
-    size    NUMERIC default 0                                  not null,
+    size    INTEGER default 0                                  not null,
     ticket  TEXT    default ''                                 not null,
     updated TEXT    default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null
 );

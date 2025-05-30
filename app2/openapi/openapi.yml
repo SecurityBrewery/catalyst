@@ -39,14 +39,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
-    put:
+    patch:
       summary: Update a ticket by ID
       operationId: updateTicket
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TicketUpdate" } } } }
       responses:  
-        "200": { "description": "Tickets updated" }
+        "200": { "description": "Tickets updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
     delete:
       summary: Delete a ticket by ID
       operationId: deleteTicket
@@ -67,7 +67,7 @@ paths:
     post:
       summary: Create a new comment
       operationId: createComment
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewComment" } } } }
       responses:
         "201": { "description": "Comment created" }
   /comments/{id}:
@@ -78,14 +78,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
-    put:
+    patch:
       summary: Update a comment by ID
       operationId: updateComment
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommentUpdate" } } } }
       responses:
-        "200": { "description": "Comment updated" }
+        "200": { "description": "Comment updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
     delete:
       summary: Delete a comment by ID
       operationId: deleteComment
@@ -106,7 +106,7 @@ paths:
     post:
       summary: Create a new file
       operationId: createFile
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFile" } } } }
       responses:
         "201": { "description": "File created" }
   /files/{id}:
@@ -117,14 +117,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single file", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
-    put:
+    patch:
       summary: Update a file by ID
       operationId: updateFile
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FileUpdate" } } } }
       responses:
-        "200": { "description": "File updated" }
+        "200": { "description": "File updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
     delete:
       summary: Delete a file by ID
       operationId: deleteFile
@@ -145,7 +145,7 @@ paths:
     post:
       summary: Create a new link
       operationId: createLink
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewLink" } } } }
       responses:
         "201": { "description": "Link created" }
   /links/{id}:
@@ -156,14 +156,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single link", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
-    put:
+    patch:
       summary: Update a link by ID
       operationId: updateLink
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LinkUpdate" } } } }
       responses:
-        "200": { "description": "Link updated" }
+        "200": { "description": "Link updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
     delete:
       summary: Delete a link by ID
       operationId: deleteLink
@@ -184,7 +184,7 @@ paths:
     post:
       summary: Create a new task
       operationId: createTask
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTask" } } } }
       responses:
         "201": { "description": "Task created" }
   /tasks/{id}:
@@ -195,14 +195,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
-    put:
+    patch:
       summary: Update a task by ID
       operationId: updateTask
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskUpdate" } } } }
       responses:
-        "200": { "description": "Task updated" }
+        "200": { "description": "Task updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
     delete:
       summary: Delete a task by ID
       operationId: deleteTask
@@ -223,7 +223,7 @@ paths:
     post:
       summary: Create a new timeline item
       operationId: createTimeline
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTimelineEntry" } } } }
       responses:
         "201": { "description": "Timeline item created" }
   /timeline/{id}:
@@ -234,14 +234,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }  
       responses:
         "200": { "description": "A single timeline item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
-    put:
+    patch:
       summary: Update a timeline item by ID
       operationId: updateTimeline
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntryUpdate" } } } }
       responses:
-        "200": { "description": "Timeline item updated" }
+        "200": { "description": "Timeline item updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
     delete:
       summary: Delete a timeline item by ID
       operationId: deleteTimeline
@@ -261,7 +261,7 @@ paths:
     post:
       summary: Create a new feature
       operationId: createFeature
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFeature" } } } }
       responses:
         "201": { "description": "Features created" }
   /features/{id}:
@@ -272,14 +272,6 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single feature", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
-    put:
-      summary: Update a feature by ID
-      operationId: updateFeature
-      parameters:
-        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
-      responses:
-        "200": { "description": "Features updated" }
     delete:
       summary: Delete a feature by ID
       operationId: deleteFeature
@@ -299,7 +291,7 @@ paths:
     post:
       summary: Create a new reaction
       operationId: createReaction
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewReaction" } } } }
       responses:
         "201": { "description": "Reactions created" }
   /reactions/{id}:
@@ -310,14 +302,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single reaction", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
-    put:
+    patch:
       summary: Update a reaction by ID
       operationId: updateReaction
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReactionUpdate" } } } }
       responses:
-        "200": { "description": "Reactions updated" }
+        "200": { "description": "Reactions updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
     delete:
       summary: Delete a reaction by ID
       operationId: deleteReaction
@@ -337,7 +329,7 @@ paths:
     post:
       summary: Create a new type
       operationId: createType
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewType" } } } }
       responses:
         "201": { "description": "Types created" }
   /types/{id}:
@@ -348,14 +340,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
-    put:
+    patch:
       summary: Update a type by ID
       operationId: updateType
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TypeUpdate" } } } }
       responses:
-        "200": { "description": "Types updated" }
+        "200": { "description": "Types updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
     delete:
       summary: Delete a type by ID
       operationId: deleteType
@@ -375,7 +367,7 @@ paths:
     post:
       summary: Create a new user
       operationId: createUser
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewUser" } } } }
       responses:
         "201": { "description": "Users created" }
   /users/{id}:
@@ -386,14 +378,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
-    put:
+    patch:
       summary: Update a user by ID
       operationId: updateUser
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } } } }
       responses:
-        "200": { "description": "Users updated" }
+        "200": { "description": "Users updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }  }
     delete:
       summary: Delete a user by ID
       operationId: deleteUser
@@ -413,7 +405,7 @@ paths:
     post:
       summary: Create a new webhook
       operationId: createWebhook
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewWebhook" } } } }
       responses:
         "201": { "description": "Webhooks created" }
   /webhooks/{id}:
@@ -424,14 +416,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single webhook", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
-    put:
+    patch:
       summary: Update a webhook by ID
       operationId: updateWebhook
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookUpdate" } } } }
       responses:
-        "200": { "description": "Webhooks updated" }
+        "200": { "description": "Webhooks updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
     delete:
       summary: Delete a webhook by ID
       operationId: deleteWebhook
@@ -463,132 +455,292 @@ paths:
         "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } } }
 components:
   schemas:
-    Comment:
+    NewComment:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+      required: [ "ticket", "author", "message" ]
+    CommentUpdate:
       type: object
       properties:
         author: { "type": "string" }
-        created: { "type": "string" }
-        id: { "type": "string" }
         message: { "type": "string" }
+    Comment:
+      type: object
+      properties:
+        id: { "type": "string" }
         ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "author", "created", "id", "message", "ticket", "updated" ]
+      required: [ "id", "ticket", "author", "message", "created", "updated" ]
+    NewFeature:
+      type: object
+      properties:
+        name: { "type": "string" }
+      required: [ "name" ]
     Feature:
       type: object
       properties:
-        created: { "type": "string" }
         id: { "type": "string" }
         name: { "type": "string" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "created", "id", "name", "updated" ]
-    File:
+      required: [ "id", "name", "created", "updated" ]
+    NewFile:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        blob: { "type": "string" }
+        name: { "type": "string" }
+        size: { "type": "integer" }
+      required: [ "ticket", "blob", "name", "size" ]
+    FileUpdate:
       type: object
       properties:
         blob: { "type": "string" }
-        created: { "type": "string" }
-        id: { "type": "string" }
         name: { "type": "string" }
         size: { "type": "integer" }
+    File:
+      type: object
+      properties:
+        id: { "type": "string" }
         ticket: { "type": "string" }
+        blob: { "type": "string" }
+        name: { "type": "string" }
+        size: { "type": "integer" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "blob", "created", "id", "name", "size", "ticket", "updated" ]
+      required: [ "id", "ticket", "blob", "name", "size", "created", "updated" ]
+    NewLink:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        url: { "type": "string" }
+      required: [ "ticket", "name", "url" ]
+    LinkUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        url: { "type": "string" }
     Link:
       type: object
       properties:
-        created: { "type": "string" }
         id: { "type": "string" }
-        name: { "type": "string" }
         ticket: { "type": "string" }
-        updated: { "type": "string" }
+        name: { "type": "string" }
         url: { "type": "string" }
-      required: [ "created", "id", "name", "ticket", "updated", "url" ]
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "ticket", "name", "url", "created", "updated" ]
+    NewReaction:
+      type: object
+      properties:
+        name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
+      required: [ "name", "action", "actiondata", "trigger", "triggerdata" ]
+    ReactionUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
     Reaction:
       type: object
       properties:
-        action: { "type": "string" }
-        actiondata: { "type": "object" }
-        created: { "type": "string" }
         id: { "type": "string" }
         name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
         trigger: { "type": "string" }
         triggerdata: { "type": "object" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "action", "actiondata", "created", "id", "name", "trigger", "triggerdata", "updated" ]
-    Task:
+      required: [ "id", "name", "action", "actiondata", "trigger", "triggerdata", "created", "updated" ]
+    NewTask:
       type: object
       properties:
-        created: { "type": "string" }
-        id: { "type": "string" }
+        ticket: { "type": "string" }
         name: { "type": "string" }
         open: { "type": "boolean" }
         owner: { "type": "string" }
-        ticket: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "created", "id", "name", "open", "owner", "ticket", "updated" ]
-    Ticket:
+      required: [ "ticket", "name", "open", "owner" ]
+    TaskUpdate:
       type: object
       properties:
-        created: { "type": "string" }
-        description: { "type": "string" }
-        id: { "type": "string" }
         name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+    Task:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "ticket", "name", "open", "owner", "created", "updated" ]
+    NewTicket:
+      type: object
+      properties:
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
         open: { "type": "boolean" }
         owner: { "type": "string" }
         resolution: { "type": "string" }
         schema: { "type": "object" }
         state: { "type": "object" }
+      required: [ "type", "name", "description", "open", "owner", "resolution", "schema", "state" ]
+    TicketUpdate:
+      type: object
+      properties:
         type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+    Ticket:
+      type: object
+      properties:
+        id: { "type": "string" }
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "created", "description", "id", "name", "open", "owner", "resolution", "schema", "state", "type", "updated" ]
+      required: [ "id", "type", "name", "description", "open", "owner", "resolution", "schema", "state", "created", "updated" ]
+    NewTimelineEntry:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        message: { "type": "string" }
+        time: { "type": "string" }
+      required: [ "ticket", "message", "time" ]
+    TimelineEntryUpdate:
+      type: object
+      properties:
+        message: { "type": "string" }
+        time: { "type": "string" }
     TimelineEntry:
       type: object
       properties:
-        created: { "type": "string" }
         id: { "type": "string" }
-        message: { "type": "string" }
         ticket: { "type": "string" }
+        message: { "type": "string" }
         time: { "type": "string" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "created", "id", "message", "ticket", "time", "updated" ]
-    Type:
+      required: [ "id", "ticket", "message", "time", "created", "updated" ]
+    NewType:
       type: object
       properties:
-        created: { "type": "string" }
         icon: { "type": "string" }
-        id: { "type": "string" }
         plural: { "type": "string" }
         schema: { "type": "object" }
         singular: { "type": "string" }
+      required: [ "singular", "plural", "schema", "icon" ]
+    TypeUpdate:
+      type: object
+      properties:
+        icon: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+    Type:
+      type: object
+      properties:
+        id: { "type": "string" }
+        icon: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "created", "icon", "id", "plural", "schema", "singular", "updated" ]
+      required: [ "id", "icon", "plural", "schema", "singular", "created", "updated" ]
+    NewUser:
+      type: object
+      properties:
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        emailVisibility: { "type": "boolean" }
+        name: { "type": "string" }
+        password: { "type": "string" }
+        passwordConfirm: { "type": "string" }
+        verified: { "type": "boolean" }
+      required: [ "username", "avatar", "email", "emailVisibility", "name", "password", "passwordConfirm", "verified" ]
+    UserUpdate:
+      type: object
+      properties:
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        emailVisibility: { "type": "boolean" }
+        name: { "type": "string" }
+        password: { "type": "string" }
+        passwordConfirm: { "type": "string" }
+        verified: { "type": "boolean" }
     User:
       type: object
       properties:
+        id: { "type": "string" }
+        username: { "type": "string" }
         avatar: { "type": "string" }
-        created: { "type": "string" }
         email: { "type": "string" }
         emailVisibility: { "type": "boolean" }
-        id: { "type": "string" }
         lastLoginAlertSentAt: { "type": "string" }
         lastResetSentAt: { "type": "string" }
         lastVerificationSentAt: { "type": "string" }
         name: { "type": "string" }
         passwordHash: { "type": "string" }
         tokenKey: { "type": "string" }
-        updated: { "type": "string" }
-        username: { "type": "string" }
         verified: { "type": "boolean" }
-      required: [ "avatar", "created", "email", "emailVisibility", "id", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "passwordHash", "tokenKey", "updated", "username", "verified" ]
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "passwordHash", "tokenKey", "verified", "created", "updated" ]
+    NewWebhook:
+      type: object
+      properties:
+        name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
+      required: [ "name", "collection", "destination" ]
+    WebhookUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
     Webhook:
       type: object
       properties:
-        collection: { "type": "string" }
-        created: { "type": "string" }
-        destination: { "type": "string" }
         id: { "type": "string" }
         name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
+        created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "collection", "created", "destination", "id", "name", "updated" ]
+      required: [ "id", "name", "collection", "destination", "created", "updated" ]
     DashboardCounts:
       type: object
       properties:
@@ -609,9 +761,17 @@ components:
       properties:
         id: { "type": "string" }
         name: { "type": "string" }
-        created: { "type": "string" }
         description: { "type": "string" }
         open: { "type": "boolean" }
         type: { "type": "string" }
         state: { "type": "object" }
-      required: [ "id", "name", "created", "description", "open", "type", "state", "owner_name", "comment_messages", "file_names", "link_names", "link_urls", "task_names", "timeline_messages" ]
+        owner_name: { "type": "string" }
+        comment_messages: { "type": "array", "items": { "type": "string" } }
+        file_names: { "type": "array", "items": { "type": "string" } }
+        link_names: { "type": "array", "items": { "type": "string" } }
+        link_urls: { "type": "array", "items": { "type": "string" } }
+        task_names: { "type": "array", "items": { "type": "string" } }
+        timeline_messages: { "type": "array", "items": { "type": "string" } }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "name", "description", "open", "type", "state", "owner_name", "comment_messages", "file_names", "link_names", "link_urls", "task_names", "timeline_messages", "created", "updated" ]

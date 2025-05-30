@@ -26,8 +26,8 @@ import type { ListResult } from 'pocketbase'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { SearchTicket, Type } from '@/lib/types'
+import { api } from '@/api'
+import type { SearchTicket, Type } from '@/client/models/Ticket'
 
 const router = useRouter()
 const route = useRoute()

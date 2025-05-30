@@ -7,8 +7,8 @@ import { LoaderCircle, User2 } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, User } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket, User } from '@/client/models/Ticket'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -36,9 +36,7 @@ const {
 
 const setTicketOwnerMutation = useMutation({
   mutationFn: (user: User): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      owner: user.id
-    }),
+    api.updateTicket({ id: props.ticket.id, ticket: { owner: user.id } }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets'] }),
   onError: handleError
 })

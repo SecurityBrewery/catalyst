@@ -24,12 +24,6 @@ export interface Feature {
      * @type {string}
      * @memberof Feature
      */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Feature
-     */
     id: string;
     /**
      * 
@@ -42,6 +36,12 @@ export interface Feature {
      * @type {string}
      * @memberof Feature
      */
+    created: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Feature
+     */
     updated: string;
 }
 
@@ -49,9 +49,9 @@ export interface Feature {
  * Check if a given object implements the Feature interface.
  */
 export function instanceOfFeature(value: object): value is Feature {
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
@@ -66,9 +66,9 @@ export function FeatureFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
     }
     return {
         
-        'created': json['created'],
         'id': json['id'],
         'name': json['name'],
+        'created': json['created'],
         'updated': json['updated'],
     };
 }
@@ -84,9 +84,9 @@ export function FeatureToJSONTyped(value?: Feature | null, ignoreDiscriminator: 
 
     return {
         
-        'created': value['created'],
         'id': value['id'],
         'name': value['name'],
+        'created': value['created'],
         'updated': value['updated'],
     };
 }

@@ -15,10 +15,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import { Configuration, DefaultApi } from '@/client'
-
-const router = useRouter()
+import { api } from '@/api'
 
 const {
   isPending,
@@ -28,10 +25,6 @@ const {
 } = useQuery({
   queryKey: ['dashboard_counts'],
   queryFn: (): Promise<Array<any>> => {
-    const config = new Configuration({
-      basePath: 'http://localhost:8090/api',
-    })
-    const api = new DefaultApi(config)
     return api.getDashboardCounts()
   }
 })
@@ -47,7 +40,7 @@ const count = (id: string) => {
 
 onMounted(() => {
   /*if (!pb.authStore.model) {
-    router.push({ name: 'login' })
+    router.push({ name: 'login' }) // TODO
   }*/
 })
 </script>

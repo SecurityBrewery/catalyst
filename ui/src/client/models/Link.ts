@@ -24,19 +24,7 @@ export interface Link {
      * @type {string}
      * @memberof Link
      */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Link
-     */
     id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Link
-     */
-    name: string;
     /**
      * 
      * @type {string}
@@ -48,25 +36,37 @@ export interface Link {
      * @type {string}
      * @memberof Link
      */
-    updated: string;
+    name: string;
     /**
      * 
      * @type {string}
      * @memberof Link
      */
     url: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Link
+     */
+    created: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Link
+     */
+    updated: string;
 }
 
 /**
  * Check if a given object implements the Link interface.
  */
 export function instanceOfLink(value: object): value is Link {
-    if (!('created' in value) || value['created'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
     if (!('ticket' in value) || value['ticket'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     if (!('url' in value) || value['url'] === undefined) return false;
+    if (!('created' in value) || value['created'] === undefined) return false;
+    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
@@ -80,12 +80,12 @@ export function LinkFromJSONTyped(json: any, ignoreDiscriminator: boolean): Link
     }
     return {
         
-        'created': json['created'],
         'id': json['id'],
-        'name': json['name'],
         'ticket': json['ticket'],
-        'updated': json['updated'],
+        'name': json['name'],
         'url': json['url'],
+        'created': json['created'],
+        'updated': json['updated'],
     };
 }
 
@@ -100,12 +100,12 @@ export function LinkToJSONTyped(value?: Link | null, ignoreDiscriminator: boolea
 
     return {
         
-        'created': value['created'],
         'id': value['id'],
-        'name': value['name'],
         'ticket': value['ticket'],
-        'updated': value['updated'],
+        'name': value['name'],
         'url': value['url'],
+        'created': value['created'],
+        'updated': value['updated'],
     };
 }
 

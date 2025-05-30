@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/vue-query'
 import { getWeek } from 'date-fns'
 import { computed } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models/Ticket'
 
 const {
   isPending,
@@ -16,11 +16,7 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets'],
-  queryFn: (): Promise<Array<Task>> =>
-    pb.collection('tickets').getFullList({
-      sort: '-created',
-      expand: 'owner,type'
-    })
+  queryFn: (): Promise<Array<Ticket>> => api.listTickets()
 })
 
 const ticketsPerWeek = computed(() => {
@@ -28,7 +24,7 @@ const ticketsPerWeek = computed(() => {
 
   const weeks = tickets.value.reduce(
     (acc, ticket) => {
-      const week = getWeek(ticket.created)
+      const week = getWeek(new Date(ticket.created))
       acc[week] = (acc[week] || 0) + 1
       return acc
     },

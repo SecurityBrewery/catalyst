@@ -19,8 +19,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models/Ticket'
+import type { Type } from '@/client/models/Type'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -38,16 +39,12 @@ const {
 } = useQuery({
   queryKey: ['types'],
   queryFn: (): Promise<Array<Type>> =>
-    pb.collection('types').getFullList({
-      sort: '-created'
-    })
+    api.listTypes()
 })
 
 const changeTypeMutation = useMutation({
   mutationFn: (typeID: string): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      type: typeID
-    }),
+    api.updateTicket({ id: props.ticket.id, ticket: { type: typeID } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     // router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
@@ -57,19 +54,17 @@ const changeTypeMutation = useMutation({
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      open: !props.ticket.open
-    }),
+    api.updateTicket({ id: props.ticket.id, ticket: { open: !props.ticket.open } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     if (!data.open) {
-      router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+      router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }
   },
   onError: handleError
 })
 
-const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.expand.type.id))
+const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type)) // TODO 
 
 const closeTicketDialogOpen = ref(false)
 </script>
@@ -90,8 +85,8 @@ const closeTicketDialogOpen = ref(false)
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button variant="outline" :disabled="!ticket">
-                <Icon :name="ticket.expand.type.icon" class="mr-2 size-4" />
-                {{ ticket.expand.type.singular }}
+                <Icon :name="ticket.type" class="mr-2 size-4" /> <!-- TODO -->
+                {{ ticket.type }}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

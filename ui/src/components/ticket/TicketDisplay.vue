@@ -26,8 +26,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket, Type } from '@/client/models/Ticket'
 import { handleError } from '@/lib/utils'
 
 const route = useRoute()
@@ -50,10 +50,7 @@ const {
 } = useQuery({
   queryKey: ['tickets', id.value],
   queryFn: (): Promise<Ticket> =>
-    pb.collection('tickets').getOne(id.value, {
-      expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
-    })
+    api.getTicket({ id: id.value })
 })
 
 const editDescriptionMutation = useMutation({
@@ -72,9 +69,7 @@ const edit = () => (editMode.value = true)
 
 const editStateMutation = useMutation({
   mutationFn: (state: Record<string, any>): Promise<Ticket> =>
-    pb.collection('tickets').update(id.value, {
-      state: state
-    }),
+    api.updateTicket({ id: id.value, ticket: { state } }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', id.value] }),
   onError: handleError
 })
@@ -84,6 +79,7 @@ const taskStatus = computed(() => {
     return 'pending'
   }
 
+  /*
   const tasks = ticket.value.expand.tasks_via_ticket
 
   if (tasks.every((task) => !task.open)) {
@@ -93,6 +89,7 @@ const taskStatus = computed(() => {
   if (tasks.every((task) => task.open)) {
     return 'open'
   }
+    */
 
   return 'pending'
 })

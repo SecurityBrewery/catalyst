@@ -7,17 +7,18 @@ SELECT *
 FROM tickets
 WHERE id = @id;
 
--- name: UpdateTicket :exec
+-- name: UpdateTicket :one
 UPDATE tickets
-SET name = @name,
-    description = @description,
-    open = @open,
-    owner = @owner,
-    resolution = @resolution,
-    schema = @schema,
-    state = @state,
-    type = @type
-WHERE id = @id;
+SET name = coalesce(sqlc.narg('name'), name),
+    description = coalesce(sqlc.narg('description'), description),
+    open = coalesce(sqlc.narg('open'), open),
+    owner = coalesce(sqlc.narg('owner'), owner),
+    resolution = coalesce(sqlc.narg('resolution'), resolution),
+    schema = coalesce(sqlc.narg('schema'), schema),
+    state = coalesce(sqlc.narg('state'), state),
+    type = coalesce(sqlc.narg('type'), type)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteTicket :exec
 DELETE
@@ -59,10 +60,11 @@ SELECT *
 FROM comments
 WHERE id = @id;
 
--- name: UpdateComment :exec
+-- name: UpdateComment :one
 UPDATE comments
-SET message = @message
-WHERE id = @id;
+SET message = coalesce(sqlc.narg('message'), message)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteComment :exec
 DELETE
@@ -87,10 +89,11 @@ SELECT *
 FROM features
 WHERE id = @id;
 
--- name: UpdateFeature :exec
+-- name: UpdateFeature :one
 UPDATE features
-SET name = @name
-WHERE id = @id;
+SET name = coalesce(sqlc.narg('name'), name)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteFeature :exec
 DELETE
@@ -113,10 +116,14 @@ SELECT *
 FROM files
 WHERE id = @id;
 
--- name: UpdateFile :exec
+-- name: UpdateFile :one
 UPDATE files
-SET name = @name, blob = @blob, size = @size
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    blob = coalesce(sqlc.narg('blob'), blob), 
+    size = coalesce(sqlc.narg('size'), size)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteFile :exec
 DELETE
@@ -141,10 +148,13 @@ SELECT *
 FROM links
 WHERE id = @id;
 
--- name: UpdateLink :exec
+-- name: UpdateLink :one
 UPDATE links
-SET name = @name, url = @url
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    url = coalesce(sqlc.narg('url'), url)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteLink :exec
 DELETE
@@ -169,10 +179,16 @@ SELECT *
 FROM reactions
 WHERE id = @id;
 
--- name: UpdateReaction :exec
+-- name: UpdateReaction :one
 UPDATE reactions
-SET name = @name, action = @action, actiondata = @actiondata, trigger = @trigger, triggerdata = @triggerdata
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    action = coalesce(sqlc.narg('action'), action), 
+    actiondata = coalesce(sqlc.narg('actiondata'), actiondata), 
+    trigger = coalesce(sqlc.narg('trigger'), trigger), 
+    triggerdata = coalesce(sqlc.narg('triggerdata'), triggerdata)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteReaction :exec
 DELETE
@@ -196,10 +212,14 @@ SELECT *
 FROM tasks
 WHERE id = @id;
 
--- name: UpdateTask :exec
+-- name: UpdateTask :one
 UPDATE tasks
-SET name = @name, open = @open, owner = @owner
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    open = coalesce(sqlc.narg('open'), open), 
+    owner = coalesce(sqlc.narg('owner'), owner)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteTask :exec
 DELETE
@@ -224,10 +244,13 @@ SELECT *
 FROM timeline
 WHERE id = @id;
 
--- name: UpdateTimeline :exec
+-- name: UpdateTimeline :one
 UPDATE timeline
-SET message = @message, time = @time
-WHERE id = @id;
+SET 
+    message = coalesce(sqlc.narg('message'), message), 
+    time = coalesce(sqlc.narg('time'), time)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteTimeline :exec
 DELETE
@@ -252,10 +275,15 @@ SELECT *
 FROM types
 WHERE id = @id;
 
--- name: UpdateType :exec
+-- name: UpdateType :one
 UPDATE types
-SET singular = @singular, plural = @plural, icon = @icon, schema = @schema
-WHERE id = @id;
+SET 
+    singular = coalesce(sqlc.narg('singular'), singular), 
+    plural = coalesce(sqlc.narg('plural'), plural), 
+    icon = coalesce(sqlc.narg('icon'), icon), 
+    schema = coalesce(sqlc.narg('schema'), schema)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteType :exec
 DELETE
@@ -278,10 +306,16 @@ SELECT *
 FROM users
 WHERE id = @id;
 
--- name: UpdateUser :exec
+-- name: UpdateUser :one
 UPDATE users
-SET name = @name, email = @email, username = @username, passwordHash = @passwordHash, tokenKey = @tokenKey
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    email = coalesce(sqlc.narg('email'), email), 
+    username = coalesce(sqlc.narg('username'), username), 
+    passwordHash = coalesce(sqlc.narg('passwordHash'), passwordHash), 
+    tokenKey = coalesce(sqlc.narg('tokenKey'), tokenKey)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteUser :exec
 DELETE
@@ -305,10 +339,14 @@ SELECT *
 FROM webhooks
 WHERE id = @id;
 
--- name: UpdateWebhook :exec
+-- name: UpdateWebhook :one
 UPDATE webhooks
-SET name = @name, collection = @collection, destination = @destination
-WHERE id = @id;
+SET 
+    name = coalesce(sqlc.narg('name'), name), 
+    collection = coalesce(sqlc.narg('collection'), collection), 
+    destination = coalesce(sqlc.narg('destination'), destination)
+WHERE id = @id
+RETURNING *;
 
 -- name: DeleteWebhook :exec
 DELETE

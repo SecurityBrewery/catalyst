@@ -9,8 +9,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models/Ticket'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -24,13 +24,10 @@ const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      open: !props.ticket.open,
-      resolution: resolution.value
-    }),
+    api.updateTicket({ id: props.ticket.id, ticket: { open: !props.ticket.open, resolution: resolution.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
-    router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+    router.push({ name: 'tickets', params: { type: props.ticket.type } })
   },
   onError: handleError
 })
@@ -53,9 +50,9 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
       <Repeat v-else class="mr-2 h-4 w-4" />
       {{
         ticket?.open
-          ? 'Close ' + props.ticket.expand.type.singular
-          : 'Reopen ' + props.ticket.expand.type.singular
-      }}
+          ? 'Close ' + props.ticket.type
+          : 'Reopen ' + props.ticket.type
+      }}<!-- TODO -->
     </Button>
   </ColumnHeader>
 </template>

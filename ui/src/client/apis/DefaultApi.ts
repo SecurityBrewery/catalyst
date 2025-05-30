@@ -16,73 +16,130 @@
 import * as runtime from '../runtime';
 import type {
   Comment,
+  CommentUpdate,
   DashboardCounts,
   Feature,
+  FileUpdate,
   Link,
-  ModelFile,
+  LinkUpdate,
+  NewComment,
+  NewFeature,
+  NewFile,
+  NewLink,
+  NewReaction,
+  NewTask,
+  NewTimelineEntry,
+  NewType,
+  NewUser,
+  NewWebhook,
   Reaction,
+  ReactionUpdate,
   Sidebar,
   Task,
+  TaskUpdate,
   Ticket,
   TicketSearch,
+  TicketUpdate,
   TimelineEntry,
+  TimelineEntryUpdate,
   Type,
+  TypeUpdate,
   User,
+  UserUpdate,
   Webhook,
+  WebhookUpdate,
 } from '../models/index';
 import {
     CommentFromJSON,
     CommentToJSON,
+    CommentUpdateFromJSON,
+    CommentUpdateToJSON,
     DashboardCountsFromJSON,
     DashboardCountsToJSON,
     FeatureFromJSON,
     FeatureToJSON,
+    FileUpdateFromJSON,
+    FileUpdateToJSON,
     LinkFromJSON,
     LinkToJSON,
-    ModelFileFromJSON,
-    ModelFileToJSON,
+    LinkUpdateFromJSON,
+    LinkUpdateToJSON,
+    NewCommentFromJSON,
+    NewCommentToJSON,
+    NewFeatureFromJSON,
+    NewFeatureToJSON,
+    NewFileFromJSON,
+    NewFileToJSON,
+    NewLinkFromJSON,
+    NewLinkToJSON,
+    NewReactionFromJSON,
+    NewReactionToJSON,
+    NewTaskFromJSON,
+    NewTaskToJSON,
+    NewTimelineEntryFromJSON,
+    NewTimelineEntryToJSON,
+    NewTypeFromJSON,
+    NewTypeToJSON,
+    NewUserFromJSON,
+    NewUserToJSON,
+    NewWebhookFromJSON,
+    NewWebhookToJSON,
     ReactionFromJSON,
     ReactionToJSON,
+    ReactionUpdateFromJSON,
+    ReactionUpdateToJSON,
     SidebarFromJSON,
     SidebarToJSON,
     TaskFromJSON,
     TaskToJSON,
+    TaskUpdateFromJSON,
+    TaskUpdateToJSON,
     TicketFromJSON,
     TicketToJSON,
     TicketSearchFromJSON,
     TicketSearchToJSON,
+    TicketUpdateFromJSON,
+    TicketUpdateToJSON,
     TimelineEntryFromJSON,
     TimelineEntryToJSON,
+    TimelineEntryUpdateFromJSON,
+    TimelineEntryUpdateToJSON,
     TypeFromJSON,
     TypeToJSON,
+    TypeUpdateFromJSON,
+    TypeUpdateToJSON,
     UserFromJSON,
     UserToJSON,
+    UserUpdateFromJSON,
+    UserUpdateToJSON,
     WebhookFromJSON,
     WebhookToJSON,
+    WebhookUpdateFromJSON,
+    WebhookUpdateToJSON,
 } from '../models/index';
 
 export interface CreateCommentRequest {
-    comment: Comment;
+    newComment: NewComment;
 }
 
 export interface CreateFeatureRequest {
-    feature: Feature;
+    newFeature: NewFeature;
 }
 
 export interface CreateFileRequest {
-    modelFile: ModelFile;
+    newFile: NewFile;
 }
 
 export interface CreateLinkRequest {
-    link: Link;
+    newLink: NewLink;
 }
 
 export interface CreateReactionRequest {
-    reaction: Reaction;
+    newReaction: NewReaction;
 }
 
 export interface CreateTaskRequest {
-    task: Task;
+    newTask: NewTask;
 }
 
 export interface CreateTicketRequest {
@@ -90,19 +147,19 @@ export interface CreateTicketRequest {
 }
 
 export interface CreateTimelineRequest {
-    timelineEntry: TimelineEntry;
+    newTimelineEntry: NewTimelineEntry;
 }
 
 export interface CreateTypeRequest {
-    type: Type;
+    newType: NewType;
 }
 
 export interface CreateUserRequest {
-    user: User;
+    newUser: NewUser;
 }
 
 export interface CreateWebhookRequest {
-    webhook: Webhook;
+    newWebhook: NewWebhook;
 }
 
 export interface DeleteCommentRequest {
@@ -261,57 +318,52 @@ export interface SearchTicketsRequest {
 
 export interface UpdateCommentRequest {
     id: string;
-    comment: Comment;
-}
-
-export interface UpdateFeatureRequest {
-    id: string;
-    feature: Feature;
+    commentUpdate: CommentUpdate;
 }
 
 export interface UpdateFileRequest {
     id: string;
-    modelFile: ModelFile;
+    fileUpdate: FileUpdate;
 }
 
 export interface UpdateLinkRequest {
     id: string;
-    link: Link;
+    linkUpdate: LinkUpdate;
 }
 
 export interface UpdateReactionRequest {
     id: string;
-    reaction: Reaction;
+    reactionUpdate: ReactionUpdate;
 }
 
 export interface UpdateTaskRequest {
     id: string;
-    task: Task;
+    taskUpdate: TaskUpdate;
 }
 
 export interface UpdateTicketRequest {
     id: string;
-    ticket: Ticket;
+    ticketUpdate: TicketUpdate;
 }
 
 export interface UpdateTimelineRequest {
     id: string;
-    timelineEntry: TimelineEntry;
+    timelineEntryUpdate: TimelineEntryUpdate;
 }
 
 export interface UpdateTypeRequest {
     id: string;
-    type: Type;
+    typeUpdate: TypeUpdate;
 }
 
 export interface UpdateUserRequest {
     id: string;
-    user: User;
+    userUpdate: UserUpdate;
 }
 
 export interface UpdateWebhookRequest {
     id: string;
-    webhook: Webhook;
+    webhookUpdate: WebhookUpdate;
 }
 
 /**
@@ -323,10 +375,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new comment
      */
     async createCommentRaw(requestParameters: CreateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['comment'] == null) {
+        if (requestParameters['newComment'] == null) {
             throw new runtime.RequiredError(
-                'comment',
-                'Required parameter "comment" was null or undefined when calling createComment().'
+                'newComment',
+                'Required parameter "newComment" was null or undefined when calling createComment().'
             );
         }
 
@@ -341,7 +393,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CommentToJSON(requestParameters['comment']),
+            body: NewCommentToJSON(requestParameters['newComment']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -358,10 +410,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new feature
      */
     async createFeatureRaw(requestParameters: CreateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['feature'] == null) {
+        if (requestParameters['newFeature'] == null) {
             throw new runtime.RequiredError(
-                'feature',
-                'Required parameter "feature" was null or undefined when calling createFeature().'
+                'newFeature',
+                'Required parameter "newFeature" was null or undefined when calling createFeature().'
             );
         }
 
@@ -376,7 +428,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: FeatureToJSON(requestParameters['feature']),
+            body: NewFeatureToJSON(requestParameters['newFeature']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -393,10 +445,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new file
      */
     async createFileRaw(requestParameters: CreateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['modelFile'] == null) {
+        if (requestParameters['newFile'] == null) {
             throw new runtime.RequiredError(
-                'modelFile',
-                'Required parameter "modelFile" was null or undefined when calling createFile().'
+                'newFile',
+                'Required parameter "newFile" was null or undefined when calling createFile().'
             );
         }
 
@@ -411,7 +463,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: ModelFileToJSON(requestParameters['modelFile']),
+            body: NewFileToJSON(requestParameters['newFile']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -428,10 +480,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new link
      */
     async createLinkRaw(requestParameters: CreateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['link'] == null) {
+        if (requestParameters['newLink'] == null) {
             throw new runtime.RequiredError(
-                'link',
-                'Required parameter "link" was null or undefined when calling createLink().'
+                'newLink',
+                'Required parameter "newLink" was null or undefined when calling createLink().'
             );
         }
 
@@ -446,7 +498,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: LinkToJSON(requestParameters['link']),
+            body: NewLinkToJSON(requestParameters['newLink']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -463,10 +515,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new reaction
      */
     async createReactionRaw(requestParameters: CreateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['reaction'] == null) {
+        if (requestParameters['newReaction'] == null) {
             throw new runtime.RequiredError(
-                'reaction',
-                'Required parameter "reaction" was null or undefined when calling createReaction().'
+                'newReaction',
+                'Required parameter "newReaction" was null or undefined when calling createReaction().'
             );
         }
 
@@ -481,7 +533,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: ReactionToJSON(requestParameters['reaction']),
+            body: NewReactionToJSON(requestParameters['newReaction']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -498,10 +550,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new task
      */
     async createTaskRaw(requestParameters: CreateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['task'] == null) {
+        if (requestParameters['newTask'] == null) {
             throw new runtime.RequiredError(
-                'task',
-                'Required parameter "task" was null or undefined when calling createTask().'
+                'newTask',
+                'Required parameter "newTask" was null or undefined when calling createTask().'
             );
         }
 
@@ -516,7 +568,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: TaskToJSON(requestParameters['task']),
+            body: NewTaskToJSON(requestParameters['newTask']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -568,10 +620,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new timeline item
      */
     async createTimelineRaw(requestParameters: CreateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['timelineEntry'] == null) {
+        if (requestParameters['newTimelineEntry'] == null) {
             throw new runtime.RequiredError(
-                'timelineEntry',
-                'Required parameter "timelineEntry" was null or undefined when calling createTimeline().'
+                'newTimelineEntry',
+                'Required parameter "newTimelineEntry" was null or undefined when calling createTimeline().'
             );
         }
 
@@ -586,7 +638,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: TimelineEntryToJSON(requestParameters['timelineEntry']),
+            body: NewTimelineEntryToJSON(requestParameters['newTimelineEntry']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -603,10 +655,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new type
      */
     async createTypeRaw(requestParameters: CreateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['type'] == null) {
+        if (requestParameters['newType'] == null) {
             throw new runtime.RequiredError(
-                'type',
-                'Required parameter "type" was null or undefined when calling createType().'
+                'newType',
+                'Required parameter "newType" was null or undefined when calling createType().'
             );
         }
 
@@ -621,7 +673,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: TypeToJSON(requestParameters['type']),
+            body: NewTypeToJSON(requestParameters['newType']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -638,10 +690,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new user
      */
     async createUserRaw(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['user'] == null) {
+        if (requestParameters['newUser'] == null) {
             throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling createUser().'
+                'newUser',
+                'Required parameter "newUser" was null or undefined when calling createUser().'
             );
         }
 
@@ -656,7 +708,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
+            body: NewUserToJSON(requestParameters['newUser']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -673,10 +725,10 @@ export class DefaultApi extends runtime.BaseAPI {
      * Create a new webhook
      */
     async createWebhookRaw(requestParameters: CreateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['webhook'] == null) {
+        if (requestParameters['newWebhook'] == null) {
             throw new runtime.RequiredError(
-                'webhook',
-                'Required parameter "webhook" was null or undefined when calling createWebhook().'
+                'newWebhook',
+                'Required parameter "newWebhook" was null or undefined when calling createWebhook().'
             );
         }
 
@@ -691,7 +743,7 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: WebhookToJSON(requestParameters['webhook']),
+            body: NewWebhookToJSON(requestParameters['newWebhook']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -1917,7 +1969,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Update a comment by ID
      */
-    async updateCommentRaw(requestParameters: UpdateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateCommentRaw(requestParameters: UpdateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Comment>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1925,10 +1977,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['comment'] == null) {
+        if (requestParameters['commentUpdate'] == null) {
             throw new runtime.RequiredError(
-                'comment',
-                'Required parameter "comment" was null or undefined when calling updateComment().'
+                'commentUpdate',
+                'Required parameter "commentUpdate" was null or undefined when calling updateComment().'
             );
         }
 
@@ -1940,68 +1992,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/comments/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: CommentToJSON(requestParameters['comment']),
+            body: CommentUpdateToJSON(requestParameters['commentUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CommentFromJSON(jsonValue));
     }
 
     /**
      * Update a comment by ID
      */
-    async updateComment(requestParameters: UpdateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateCommentRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Update a feature by ID
-     */
-    async updateFeatureRaw(requestParameters: UpdateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling updateFeature().'
-            );
-        }
-
-        if (requestParameters['feature'] == null) {
-            throw new runtime.RequiredError(
-                'feature',
-                'Required parameter "feature" was null or undefined when calling updateFeature().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/features/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: FeatureToJSON(requestParameters['feature']),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Update a feature by ID
-     */
-    async updateFeature(requestParameters: UpdateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateFeatureRaw(requestParameters, initOverrides);
+    async updateComment(requestParameters: UpdateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Comment> {
+        const response = await this.updateCommentRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a file by ID
      */
-    async updateFileRaw(requestParameters: UpdateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateFileRaw(requestParameters: UpdateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2009,10 +2020,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['modelFile'] == null) {
+        if (requestParameters['fileUpdate'] == null) {
             throw new runtime.RequiredError(
-                'modelFile',
-                'Required parameter "modelFile" was null or undefined when calling updateFile().'
+                'fileUpdate',
+                'Required parameter "fileUpdate" was null or undefined when calling updateFile().'
             );
         }
 
@@ -2024,26 +2035,31 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/files/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: ModelFileToJSON(requestParameters['modelFile']),
+            body: FileUpdateToJSON(requestParameters['fileUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
     }
 
     /**
      * Update a file by ID
      */
-    async updateFile(requestParameters: UpdateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateFileRaw(requestParameters, initOverrides);
+    async updateFile(requestParameters: UpdateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.updateFileRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a link by ID
      */
-    async updateLinkRaw(requestParameters: UpdateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateLinkRaw(requestParameters: UpdateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Link>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2051,10 +2067,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['link'] == null) {
+        if (requestParameters['linkUpdate'] == null) {
             throw new runtime.RequiredError(
-                'link',
-                'Required parameter "link" was null or undefined when calling updateLink().'
+                'linkUpdate',
+                'Required parameter "linkUpdate" was null or undefined when calling updateLink().'
             );
         }
 
@@ -2066,26 +2082,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/links/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: LinkToJSON(requestParameters['link']),
+            body: LinkUpdateToJSON(requestParameters['linkUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => LinkFromJSON(jsonValue));
     }
 
     /**
      * Update a link by ID
      */
-    async updateLink(requestParameters: UpdateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateLinkRaw(requestParameters, initOverrides);
+    async updateLink(requestParameters: UpdateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Link> {
+        const response = await this.updateLinkRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a reaction by ID
      */
-    async updateReactionRaw(requestParameters: UpdateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateReactionRaw(requestParameters: UpdateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Reaction>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2093,10 +2110,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['reaction'] == null) {
+        if (requestParameters['reactionUpdate'] == null) {
             throw new runtime.RequiredError(
-                'reaction',
-                'Required parameter "reaction" was null or undefined when calling updateReaction().'
+                'reactionUpdate',
+                'Required parameter "reactionUpdate" was null or undefined when calling updateReaction().'
             );
         }
 
@@ -2108,26 +2125,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/reactions/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: ReactionToJSON(requestParameters['reaction']),
+            body: ReactionUpdateToJSON(requestParameters['reactionUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ReactionFromJSON(jsonValue));
     }
 
     /**
      * Update a reaction by ID
      */
-    async updateReaction(requestParameters: UpdateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateReactionRaw(requestParameters, initOverrides);
+    async updateReaction(requestParameters: UpdateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Reaction> {
+        const response = await this.updateReactionRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a task by ID
      */
-    async updateTaskRaw(requestParameters: UpdateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateTaskRaw(requestParameters: UpdateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Task>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2135,10 +2153,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['task'] == null) {
+        if (requestParameters['taskUpdate'] == null) {
             throw new runtime.RequiredError(
-                'task',
-                'Required parameter "task" was null or undefined when calling updateTask().'
+                'taskUpdate',
+                'Required parameter "taskUpdate" was null or undefined when calling updateTask().'
             );
         }
 
@@ -2150,26 +2168,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/tasks/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: TaskToJSON(requestParameters['task']),
+            body: TaskUpdateToJSON(requestParameters['taskUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskFromJSON(jsonValue));
     }
 
     /**
      * Update a task by ID
      */
-    async updateTask(requestParameters: UpdateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateTaskRaw(requestParameters, initOverrides);
+    async updateTask(requestParameters: UpdateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Task> {
+        const response = await this.updateTaskRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a ticket by ID
      */
-    async updateTicketRaw(requestParameters: UpdateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateTicketRaw(requestParameters: UpdateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Ticket>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2177,10 +2196,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['ticket'] == null) {
+        if (requestParameters['ticketUpdate'] == null) {
             throw new runtime.RequiredError(
-                'ticket',
-                'Required parameter "ticket" was null or undefined when calling updateTicket().'
+                'ticketUpdate',
+                'Required parameter "ticketUpdate" was null or undefined when calling updateTicket().'
             );
         }
 
@@ -2192,26 +2211,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/tickets/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: TicketToJSON(requestParameters['ticket']),
+            body: TicketUpdateToJSON(requestParameters['ticketUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TicketFromJSON(jsonValue));
     }
 
     /**
      * Update a ticket by ID
      */
-    async updateTicket(requestParameters: UpdateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateTicketRaw(requestParameters, initOverrides);
+    async updateTicket(requestParameters: UpdateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Ticket> {
+        const response = await this.updateTicketRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a timeline item by ID
      */
-    async updateTimelineRaw(requestParameters: UpdateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateTimelineRaw(requestParameters: UpdateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TimelineEntry>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2219,10 +2239,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['timelineEntry'] == null) {
+        if (requestParameters['timelineEntryUpdate'] == null) {
             throw new runtime.RequiredError(
-                'timelineEntry',
-                'Required parameter "timelineEntry" was null or undefined when calling updateTimeline().'
+                'timelineEntryUpdate',
+                'Required parameter "timelineEntryUpdate" was null or undefined when calling updateTimeline().'
             );
         }
 
@@ -2234,26 +2254,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/timeline/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: TimelineEntryToJSON(requestParameters['timelineEntry']),
+            body: TimelineEntryUpdateToJSON(requestParameters['timelineEntryUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TimelineEntryFromJSON(jsonValue));
     }
 
     /**
      * Update a timeline item by ID
      */
-    async updateTimeline(requestParameters: UpdateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateTimelineRaw(requestParameters, initOverrides);
+    async updateTimeline(requestParameters: UpdateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TimelineEntry> {
+        const response = await this.updateTimelineRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a type by ID
      */
-    async updateTypeRaw(requestParameters: UpdateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateTypeRaw(requestParameters: UpdateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Type>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2261,10 +2282,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['type'] == null) {
+        if (requestParameters['typeUpdate'] == null) {
             throw new runtime.RequiredError(
-                'type',
-                'Required parameter "type" was null or undefined when calling updateType().'
+                'typeUpdate',
+                'Required parameter "typeUpdate" was null or undefined when calling updateType().'
             );
         }
 
@@ -2276,26 +2297,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/types/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: TypeToJSON(requestParameters['type']),
+            body: TypeUpdateToJSON(requestParameters['typeUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TypeFromJSON(jsonValue));
     }
 
     /**
      * Update a type by ID
      */
-    async updateType(requestParameters: UpdateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateTypeRaw(requestParameters, initOverrides);
+    async updateType(requestParameters: UpdateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Type> {
+        const response = await this.updateTypeRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a user by ID
      */
-    async updateUserRaw(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateUserRaw(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2303,10 +2325,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['user'] == null) {
+        if (requestParameters['userUpdate'] == null) {
             throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling updateUser().'
+                'userUpdate',
+                'Required parameter "userUpdate" was null or undefined when calling updateUser().'
             );
         }
 
@@ -2318,26 +2340,27 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/users/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
+            body: UserUpdateToJSON(requestParameters['userUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
      * Update a user by ID
      */
-    async updateUser(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateUserRaw(requestParameters, initOverrides);
+    async updateUser(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.updateUserRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update a webhook by ID
      */
-    async updateWebhookRaw(requestParameters: UpdateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateWebhookRaw(requestParameters: UpdateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Webhook>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -2345,10 +2368,10 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['webhook'] == null) {
+        if (requestParameters['webhookUpdate'] == null) {
             throw new runtime.RequiredError(
-                'webhook',
-                'Required parameter "webhook" was null or undefined when calling updateWebhook().'
+                'webhookUpdate',
+                'Required parameter "webhookUpdate" was null or undefined when calling updateWebhook().'
             );
         }
 
@@ -2360,20 +2383,21 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/webhooks/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: WebhookToJSON(requestParameters['webhook']),
+            body: WebhookUpdateToJSON(requestParameters['webhookUpdate']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => WebhookFromJSON(jsonValue));
     }
 
     /**
      * Update a webhook by ID
      */
-    async updateWebhook(requestParameters: UpdateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateWebhookRaw(requestParameters, initOverrides);
+    async updateWebhook(requestParameters: UpdateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Webhook> {
+        const response = await this.updateWebhookRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

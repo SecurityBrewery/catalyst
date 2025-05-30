@@ -16,105 +16,78 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Task
+ * @interface NewTask
  */
-export interface Task {
+export interface NewTask {
     /**
      * 
      * @type {string}
-     * @memberof Task
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Task
+     * @memberof NewTask
      */
     ticket: string;
     /**
      * 
      * @type {string}
-     * @memberof Task
+     * @memberof NewTask
      */
     name: string;
     /**
      * 
      * @type {boolean}
-     * @memberof Task
+     * @memberof NewTask
      */
     open: boolean;
     /**
      * 
      * @type {string}
-     * @memberof Task
+     * @memberof NewTask
      */
     owner: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Task
-     */
-    created: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Task
-     */
-    updated: string;
 }
 
 /**
- * Check if a given object implements the Task interface.
+ * Check if a given object implements the NewTask interface.
  */
-export function instanceOfTask(value: object): value is Task {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfNewTask(value: object): value is NewTask {
     if (!('ticket' in value) || value['ticket'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('open' in value) || value['open'] === undefined) return false;
     if (!('owner' in value) || value['owner'] === undefined) return false;
-    if (!('created' in value) || value['created'] === undefined) return false;
-    if (!('updated' in value) || value['updated'] === undefined) return false;
     return true;
 }
 
-export function TaskFromJSON(json: any): Task {
-    return TaskFromJSONTyped(json, false);
+export function NewTaskFromJSON(json: any): NewTask {
+    return NewTaskFromJSONTyped(json, false);
 }
 
-export function TaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): Task {
+export function NewTaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewTask {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'ticket': json['ticket'],
         'name': json['name'],
         'open': json['open'],
         'owner': json['owner'],
-        'created': json['created'],
-        'updated': json['updated'],
     };
 }
 
-export function TaskToJSON(json: any): Task {
-    return TaskToJSONTyped(json, false);
+export function NewTaskToJSON(json: any): NewTask {
+    return NewTaskToJSONTyped(json, false);
 }
 
-export function TaskToJSONTyped(value?: Task | null, ignoreDiscriminator: boolean = false): any {
+export function NewTaskToJSONTyped(value?: NewTask | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'ticket': value['ticket'],
         'name': value['name'],
         'open': value['open'],
         'owner': value['owner'],
-        'created': value['created'],
-        'updated': value['updated'],
     };
 }
 
