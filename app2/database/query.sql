@@ -1,6 +1,7 @@
--- name: CreateTicket :execlastid
+-- name: CreateTicket :one
 INSERT INTO tickets (name, description, open, owner, resolution, schema, state, type)
-VALUES (@name, @description, @open, @owner, @resolution, @schema, @state, @type);
+VALUES (@name, @description, @open, @owner, @resolution, @schema, @state, @type)
+RETURNING *;
 
 -- name: Ticket :one
 SELECT *
@@ -51,9 +52,10 @@ WHERE token = @token;
 
 ------------------------------------------------------------------
 
--- name: CreateComment :execlastid
+-- name: CreateComment :one
 INSERT INTO comments (author, message, ticket)
-VALUES (@author, @message, @ticket);
+VALUES (@author, @message, @ticket)
+RETURNING *;
 
 -- name: GetComment :one
 SELECT *
@@ -80,9 +82,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateFeature :execlastid
+-- name: CreateFeature :one
 INSERT INTO features (name)
-VALUES (@name);
+VALUES (@name)
+RETURNING *;
 
 -- name: GetFeature :one
 SELECT *
@@ -107,9 +110,10 @@ ORDER BY created DESC;
 
 ------------------------------------------------------------------
 
--- name: CreateFile :execlastid
+-- name: CreateFile :one
 INSERT INTO files (name, blob, size, ticket)
-VALUES (@name, @blob, @size, @ticket);
+VALUES (@name, @blob, @size, @ticket)
+RETURNING *;
 
 -- name: GetFile :one
 SELECT *
@@ -139,9 +143,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateLink :execlastid
+-- name: CreateLink :one
 INSERT INTO links (name, url, ticket)
-VALUES (@name, @url, @ticket);
+VALUES (@name, @url, @ticket)
+RETURNING *;
 
 -- name: GetLink :one
 SELECT *
@@ -170,9 +175,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateReaction :execlastid
+-- name: CreateReaction :one
 INSERT INTO reactions (name, action, actiondata, trigger, triggerdata)
-VALUES (@name, @action, @actiondata, @trigger, @triggerdata);
+VALUES (@name, @action, @actiondata, @trigger, @triggerdata)
+RETURNING *;
 
 -- name: GetReaction :one
 SELECT *
@@ -203,9 +209,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateTask :execlastid
+-- name: CreateTask :one
 INSERT INTO tasks (name, open, owner, ticket)
-VALUES (@name, @open, @owner, @ticket);
+VALUES (@name, @open, @owner, @ticket)
+RETURNING *;
 
 -- name: GetTask :one
 SELECT *
@@ -235,9 +242,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateTimeline :execlastid
+-- name: CreateTimeline :one
 INSERT INTO timeline (message, ticket, time)
-VALUES (@message, @ticket, @time);
+VALUES (@message, @ticket, @time)
+RETURNING *;
 
 -- name: GetTimeline :one
 SELECT *
@@ -266,9 +274,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateType :execlastid
+-- name: CreateType :one
 INSERT INTO types (singular, plural, icon, schema)
-VALUES (@singular, @plural, @icon, @schema);
+VALUES (@singular, @plural, @icon, @schema)
+RETURNING *;
 
 -- name: GetType :one
 SELECT *
@@ -297,9 +306,10 @@ ORDER BY created DESC;
 
 ------------------------------------------------------------------
 
--- name: CreateUser :execlastid
+-- name: CreateUser :one
 INSERT INTO users (name, email, username, passwordHash, tokenKey)
-VALUES (@name, @email, @username, @passwordHash, @tokenKey);
+VALUES (@name, @email, @username, @passwordHash, @tokenKey)
+RETURNING *;
 
 -- name: GetUser :one
 SELECT *
@@ -330,9 +340,10 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateWebhook :execlastid
+-- name: CreateWebhook :one
 INSERT INTO webhooks (name, collection, destination)
-VALUES (@name, @collection, @destination);
+VALUES (@name, @collection, @destination)
+RETURNING *;
 
 -- name: GetWebhook :one
 SELECT *

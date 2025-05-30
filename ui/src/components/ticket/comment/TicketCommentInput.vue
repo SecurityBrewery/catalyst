@@ -8,8 +8,8 @@ import { Plus } from 'lucide-vue-next'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const props = defineProps<{
@@ -23,10 +23,10 @@ const isOpen = ref(false)
 
 const addCommentMutation = useMutation({
   mutationFn: (): Promise<Comment> => {
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('comments').create({
+    // if (!pb.authStore.model) return Promise.reject('Not authenticated') // TODO
+    return api.createComment({
       ticket: props.ticket.id,
-      author: pb.authStore.model.id,
+      author: '', // pb.authStore.model.id, // TODO // TODO
       message: message.value
     })
   },

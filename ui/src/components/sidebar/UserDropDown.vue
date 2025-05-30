@@ -15,7 +15,7 @@ import { CircleUser } from 'lucide-vue-next'
 import type { AuthModel } from 'pocketbase'
 import { onMounted, ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
+import { api } from '@/api'
 import { cn } from '@/lib/utils'
 
 defineProps<{
@@ -28,16 +28,16 @@ interface User {
   name: string
 }
 
-const user = ref<AuthModel | User>(pb.authStore.model)
+const user = ref<AuthModel | User>() // TODO
 
 const logout = () => {
-  pb.authStore.clear()
-  window.location.href = '/ui/login'
+  // pb.authStore.clear() // TODO
+  // window.location.href = '/ui/login' // TODO
 }
 
 onMounted(() => {
   /*
-  pb.collection('users')
+  pb.collection('users') // TODO
     .authRefresh()
     .catch(() => {
       // pb.authStore.clear()

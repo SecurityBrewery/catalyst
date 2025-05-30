@@ -28,10 +28,11 @@ func (q *Queries) CommitSession(ctx context.Context, arg CommitSessionParams) er
 	return err
 }
 
-const createComment = `-- name: CreateComment :execlastid
+const createComment = `-- name: CreateComment :one
 
 INSERT INTO comments (author, message, ticket)
 VALUES (?1, ?2, ?3)
+RETURNING author, created, id, message, ticket, updated
 `
 
 type CreateCommentParams struct {
@@ -41,33 +42,45 @@ type CreateCommentParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createComment, arg.Author, arg.Message, arg.Ticket)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error) {
+	row := q.db.QueryRowContext(ctx, createComment, arg.Author, arg.Message, arg.Ticket)
+	var i Comment
+	err := row.Scan(
+		&i.Author,
+		&i.Created,
+		&i.ID,
+		&i.Message,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createFeature = `-- name: CreateFeature :execlastid
+const createFeature = `-- name: CreateFeature :one
 
 INSERT INTO features (name)
 VALUES (?1)
+RETURNING created, id, name, updated
 `
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateFeature(ctx context.Context, name string) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createFeature, name)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) CreateFeature(ctx context.Context, name string) (Feature, error) {
+	row := q.db.QueryRowContext(ctx, createFeature, name)
+	var i Feature
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createFile = `-- name: CreateFile :execlastid
+const createFile = `-- name: CreateFile :one
 
 INSERT INTO files (name, blob, size, ticket)
 VALUES (?1, ?2, ?3, ?4)
+RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type CreateFileParams struct {
@@ -78,23 +91,31 @@ type CreateFileParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createFile,
+func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, error) {
+	row := q.db.QueryRowContext(ctx, createFile,
 		arg.Name,
 		arg.Blob,
 		arg.Size,
 		arg.Ticket,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i File
+	err := row.Scan(
+		&i.Blob,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Size,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createLink = `-- name: CreateLink :execlastid
+const createLink = `-- name: CreateLink :one
 
 INSERT INTO links (name, url, ticket)
 VALUES (?1, ?2, ?3)
+RETURNING created, id, name, ticket, updated, url
 `
 
 type CreateLinkParams struct {
@@ -104,18 +125,25 @@ type CreateLinkParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createLink, arg.Name, arg.Url, arg.Ticket)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (Link, error) {
+	row := q.db.QueryRowContext(ctx, createLink, arg.Name, arg.Url, arg.Ticket)
+	var i Link
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Ticket,
+		&i.Updated,
+		&i.Url,
+	)
+	return i, err
 }
 
-const createReaction = `-- name: CreateReaction :execlastid
+const createReaction = `-- name: CreateReaction :one
 
 INSERT INTO reactions (name, action, actiondata, trigger, triggerdata)
 VALUES (?1, ?2, ?3, ?4, ?5)
+RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updated
 `
 
 type CreateReactionParams struct {
@@ -127,24 +155,33 @@ type CreateReactionParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createReaction,
+func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) (Reaction, error) {
+	row := q.db.QueryRowContext(ctx, createReaction,
 		arg.Name,
 		arg.Action,
 		arg.Actiondata,
 		arg.Trigger,
 		arg.Triggerdata,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i Reaction
+	err := row.Scan(
+		&i.Action,
+		&i.Actiondata,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Trigger,
+		&i.Triggerdata,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createTask = `-- name: CreateTask :execlastid
+const createTask = `-- name: CreateTask :one
 
 INSERT INTO tasks (name, open, owner, ticket)
 VALUES (?1, ?2, ?3, ?4)
+RETURNING created, id, name, open, owner, ticket, updated
 `
 
 type CreateTaskParams struct {
@@ -155,22 +192,30 @@ type CreateTaskParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createTask,
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, createTask,
 		arg.Name,
 		arg.Open,
 		arg.Owner,
 		arg.Ticket,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i Task
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Open,
+		&i.Owner,
+		&i.Ticket,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createTicket = `-- name: CreateTicket :execlastid
+const createTicket = `-- name: CreateTicket :one
 INSERT INTO tickets (name, description, open, owner, resolution, schema, state, type)
 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
 `
 
 type CreateTicketParams struct {
@@ -184,8 +229,8 @@ type CreateTicketParams struct {
 	Type        string      `json:"type"`
 }
 
-func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createTicket,
+func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
+	row := q.db.QueryRowContext(ctx, createTicket,
 		arg.Name,
 		arg.Description,
 		arg.Open,
@@ -195,16 +240,28 @@ func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (int
 		arg.State,
 		arg.Type,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i Ticket
+	err := row.Scan(
+		&i.Created,
+		&i.Description,
+		&i.ID,
+		&i.Name,
+		&i.Open,
+		&i.Owner,
+		&i.Resolution,
+		&i.Schema,
+		&i.State,
+		&i.Type,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createTimeline = `-- name: CreateTimeline :execlastid
+const createTimeline = `-- name: CreateTimeline :one
 
 INSERT INTO timeline (message, ticket, time)
 VALUES (?1, ?2, ?3)
+RETURNING created, id, message, ticket, time, updated
 `
 
 type CreateTimelineParams struct {
@@ -214,18 +271,25 @@ type CreateTimelineParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateTimeline(ctx context.Context, arg CreateTimelineParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createTimeline, arg.Message, arg.Ticket, arg.Time)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) CreateTimeline(ctx context.Context, arg CreateTimelineParams) (Timeline, error) {
+	row := q.db.QueryRowContext(ctx, createTimeline, arg.Message, arg.Ticket, arg.Time)
+	var i Timeline
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Message,
+		&i.Ticket,
+		&i.Time,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createType = `-- name: CreateType :execlastid
+const createType = `-- name: CreateType :one
 
 INSERT INTO types (singular, plural, icon, schema)
 VALUES (?1, ?2, ?3, ?4)
+RETURNING created, icon, id, plural, schema, singular, updated
 `
 
 type CreateTypeParams struct {
@@ -236,23 +300,31 @@ type CreateTypeParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createType,
+func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) (Type, error) {
+	row := q.db.QueryRowContext(ctx, createType,
 		arg.Singular,
 		arg.Plural,
 		arg.Icon,
 		arg.Schema,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i Type
+	err := row.Scan(
+		&i.Created,
+		&i.Icon,
+		&i.ID,
+		&i.Plural,
+		&i.Schema,
+		&i.Singular,
+		&i.Updated,
+	)
+	return i, err
 }
 
-const createUser = `-- name: CreateUser :execlastid
+const createUser = `-- name: CreateUser :one
 
 INSERT INTO users (name, email, username, passwordHash, tokenKey)
 VALUES (?1, ?2, ?3, ?4, ?5)
+RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type CreateUserParams struct {
@@ -264,24 +336,39 @@ type CreateUserParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Name,
 		arg.Email,
 		arg.Username,
 		arg.PasswordHash,
 		arg.TokenKey,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i User
+	err := row.Scan(
+		&i.Avatar,
+		&i.Created,
+		&i.Email,
+		&i.Emailvisibility,
+		&i.ID,
+		&i.Lastloginalertsentat,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Name,
+		&i.Passwordhash,
+		&i.Tokenkey,
+		&i.Updated,
+		&i.Username,
+		&i.Verified,
+	)
+	return i, err
 }
 
-const createWebhook = `-- name: CreateWebhook :execlastid
+const createWebhook = `-- name: CreateWebhook :one
 
 INSERT INTO webhooks (name, collection, destination)
 VALUES (?1, ?2, ?3)
+RETURNING collection, created, destination, id, name, updated
 `
 
 type CreateWebhookParams struct {
@@ -291,12 +378,18 @@ type CreateWebhookParams struct {
 }
 
 // ----------------------------------------------------------------
-func (q *Queries) CreateWebhook(ctx context.Context, arg CreateWebhookParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createWebhook, arg.Name, arg.Collection, arg.Destination)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) CreateWebhook(ctx context.Context, arg CreateWebhookParams) (Webhook, error) {
+	row := q.db.QueryRowContext(ctx, createWebhook, arg.Name, arg.Collection, arg.Destination)
+	var i Webhook
+	err := row.Scan(
+		&i.Collection,
+		&i.Created,
+		&i.Destination,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
+	return i, err
 }
 
 const deleteComment = `-- name: DeleteComment :exec

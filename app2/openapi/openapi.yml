@@ -28,9 +28,9 @@ paths:
     post:
       summary: Create a new ticket
       operationId: createTicket
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTicket" } } } }
       responses:
-        "201": { "description": "Tickets created" }
+        "200": { "description": "Ticket created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
   /tickets/{id}:
     get:
       summary: Get a single ticket by ID
@@ -69,7 +69,7 @@ paths:
       operationId: createComment
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewComment" } } } }
       responses:
-        "201": { "description": "Comment created" }
+        "200": { "description": "Comment created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
   /comments/{id}:
     get:
       summary: Get a single comment by ID
@@ -108,7 +108,7 @@ paths:
       operationId: createFile
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFile" } } } }
       responses:
-        "201": { "description": "File created" }
+        "200": { "description": "File created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
   /files/{id}:
     get:
       summary: Get a single file by ID
@@ -147,7 +147,7 @@ paths:
       operationId: createLink
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewLink" } } } }
       responses:
-        "201": { "description": "Link created" }
+        "200": { "description": "Link created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
   /links/{id}:
     get:
       summary: Get a single link by ID
@@ -186,7 +186,7 @@ paths:
       operationId: createTask
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTask" } } } }
       responses:
-        "201": { "description": "Task created" }
+        "200": { "description": "Task created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
   /tasks/{id}:
     get:
       summary: Get a single task by ID
@@ -225,7 +225,7 @@ paths:
       operationId: createTimeline
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTimelineEntry" } } } }
       responses:
-        "201": { "description": "Timeline item created" }
+        "200": { "description": "Timeline item created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
   /timeline/{id}:
     get:
       summary: Get a single timeline item by ID
@@ -263,7 +263,7 @@ paths:
       operationId: createFeature
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFeature" } } } }
       responses:
-        "201": { "description": "Features created" }
+        "200": { "description": "Features created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Feature" } } } }
   /features/{id}:
     get:
       summary: Get a single feature by ID
@@ -293,7 +293,7 @@ paths:
       operationId: createReaction
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewReaction" } } } }
       responses:
-        "201": { "description": "Reactions created" }
+        "200": { "description": "Reactions created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
   /reactions/{id}:
     get:
       summary: Get a single reaction by ID
@@ -331,7 +331,7 @@ paths:
       operationId: createType
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewType" } } } }
       responses:
-        "201": { "description": "Types created" }
+        "200": { "description": "Types created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
   /types/{id}:
     get:
       summary: Get a single type by ID
@@ -369,7 +369,7 @@ paths:
       operationId: createUser
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewUser" } } } }
       responses:
-        "201": { "description": "Users created" }
+        "200": { "description": "Users created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
   /users/{id}:
     get:
       summary: Get a single user by ID
@@ -407,7 +407,7 @@ paths:
       operationId: createWebhook
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewWebhook" } } } }
       responses:
-        "201": { "description": "Webhooks created" }
+        "200": { "description": "Webhooks created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
   /webhooks/{id}:
     get:
       summary: Get a single webhook by ID

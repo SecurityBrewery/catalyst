@@ -17,7 +17,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { type RouteLocationRaw, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
+import { api } from '@/api'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -35,7 +35,10 @@ const props = defineProps<{
 const isOpen = ref(false)
 
 const deleteMutation = useMutation({
-  mutationFn: () => pb.collection(props.collection).delete(props.id),
+  mutationFn: () => {
+    // api.delete(props.collection, props.id), // TODO
+    return Promise.resolve()
+  },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: props.queryKey })
     if (props.to) router.push(props.to)

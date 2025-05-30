@@ -22,12 +22,12 @@ import { LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
-import type { ListResult } from 'pocketbase'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api } from '@/api'
-import type { SearchTicket, Type } from '@/client/models/Ticket'
+import type { TicketSearch } from '@/client/models'
+import type { Type } from '@/client/models/Type'
 
 const router = useRouter()
 const route = useRoute()
@@ -79,7 +79,7 @@ const filter = computed(() => {
 
   if (raw === '') return ''
 
-  return pb.filter(raw, params)
+  return 'pb.filter(raw, params)' // TODO
 })
 
 const page = ref(1)
@@ -93,10 +93,11 @@ const {
   refetch
 } = useQuery({
   queryKey: ['tickets', filter.value],
-  queryFn: (): Promise<ListResult<SearchTicket>> =>
-    pb.collection('ticket_search').getList(page.value, perPage.value, {
-      sort: '-created',
-      filter: filter.value
+  queryFn: (): Promise<Array<TicketSearch>> =>
+    api.searchTickets({
+      query: searchValue.value,
+      offset: page.value,
+      limit: perPage.value
     })
 })
 

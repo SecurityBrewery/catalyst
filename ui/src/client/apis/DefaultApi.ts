@@ -28,6 +28,7 @@ import type {
   NewLink,
   NewReaction,
   NewTask,
+  NewTicket,
   NewTimelineEntry,
   NewType,
   NewUser,
@@ -76,6 +77,8 @@ import {
     NewReactionToJSON,
     NewTaskFromJSON,
     NewTaskToJSON,
+    NewTicketFromJSON,
+    NewTicketToJSON,
     NewTimelineEntryFromJSON,
     NewTimelineEntryToJSON,
     NewTypeFromJSON,
@@ -143,7 +146,7 @@ export interface CreateTaskRequest {
 }
 
 export interface CreateTicketRequest {
-    ticket: Ticket;
+    newTicket: NewTicket;
 }
 
 export interface CreateTimelineRequest {
@@ -374,7 +377,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Create a new comment
      */
-    async createCommentRaw(requestParameters: CreateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createCommentRaw(requestParameters: CreateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Comment>> {
         if (requestParameters['newComment'] == null) {
             throw new runtime.RequiredError(
                 'newComment',
@@ -396,20 +399,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewCommentToJSON(requestParameters['newComment']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CommentFromJSON(jsonValue));
     }
 
     /**
      * Create a new comment
      */
-    async createComment(requestParameters: CreateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createCommentRaw(requestParameters, initOverrides);
+    async createComment(requestParameters: CreateCommentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Comment> {
+        const response = await this.createCommentRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new feature
      */
-    async createFeatureRaw(requestParameters: CreateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createFeatureRaw(requestParameters: CreateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Feature>> {
         if (requestParameters['newFeature'] == null) {
             throw new runtime.RequiredError(
                 'newFeature',
@@ -431,20 +435,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewFeatureToJSON(requestParameters['newFeature']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FeatureFromJSON(jsonValue));
     }
 
     /**
      * Create a new feature
      */
-    async createFeature(requestParameters: CreateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createFeatureRaw(requestParameters, initOverrides);
+    async createFeature(requestParameters: CreateFeatureRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Feature> {
+        const response = await this.createFeatureRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new file
      */
-    async createFileRaw(requestParameters: CreateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createFileRaw(requestParameters: CreateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
         if (requestParameters['newFile'] == null) {
             throw new runtime.RequiredError(
                 'newFile',
@@ -466,20 +471,25 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewFileToJSON(requestParameters['newFile']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
     }
 
     /**
      * Create a new file
      */
-    async createFile(requestParameters: CreateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createFileRaw(requestParameters, initOverrides);
+    async createFile(requestParameters: CreateFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.createFileRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new link
      */
-    async createLinkRaw(requestParameters: CreateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createLinkRaw(requestParameters: CreateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Link>> {
         if (requestParameters['newLink'] == null) {
             throw new runtime.RequiredError(
                 'newLink',
@@ -501,20 +511,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewLinkToJSON(requestParameters['newLink']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => LinkFromJSON(jsonValue));
     }
 
     /**
      * Create a new link
      */
-    async createLink(requestParameters: CreateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createLinkRaw(requestParameters, initOverrides);
+    async createLink(requestParameters: CreateLinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Link> {
+        const response = await this.createLinkRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new reaction
      */
-    async createReactionRaw(requestParameters: CreateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createReactionRaw(requestParameters: CreateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Reaction>> {
         if (requestParameters['newReaction'] == null) {
             throw new runtime.RequiredError(
                 'newReaction',
@@ -536,20 +547,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewReactionToJSON(requestParameters['newReaction']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ReactionFromJSON(jsonValue));
     }
 
     /**
      * Create a new reaction
      */
-    async createReaction(requestParameters: CreateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createReactionRaw(requestParameters, initOverrides);
+    async createReaction(requestParameters: CreateReactionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Reaction> {
+        const response = await this.createReactionRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new task
      */
-    async createTaskRaw(requestParameters: CreateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createTaskRaw(requestParameters: CreateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Task>> {
         if (requestParameters['newTask'] == null) {
             throw new runtime.RequiredError(
                 'newTask',
@@ -571,24 +583,25 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewTaskToJSON(requestParameters['newTask']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskFromJSON(jsonValue));
     }
 
     /**
      * Create a new task
      */
-    async createTask(requestParameters: CreateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createTaskRaw(requestParameters, initOverrides);
+    async createTask(requestParameters: CreateTaskRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Task> {
+        const response = await this.createTaskRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new ticket
      */
-    async createTicketRaw(requestParameters: CreateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['ticket'] == null) {
+    async createTicketRaw(requestParameters: CreateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Ticket>> {
+        if (requestParameters['newTicket'] == null) {
             throw new runtime.RequiredError(
-                'ticket',
-                'Required parameter "ticket" was null or undefined when calling createTicket().'
+                'newTicket',
+                'Required parameter "newTicket" was null or undefined when calling createTicket().'
             );
         }
 
@@ -603,23 +616,24 @@ export class DefaultApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: TicketToJSON(requestParameters['ticket']),
+            body: NewTicketToJSON(requestParameters['newTicket']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TicketFromJSON(jsonValue));
     }
 
     /**
      * Create a new ticket
      */
-    async createTicket(requestParameters: CreateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createTicketRaw(requestParameters, initOverrides);
+    async createTicket(requestParameters: CreateTicketRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Ticket> {
+        const response = await this.createTicketRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new timeline item
      */
-    async createTimelineRaw(requestParameters: CreateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createTimelineRaw(requestParameters: CreateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TimelineEntry>> {
         if (requestParameters['newTimelineEntry'] == null) {
             throw new runtime.RequiredError(
                 'newTimelineEntry',
@@ -641,20 +655,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewTimelineEntryToJSON(requestParameters['newTimelineEntry']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TimelineEntryFromJSON(jsonValue));
     }
 
     /**
      * Create a new timeline item
      */
-    async createTimeline(requestParameters: CreateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createTimelineRaw(requestParameters, initOverrides);
+    async createTimeline(requestParameters: CreateTimelineRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TimelineEntry> {
+        const response = await this.createTimelineRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new type
      */
-    async createTypeRaw(requestParameters: CreateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createTypeRaw(requestParameters: CreateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Type>> {
         if (requestParameters['newType'] == null) {
             throw new runtime.RequiredError(
                 'newType',
@@ -676,20 +691,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewTypeToJSON(requestParameters['newType']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => TypeFromJSON(jsonValue));
     }
 
     /**
      * Create a new type
      */
-    async createType(requestParameters: CreateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createTypeRaw(requestParameters, initOverrides);
+    async createType(requestParameters: CreateTypeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Type> {
+        const response = await this.createTypeRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new user
      */
-    async createUserRaw(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createUserRaw(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['newUser'] == null) {
             throw new runtime.RequiredError(
                 'newUser',
@@ -711,20 +727,21 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewUserToJSON(requestParameters['newUser']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
      * Create a new user
      */
-    async createUser(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createUserRaw(requestParameters, initOverrides);
+    async createUser(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.createUserRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Create a new webhook
      */
-    async createWebhookRaw(requestParameters: CreateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createWebhookRaw(requestParameters: CreateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Webhook>> {
         if (requestParameters['newWebhook'] == null) {
             throw new runtime.RequiredError(
                 'newWebhook',
@@ -746,14 +763,15 @@ export class DefaultApi extends runtime.BaseAPI {
             body: NewWebhookToJSON(requestParameters['newWebhook']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => WebhookFromJSON(jsonValue));
     }
 
     /**
      * Create a new webhook
      */
-    async createWebhook(requestParameters: CreateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createWebhookRaw(requestParameters, initOverrides);
+    async createWebhook(requestParameters: CreateWebhookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Webhook> {
+        const response = await this.createWebhookRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

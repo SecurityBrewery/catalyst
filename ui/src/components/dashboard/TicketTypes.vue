@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 
 import { api } from '@/api'
-import type { Sidebar } from '@/client/models/Sidebar'
+import type { Sidebar } from '@/client/models'
 
 const {
   isPending,

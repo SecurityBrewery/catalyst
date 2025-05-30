@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { ref } from 'vue'
 
-import type { User } from '@/client/models/User'
+import type { User } from '@/client/models'
 
 const user = defineModel<User>()
 

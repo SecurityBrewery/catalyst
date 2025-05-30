@@ -9,14 +9,13 @@ import { LoaderCircle } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Type } from '@/lib/types'
+import { api } from '@/api'
+import type { Sidebar, Type } from '@/client/models'
 import { cn } from '@/lib/utils'
-import { Configuration, DefaultApi } from '@/client'
 
 const route = useRoute()
 
-defineProps<{
+defineProps<{ 
   isCollapsed: boolean
 }>()
 
@@ -27,16 +26,10 @@ const {
   error
 } = useQuery({
   queryKey: ['sidebar'],
-  queryFn: (): Promise<Array<any>> => {
-    const config = new Configuration({
-      basePath: 'http://localhost:8090/api',
-    })
-    const api = new DefaultApi(config)
-    return api.getSidebar()
-  }
+  queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 
-const variant = (t: Type): 'default' | 'ghost' => (route.params.type === t.id ? 'default' : 'ghost')
+const variant = (t: Sidebar): 'default' | 'ghost' => (route.params.type === t.id ? 'default' : 'ghost')
 </script>
 
 <template>

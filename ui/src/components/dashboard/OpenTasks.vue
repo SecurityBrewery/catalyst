@@ -9,7 +9,7 @@ import { ChevronRight } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 
 import { api } from '@/api'
-import type { Task } from '@/client/models/Task'
+import type { Task } from '@/client/models'
 import { cn } from '@/lib/utils'
 
 const {

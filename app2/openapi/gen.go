@@ -456,7 +456,7 @@ type CreateTaskJSONRequestBody = NewTask
 type UpdateTaskJSONRequestBody = TaskUpdate
 
 // CreateTicketJSONRequestBody defines body for CreateTicket for application/json ContentType.
-type CreateTicketJSONRequestBody = Ticket
+type CreateTicketJSONRequestBody = NewTicket
 
 // UpdateTicketJSONRequestBody defines body for UpdateTicket for application/json ContentType.
 type UpdateTicketJSONRequestBody = TicketUpdate
@@ -2785,12 +2785,13 @@ type CreateCommentResponseObject interface {
 	VisitCreateCommentResponse(w http.ResponseWriter) error
 }
 
-type CreateComment201Response struct {
-}
+type CreateComment200JSONResponse Comment
 
-func (response CreateComment201Response) VisitCreateCommentResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateComment200JSONResponse) VisitCreateCommentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteCommentRequestObject struct {
@@ -2885,12 +2886,13 @@ type CreateFeatureResponseObject interface {
 	VisitCreateFeatureResponse(w http.ResponseWriter) error
 }
 
-type CreateFeature201Response struct {
-}
+type CreateFeature200JSONResponse Feature
 
-func (response CreateFeature201Response) VisitCreateFeatureResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateFeature200JSONResponse) VisitCreateFeatureResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteFeatureRequestObject struct {
@@ -2951,12 +2953,13 @@ type CreateFileResponseObject interface {
 	VisitCreateFileResponse(w http.ResponseWriter) error
 }
 
-type CreateFile201Response struct {
-}
+type CreateFile200JSONResponse File
 
-func (response CreateFile201Response) VisitCreateFileResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateFile200JSONResponse) VisitCreateFileResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteFileRequestObject struct {
@@ -3035,12 +3038,13 @@ type CreateLinkResponseObject interface {
 	VisitCreateLinkResponse(w http.ResponseWriter) error
 }
 
-type CreateLink201Response struct {
-}
+type CreateLink200JSONResponse Link
 
-func (response CreateLink201Response) VisitCreateLinkResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateLink200JSONResponse) VisitCreateLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteLinkRequestObject struct {
@@ -3119,12 +3123,13 @@ type CreateReactionResponseObject interface {
 	VisitCreateReactionResponse(w http.ResponseWriter) error
 }
 
-type CreateReaction201Response struct {
-}
+type CreateReaction200JSONResponse Reaction
 
-func (response CreateReaction201Response) VisitCreateReactionResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateReaction200JSONResponse) VisitCreateReactionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteReactionRequestObject struct {
@@ -3219,12 +3224,13 @@ type CreateTaskResponseObject interface {
 	VisitCreateTaskResponse(w http.ResponseWriter) error
 }
 
-type CreateTask201Response struct {
-}
+type CreateTask200JSONResponse Task
 
-func (response CreateTask201Response) VisitCreateTaskResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateTask200JSONResponse) VisitCreateTaskResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTaskRequestObject struct {
@@ -3320,12 +3326,13 @@ type CreateTicketResponseObject interface {
 	VisitCreateTicketResponse(w http.ResponseWriter) error
 }
 
-type CreateTicket201Response struct {
-}
+type CreateTicket200JSONResponse Ticket
 
-func (response CreateTicket201Response) VisitCreateTicketResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateTicket200JSONResponse) VisitCreateTicketResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTicketRequestObject struct {
@@ -3404,12 +3411,13 @@ type CreateTimelineResponseObject interface {
 	VisitCreateTimelineResponse(w http.ResponseWriter) error
 }
 
-type CreateTimeline201Response struct {
-}
+type CreateTimeline200JSONResponse TimelineEntry
 
-func (response CreateTimeline201Response) VisitCreateTimelineResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateTimeline200JSONResponse) VisitCreateTimelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTimelineRequestObject struct {
@@ -3488,12 +3496,13 @@ type CreateTypeResponseObject interface {
 	VisitCreateTypeResponse(w http.ResponseWriter) error
 }
 
-type CreateType201Response struct {
-}
+type CreateType200JSONResponse Type
 
-func (response CreateType201Response) VisitCreateTypeResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateType200JSONResponse) VisitCreateTypeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTypeRequestObject struct {
@@ -3572,12 +3581,13 @@ type CreateUserResponseObject interface {
 	VisitCreateUserResponse(w http.ResponseWriter) error
 }
 
-type CreateUser201Response struct {
-}
+type CreateUser200JSONResponse User
 
-func (response CreateUser201Response) VisitCreateUserResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateUser200JSONResponse) VisitCreateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteUserRequestObject struct {
@@ -3656,12 +3666,13 @@ type CreateWebhookResponseObject interface {
 	VisitCreateWebhookResponse(w http.ResponseWriter) error
 }
 
-type CreateWebhook201Response struct {
-}
+type CreateWebhook200JSONResponse Webhook
 
-func (response CreateWebhook201Response) VisitCreateWebhookResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
+func (response CreateWebhook200JSONResponse) VisitCreateWebhookResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteWebhookRequestObject struct {

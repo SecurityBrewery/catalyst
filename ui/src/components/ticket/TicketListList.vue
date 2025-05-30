@@ -3,12 +3,12 @@ import ResourceListElement from '@/components/layout/ResourceListElement.vue'
 
 import { useRoute } from 'vue-router'
 
-import type { SearchTicket } from '@/lib/types'
+import type { TicketSearch } from '@/client/models'
 
 const route = useRoute()
 
 defineProps<{
-  tickets: Array<SearchTicket>
+  tickets: Array<TicketSearch>
 }>()
 </script>
 
@@ -19,7 +19,7 @@ defineProps<{
       :key="item.id"
       :title="item.name"
       :created="item.created"
-      :subtitle="item.owner_name"
+      :subtitle="item.ownerName"
       :description="item.description ? item.description.substring(0, 300) : ''"
       :active="route.params.id === item.id"
       :to="`/tickets/${item.type}/${item.id}`"

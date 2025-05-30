@@ -24,8 +24,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Comment } from '@/lib/types'
+import { api } from '@/api'
+import type { Comment } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -39,7 +39,7 @@ const editMode = ref(false)
 const message = ref(props.comment.message)
 
 const deleteCommentMutation = useMutation({
-  mutationFn: () => pb.collection('comments').delete(props.comment.id),
+  mutationFn: () => api.deleteComment({ id: props.comment.id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.comment.ticket] })
     isOpen.value = false
@@ -68,7 +68,7 @@ const save = () => editCommentMutation.mutate()
     <div class="flex items-start justify-between">
       <div class="flex flex-col gap-1 text-sm">
         <div class="font-semibold">
-          {{ comment.expand.author.name }}
+          {{ comment.author }} <!-- TODO -->
         </div>
         <div class="text-xs text-muted-foreground">
           {{ format(new Date(comment.created), 'PPpp') }}

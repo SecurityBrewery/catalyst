@@ -43,7 +43,7 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 }
 
 func (s *Service) CreateComment(ctx context.Context, request openapi.CreateCommentRequestObject) (openapi.CreateCommentResponseObject, error) {
-	_, err := s.Queries.CreateComment(ctx, sqlc.CreateCommentParams{
+	comment, err := s.Queries.CreateComment(ctx, sqlc.CreateCommentParams{
 		Author:  request.Body.Author,
 		Message: request.Body.Message,
 		Ticket:  request.Body.Ticket,
@@ -52,7 +52,14 @@ func (s *Service) CreateComment(ctx context.Context, request openapi.CreateComme
 		return nil, err
 	}
 
-	return openapi.CreateComment201Response{}, nil
+	return openapi.CreateComment200JSONResponse(openapi.Comment{
+		Author:  comment.Author,
+		Created: comment.Created,
+		Id:      comment.ID,
+		Message: comment.Message,
+		Ticket:  comment.Ticket,
+		Updated: comment.Updated,
+	}), nil
 }
 
 func (s *Service) DeleteComment(ctx context.Context, request openapi.DeleteCommentRequestObject) (openapi.DeleteCommentResponseObject, error) {
@@ -135,12 +142,17 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 }
 
 func (s *Service) CreateFeature(ctx context.Context, request openapi.CreateFeatureRequestObject) (openapi.CreateFeatureResponseObject, error) {
-	_, err := s.Queries.CreateFeature(ctx, request.Body.Name)
+	feature, err := s.Queries.CreateFeature(ctx, request.Body.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	return openapi.CreateFeature201Response{}, nil
+	return openapi.CreateFeature200JSONResponse(openapi.Feature{
+		Id:      feature.ID,
+		Name:    feature.Name,
+		Created: feature.Created,
+		Updated: feature.Updated,
+	}), nil
 }
 
 func (s *Service) DeleteFeature(ctx context.Context, request openapi.DeleteFeatureRequestObject) (openapi.DeleteFeatureResponseObject, error) {
@@ -190,7 +202,7 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 }
 
 func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequestObject) (openapi.CreateFileResponseObject, error) {
-	_, err := s.Queries.CreateFile(ctx, sqlc.CreateFileParams{
+	file, err := s.Queries.CreateFile(ctx, sqlc.CreateFileParams{
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
 		Size:   int64(request.Body.Size),
@@ -200,7 +212,12 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 		return nil, err
 	}
 
-	return openapi.CreateFile201Response{}, nil
+	return openapi.CreateFile200JSONResponse(openapi.File{
+		Id:      file.ID,
+		Name:    file.Name,
+		Created: file.Created,
+		Updated: file.Updated,
+	}), nil
 }
 
 func (s *Service) DeleteFile(ctx context.Context, request openapi.DeleteFileRequestObject) (openapi.DeleteFileResponseObject, error) {
@@ -271,7 +288,7 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 }
 
 func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequestObject) (openapi.CreateLinkResponseObject, error) {
-	_, err := s.Queries.CreateLink(ctx, sqlc.CreateLinkParams{
+	link, err := s.Queries.CreateLink(ctx, sqlc.CreateLinkParams{
 		Name:   request.Body.Name,
 		Url:    request.Body.Url,
 		Ticket: request.Body.Ticket,
@@ -280,7 +297,13 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 		return nil, err
 	}
 
-	return openapi.CreateLink201Response{}, nil
+	return openapi.CreateLink200JSONResponse(openapi.Link{
+		Id:      link.ID,
+		Name:    link.Name,
+		Created: link.Created,
+		Updated: link.Updated,
+		Url:     link.Url,
+	}), nil
 }
 
 func (s *Service) DeleteLink(ctx context.Context, request openapi.DeleteLinkRequestObject) (openapi.DeleteLinkResponseObject, error) {
@@ -352,7 +375,7 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 }
 
 func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReactionRequestObject) (openapi.CreateReactionResponseObject, error) {
-	_, err := s.Queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+	reaction, err := s.Queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		Name:    request.Body.Name,
 		Action:  request.Body.Action,
 		Trigger: request.Body.Trigger,
@@ -361,7 +384,13 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 		return nil, err
 	}
 
-	return openapi.CreateReaction201Response{}, nil
+	return openapi.CreateReaction200JSONResponse(openapi.Reaction{
+		Id:      reaction.ID,
+		Name:    reaction.Name,
+		Created: reaction.Created,
+		Updated: reaction.Updated,
+		Action:  reaction.Action,
+	}), nil
 }
 
 func (s *Service) DeleteReaction(ctx context.Context, request openapi.DeleteReactionRequestObject) (openapi.DeleteReactionResponseObject, error) {
@@ -455,7 +484,7 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 }
 
 func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequestObject) (openapi.CreateTaskResponseObject, error) {
-	_, err := s.Queries.CreateTask(ctx, sqlc.CreateTaskParams{
+	task, err := s.Queries.CreateTask(ctx, sqlc.CreateTaskParams{
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -465,7 +494,12 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 		return nil, err
 	}
 
-	return openapi.CreateTask201Response{}, nil
+	return openapi.CreateTask200JSONResponse(openapi.Task{
+		Id:      task.ID,
+		Name:    task.Name,
+		Created: task.Created,
+		Updated: task.Updated,
+	}), nil
 }
 
 func (s *Service) DeleteTask(ctx context.Context, request openapi.DeleteTaskRequestObject) (openapi.DeleteTaskResponseObject, error) {
@@ -562,7 +596,7 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 }
 
 func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicketRequestObject) (openapi.CreateTicketResponseObject, error) {
-	_, err := s.Queries.CreateTicket(ctx, sqlc.CreateTicketParams{
+	ticket, err := s.Queries.CreateTicket(ctx, sqlc.CreateTicketParams{
 		Name:        request.Body.Name,
 		Description: request.Body.Description,
 		Owner:       request.Body.Owner,
@@ -575,7 +609,18 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 		return nil, err
 	}
 
-	return openapi.CreateTicket201Response{}, nil
+	return openapi.CreateTicket200JSONResponse(openapi.Ticket{
+		Id:          ticket.ID,
+		Name:        ticket.Name,
+		Description: ticket.Description,
+		Owner:       ticket.Owner,
+		Created:     ticket.Created,
+		Updated:     ticket.Updated,
+		Open:        ticket.Open,
+		Resolution:  ticket.Resolution,
+		Type:        ticket.Type,
+		// State:       ticket.State, // TODO
+	}), nil
 }
 
 func (s *Service) DeleteTicket(ctx context.Context, request openapi.DeleteTicketRequestObject) (openapi.DeleteTicketResponseObject, error) {
@@ -656,7 +701,7 @@ func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimeline
 }
 
 func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTimelineRequestObject) (openapi.CreateTimelineResponseObject, error) {
-	_, err := s.Queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
+	timeline, err := s.Queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
 		Message: request.Body.Message,
 		Time:    request.Body.Time,
 		Ticket:  request.Body.Ticket,
@@ -665,7 +710,13 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 		return nil, err
 	}
 
-	return openapi.CreateTimeline201Response{}, nil
+	return openapi.CreateTimeline200JSONResponse(openapi.TimelineEntry{
+		Id:      timeline.ID,
+		Message: timeline.Message,
+		Created: timeline.Created,
+		Updated: timeline.Updated,
+		Time:    timeline.Time,
+	}), nil
 }
 
 func (s *Service) DeleteTimeline(ctx context.Context, request openapi.DeleteTimelineRequestObject) (openapi.DeleteTimelineResponseObject, error) {
@@ -734,7 +785,7 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 }
 
 func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequestObject) (openapi.CreateTypeResponseObject, error) {
-	_, err := s.Queries.CreateType(ctx, sqlc.CreateTypeParams{
+	t, err := s.Queries.CreateType(ctx, sqlc.CreateTypeParams{
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
@@ -744,7 +795,14 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 		return nil, err
 	}
 
-	return openapi.CreateType201Response{}, nil
+	return openapi.CreateType200JSONResponse(openapi.Type{
+		Id:       t.ID,
+		Created:  t.Created,
+		Updated:  t.Updated,
+		Icon:     t.Icon,
+		Plural:   t.Plural,
+		Singular: t.Singular,
+	}), nil
 }
 
 func (s *Service) DeleteType(ctx context.Context, request openapi.DeleteTypeRequestObject) (openapi.DeleteTypeResponseObject, error) {
@@ -814,7 +872,7 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 }
 
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
-	_, err := s.Queries.CreateUser(ctx, sqlc.CreateUserParams{
+	user, err := s.Queries.CreateUser(ctx, sqlc.CreateUserParams{
 		Email:    request.Body.Email,
 		Username: request.Body.Username,
 		// TokenKey:     request.Body.TokenKey, // TODO
@@ -825,7 +883,16 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		return nil, err
 	}
 
-	return openapi.CreateUser201Response{}, nil
+	return openapi.CreateUser200JSONResponse(openapi.User{
+		Id:       user.ID,
+		Created:  user.Created,
+		Updated:  user.Updated,
+		Name:     user.Name,
+		Email:    user.Email,
+		Username: user.Username,
+		// TokenKey:     user.TokenKey, // TODO
+		// PasswordHash: user.PasswordHash, // TODO
+	}), nil
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request openapi.DeleteUserRequestObject) (openapi.DeleteUserResponseObject, error) {
@@ -895,7 +962,7 @@ func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooks
 }
 
 func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebhookRequestObject) (openapi.CreateWebhookResponseObject, error) {
-	_, err := s.Queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
+	webhook, err := s.Queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
 		Name:        request.Body.Name,
 		Destination: request.Body.Destination,
 		Collection:  request.Body.Collection,
@@ -904,7 +971,14 @@ func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebho
 		return nil, err
 	}
 
-	return openapi.CreateWebhook201Response{}, nil
+	return openapi.CreateWebhook200JSONResponse(openapi.Webhook{
+		Id:          webhook.ID,
+		Name:        webhook.Name,
+		Created:     webhook.Created,
+		Updated:     webhook.Updated,
+		Destination: webhook.Destination,
+		Collection:  webhook.Collection,
+	}), nil
 }
 
 func (s *Service) DeleteWebhook(ctx context.Context, request openapi.DeleteWebhookRequestObject) (openapi.DeleteWebhookResponseObject, error) {

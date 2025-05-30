@@ -15,7 +15,7 @@ import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
 import { api } from '@/api'
-import type { User } from '@/client/models/User'
+import type { User } from '@/client/models'
 import { cn } from '@/lib/utils'
 
 const user = defineModel<User>()

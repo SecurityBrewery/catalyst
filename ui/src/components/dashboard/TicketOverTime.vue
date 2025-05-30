@@ -7,7 +7,7 @@ import { getWeek } from 'date-fns'
 import { computed } from 'vue'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models/Ticket'
+import type { Ticket } from '@/client/models'
 
 const {
   isPending,

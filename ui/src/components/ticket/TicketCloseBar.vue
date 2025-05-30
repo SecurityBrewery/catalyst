@@ -24,7 +24,7 @@ const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    api.updateTicket({ id: props.ticket.id, ticket: { open: !props.ticket.open, resolution: resolution.value } }),
+    api.updateTicket({ id: props.ticket.id, ticketUpdate: { open: !props.ticket.open, resolution: resolution.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     router.push({ name: 'tickets', params: { type: props.ticket.type } })

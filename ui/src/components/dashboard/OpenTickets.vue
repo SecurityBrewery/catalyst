@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models/Ticket'
+import type { Ticket } from '@/client/models'
 import { cn } from '@/lib/utils'
 
 const {
