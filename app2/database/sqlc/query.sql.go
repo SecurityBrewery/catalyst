@@ -147,11 +147,11 @@ RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updat
 `
 
 type CreateReactionParams struct {
-	Name        string      `json:"name"`
-	Action      string      `json:"action"`
-	Actiondata  interface{} `json:"actiondata"`
-	Trigger     string      `json:"trigger"`
-	Triggerdata interface{} `json:"triggerdata"`
+	Name        string `json:"name"`
+	Action      string `json:"action"`
+	Actiondata  string `json:"actiondata"`
+	Trigger     string `json:"trigger"`
+	Triggerdata string `json:"triggerdata"`
 }
 
 // ----------------------------------------------------------------
@@ -219,14 +219,14 @@ RETURNING created, description, id, name, open, owner, resolution, schema, state
 `
 
 type CreateTicketParams struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Open        bool        `json:"open"`
-	Owner       string      `json:"owner"`
-	Resolution  string      `json:"resolution"`
-	Schema      interface{} `json:"schema"`
-	State       interface{} `json:"state"`
-	Type        string      `json:"type"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Open        bool   `json:"open"`
+	Owner       string `json:"owner"`
+	Resolution  string `json:"resolution"`
+	Schema      string `json:"schema"`
+	State       string `json:"state"`
+	Type        string `json:"type"`
 }
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
@@ -293,10 +293,10 @@ RETURNING created, icon, id, plural, schema, singular, updated
 `
 
 type CreateTypeParams struct {
-	Singular string      `json:"singular"`
-	Plural   string      `json:"plural"`
-	Icon     string      `json:"icon"`
-	Schema   interface{} `json:"schema"`
+	Singular string `json:"singular"`
+	Plural   string `json:"plural"`
+	Icon     string `json:"icon"`
+	Schema   string `json:"schema"`
 }
 
 // ----------------------------------------------------------------
@@ -322,17 +322,20 @@ func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) (Type, e
 
 const createUser = `-- name: CreateUser :one
 
-INSERT INTO users (name, email, username, passwordHash, tokenKey)
-VALUES (?1, ?2, ?3, ?4, ?5)
+INSERT INTO users (name, email, emailVisibility, username, passwordHash, tokenKey, avatar, verified)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
 RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type CreateUserParams struct {
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	Username     string `json:"username"`
-	PasswordHash string `json:"passwordHash"`
-	TokenKey     string `json:"tokenKey"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	EmailVisibility bool   `json:"emailVisibility"`
+	Username        string `json:"username"`
+	PasswordHash    string `json:"passwordHash"`
+	TokenKey        string `json:"tokenKey"`
+	Avatar          string `json:"avatar"`
+	Verified        bool   `json:"verified"`
 }
 
 // ----------------------------------------------------------------
@@ -340,9 +343,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Name,
 		arg.Email,
+		arg.EmailVisibility,
 		arg.Username,
 		arg.PasswordHash,
 		arg.TokenKey,
+		arg.Avatar,
+		arg.Verified,
 	)
 	var i User
 	err := row.Scan(
@@ -542,7 +548,7 @@ func (q *Queries) FindSession(ctx context.Context, token string) (Session, error
 const getComment = `-- name: GetComment :one
 SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
 FROM comments
-LEFT JOIN users ON users.id = comments.author
+         LEFT JOIN users ON users.id = comments.author
 WHERE comments.id = ?1
 `
 
@@ -719,8 +725,8 @@ func (q *Queries) GetSidebar(ctx context.Context) ([]Sidebar, error) {
 const getTask = `-- name: GetTask :one
 SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
-LEFT JOIN users ON users.id = tasks.owner
-LEFT JOIN tickets ON tickets.id = tasks.ticket
+         LEFT JOIN users ON users.id = tasks.owner
+         LEFT JOIN tickets ON tickets.id = tasks.ticket
 WHERE tasks.id = ?1
 `
 
@@ -847,8 +853,9 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 const listComments = `-- name: ListComments :many
 SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
 FROM comments
-LEFT JOIN users ON users.id = comments.author
-WHERE ticket = ?1 OR ?1 = ''
+         LEFT JOIN users ON users.id = comments.author
+WHERE ticket = ?1
+   OR ?1 = ''
 ORDER BY comments.created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -937,7 +944,8 @@ func (q *Queries) ListFeatures(ctx context.Context) ([]Feature, error) {
 const listFiles = `-- name: ListFiles :many
 SELECT blob, created, id, name, size, ticket, updated
 FROM files
-WHERE ticket = ?1 OR ?1 = ''
+WHERE ticket = ?1
+   OR ?1 = ''
 ORDER BY files.created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -982,7 +990,8 @@ func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]File, e
 const listLinks = `-- name: ListLinks :many
 SELECT created, id, name, ticket, updated, url
 FROM links
-WHERE ticket = ?1 OR ?1 = ''
+WHERE ticket = ?1
+   OR ?1 = ''
 ORDER BY links.created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -1068,15 +1077,14 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 }
 
 const listSearchTickets = `-- name: ListSearchTickets :many
-SELECT 
-    id, 
-    name, 
-    created,
-    description,
-    open,
-    type,
-    state,
-    owner_name
+SELECT id,
+       name,
+       created,
+       description,
+       open,
+       type,
+       state,
+       owner_name
 FROM ticket_search
 LIMIT ?2 OFFSET ?1
 `
@@ -1093,7 +1101,7 @@ type ListSearchTicketsRow struct {
 	Description string         `json:"description"`
 	Open        bool           `json:"open"`
 	Type        string         `json:"type"`
-	State       interface{}    `json:"state"`
+	State       string         `json:"state"`
 	OwnerName   sql.NullString `json:"owner_name"`
 }
 
@@ -1132,9 +1140,10 @@ func (q *Queries) ListSearchTickets(ctx context.Context, arg ListSearchTicketsPa
 const listTasks = `-- name: ListTasks :many
 SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
-LEFT JOIN users ON users.id = tasks.owner
-LEFT JOIN tickets ON tickets.id = tasks.ticket
-WHERE ticket = ?1 OR ?1 = ''
+         LEFT JOIN users ON users.id = tasks.owner
+         LEFT JOIN tickets ON tickets.id = tasks.ticket
+WHERE ticket = ?1
+   OR ?1 = ''
 ORDER BY tasks.created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -1195,8 +1204,8 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTas
 const listTickets = `-- name: ListTickets :many
 SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-LEFT JOIN users ON users.id = tickets.owner
-LEFT JOIN types ON types.id = tickets.type
+         LEFT JOIN users ON users.id = tickets.owner
+         LEFT JOIN types ON types.id = tickets.type
 ORDER BY tickets.created DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -1214,8 +1223,8 @@ type ListTicketsRow struct {
 	Open         bool           `json:"open"`
 	Owner        string         `json:"owner"`
 	Resolution   string         `json:"resolution"`
-	Schema       interface{}    `json:"schema"`
-	State        interface{}    `json:"state"`
+	Schema       string         `json:"schema"`
+	State        string         `json:"state"`
 	Type         string         `json:"type"`
 	Updated      string         `json:"updated"`
 	OwnerName    sql.NullString `json:"owner_name"`
@@ -1264,7 +1273,8 @@ func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Lis
 const listTimeline = `-- name: ListTimeline :many
 SELECT created, id, message, ticket, time, updated
 FROM timeline
-WHERE ticket = ?1 OR ?1 = ''
+WHERE ticket = ?1
+   OR ?1 = ''
 ORDER BY timeline.created DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -1435,15 +1445,14 @@ func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]W
 }
 
 const searchTickets = `-- name: SearchTickets :many
-SELECT 
-    id, 
-    name, 
-    created,
-    description,
-    open,
-    type,
-    state,
-    owner_name
+SELECT id,
+       name,
+       created,
+       description,
+       open,
+       type,
+       state,
+       owner_name
 FROM ticket_search
 WHERE name LIKE '%' || ?1 || '%'
    OR description LIKE '%' || ?1 || '%'
@@ -1469,7 +1478,7 @@ type SearchTicketsRow struct {
 	Description string         `json:"description"`
 	Open        bool           `json:"open"`
 	Type        string         `json:"type"`
-	State       interface{}    `json:"state"`
+	State       string         `json:"state"`
 	OwnerName   sql.NullString `json:"owner_name"`
 }
 
@@ -1508,8 +1517,8 @@ func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([
 const ticket = `-- name: Ticket :one
 SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
-LEFT JOIN users ON users.id = tickets.owner
-LEFT JOIN types ON types.id = tickets.type
+         LEFT JOIN users ON users.id = tickets.owner
+         LEFT JOIN types ON types.id = tickets.type
 WHERE tickets.id = ?1
 `
 
@@ -1521,8 +1530,8 @@ type TicketRow struct {
 	Open         bool           `json:"open"`
 	Owner        string         `json:"owner"`
 	Resolution   string         `json:"resolution"`
-	Schema       interface{}    `json:"schema"`
-	State        interface{}    `json:"state"`
+	Schema       string         `json:"schema"`
+	State        string         `json:"state"`
 	Type         string         `json:"type"`
 	Updated      string         `json:"updated"`
 	OwnerName    sql.NullString `json:"owner_name"`
@@ -1604,9 +1613,8 @@ func (q *Queries) UpdateFeature(ctx context.Context, arg UpdateFeatureParams) (F
 
 const updateFile = `-- name: UpdateFile :one
 UPDATE files
-SET 
-    name = coalesce(?1, name), 
-    blob = coalesce(?2, blob), 
+SET name = coalesce(?1, name),
+    blob = coalesce(?2, blob),
     size = coalesce(?3, size)
 WHERE id = ?4
 RETURNING blob, created, id, name, size, ticket, updated
@@ -1641,9 +1649,8 @@ func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, e
 
 const updateLink = `-- name: UpdateLink :one
 UPDATE links
-SET 
-    name = coalesce(?1, name), 
-    url = coalesce(?2, url)
+SET name = coalesce(?1, name),
+    url  = coalesce(?2, url)
 WHERE id = ?3
 RETURNING created, id, name, ticket, updated, url
 `
@@ -1670,11 +1677,10 @@ func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) (Link, e
 
 const updateReaction = `-- name: UpdateReaction :one
 UPDATE reactions
-SET 
-    name = coalesce(?1, name), 
-    action = coalesce(?2, action), 
-    actiondata = coalesce(?3, actiondata), 
-    trigger = coalesce(?4, trigger), 
+SET name        = coalesce(?1, name),
+    action      = coalesce(?2, action),
+    actiondata  = coalesce(?3, actiondata),
+    trigger     = coalesce(?4, trigger),
     triggerdata = coalesce(?5, triggerdata)
 WHERE id = ?6
 RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updated
@@ -1683,9 +1689,9 @@ RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updat
 type UpdateReactionParams struct {
 	Name        sql.NullString `json:"name"`
 	Action      sql.NullString `json:"action"`
-	Actiondata  interface{}    `json:"actiondata"`
+	Actiondata  string         `json:"actiondata"`
 	Trigger     sql.NullString `json:"trigger"`
-	Triggerdata interface{}    `json:"triggerdata"`
+	Triggerdata string         `json:"triggerdata"`
 	ID          string         `json:"id"`
 }
 
@@ -1714,9 +1720,8 @@ func (q *Queries) UpdateReaction(ctx context.Context, arg UpdateReactionParams) 
 
 const updateTask = `-- name: UpdateTask :one
 UPDATE tasks
-SET 
-    name = coalesce(?1, name), 
-    open = coalesce(?2, open), 
+SET name  = coalesce(?1, name),
+    open  = coalesce(?2, open),
     owner = coalesce(?3, owner)
 WHERE id = ?4
 RETURNING created, id, name, open, owner, ticket, updated
@@ -1751,14 +1756,14 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 
 const updateTicket = `-- name: UpdateTicket :one
 UPDATE tickets
-SET name = coalesce(?1, name),
+SET name        = coalesce(?1, name),
     description = coalesce(?2, description),
-    open = coalesce(?3, open),
-    owner = coalesce(?4, owner),
-    resolution = coalesce(?5, resolution),
-    schema = coalesce(?6, schema),
-    state = coalesce(?7, state),
-    type = coalesce(?8, type)
+    open        = coalesce(?3, open),
+    owner       = coalesce(?4, owner),
+    resolution  = coalesce(?5, resolution),
+    schema      = coalesce(?6, schema),
+    state       = coalesce(?7, state),
+    type        = coalesce(?8, type)
 WHERE id = ?9
 RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
 `
@@ -1769,8 +1774,8 @@ type UpdateTicketParams struct {
 	Open        sql.NullBool   `json:"open"`
 	Owner       sql.NullString `json:"owner"`
 	Resolution  sql.NullString `json:"resolution"`
-	Schema      interface{}    `json:"schema"`
-	State       interface{}    `json:"state"`
+	Schema      string         `json:"schema"`
+	State       string         `json:"state"`
 	Type        sql.NullString `json:"type"`
 	ID          string         `json:"id"`
 }
@@ -1806,9 +1811,8 @@ func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (Tic
 
 const updateTimeline = `-- name: UpdateTimeline :one
 UPDATE timeline
-SET 
-    message = coalesce(?1, message), 
-    time = coalesce(?2, time)
+SET message = coalesce(?1, message),
+    time    = coalesce(?2, time)
 WHERE id = ?3
 RETURNING created, id, message, ticket, time, updated
 `
@@ -1835,11 +1839,10 @@ func (q *Queries) UpdateTimeline(ctx context.Context, arg UpdateTimelineParams) 
 
 const updateType = `-- name: UpdateType :one
 UPDATE types
-SET 
-    singular = coalesce(?1, singular), 
-    plural = coalesce(?2, plural), 
-    icon = coalesce(?3, icon), 
-    schema = coalesce(?4, schema)
+SET singular = coalesce(?1, singular),
+    plural   = coalesce(?2, plural),
+    icon     = coalesce(?3, icon),
+    schema   = coalesce(?4, schema)
 WHERE id = ?5
 RETURNING created, icon, id, plural, schema, singular, updated
 `
@@ -1848,7 +1851,7 @@ type UpdateTypeParams struct {
 	Singular sql.NullString `json:"singular"`
 	Plural   sql.NullString `json:"plural"`
 	Icon     sql.NullString `json:"icon"`
-	Schema   interface{}    `json:"schema"`
+	Schema   string         `json:"schema"`
 	ID       string         `json:"id"`
 }
 
@@ -1875,32 +1878,40 @@ func (q *Queries) UpdateType(ctx context.Context, arg UpdateTypeParams) (Type, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET 
-    name = coalesce(?1, name), 
-    email = coalesce(?2, email), 
-    username = coalesce(?3, username), 
-    passwordHash = coalesce(?4, passwordHash), 
-    tokenKey = coalesce(?5, tokenKey)
-WHERE id = ?6
+SET name                   = coalesce(?1, name),
+    email                  = coalesce(?2, email),
+    emailVisibility        = coalesce(?3, emailVisibility),
+    username               = coalesce(?4, username),
+    passwordHash           = coalesce(?5, passwordHash),
+    tokenKey               = coalesce(?6, tokenKey),
+    avatar                 = coalesce(?7, avatar),
+    verified               = coalesce(?8, verified)
+WHERE id = ?9
 RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type UpdateUserParams struct {
-	Name         sql.NullString `json:"name"`
-	Email        sql.NullString `json:"email"`
-	Username     sql.NullString `json:"username"`
-	PasswordHash sql.NullString `json:"passwordHash"`
-	TokenKey     sql.NullString `json:"tokenKey"`
-	ID           string         `json:"id"`
+	Name            sql.NullString `json:"name"`
+	Email           sql.NullString `json:"email"`
+	EmailVisibility sql.NullBool   `json:"emailVisibility"`
+	Username        sql.NullString `json:"username"`
+	PasswordHash    sql.NullString `json:"passwordHash"`
+	TokenKey        sql.NullString `json:"tokenKey"`
+	Avatar          sql.NullString `json:"avatar"`
+	Verified        sql.NullBool   `json:"verified"`
+	ID              string         `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.Name,
 		arg.Email,
+		arg.EmailVisibility,
 		arg.Username,
 		arg.PasswordHash,
 		arg.TokenKey,
+		arg.Avatar,
+		arg.Verified,
 		arg.ID,
 	)
 	var i User
@@ -1925,9 +1936,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 
 const updateWebhook = `-- name: UpdateWebhook :one
 UPDATE webhooks
-SET 
-    name = coalesce(?1, name), 
-    collection = coalesce(?2, collection), 
+SET name        = coalesce(?1, name),
+    collection  = coalesce(?2, collection),
     destination = coalesce(?3, destination)
 WHERE id = ?4
 RETURNING collection, created, destination, id, name, updated
@@ -1955,6 +1965,62 @@ func (q *Queries) UpdateWebhook(ctx context.Context, arg UpdateWebhookParams) (W
 		&i.ID,
 		&i.Name,
 		&i.Updated,
+	)
+	return i, err
+}
+
+const userByEmail = `-- name: UserByEmail :one
+SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+FROM users
+WHERE email = ?1
+`
+
+func (q *Queries) UserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, userByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.Avatar,
+		&i.Created,
+		&i.Email,
+		&i.Emailvisibility,
+		&i.ID,
+		&i.Lastloginalertsentat,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Name,
+		&i.Passwordhash,
+		&i.Tokenkey,
+		&i.Updated,
+		&i.Username,
+		&i.Verified,
+	)
+	return i, err
+}
+
+const userByUserName = `-- name: UserByUserName :one
+SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+FROM users
+WHERE username = ?1
+`
+
+func (q *Queries) UserByUserName(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, userByUserName, username)
+	var i User
+	err := row.Scan(
+		&i.Avatar,
+		&i.Created,
+		&i.Email,
+		&i.Emailvisibility,
+		&i.ID,
+		&i.Lastloginalertsentat,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Name,
+		&i.Passwordhash,
+		&i.Tokenkey,
+		&i.Updated,
+		&i.Username,
+		&i.Verified,
 	)
 	return i, err
 }

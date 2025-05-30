@@ -8,3 +8,25 @@ sql:
         package: "sqlc"
         out: "sqlc"
         emit_json_tags: true
+        overrides:
+          - column: "tickets.schema"
+            go_type:
+              type: "string"
+          - column: "tickets.state"
+            go_type:
+              type: "string"
+          - column: "ticket_search.schema"
+            go_type:
+              type: "string"
+          - column: "ticket_search.state"
+            go_type:
+              type: "string"
+          - column: "types.schema"
+            go_type:
+              type: "string"
+          - column: "reactions.actiondata"
+            go_type:
+              type: "string"
+          - column: "reactions.triggerdata"
+            go_type:
+              type: "string"

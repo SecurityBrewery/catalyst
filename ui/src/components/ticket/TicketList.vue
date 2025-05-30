@@ -22,7 +22,7 @@ import { LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api } from '@/api'
@@ -39,49 +39,6 @@ const props = defineProps<{
 const searchValue = ref('')
 const tab = ref('open')
 
-const filter = computed(() => {
-  let raw = ''
-  const params: Record<string, string> = {}
-
-  if (searchValue.value && searchValue.value !== '') {
-    let raws: Array<string> = [
-      'name ~ {:search}',
-      'description ~ {:search}',
-      'owner_name ~ {:search}',
-      'comment_messages ~ {:search}',
-      'file_names ~ {:search}',
-      'link_names ~ {:search}',
-      'link_urls ~ {:search}',
-      'task_names ~ {:search}',
-      'timeline_messages ~ {:search}'
-    ]
-
-    Object.keys(props.selectedType.schema.properties).forEach((key) => {
-      const property = props.selectedType.schema.properties[key]
-      if (property.type === 'bool') return
-      raws.push(`state.${key} ~ {:search}`)
-    })
-    raw += '(' + raws.join(' || ') + `)`
-    params['search'] = searchValue.value
-  }
-
-  if (tab.value === 'open') {
-    if (raw !== '') raw += ' && '
-    raw += 'open = true'
-  } else if (tab.value === 'closed') {
-    if (raw !== '') raw += ' && '
-    raw += 'open = false'
-  }
-
-  if (raw !== '') raw += ' && '
-  raw += 'type = {:type}'
-  params['type'] = props.selectedType.id
-
-  if (raw === '') return ''
-
-  return 'pb.filter(raw, params)' // TODO
-})
-
 const page = ref(1)
 const perPage = ref(10)
 
@@ -92,7 +49,7 @@ const {
   error,
   refetch
 } = useQuery({
-  queryKey: ['tickets', filter.value],
+  queryKey: ['tickets', searchValue.value],
   queryFn: (): Promise<Array<TicketSearch>> =>
     api.searchTickets({
       query: searchValue.value,
@@ -164,18 +121,19 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
     <div class="my-2 flex items-center justify-center">
       <span class="text-xs text-muted-foreground">
         {{ ticketItems ? ticketItems.length : '?' }} of
-        {{ ticketItems ? ticketItems.length : '?' }} tickets <!-- TODO ticketItems ? ticketItems.totalItems : '?' -->
+        {{ ticketItems ? ticketItems.length : '?' }} tickets
+        <!-- TODO ticketItems ? ticketItems.totalItems : '?' -->
       </span>
     </div>
     <div class="mb-2 flex items-center justify-center">
       <Pagination
         v-slot="{ page }"
-        :total="ticketItems ? ticketItems.length : 0" 
+        :total="ticketItems ? ticketItems.length : 0"
         :itemsPerPage="perPage"
         :sibling-count="0"
         :default-page="1"
         @update:page="page = $event"
-      ><!-- TODO ticketItems ? ticketItems.totalItems : 0 -->
+        ><!-- TODO ticketItems ? ticketItems.totalItems : 0 -->
         <PaginationList v-slot="{ items }" class="flex items-center gap-1">
           <PaginationFirst />
           <PaginationPrev />

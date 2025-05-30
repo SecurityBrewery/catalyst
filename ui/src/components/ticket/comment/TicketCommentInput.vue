@@ -9,8 +9,11 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 import { api } from '@/api'
-import type { Ticket } from '@/client/models'
+import type { Comment, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const authStore = useAuthStore()
 
 const props = defineProps<{
   ticket: Ticket
@@ -23,11 +26,13 @@ const isOpen = ref(false)
 
 const addCommentMutation = useMutation({
   mutationFn: (): Promise<Comment> => {
-    // if (!pb.authStore.model) return Promise.reject('Not authenticated') // TODO
+    if (!authStore.user) return Promise.reject('Not authenticated')
     return api.createComment({
-      ticket: props.ticket.id,
-      author: '', // pb.authStore.model.id, // TODO // TODO
-      message: message.value
+      newComment: {
+        ticket: props.ticket.id,
+        author: authStore.user.id,
+        message: message.value
+      }
     })
   },
   onSuccess: () => {

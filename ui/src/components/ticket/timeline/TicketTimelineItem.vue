@@ -47,7 +47,7 @@ const updateTimelineMutation = useMutation({
     api.updateTimeline({
       id: props.timelineItem.id,
       timelineEntryUpdate: {
-        time: update.time?.toISOString(), // TODO
+        time: update.time?.toISOString(),
         message: update.message
       }
     }),

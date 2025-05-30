@@ -91,11 +91,7 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
               Unassigned
             </Button>
           </UserSelect>
-          <UserSelect
-            v-else
-            :modelValue="task.owner"
-            @update:modelValue="update(task.id, $event)"
-          >
+          <UserSelect v-else :modelValue="task.owner" @update:modelValue="update(task.id, $event)">
             <Button variant="outline" role="combobox" class="mr-2 h-8">
               <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
               {{ task.ownerName }}

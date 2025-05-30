@@ -65,7 +65,7 @@ const closeTicketMutation = useMutation({
 
 const ticketType = computed(() => types.value?.find((t) => t.id === props.ticket.type))
 
-const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type)) // TODO
+const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type))
 
 const closeTicketDialogOpen = ref(false)
 </script>

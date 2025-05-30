@@ -22,9 +22,12 @@ import { useRouter } from 'vue-router'
 import { api } from '@/api'
 import type { Ticket, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 const queryClient = useQueryClient()
 const router = useRouter()
+
+const authStore = useAuthStore()
 
 const props = defineProps<{
   selectedType: Type
@@ -34,7 +37,7 @@ const isOpen = ref(false)
 
 const addTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> => {
-    // if (!pb.authStore.model) return Promise.reject('Not logged in') // TODO
+    if (!authStore.user) return Promise.reject('Not logged in')
 
     return api.createTicket({
       newTicket: {
@@ -44,7 +47,7 @@ const addTicketMutation = useMutation({
         type: props.selectedType.id,
         schema: props.selectedType.schema,
         state: state.value,
-        owner: '', // TODO
+        owner: authStore.user.id,
         resolution: ''
       }
     })

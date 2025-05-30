@@ -11,6 +11,9 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { api } from '@/api'
 import type { Type } from '@/client/models'
+import { useAuthStore } from '@/store/auth'
+
+const authStore = useAuthStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -37,9 +40,9 @@ watch(
 )
 
 onMounted(() => {
-  /* if (!pb.authStore.model) {
-    // router.push({ name: 'login' }) // TODO
-  } */
+  if (!authStore.user) {
+    router.push({ name: 'login' })
+  }
 })
 </script>
 

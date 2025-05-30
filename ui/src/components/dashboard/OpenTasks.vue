@@ -9,8 +9,11 @@ import { ChevronRight } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 
 import { api } from '@/api'
-import type { Task } from '@/client/models'
+import type { ExtendedTask } from '@/client/models'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const authStore = useAuthStore()
 
 const {
   isPending,
@@ -19,8 +22,10 @@ const {
   error
 } = useQuery({
   queryKey: ['tasks'],
-  queryFn: (): Promise<Array<Task>> => {
-    return api.listTasks().then((tasks) => tasks.filter((task) => task.open)) // TODO: filter by owner
+  queryFn: (): Promise<Array<ExtendedTask>> => {
+    return api
+      .listTasks()
+      .then((tasks) => tasks.filter((task) => task.open && task.owner === authStore.user?.id))
   }
 })
 </script>
@@ -37,7 +42,7 @@ const {
           <RouterLink
             :to="{
               name: 'tickets',
-              params: { type: 'alert', id: task.ticket } // TODO: type
+              params: { type: task.ticketType, id: task.ticket }
             }"
             :class="
               cn(

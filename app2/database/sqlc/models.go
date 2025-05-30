@@ -49,14 +49,14 @@ type Link struct {
 }
 
 type Reaction struct {
-	Action      string      `json:"action"`
-	Actiondata  interface{} `json:"actiondata"`
-	Created     string      `json:"created"`
-	ID          string      `json:"id"`
-	Name        string      `json:"name"`
-	Trigger     string      `json:"trigger"`
-	Triggerdata interface{} `json:"triggerdata"`
-	Updated     string      `json:"updated"`
+	Action      string `json:"action"`
+	Actiondata  string `json:"actiondata"`
+	Created     string `json:"created"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Trigger     string `json:"trigger"`
+	Triggerdata string `json:"triggerdata"`
+	Updated     string `json:"updated"`
 }
 
 type Session struct {
@@ -84,17 +84,17 @@ type Task struct {
 }
 
 type Ticket struct {
-	Created     string      `json:"created"`
-	Description string      `json:"description"`
-	ID          string      `json:"id"`
-	Name        string      `json:"name"`
-	Open        bool        `json:"open"`
-	Owner       string      `json:"owner"`
-	Resolution  string      `json:"resolution"`
-	Schema      interface{} `json:"schema"`
-	State       interface{} `json:"state"`
-	Type        string      `json:"type"`
-	Updated     string      `json:"updated"`
+	Created     string `json:"created"`
+	Description string `json:"description"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Open        bool   `json:"open"`
+	Owner       string `json:"owner"`
+	Resolution  string `json:"resolution"`
+	Schema      string `json:"schema"`
+	State       string `json:"state"`
+	Type        string `json:"type"`
+	Updated     string `json:"updated"`
 }
 
 type TicketSearch struct {
@@ -104,7 +104,7 @@ type TicketSearch struct {
 	Description      string         `json:"description"`
 	Open             bool           `json:"open"`
 	Type             string         `json:"type"`
-	State            interface{}    `json:"state"`
+	State            string         `json:"state"`
 	OwnerName        sql.NullString `json:"owner_name"`
 	CommentMessages  string         `json:"comment_messages"`
 	FileNames        string         `json:"file_names"`
@@ -124,13 +124,13 @@ type Timeline struct {
 }
 
 type Type struct {
-	Created  string      `json:"created"`
-	Icon     string      `json:"icon"`
-	ID       string      `json:"id"`
-	Plural   string      `json:"plural"`
-	Schema   interface{} `json:"schema"`
-	Singular string      `json:"singular"`
-	Updated  string      `json:"updated"`
+	Created  string `json:"created"`
+	Icon     string `json:"icon"`
+	ID       string `json:"id"`
+	Plural   string `json:"plural"`
+	Schema   string `json:"schema"`
+	Singular string `json:"singular"`
+	Updated  string `json:"updated"`
 }
 
 type User struct {

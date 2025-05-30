@@ -31,7 +31,7 @@ interface JSONSchema {
 const model = defineModel<Record<string, any>>()
 
 const props = defineProps<{
-  schema: JSONSchema | undefined | null // TODO
+  schema: JSONSchema
 }>()
 
 const formdata = ref<Record<string, any>>({})

@@ -3,6 +3,11 @@ package app2
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app2/openapi"
@@ -79,12 +84,13 @@ func (s *Service) GetComment(ctx context.Context, request openapi.GetCommentRequ
 	}
 
 	return openapi.GetComment200JSONResponse{
-		Author:  comment.Author,
-		Created: comment.Created,
-		Id:      comment.ID,
-		Message: comment.Message,
-		Ticket:  comment.Ticket,
-		Updated: comment.Updated,
+		Author:     comment.Author,
+		AuthorName: comment.AuthorName.String,
+		Created:    comment.Created,
+		Id:         comment.ID,
+		Message:    comment.Message,
+		Ticket:     comment.Ticket,
+		Updated:    comment.Updated,
 	}, nil
 }
 
@@ -98,11 +104,12 @@ func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateComme
 	}
 
 	return openapi.UpdateComment200JSONResponse{
-		Id:      comment.ID,
 		Author:  comment.Author,
 		Created: comment.Created,
-		Updated: comment.Updated,
+		Id:      comment.ID,
 		Message: comment.Message,
+		Ticket:  comment.Ticket,
+		Updated: comment.Updated,
 	}, nil
 }
 
@@ -192,9 +199,12 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 	var response []openapi.File
 	for _, file := range files {
 		response = append(response, openapi.File{
+			Blob:    file.Blob,
+			Created: file.Created,
 			Id:      file.ID,
 			Name:    file.Name,
-			Created: file.Created,
+			Size:    file.Size,
+			Ticket:  file.Ticket,
 			Updated: file.Updated,
 		})
 	}
@@ -214,9 +224,12 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	}
 
 	return openapi.CreateFile200JSONResponse(openapi.File{
+		Blob:    file.Blob,
+		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
-		Created: file.Created,
+		Size:    file.Size,
+		Ticket:  file.Ticket,
 		Updated: file.Updated,
 	}), nil
 }
@@ -237,9 +250,12 @@ func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObj
 	}
 
 	return openapi.GetFile200JSONResponse{
+		Blob:    file.Blob,
+		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
-		Created: file.Created,
+		Size:    file.Size,
+		Ticket:  file.Ticket,
 		Updated: file.Updated,
 	}, nil
 }
@@ -256,9 +272,12 @@ func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequ
 	}
 
 	return openapi.UpdateFile200JSONResponse{
+		Blob:    file.Blob,
+		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
-		Created: file.Created,
+		Size:    file.Size,
+		Ticket:  file.Ticket,
 		Updated: file.Updated,
 	}, nil
 }
@@ -299,9 +318,10 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 	}
 
 	return openapi.CreateLink200JSONResponse(openapi.Link{
+		Created: link.Created,
 		Id:      link.ID,
 		Name:    link.Name,
-		Created: link.Created,
+		Ticket:  link.Ticket,
 		Updated: link.Updated,
 		Url:     link.Url,
 	}), nil
@@ -343,9 +363,10 @@ func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequ
 	}
 
 	return openapi.UpdateLink200JSONResponse{
+		Created: link.Created,
 		Id:      link.ID,
 		Name:    link.Name,
-		Created: link.Created,
+		Ticket:  link.Ticket,
 		Updated: link.Updated,
 		Url:     link.Url,
 	}, nil
@@ -363,12 +384,14 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 	var response []openapi.Reaction
 	for _, reaction := range reactions {
 		response = append(response, openapi.Reaction{
-			Id:      reaction.ID,
-			Name:    reaction.Name,
-			Created: reaction.Created,
-			Updated: reaction.Updated,
-			Action:  reaction.Action,
-			Trigger: reaction.Trigger,
+			Action:      reaction.Action,
+			Actiondata:  unmarshal(reaction.Actiondata),
+			Created:     reaction.Created,
+			Id:          reaction.ID,
+			Name:        reaction.Name,
+			Trigger:     reaction.Trigger,
+			Triggerdata: unmarshal(reaction.Triggerdata),
+			Updated:     reaction.Updated,
 		})
 	}
 
@@ -386,11 +409,14 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 	}
 
 	return openapi.CreateReaction200JSONResponse(openapi.Reaction{
-		Id:      reaction.ID,
-		Name:    reaction.Name,
-		Created: reaction.Created,
-		Updated: reaction.Updated,
-		Action:  reaction.Action,
+		Action:      reaction.Action,
+		Actiondata:  unmarshal(reaction.Actiondata),
+		Created:     reaction.Created,
+		Id:          reaction.ID,
+		Name:        reaction.Name,
+		Trigger:     reaction.Trigger,
+		Triggerdata: unmarshal(reaction.Triggerdata),
+		Updated:     reaction.Updated,
 	}), nil
 }
 
@@ -410,12 +436,14 @@ func (s *Service) GetReaction(ctx context.Context, request openapi.GetReactionRe
 	}
 
 	return openapi.GetReaction200JSONResponse{
-		Id:      reaction.ID,
-		Name:    reaction.Name,
-		Created: reaction.Created,
-		Updated: reaction.Updated,
-		Action:  reaction.Action,
-		Trigger: reaction.Trigger,
+		Action:      reaction.Action,
+		Actiondata:  unmarshal(reaction.Actiondata),
+		Created:     reaction.Created,
+		Id:          reaction.ID,
+		Name:        reaction.Name,
+		Trigger:     reaction.Trigger,
+		Triggerdata: unmarshal(reaction.Triggerdata),
+		Updated:     reaction.Updated,
 	}, nil
 }
 
@@ -431,11 +459,14 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 	}
 
 	return openapi.UpdateReaction200JSONResponse{
-		Id:      reaction.ID,
-		Name:    reaction.Name,
-		Created: reaction.Created,
-		Updated: reaction.Updated,
-		Action:  reaction.Action,
+		Action:      reaction.Action,
+		Actiondata:  unmarshal(reaction.Actiondata),
+		Created:     reaction.Created,
+		Id:          reaction.ID,
+		Name:        reaction.Name,
+		Trigger:     reaction.Trigger,
+		Triggerdata: unmarshal(reaction.Triggerdata),
+		Updated:     reaction.Updated,
 	}, nil
 }
 
@@ -499,9 +530,12 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	}
 
 	return openapi.CreateTask200JSONResponse(openapi.Task{
+		Created: task.Created,
 		Id:      task.ID,
 		Name:    task.Name,
-		Created: task.Created,
+		Open:    task.Open,
+		Owner:   task.Owner,
+		Ticket:  task.Ticket,
 		Updated: task.Updated,
 	}), nil
 }
@@ -547,11 +581,13 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 	}
 
 	return openapi.UpdateTask200JSONResponse{
+		Created: task.Created,
 		Id:      task.ID,
 		Name:    task.Name,
-		Created: task.Created,
-		Updated: task.Updated,
 		Open:    task.Open,
+		Owner:   task.Owner,
+		Ticket:  task.Ticket,
+		Updated: task.Updated,
 	}, nil
 }
 
@@ -569,13 +605,14 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 
 		for _, ticket := range tickets {
 			response = append(response, openapi.TicketSearch{
-				Id:          ticket.ID,
-				Name:        ticket.Name,
 				Created:     ticket.Created,
 				Description: ticket.Description,
+				Id:          ticket.ID,
+				Name:        ticket.Name,
 				Open:        ticket.Open,
+				OwnerName:   ticket.OwnerName.String,
+				State:       unmarshal(ticket.State),
 				Type:        ticket.Type,
-				// State:       ticket.State, // TODO
 			})
 		}
 	} else {
@@ -590,13 +627,14 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 
 		for _, ticket := range tickets {
 			response = append(response, openapi.TicketSearch{
-				Id:          ticket.ID,
-				Name:        ticket.Name,
 				Created:     ticket.Created,
 				Description: ticket.Description,
+				Id:          ticket.ID,
+				Name:        ticket.Name,
 				Open:        ticket.Open,
+				OwnerName:   ticket.OwnerName.String,
+				State:       unmarshal(ticket.State),
 				Type:        ticket.Type,
-				// State:       ticket.State, // TODO
 			})
 		}
 	}
@@ -616,20 +654,20 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 	var response []openapi.ExtendedTicket
 	for _, ticket := range tickets {
 		response = append(response, openapi.ExtendedTicket{
-			Id:          ticket.ID,
-			Name:        ticket.Name,
-			Description: ticket.Description,
-			Owner:       ticket.Owner,
-			OwnerName:   ticket.OwnerName.String,
-			Type:        ticket.Type,
-			Open:        ticket.Open,
-			Resolution:  ticket.Resolution,
-			Created:     ticket.Created,
-			Updated:     ticket.Updated,
-			// Schema:       ticket.Schema, // TODO
-			// State:        ticket.State, // TODO
+			Created:      ticket.Created,
+			Description:  ticket.Description,
+			Id:           ticket.ID,
+			Name:         ticket.Name,
+			Open:         ticket.Open,
+			Owner:        ticket.Owner,
+			OwnerName:    ticket.OwnerName.String,
+			Resolution:   ticket.Resolution,
+			Type:         ticket.Type,
+			Schema:       unmarshal(ticket.Schema),
+			State:        unmarshal(ticket.State),
 			TypePlural:   ticket.TypePlural.String,
 			TypeSingular: ticket.TypeSingular.String,
+			Updated:      ticket.Updated,
 		})
 	}
 
@@ -644,23 +682,24 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 		Open:        request.Body.Open,
 		Resolution:  request.Body.Resolution,
 		Type:        request.Body.Type,
-		State:       request.Body.State,
+		State:       marshal(request.Body.State),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.CreateTicket200JSONResponse(openapi.Ticket{
+		Created:     ticket.Created,
+		Description: ticket.Description,
 		Id:          ticket.ID,
 		Name:        ticket.Name,
-		Description: ticket.Description,
-		Owner:       ticket.Owner,
-		Created:     ticket.Created,
-		Updated:     ticket.Updated,
 		Open:        ticket.Open,
+		Owner:       ticket.Owner,
 		Resolution:  ticket.Resolution,
+		Schema:      unmarshal(ticket.Schema),
+		State:       unmarshal(ticket.State),
 		Type:        ticket.Type,
-		// State:       ticket.State, // TODO
+		Updated:     ticket.Updated,
 	}), nil
 }
 
@@ -680,42 +719,51 @@ func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketReques
 	}
 
 	return openapi.GetTicket200JSONResponse{
-		Id:          ticket.ID,
-		Name:        ticket.Name,
-		Description: ticket.Description,
-		Owner:       ticket.Owner,
-		Created:     ticket.Created,
-		Updated:     ticket.Updated,
-		Open:        ticket.Open,
-		Resolution:  ticket.Resolution,
-		Type:        ticket.Type,
-		// State:       ticket.State, // TODO
+		Created:      ticket.Created,
+		Description:  ticket.Description,
+		Id:           ticket.ID,
+		Name:         ticket.Name,
+		Open:         ticket.Open,
+		Owner:        ticket.Owner,
 		OwnerName:    ticket.OwnerName.String,
+		Resolution:   ticket.Resolution,
+		Schema:       unmarshal(ticket.Schema),
+		State:        unmarshal(ticket.State),
+		Type:         ticket.Type,
 		TypePlural:   ticket.TypePlural.String,
 		TypeSingular: ticket.TypeSingular.String,
+		Updated:      ticket.Updated,
 	}, nil
 }
 
 func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicketRequestObject) (openapi.UpdateTicketResponseObject, error) {
 	ticket, err := s.Queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
-		ID:          request.Id,
 		Name:        toNullString(request.Body.Name),
 		Description: toNullString(request.Body.Description),
-		Owner:       toNullString(request.Body.Owner),
 		Open:        toNullBool(request.Body.Open),
+		Owner:       toNullString(request.Body.Owner),
 		Resolution:  toNullString(request.Body.Resolution),
+		Schema:      marshalPointer(request.Body.Schema),
+		State:       marshalPointer(request.Body.State),
 		Type:        toNullString(request.Body.Type),
-		// State:       toNullString(request.Body.State), // TODO
+		ID:          request.Id,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.UpdateTicket200JSONResponse{
+		Created:     ticket.Created,
+		Description: ticket.Description,
 		Id:          ticket.ID,
 		Name:        ticket.Name,
-		Description: ticket.Description,
+		Open:        ticket.Open,
 		Owner:       ticket.Owner,
+		Resolution:  ticket.Resolution,
+		Schema:      unmarshal(ticket.Schema),
+		State:       unmarshal(ticket.State),
+		Type:        ticket.Type,
+		Updated:     ticket.Updated,
 	}, nil
 }
 
@@ -755,11 +803,12 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 	}
 
 	return openapi.CreateTimeline200JSONResponse(openapi.TimelineEntry{
+		Created: timeline.Created,
 		Id:      timeline.ID,
 		Message: timeline.Message,
-		Created: timeline.Created,
-		Updated: timeline.Updated,
+		Ticket:  timeline.Ticket,
 		Time:    timeline.Time,
+		Updated: timeline.Updated,
 	}), nil
 }
 
@@ -799,11 +848,12 @@ func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTime
 	}
 
 	return openapi.UpdateTimeline200JSONResponse{
+		Created: timeline.Created,
 		Id:      timeline.ID,
 		Message: timeline.Message,
-		Created: timeline.Created,
-		Updated: timeline.Updated,
+		Ticket:  timeline.Ticket,
 		Time:    timeline.Time,
+		Updated: timeline.Updated,
 	}, nil
 }
 
@@ -816,12 +866,13 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 	var response []openapi.Type
 	for _, t := range types {
 		response = append(response, openapi.Type{
-			Id:       t.ID,
 			Created:  t.Created,
-			Updated:  t.Updated,
 			Icon:     t.Icon,
+			Id:       t.ID,
 			Plural:   t.Plural,
+			Schema:   unmarshal(t.Schema),
 			Singular: t.Singular,
+			Updated:  t.Updated,
 		})
 	}
 
@@ -833,19 +884,20 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
-		Schema:   request.Body.Schema,
+		Schema:   marshal(request.Body.Schema),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.CreateType200JSONResponse(openapi.Type{
-		Id:       t.ID,
 		Created:  t.Created,
-		Updated:  t.Updated,
 		Icon:     t.Icon,
+		Id:       t.ID,
 		Plural:   t.Plural,
+		Schema:   unmarshal(t.Schema),
 		Singular: t.Singular,
+		Updated:  t.Updated,
 	}), nil
 }
 
@@ -865,12 +917,13 @@ func (s *Service) GetType(ctx context.Context, request openapi.GetTypeRequestObj
 	}
 
 	return openapi.GetType200JSONResponse{
-		Id:       t.ID,
 		Created:  t.Created,
-		Updated:  t.Updated,
 		Icon:     t.Icon,
+		Id:       t.ID,
 		Plural:   t.Plural,
+		Schema:   unmarshal(t.Schema),
 		Singular: t.Singular,
+		Updated:  t.Updated,
 	}, nil
 }
 
@@ -880,19 +933,20 @@ func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequ
 		Icon:     toNullString(request.Body.Icon),
 		Plural:   toNullString(request.Body.Plural),
 		Singular: toNullString(request.Body.Singular),
-		Schema:   request.Body.Schema,
+		Schema:   marshalPointer(request.Body.Schema),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.UpdateType200JSONResponse{
-		Id:       t.ID,
 		Created:  t.Created,
-		Updated:  t.Updated,
 		Icon:     t.Icon,
+		Id:       t.ID,
 		Plural:   t.Plural,
+		Schema:   unmarshal(t.Schema),
 		Singular: t.Singular,
+		Updated:  t.Updated,
 	}, nil
 }
 
@@ -908,7 +962,20 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 	var response []openapi.User
 	for _, user := range users {
 		response = append(response, openapi.User{
-			Id: user.ID,
+			Avatar:                 user.Avatar,
+			Created:                user.Created,
+			Email:                  user.Email,
+			EmailVisibility:        user.Emailvisibility,
+			Id:                     user.ID,
+			LastLoginAlertSentAt:   user.Lastloginalertsentat,
+			LastResetSentAt:        user.Lastresetsentat,
+			LastVerificationSentAt: user.Lastverificationsentat,
+			Name:                   user.Name,
+			PasswordHash:           user.Passwordhash,
+			TokenKey:               user.Tokenkey,
+			Updated:                user.Updated,
+			Username:               user.Username,
+			Verified:               user.Verified,
 		})
 	}
 
@@ -916,27 +983,54 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 }
 
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
+	if request.Body.Password != request.Body.PasswordConfirm {
+		return nil, errors.New("passwords do not match")
+	}
+
+	passwordHash, err := hashPassword(request.Body.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+
 	user, err := s.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		Email:    request.Body.Email,
-		Username: request.Body.Username,
-		// TokenKey:     request.Body.TokenKey, // TODO
-		Name: request.Body.Name,
-		// PasswordHash: request.Body.PasswordHash, // TODO
+		Name:            request.Body.Name,
+		Email:           request.Body.Email,
+		EmailVisibility: request.Body.EmailVisibility,
+		Username:        request.Body.Username,
+		PasswordHash:    passwordHash,
+		TokenKey:        "", // TODO
+		Avatar:          request.Body.Avatar,
+		Verified:        request.Body.Verified,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.CreateUser200JSONResponse(openapi.User{
-		Id:       user.ID,
-		Created:  user.Created,
-		Updated:  user.Updated,
-		Name:     user.Name,
-		Email:    user.Email,
-		Username: user.Username,
-		// TokenKey:     user.TokenKey, // TODO
-		// PasswordHash: user.PasswordHash, // TODO
+		Avatar:                 user.Avatar,
+		Created:                user.Created,
+		Email:                  user.Email,
+		EmailVisibility:        user.Emailvisibility,
+		Id:                     user.ID,
+		LastLoginAlertSentAt:   user.Lastloginalertsentat,
+		LastResetSentAt:        user.Lastresetsentat,
+		LastVerificationSentAt: user.Lastverificationsentat,
+		Name:                   user.Name,
+		PasswordHash:           user.Passwordhash,
+		TokenKey:               user.Tokenkey,
+		Updated:                user.Updated,
+		Username:               user.Username,
+		Verified:               user.Verified,
 	}), nil
+}
+
+func hashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashedPassword), nil
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request openapi.DeleteUserRequestObject) (openapi.DeleteUserResponseObject, error) {
@@ -955,33 +1049,73 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 	}
 
 	return openapi.GetUser200JSONResponse{
-		Id:       user.ID,
-		Name:     user.Name,
-		Email:    user.Email,
-		Username: user.Username,
-		Verified: user.Verified,
+		Avatar:                 user.Avatar,
+		Created:                user.Created,
+		Email:                  user.Email,
+		EmailVisibility:        user.Emailvisibility,
+		Id:                     user.ID,
+		LastLoginAlertSentAt:   user.Lastloginalertsentat,
+		LastResetSentAt:        user.Lastresetsentat,
+		LastVerificationSentAt: user.Lastverificationsentat,
+		Name:                   user.Name,
+		PasswordHash:           user.Passwordhash,
+		TokenKey:               user.Tokenkey,
+		Updated:                user.Updated,
+		Username:               user.Username,
+		Verified:               user.Verified,
 	}, nil
 }
 
 func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequestObject) (openapi.UpdateUserResponseObject, error) {
+	var passwordHash sql.NullString
+
+	switch {
+	case request.Body.Password == nil && request.Body.PasswordConfirm == nil:
+	case request.Body.Password != nil && request.Body.PasswordConfirm != nil:
+		if request.Body.Password != request.Body.PasswordConfirm {
+			return nil, errors.New("passwords do not match")
+		}
+
+		passwordHashS, err := hashPassword(*request.Body.Password)
+		if err != nil {
+			return nil, fmt.Errorf("failed to hash password: %w", err)
+		}
+
+		passwordHash = sql.NullString{String: passwordHashS, Valid: true}
+	default:
+		return nil, errors.New("password and password confirm must be provided together")
+	}
+
 	user, err := s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
-		ID:       request.Id,
-		Name:     toNullString(request.Body.Name),
-		Email:    toNullString(request.Body.Email),
-		Username: toNullString(request.Body.Username),
-		// TokenKey:     toNullString(request.Body.TokenKey), // TODO
-		// PasswordHash: toNullString(request.Body.PasswordHash), // TODO
+		Name:            toNullString(request.Body.Name),
+		Email:           toNullString(request.Body.Email),
+		EmailVisibility: toNullBool(request.Body.EmailVisibility),
+		Username:        toNullString(request.Body.Username),
+		PasswordHash:    passwordHash,
+		TokenKey:        sql.NullString{},
+		Avatar:          toNullString(request.Body.Avatar),
+		Verified:        toNullBool(request.Body.Verified),
+		ID:              request.Id,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return openapi.UpdateUser200JSONResponse{
-		Id:       user.ID,
-		Name:     user.Name,
-		Email:    user.Email,
-		Username: user.Username,
-		Verified: user.Verified,
+		Avatar:                 user.Avatar,
+		Created:                user.Created,
+		Email:                  user.Email,
+		EmailVisibility:        user.Emailvisibility,
+		Id:                     user.ID,
+		LastLoginAlertSentAt:   user.Lastloginalertsentat,
+		LastResetSentAt:        user.Lastresetsentat,
+		LastVerificationSentAt: user.Lastverificationsentat,
+		Name:                   user.Name,
+		PasswordHash:           user.Passwordhash,
+		TokenKey:               user.Tokenkey,
+		Updated:                user.Updated,
+		Username:               user.Username,
+		Verified:               user.Verified,
 	}, nil
 }
 
@@ -1092,7 +1226,7 @@ func toInt64(value *int, defaultValue int64) int64 {
 	return int64(*value)
 }
 
-func toNullInt64(value *int) sql.NullInt64 {
+func toNullInt64(value *int64) sql.NullInt64 {
 	if value == nil {
 		return sql.NullInt64{}
 	}
@@ -1104,4 +1238,28 @@ func toNullBool(value *bool) sql.NullBool {
 		return sql.NullBool{}
 	}
 	return sql.NullBool{Bool: *value, Valid: true}
+}
+
+func marshal(state map[string]interface{}) string {
+	b, _ := json.Marshal(state)
+	return string(b)
+}
+
+func marshalPointer(state *map[string]interface{}) string {
+	if state == nil {
+		return "{}"
+	}
+
+	b, _ := json.Marshal(*state)
+	return string(b)
+}
+
+func unmarshal(data string) map[string]interface{} {
+	var m map[string]interface{}
+
+	if err := json.Unmarshal([]byte(data), &m); err != nil {
+		return nil
+	}
+
+	return m
 }

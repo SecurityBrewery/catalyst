@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"github.com/brianvoe/gofakeit/v7"
+
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 )
 
 const (
@@ -31,22 +32,22 @@ func Generate(queries *sqlc.Queries, userCount, ticketCount int) error {
 func Records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
 	types, err := queries.ListTypes(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list types: %w", err)
 	}
 
 	users, err := userRecords(ctx, queries, userCount)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create user records: %w", err)
 	}
 
 	err = ticketRecords(ctx, queries, users, types, ticketCount)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create ticket records: %w", err)
 	}
 
 	err = reactionRecords(ctx, queries)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create reaction records: %w", err)
 	}
 
 	return nil
@@ -103,28 +104,28 @@ func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User
 			Type:        ticketType.ID,
 			Description: fakeTicketDescription(),
 			Open:        gofakeit.Bool(),
-			Schema:      `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`,
-			State:       `{"severity":"Medium"}`,
+			Schema:      marshal(map[string]interface{}{"type": "object", "properties": map[string]interface{}{"tlp": map[string]interface{}{"title": "TLP", "type": "string"}}}),
+			State:       marshal(map[string]interface{}{"severity": "Medium"}),
 			Owner:       random(users).ID,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create ticket: %w", err)
 		}
 
 		if err := commentRecords(ctx, queries, users, newTicket); err != nil {
-			return err
+			return fmt.Errorf("failed to create comments for ticket %s: %w", newTicket.ID, err)
 		}
 
 		if err := timelineRecords(ctx, queries, created, newTicket); err != nil {
-			return err
+			return fmt.Errorf("failed to create timeline for ticket %s: %w", newTicket.ID, err)
 		}
 
 		if err := taskRecords(ctx, queries, users, created, newTicket); err != nil {
-			return err
+			return fmt.Errorf("failed to create tasks for ticket %s: %w", newTicket.ID, err)
 		}
 
 		if err := linkRecords(ctx, queries, created, newTicket); err != nil {
-			return err
+			return fmt.Errorf("failed to create links for ticket %s: %w", newTicket.ID, err)
 		}
 	}
 
@@ -139,7 +140,7 @@ func commentRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 			Message: fakeTicketComment(),
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create comment for ticket %s: %w", record.ID, err)
 		}
 	}
 
@@ -154,7 +155,7 @@ func timelineRecords(ctx context.Context, queries *sqlc.Queries, created time.Ti
 			Time:    created.Format("2006-01-02T15:04:05Z"),
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create timeline for ticket %s: %w", record.ID, err)
 		}
 	}
 
@@ -164,12 +165,13 @@ func timelineRecords(ctx context.Context, queries *sqlc.Queries, created time.Ti
 func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, created time.Time, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateTask(ctx, sqlc.CreateTaskParams{
-			Name:  fakeTicketTask(),
-			Open:  gofakeit.Bool(),
-			Owner: random(users).ID,
+			Name:   fakeTicketTask(),
+			Open:   gofakeit.Bool(),
+			Owner:  random(users).ID,
+			Ticket: record.ID,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create task for ticket %s: %w", record.ID, err)
 		}
 	}
 
@@ -184,7 +186,7 @@ func linkRecords(ctx context.Context, queries *sqlc.Queries, created time.Time, 
 			Name:   random([]string{"Blog", "Forum", "Wiki", "Documentation"}),
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create link for ticket %s: %w", record.ID, err)
 		}
 	}
 
@@ -258,78 +260,59 @@ client.collection("tickets").update(ticket["record"]["id"], {
 	"owner": random_user.id,
 })`
 
-const (
-	triggerSchedule = `{"expression":"12 * * * *"}`
-	triggerWebhook  = `{"token":"1234567890","path":"webhook"}`
-	triggerHook     = `{"collections":["tickets"],"events":["create"]}`
+var (
+	triggerSchedule = map[string]any{"expression": "12 * * * *"}
+	triggerWebhook  = map[string]any{"token": "1234567890", "path": "webhook"}
+	triggerHook     = map[string]any{"collections": []any{"tickets"}, "events": []any{"create"}}
 )
 
 func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
-	createTicketActionData, err := json.Marshal(map[string]interface{}{
-		"requirements": "pocketbase",
-		"script":       createTicketPy,
-	})
-	if err != nil {
-		return err
-	}
-
-	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+	_, err := queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		Name:        "Create New Ticket",
 		Trigger:     "schedule",
-		Triggerdata: triggerSchedule,
+		Triggerdata: marshal(triggerSchedule),
 		Action:      "python",
-		Actiondata:  string(createTicketActionData),
+		Actiondata: marshal(map[string]interface{}{
+			"requirements": "pocketbase",
+			"script":       createTicketPy,
+		}),
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create reaction for schedule trigger: %w", err)
 	}
 
-	alertIngestActionData, err := json.Marshal(map[string]interface{}{
-		"requirements": "pocketbase",
-		"script":       alertIngestPy,
-	})
-	if err != nil {
-		return err
-	}
 	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		Name:        "Alert Ingest Webhook",
 		Trigger:     "webhook",
-		Triggerdata: triggerWebhook,
+		Triggerdata: marshal(triggerWebhook),
 		Action:      "python",
-		Actiondata:  string(alertIngestActionData),
+		Actiondata: marshal(map[string]interface{}{
+			"requirements": "pocketbase",
+			"script":       alertIngestPy,
+		}),
 	})
 	if err != nil {
-		return err
-	}
-
-	assignTicketsActionData, err := json.Marshal(map[string]interface{}{
-		"requirements": "pocketbase",
-		"script":       assignTicketsPy,
-	})
-	if err != nil {
-		return err
-	}
-	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
-		Name:        "Assign new Tickets",
-		Trigger:     "hook",
-		Triggerdata: triggerHook,
-		Action:      "python",
-		Actiondata:  string(assignTicketsActionData),
-	})
-	if err != nil {
-		return err
+		return fmt.Errorf("failed to create reaction for webhook trigger: %w", err)
 	}
 
 	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		Name:        "Assign new Tickets",
 		Trigger:     "hook",
-		Triggerdata: triggerHook,
+		Triggerdata: marshal(triggerHook),
 		Action:      "python",
-		Actiondata:  string(assignTicketsActionData),
+		Actiondata: marshal(map[string]interface{}{
+			"requirements": "pocketbase",
+			"script":       assignTicketsPy,
+		}),
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create reaction for hook trigger: %w", err)
 	}
 
 	return nil
+}
+
+func marshal(m map[string]interface{}) string {
+	b, _ := json.Marshal(m)
+	return string(b)
 }

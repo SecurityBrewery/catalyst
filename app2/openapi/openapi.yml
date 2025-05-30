@@ -507,14 +507,14 @@ components:
         ticket: { "type": "string" }
         blob: { "type": "string" }
         name: { "type": "string" }
-        size: { "type": "integer" }
+        size: { "type": "integer", "format": "int64" }
       required: [ "ticket", "blob", "name", "size" ]
     FileUpdate:
       type: object
       properties:
         blob: { "type": "string" }
         name: { "type": "string" }
-        size: { "type": "integer" }
+        size: { "type": "integer", "format": "int64" }
     File:
       type: object
       properties:
@@ -522,7 +522,7 @@ components:
         ticket: { "type": "string" }
         blob: { "type": "string" }
         name: { "type": "string" }
-        size: { "type": "integer" }
+        size: { "type": "integer", "format": "int64" }
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "ticket", "blob", "name", "size", "created", "updated" ]
@@ -809,12 +809,5 @@ components:
         type: { "type": "string" }
         state: { "type": "object" }
         owner_name: { "type": "string" }
-        comment_messages: { "type": "array", "items": { "type": "string" } }
-        file_names: { "type": "array", "items": { "type": "string" } }
-        link_names: { "type": "array", "items": { "type": "string" } }
-        link_urls: { "type": "array", "items": { "type": "string" } }
-        task_names: { "type": "array", "items": { "type": "string" } }
-        timeline_messages: { "type": "array", "items": { "type": "string" } }
         created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "name", "description", "open", "type", "state", "owner_name", "comment_messages", "file_names", "link_names", "link_urls", "task_names", "timeline_messages", "created", "updated" ]
+      required: [ "id", "name", "description", "open", "type", "state", "owner_name", "created" ]

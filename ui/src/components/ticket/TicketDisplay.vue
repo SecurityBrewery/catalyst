@@ -27,7 +27,16 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { api } from '@/api'
-import type { ExtendedComment, ModelFile, Link, ExtendedTicket, ExtendedTask, TimelineEntry, Ticket, Type } from '@/client/models'
+import type {
+  ExtendedComment,
+  ExtendedTask,
+  ExtendedTicket,
+  Link,
+  ModelFile,
+  Ticket,
+  TimelineEntry,
+  Type
+} from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const route = useRoute()
@@ -77,7 +86,7 @@ const {
 } = useQuery({
   queryKey: ['comments', id.value],
   queryFn: (): Promise<Array<ExtendedComment>> => api.listComments({ ticket: id.value })
-}) 
+})
 
 const {
   data: files,
@@ -98,7 +107,8 @@ const {
 })
 
 const editDescriptionMutation = useMutation({
-  mutationFn: () => api.updateTicket({ id: id.value, ticketUpdate: { description: message.value } }),
+  mutationFn: () =>
+    api.updateTicket({ id: id.value, ticketUpdate: { description: message.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
     editMode.value = false

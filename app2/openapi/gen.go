@@ -93,7 +93,7 @@ type File struct {
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Name    string `json:"name"`
-	Size    int    `json:"size"`
+	Size    int64  `json:"size"`
 	Ticket  string `json:"ticket"`
 	Updated string `json:"updated"`
 }
@@ -102,7 +102,7 @@ type File struct {
 type FileUpdate struct {
 	Blob *string `json:"blob,omitempty"`
 	Name *string `json:"name,omitempty"`
-	Size *int    `json:"size,omitempty"`
+	Size *int64  `json:"size,omitempty"`
 }
 
 // Link defines model for Link.
@@ -137,7 +137,7 @@ type NewFeature struct {
 type NewFile struct {
 	Blob   string `json:"blob"`
 	Name   string `json:"name"`
-	Size   int    `json:"size"`
+	Size   int64  `json:"size"`
 	Ticket string `json:"ticket"`
 }
 
@@ -276,21 +276,14 @@ type Ticket struct {
 
 // TicketSearch defines model for TicketSearch.
 type TicketSearch struct {
-	CommentMessages  []string               `json:"comment_messages"`
-	Created          string                 `json:"created"`
-	Description      string                 `json:"description"`
-	FileNames        []string               `json:"file_names"`
-	Id               string                 `json:"id"`
-	LinkNames        []string               `json:"link_names"`
-	LinkUrls         []string               `json:"link_urls"`
-	Name             string                 `json:"name"`
-	Open             bool                   `json:"open"`
-	OwnerName        string                 `json:"owner_name"`
-	State            map[string]interface{} `json:"state"`
-	TaskNames        []string               `json:"task_names"`
-	TimelineMessages []string               `json:"timeline_messages"`
-	Type             string                 `json:"type"`
-	Updated          string                 `json:"updated"`
+	Created     string                 `json:"created"`
+	Description string                 `json:"description"`
+	Id          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Open        bool                   `json:"open"`
+	OwnerName   string                 `json:"owner_name"`
+	State       map[string]interface{} `json:"state"`
+	Type        string                 `json:"type"`
 }
 
 // TicketUpdate defines model for TicketUpdate.

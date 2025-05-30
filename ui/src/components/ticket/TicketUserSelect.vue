@@ -27,7 +27,7 @@ const update = (userID: string) => setTicketOwnerMutation.mutate(userID)
 </script>
 
 <template>
-    <UserSelect v-if="!ticket.owner" @update:modelValue="update">
+  <UserSelect v-if="!ticket.owner" @update:modelValue="update">
     <Button variant="outline" role="combobox">
       <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
       Unassigned

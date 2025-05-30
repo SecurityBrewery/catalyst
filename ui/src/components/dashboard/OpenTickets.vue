@@ -12,6 +12,9 @@ import { intervalToDuration } from 'date-fns'
 import { api } from '@/api'
 import type { Ticket } from '@/client/models'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const authStore = useAuthStore()
 
 const {
   isPending,
@@ -21,7 +24,11 @@ const {
 } = useQuery({
   queryKey: ['tickets', 'dashboard'],
   queryFn: (): Promise<Array<Ticket>> => {
-    return api.listTickets().then((tickets) => tickets.filter((ticket) => ticket.open)) // TODO: filter by owner
+    return api
+      .listTickets()
+      .then((tickets) =>
+        tickets.filter((ticket) => ticket.open && ticket.owner === authStore.user?.id)
+      )
   }
 })
 

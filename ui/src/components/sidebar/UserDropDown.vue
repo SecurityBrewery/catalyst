@@ -12,11 +12,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { CircleUser } from 'lucide-vue-next'
 
-import type { AuthModel } from 'pocketbase'
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 
-import { api } from '@/api'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 defineProps<{
   isCollapsed: boolean
@@ -24,33 +23,29 @@ defineProps<{
 
 const variant = 'secondary'
 
-interface User {
-  name: string
-}
-
-const user = ref<AuthModel | User>() // TODO
+const authStore = useAuthStore()
 
 const logout = () => {
-  // pb.authStore.clear() // TODO
-  // window.location.href = '/ui/login' // TODO
+  fetch('/auth/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  window.location.href = '/auth/local/logout'
 }
 
 onMounted(() => {
-  /*
-  pb.collection('users') // TODO
-    .authRefresh()
-    .catch(() => {
-      // pb.authStore.clear()
-      // window.location.href = '/ui/login'
-    })
-   */
+  if (!authStore.user) {
+    window.location.href = '/ui/login'
+  }
 })
 </script>
 
 <template>
   <div class="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2">
     <nav
-      v-if="user"
+      v-if="authStore.user"
       class="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2"
     >
       <DropdownMenu>
@@ -64,11 +59,11 @@ onMounted(() => {
                   "
                 >
                   <CircleUser class="size-4" />
-                  <span class="sr-only">{{ user.name }}</span>
+                  <span class="sr-only">{{ authStore.user.name }}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" class="flex items-center gap-4">
-                {{ user.name }}
+                {{ authStore.user.name }}
               </TooltipContent>
             </Tooltip>
             <Button
@@ -76,7 +71,7 @@ onMounted(() => {
               :class="cn(buttonVariants({ variant: variant, size: 'sm' }), 'w-full justify-start')"
             >
               <CircleUser class="mr-2 size-4" />
-              {{ user.name }}
+              {{ authStore.user.name }}
             </Button>
           </div>
         </DropdownMenuTrigger>

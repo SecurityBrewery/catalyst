@@ -13,33 +13,35 @@ import { computed, ref } from 'vue'
 import { api } from '@/api'
 import type { Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 const queryClient = useQueryClient()
+const authStore = useAuthStore()
 
 const props = defineProps<{
   ticket: Ticket
 }>()
 
 const name = ref('')
-const owner = ref<string | undefined>(undefined) // pb.authStore.model // TODO
+const owner = ref<string | undefined>(authStore.user?.id)
 const isOpen = ref(false)
 
 const addTaskMutation = useMutation({
   mutationFn: (): Promise<Task> => {
-    // if (!pb.authStore.model) return Promise.reject('Not authenticated') // TODO
+    if (!authStore.user) return Promise.reject('Not authenticated')
     return api.createTask({
       newTask: {
         ticket: props.ticket.id,
         name: name.value,
         open: true,
-        owner: owner.value ? owner.value : '' // pb.authStore.model.id // TODO
+        owner: owner.value ? owner.value : authStore.user?.id
       }
     })
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     name.value = ''
-    owner.value = undefined // pb.authStore.model // TODO
+    owner.value = authStore.user?.id
     isOpen.value = false
   },
   onError: handleError
@@ -65,7 +67,8 @@ const submitDisabled = computed(() => !name.value || !owner.value)
     <UserSelect v-model="owner">
       <Button variant="outline" role="combobox">
         <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-        {{ owner?.name }} <!-- TODO -->
+        {{ owner }}
+        <!-- TODO -->
       </Button>
     </UserSelect>
     <Button variant="outline" @click="isOpen = false"> Cancel</Button>
