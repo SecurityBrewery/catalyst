@@ -29,7 +29,7 @@ FROM tickets
 WHERE id = @id;
 
 -- name: ListTickets :many
-SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
+SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural, COUNT(*) OVER () as total_count
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
          LEFT JOIN types ON types.id = tickets.type
@@ -79,7 +79,7 @@ FROM comments
 WHERE id = @id;
 
 -- name: ListComments :many
-SELECT comments.*, users.name as author_name
+SELECT comments.*, users.name as author_name, COUNT(*) OVER () as total_count
 FROM comments
          LEFT JOIN users ON users.id = comments.author
 WHERE ticket = @ticket
@@ -111,9 +111,10 @@ FROM features
 WHERE id = @id;
 
 -- name: ListFeatures :many
-SELECT *
+SELECT features.*, COUNT(*) OVER () as total_count
 FROM features
-ORDER BY features.created DESC;
+ORDER BY features.created DESC
+LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
@@ -141,7 +142,7 @@ FROM files
 WHERE id = @id;
 
 -- name: ListFiles :many
-SELECT *
+SELECT files.*, COUNT(*) OVER () as total_count
 FROM files
 WHERE ticket = @ticket
    OR @ticket = ''
@@ -173,7 +174,7 @@ FROM links
 WHERE id = @id;
 
 -- name: ListLinks :many
-SELECT *
+SELECT links.*, COUNT(*) OVER () as total_count
 FROM links
 WHERE ticket = @ticket
    OR @ticket = ''
@@ -208,7 +209,7 @@ FROM reactions
 WHERE id = @id;
 
 -- name: ListReactions :many
-SELECT *
+SELECT reactions.*, COUNT(*) OVER () as total_count
 FROM reactions
 ORDER BY reactions.created DESC
 LIMIT @limit OFFSET @offset;
@@ -241,7 +242,7 @@ FROM tasks
 WHERE id = @id;
 
 -- name: ListTasks :many
-SELECT tasks.*, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
+SELECT tasks.*, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type, COUNT(*) OVER () as total_count
 FROM tasks
          LEFT JOIN users ON users.id = tasks.owner
          LEFT JOIN tickets ON tickets.id = tasks.ticket
@@ -275,7 +276,7 @@ FROM timeline
 WHERE id = @id;
 
 -- name: ListTimeline :many
-SELECT *
+SELECT timeline.*, COUNT(*) OVER () as total_count
 FROM timeline
 WHERE ticket = @ticket
    OR @ticket = ''
@@ -309,7 +310,7 @@ FROM types
 WHERE id = @id;
 
 -- name: ListTypes :many
-SELECT *
+SELECT types.*, COUNT(*) OVER () as total_count
 FROM types
 ORDER BY created DESC;
 
@@ -354,7 +355,7 @@ FROM users
 WHERE id = @id;
 
 -- name: ListUsers :many
-SELECT *
+SELECT users.*, COUNT(*) OVER () as total_count
 FROM users
 ORDER BY users.created DESC
 LIMIT @limit OFFSET @offset;
@@ -385,7 +386,7 @@ FROM webhooks
 WHERE id = @id;
 
 -- name: ListWebhooks :many
-SELECT *
+SELECT webhooks.*, COUNT(*) OVER () as total_count
 FROM webhooks
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
@@ -408,7 +409,8 @@ SELECT id,
        open,
        type,
        state,
-       owner_name
+       owner_name,
+       COUNT(*) OVER () as total_count
 FROM ticket_search
 WHERE (@query = '' OR (name LIKE '%' || @query || '%'
    OR description LIKE '%' || @query || '%'

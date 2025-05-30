@@ -22,7 +22,7 @@ import { LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api } from '@/api'
@@ -42,6 +42,24 @@ const tab = ref('open')
 const page = ref(1)
 const perPage = ref(10)
 
+const totalItems = ref(0)
+const offset = computed(() => (page.value - 1) * perPage.value)
+const paginationHuman = computed(() => {
+  if (totalItems.value === 0) {
+    return '0 tickets'
+  }
+
+  if (offset.value + 1 === totalItems.value) {
+    return `${offset.value + 1} of ${totalItems.value} tickets`
+  }
+
+  if (offset.value + perPage.value >= totalItems.value) {
+    return `${offset.value + 1} - ${totalItems.value} of ${totalItems.value} tickets`
+  }
+
+  return `${offset.value + 1} - ${offset.value + perPage.value} of ${totalItems.value} tickets`
+})
+
 const {
   isPending,
   isError,
@@ -57,14 +75,18 @@ const {
     page.value,
     perPage.value
   ],
-  queryFn: (): Promise<Array<TicketSearch>> =>
-    api.searchTickets({
+  queryFn: async (): Promise<Array<TicketSearch>> => {
+    const response = await api.searchTicketsRaw({
       type: props.selectedType.id,
       query: searchValue.value,
       open: tab.value === 'open' ? true : tab.value === 'closed' ? false : undefined,
-      offset: page.value - 1 * perPage.value,
+      offset: offset.value,
       limit: perPage.value
     })
+    totalItems.value = parseInt(response.raw.headers.get('X-Total-Count') ?? '0')
+
+    return response.value()
+  }
 })
 
 watch(
@@ -129,20 +151,18 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
     <Separator />
     <div class="my-2 flex items-center justify-center">
       <span class="text-xs text-muted-foreground">
-        {{ ticketItems ? ticketItems.length : '?' }} of
-        {{ ticketItems ? ticketItems.length : '?' }} tickets
-        <!-- TODO ticketItems ? ticketItems.totalItems : '?' -->
+        {{ paginationHuman }}
       </span>
     </div>
     <div class="mb-2 flex items-center justify-center">
       <Pagination
         v-slot="{ page }"
-        :total="ticketItems ? ticketItems.length : 0"
+        :total="totalItems"
         :itemsPerPage="perPage"
         :sibling-count="0"
         :default-page="1"
         @update:page="page = $event"
-        ><!-- TODO ticketItems ? ticketItems.totalItems : 0 -->
+      >
         <PaginationList v-slot="{ items }" class="flex items-center gap-1">
           <PaginationFirst />
           <PaginationPrev />

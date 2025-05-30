@@ -91,7 +91,7 @@ func (a *App2) Start(ctx context.Context) error {
 	r.Get("/ui/*", staticFiles)
 	r.Mount("/auth", authService.Server())
 	r.Get("/config", func(w http.ResponseWriter, r *http.Request) {
-		features, err := a.Queries.ListFeatures(r.Context())
+		features, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
 		if err != nil {
 			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)

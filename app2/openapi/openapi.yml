@@ -24,7 +24,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTicket" } } } } }
+        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTicket" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
     post:
       summary: Create a new ticket
       operationId: createTicket
@@ -63,7 +63,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedComment" } } } } }
+        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedComment" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of comments" } } }
     post:
       summary: Create a new comment
       operationId: createComment
@@ -102,7 +102,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of files", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/File" } } } } }
+        "200": { "description": "A list of files", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/File" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of files" } } }
     post:
       summary: Create a new file
       operationId: createFile
@@ -141,7 +141,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of links", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } } } } }
+        "200": { "description": "A list of links", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of links" } } }
     post:
       summary: Create a new link
       operationId: createLink
@@ -180,7 +180,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTask" } } } } }
+        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTask" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tasks" } } }
     post:
       summary: Create a new task
       operationId: createTask
@@ -219,7 +219,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of timeline items", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEntry" } } } } }
+        "200": { "description": "A list of timeline items", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEntry" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of timeline items" } } }
     post:
       summary: Create a new timeline item
       operationId: createTimeline
@@ -257,7 +257,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of features", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Feature" } } } } }
+        "200": { "description": "A list of features", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Feature" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of features" } } }
     post:
       summary: Create a new feature
       operationId: createFeature
@@ -287,7 +287,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of reactions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Reaction" } } } } }
+        "200": { "description": "A list of reactions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Reaction" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of reactions" } } }
     post:
       summary: Create a new reaction
       operationId: createReaction
@@ -325,7 +325,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of types", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Type" } } } } }
+        "200": { "description": "A list of types", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Type" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of types" } } }
     post:
       summary: Create a new type
       operationId: createType
@@ -363,7 +363,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } }
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of users" } } }
     post:
       summary: Create a new user
       operationId: createUser
@@ -401,7 +401,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of webhooks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Webhook" } } } } }
+        "200": { "description": "A list of webhooks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Webhook" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of webhooks" } } }
     post:
       summary: Create a new webhook
       operationId: createWebhook
@@ -454,7 +454,7 @@ paths:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } } }
+        "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
 components:
   schemas:
     NewComment:

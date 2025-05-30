@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	defaultLimit  = 10
+	defaultLimit  = 100
 	defaultOffset = 0
 )
 
@@ -45,7 +45,17 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 		})
 	}
 
-	return openapi.ListComments200JSONResponse(response), nil
+	totalCount := 0
+	if len(comments) > 0 {
+		totalCount = int(comments[0].TotalCount)
+	}
+
+	return openapi.ListComments200JSONResponse{
+		Body: response,
+		Headers: openapi.ListComments200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateComment(ctx context.Context, request openapi.CreateCommentRequestObject) (openapi.CreateCommentResponseObject, error) {
@@ -131,7 +141,10 @@ func (s *Service) GetDashboardCounts(ctx context.Context, request openapi.GetDas
 }
 
 func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeaturesRequestObject) (openapi.ListFeaturesResponseObject, error) {
-	features, err := s.Queries.ListFeatures(ctx)
+	features, err := s.Queries.ListFeatures(ctx, sqlc.ListFeaturesParams{
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +159,17 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 		})
 	}
 
-	return openapi.ListFeatures200JSONResponse(response), nil
+	totalCount := 0
+	if len(features) > 0 {
+		totalCount = int(features[0].TotalCount)
+	}
+
+	return openapi.ListFeatures200JSONResponse{
+		Body: response,
+		Headers: openapi.ListFeatures200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateFeature(ctx context.Context, request openapi.CreateFeatureRequestObject) (openapi.CreateFeatureResponseObject, error) {
@@ -209,7 +232,17 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 		})
 	}
 
-	return openapi.ListFiles200JSONResponse(response), nil
+	totalCount := 0
+	if len(files) > 0 {
+		totalCount = int(files[0].TotalCount)
+	}
+
+	return openapi.ListFiles200JSONResponse{
+		Body: response,
+		Headers: openapi.ListFiles200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequestObject) (openapi.CreateFileResponseObject, error) {
@@ -304,7 +337,17 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 		})
 	}
 
-	return openapi.ListLinks200JSONResponse(response), nil
+	totalCount := 0
+	if len(links) > 0 {
+		totalCount = int(links[0].TotalCount)
+	}
+
+	return openapi.ListLinks200JSONResponse{
+		Body: response,
+		Headers: openapi.ListLinks200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequestObject) (openapi.CreateLinkResponseObject, error) {
@@ -395,7 +438,17 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 		})
 	}
 
-	return openapi.ListReactions200JSONResponse(response), nil
+	totalCount := 0
+	if len(reactions) > 0 {
+		totalCount = int(reactions[0].TotalCount)
+	}
+
+	return openapi.ListReactions200JSONResponse{
+		Body: response,
+		Headers: openapi.ListReactions200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReactionRequestObject) (openapi.CreateReactionResponseObject, error) {
@@ -516,7 +569,17 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 		})
 	}
 
-	return openapi.ListTasks200JSONResponse(response), nil
+	totalCount := 0
+	if len(tasks) > 0 {
+		totalCount = int(tasks[0].TotalCount)
+	}
+
+	return openapi.ListTasks200JSONResponse{
+		Body: response,
+		Headers: openapi.ListTasks200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequestObject) (openapi.CreateTaskResponseObject, error) {
@@ -619,7 +682,17 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 		})
 	}
 
-	return openapi.SearchTickets200JSONResponse(response), nil
+	totalCount := 0
+	if len(tickets) > 0 {
+		totalCount = int(tickets[0].TotalCount)
+	}
+
+	return openapi.SearchTickets200JSONResponse{
+		Body: response,
+		Headers: openapi.SearchTickets200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRequestObject) (openapi.ListTicketsResponseObject, error) {
@@ -651,7 +724,17 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 		})
 	}
 
-	return openapi.ListTickets200JSONResponse(response), nil
+	totalCount := 0
+	if len(tickets) > 0 {
+		totalCount = int(tickets[0].TotalCount)
+	}
+
+	return openapi.ListTickets200JSONResponse{
+		Body: response,
+		Headers: openapi.ListTickets200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicketRequestObject) (openapi.CreateTicketResponseObject, error) {
@@ -769,7 +852,17 @@ func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimeline
 		})
 	}
 
-	return openapi.ListTimeline200JSONResponse(response), nil
+	totalCount := 0
+	if len(timeline) > 0 {
+		totalCount = int(timeline[0].TotalCount)
+	}
+
+	return openapi.ListTimeline200JSONResponse{
+		Body: response,
+		Headers: openapi.ListTimeline200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTimelineRequestObject) (openapi.CreateTimelineResponseObject, error) {
@@ -856,7 +949,17 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 		})
 	}
 
-	return openapi.ListTypes200JSONResponse(response), nil
+	totalCount := 0
+	if len(types) > 0 {
+		totalCount = int(types[0].TotalCount)
+	}
+
+	return openapi.ListTypes200JSONResponse{
+		Body: response,
+		Headers: openapi.ListTypes200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequestObject) (openapi.CreateTypeResponseObject, error) {
@@ -959,7 +1062,17 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 		})
 	}
 
-	return openapi.ListUsers200JSONResponse(response), nil
+	totalCount := 0
+	if len(users) > 0 {
+		totalCount = int(users[0].TotalCount)
+	}
+
+	return openapi.ListUsers200JSONResponse{
+		Body: response,
+		Headers: openapi.ListUsers200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
@@ -1116,7 +1229,17 @@ func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooks
 		})
 	}
 
-	return openapi.ListWebhooks200JSONResponse(response), nil
+	totalCount := 0
+	if len(webhooks) > 0 {
+		totalCount = int(webhooks[0].TotalCount)
+	}
+
+	return openapi.ListWebhooks200JSONResponse{
+		Body: response,
+		Headers: openapi.ListWebhooks200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
 }
 
 func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebhookRequestObject) (openapi.CreateWebhookResponseObject, error) {

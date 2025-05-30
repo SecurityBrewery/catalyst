@@ -89,7 +89,7 @@ func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.
 	return records, nil
 }
 
-func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, types []sqlc.Type, count int) error {
+func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, types []sqlc.ListTypesRow, count int) error {
 	created := time.Now()
 	number := gofakeit.Number(200*count, 300*count)
 

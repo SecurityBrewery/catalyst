@@ -2815,13 +2815,21 @@ type ListCommentsResponseObject interface {
 	VisitListCommentsResponse(w http.ResponseWriter) error
 }
 
-type ListComments200JSONResponse []ExtendedComment
+type ListComments200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListComments200JSONResponse struct {
+	Body    []ExtendedComment
+	Headers ListComments200ResponseHeaders
+}
 
 func (response ListComments200JSONResponse) VisitListCommentsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateCommentRequestObject struct {
@@ -2916,13 +2924,21 @@ type ListFeaturesResponseObject interface {
 	VisitListFeaturesResponse(w http.ResponseWriter) error
 }
 
-type ListFeatures200JSONResponse []Feature
+type ListFeatures200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListFeatures200JSONResponse struct {
+	Body    []Feature
+	Headers ListFeatures200ResponseHeaders
+}
 
 func (response ListFeatures200JSONResponse) VisitListFeaturesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateFeatureRequestObject struct {
@@ -2983,13 +2999,21 @@ type ListFilesResponseObject interface {
 	VisitListFilesResponse(w http.ResponseWriter) error
 }
 
-type ListFiles200JSONResponse []File
+type ListFiles200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListFiles200JSONResponse struct {
+	Body    []File
+	Headers ListFiles200ResponseHeaders
+}
 
 func (response ListFiles200JSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateFileRequestObject struct {
@@ -3068,13 +3092,21 @@ type ListLinksResponseObject interface {
 	VisitListLinksResponse(w http.ResponseWriter) error
 }
 
-type ListLinks200JSONResponse []Link
+type ListLinks200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListLinks200JSONResponse struct {
+	Body    []Link
+	Headers ListLinks200ResponseHeaders
+}
 
 func (response ListLinks200JSONResponse) VisitListLinksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateLinkRequestObject struct {
@@ -3153,13 +3185,21 @@ type ListReactionsResponseObject interface {
 	VisitListReactionsResponse(w http.ResponseWriter) error
 }
 
-type ListReactions200JSONResponse []Reaction
+type ListReactions200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListReactions200JSONResponse struct {
+	Body    []Reaction
+	Headers ListReactions200ResponseHeaders
+}
 
 func (response ListReactions200JSONResponse) VisitListReactionsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateReactionRequestObject struct {
@@ -3254,13 +3294,21 @@ type ListTasksResponseObject interface {
 	VisitListTasksResponse(w http.ResponseWriter) error
 }
 
-type ListTasks200JSONResponse []ExtendedTask
+type ListTasks200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListTasks200JSONResponse struct {
+	Body    []ExtendedTask
+	Headers ListTasks200ResponseHeaders
+}
 
 func (response ListTasks200JSONResponse) VisitListTasksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateTaskRequestObject struct {
@@ -3339,13 +3387,21 @@ type SearchTicketsResponseObject interface {
 	VisitSearchTicketsResponse(w http.ResponseWriter) error
 }
 
-type SearchTickets200JSONResponse []TicketSearch
+type SearchTickets200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type SearchTickets200JSONResponse struct {
+	Body    []TicketSearch
+	Headers SearchTickets200ResponseHeaders
+}
 
 func (response SearchTickets200JSONResponse) VisitSearchTicketsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type ListTicketsRequestObject struct {
@@ -3356,13 +3412,21 @@ type ListTicketsResponseObject interface {
 	VisitListTicketsResponse(w http.ResponseWriter) error
 }
 
-type ListTickets200JSONResponse []ExtendedTicket
+type ListTickets200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListTickets200JSONResponse struct {
+	Body    []ExtendedTicket
+	Headers ListTickets200ResponseHeaders
+}
 
 func (response ListTickets200JSONResponse) VisitListTicketsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateTicketRequestObject struct {
@@ -3441,13 +3505,21 @@ type ListTimelineResponseObject interface {
 	VisitListTimelineResponse(w http.ResponseWriter) error
 }
 
-type ListTimeline200JSONResponse []TimelineEntry
+type ListTimeline200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListTimeline200JSONResponse struct {
+	Body    []TimelineEntry
+	Headers ListTimeline200ResponseHeaders
+}
 
 func (response ListTimeline200JSONResponse) VisitListTimelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateTimelineRequestObject struct {
@@ -3526,13 +3598,21 @@ type ListTypesResponseObject interface {
 	VisitListTypesResponse(w http.ResponseWriter) error
 }
 
-type ListTypes200JSONResponse []Type
+type ListTypes200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListTypes200JSONResponse struct {
+	Body    []Type
+	Headers ListTypes200ResponseHeaders
+}
 
 func (response ListTypes200JSONResponse) VisitListTypesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateTypeRequestObject struct {
@@ -3611,13 +3691,21 @@ type ListUsersResponseObject interface {
 	VisitListUsersResponse(w http.ResponseWriter) error
 }
 
-type ListUsers200JSONResponse []User
+type ListUsers200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListUsers200JSONResponse struct {
+	Body    []User
+	Headers ListUsers200ResponseHeaders
+}
 
 func (response ListUsers200JSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateUserRequestObject struct {
@@ -3696,13 +3784,21 @@ type ListWebhooksResponseObject interface {
 	VisitListWebhooksResponse(w http.ResponseWriter) error
 }
 
-type ListWebhooks200JSONResponse []Webhook
+type ListWebhooks200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListWebhooks200JSONResponse struct {
+	Body    []Webhook
+	Headers ListWebhooks200ResponseHeaders
+}
 
 func (response ListWebhooks200JSONResponse) VisitListWebhooksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
 	w.WriteHeader(200)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Body)
 }
 
 type CreateWebhookRequestObject struct {

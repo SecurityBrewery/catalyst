@@ -851,7 +851,7 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 }
 
 const listComments = `-- name: ListComments :many
-SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
+SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name, COUNT(*) OVER () as total_count
 FROM comments
          LEFT JOIN users ON users.id = comments.author
 WHERE ticket = ?1
@@ -874,6 +874,7 @@ type ListCommentsRow struct {
 	Ticket     string         `json:"ticket"`
 	Updated    string         `json:"updated"`
 	AuthorName sql.NullString `json:"author_name"`
+	TotalCount int64          `json:"total_count"`
 }
 
 func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]ListCommentsRow, error) {
@@ -893,6 +894,7 @@ func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]L
 			&i.Ticket,
 			&i.Updated,
 			&i.AuthorName,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -908,25 +910,40 @@ func (q *Queries) ListComments(ctx context.Context, arg ListCommentsParams) ([]L
 }
 
 const listFeatures = `-- name: ListFeatures :many
-SELECT created, id, name, updated
+SELECT features.created, features.id, features.name, features.updated, COUNT(*) OVER () as total_count
 FROM features
 ORDER BY features.created DESC
+LIMIT ?2 OFFSET ?1
 `
 
-func (q *Queries) ListFeatures(ctx context.Context) ([]Feature, error) {
-	rows, err := q.db.QueryContext(ctx, listFeatures)
+type ListFeaturesParams struct {
+	Offset int64 `json:"offset"`
+	Limit  int64 `json:"limit"`
+}
+
+type ListFeaturesRow struct {
+	Created    string `json:"created"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Updated    string `json:"updated"`
+	TotalCount int64  `json:"total_count"`
+}
+
+func (q *Queries) ListFeatures(ctx context.Context, arg ListFeaturesParams) ([]ListFeaturesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeatures, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Feature
+	var items []ListFeaturesRow
 	for rows.Next() {
-		var i Feature
+		var i ListFeaturesRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.ID,
 			&i.Name,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -942,7 +959,7 @@ func (q *Queries) ListFeatures(ctx context.Context) ([]Feature, error) {
 }
 
 const listFiles = `-- name: ListFiles :many
-SELECT blob, created, id, name, size, ticket, updated
+SELECT files.blob, files.created, files.id, files.name, files.size, files.ticket, files.updated, COUNT(*) OVER () as total_count
 FROM files
 WHERE ticket = ?1
    OR ?1 = ''
@@ -956,15 +973,26 @@ type ListFilesParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]File, error) {
+type ListFilesRow struct {
+	Blob       string `json:"blob"`
+	Created    string `json:"created"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Size       int64  `json:"size"`
+	Ticket     string `json:"ticket"`
+	Updated    string `json:"updated"`
+	TotalCount int64  `json:"total_count"`
+}
+
+func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]ListFilesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listFiles, arg.Ticket, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []File
+	var items []ListFilesRow
 	for rows.Next() {
-		var i File
+		var i ListFilesRow
 		if err := rows.Scan(
 			&i.Blob,
 			&i.Created,
@@ -973,6 +1001,7 @@ func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]File, e
 			&i.Size,
 			&i.Ticket,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -988,7 +1017,7 @@ func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]File, e
 }
 
 const listLinks = `-- name: ListLinks :many
-SELECT created, id, name, ticket, updated, url
+SELECT links.created, links.id, links.name, links.ticket, links.updated, links.url, COUNT(*) OVER () as total_count
 FROM links
 WHERE ticket = ?1
    OR ?1 = ''
@@ -1002,15 +1031,25 @@ type ListLinksParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]Link, error) {
+type ListLinksRow struct {
+	Created    string `json:"created"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Ticket     string `json:"ticket"`
+	Updated    string `json:"updated"`
+	Url        string `json:"url"`
+	TotalCount int64  `json:"total_count"`
+}
+
+func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]ListLinksRow, error) {
 	rows, err := q.db.QueryContext(ctx, listLinks, arg.Ticket, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Link
+	var items []ListLinksRow
 	for rows.Next() {
-		var i Link
+		var i ListLinksRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.ID,
@@ -1018,6 +1057,7 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]Link, e
 			&i.Ticket,
 			&i.Updated,
 			&i.Url,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1033,7 +1073,7 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]Link, e
 }
 
 const listReactions = `-- name: ListReactions :many
-SELECT "action", actiondata, created, id, name, "trigger", triggerdata, updated
+SELECT reactions."action", reactions.actiondata, reactions.created, reactions.id, reactions.name, reactions."trigger", reactions.triggerdata, reactions.updated, COUNT(*) OVER () as total_count
 FROM reactions
 ORDER BY reactions.created DESC
 LIMIT ?2 OFFSET ?1
@@ -1044,15 +1084,27 @@ type ListReactionsParams struct {
 	Limit  int64 `json:"limit"`
 }
 
-func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([]Reaction, error) {
+type ListReactionsRow struct {
+	Action      string `json:"action"`
+	Actiondata  string `json:"actiondata"`
+	Created     string `json:"created"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Trigger     string `json:"trigger"`
+	Triggerdata string `json:"triggerdata"`
+	Updated     string `json:"updated"`
+	TotalCount  int64  `json:"total_count"`
+}
+
+func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([]ListReactionsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listReactions, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Reaction
+	var items []ListReactionsRow
 	for rows.Next() {
-		var i Reaction
+		var i ListReactionsRow
 		if err := rows.Scan(
 			&i.Action,
 			&i.Actiondata,
@@ -1062,6 +1114,7 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 			&i.Trigger,
 			&i.Triggerdata,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1077,7 +1130,7 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
+SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type, COUNT(*) OVER () as total_count
 FROM tasks
          LEFT JOIN users ON users.id = tasks.owner
          LEFT JOIN tickets ON tickets.id = tasks.ticket
@@ -1104,6 +1157,7 @@ type ListTasksRow struct {
 	OwnerName  sql.NullString `json:"owner_name"`
 	TicketName sql.NullString `json:"ticket_name"`
 	TicketType sql.NullString `json:"ticket_type"`
+	TotalCount int64          `json:"total_count"`
 }
 
 func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTasksRow, error) {
@@ -1126,6 +1180,7 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTas
 			&i.OwnerName,
 			&i.TicketName,
 			&i.TicketType,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1141,7 +1196,7 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTas
 }
 
 const listTickets = `-- name: ListTickets :many
-SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
+SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural, COUNT(*) OVER () as total_count
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
          LEFT JOIN types ON types.id = tickets.type
@@ -1169,6 +1224,7 @@ type ListTicketsRow struct {
 	OwnerName    sql.NullString `json:"owner_name"`
 	TypeSingular sql.NullString `json:"type_singular"`
 	TypePlural   sql.NullString `json:"type_plural"`
+	TotalCount   int64          `json:"total_count"`
 }
 
 func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]ListTicketsRow, error) {
@@ -1195,6 +1251,7 @@ func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Lis
 			&i.OwnerName,
 			&i.TypeSingular,
 			&i.TypePlural,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1210,7 +1267,7 @@ func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]Lis
 }
 
 const listTimeline = `-- name: ListTimeline :many
-SELECT created, id, message, ticket, time, updated
+SELECT timeline.created, timeline.id, timeline.message, timeline.ticket, timeline.time, timeline.updated, COUNT(*) OVER () as total_count
 FROM timeline
 WHERE ticket = ?1
    OR ?1 = ''
@@ -1224,15 +1281,25 @@ type ListTimelineParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListTimeline(ctx context.Context, arg ListTimelineParams) ([]Timeline, error) {
+type ListTimelineRow struct {
+	Created    string `json:"created"`
+	ID         string `json:"id"`
+	Message    string `json:"message"`
+	Ticket     string `json:"ticket"`
+	Time       string `json:"time"`
+	Updated    string `json:"updated"`
+	TotalCount int64  `json:"total_count"`
+}
+
+func (q *Queries) ListTimeline(ctx context.Context, arg ListTimelineParams) ([]ListTimelineRow, error) {
 	rows, err := q.db.QueryContext(ctx, listTimeline, arg.Ticket, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Timeline
+	var items []ListTimelineRow
 	for rows.Next() {
-		var i Timeline
+		var i ListTimelineRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.ID,
@@ -1240,6 +1307,7 @@ func (q *Queries) ListTimeline(ctx context.Context, arg ListTimelineParams) ([]T
 			&i.Ticket,
 			&i.Time,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1255,20 +1323,31 @@ func (q *Queries) ListTimeline(ctx context.Context, arg ListTimelineParams) ([]T
 }
 
 const listTypes = `-- name: ListTypes :many
-SELECT created, icon, id, plural, schema, singular, updated
+SELECT types.created, types.icon, types.id, types.plural, types.schema, types.singular, types.updated, COUNT(*) OVER () as total_count
 FROM types
 ORDER BY created DESC
 `
 
-func (q *Queries) ListTypes(ctx context.Context) ([]Type, error) {
+type ListTypesRow struct {
+	Created    string `json:"created"`
+	Icon       string `json:"icon"`
+	ID         string `json:"id"`
+	Plural     string `json:"plural"`
+	Schema     string `json:"schema"`
+	Singular   string `json:"singular"`
+	Updated    string `json:"updated"`
+	TotalCount int64  `json:"total_count"`
+}
+
+func (q *Queries) ListTypes(ctx context.Context) ([]ListTypesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listTypes)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Type
+	var items []ListTypesRow
 	for rows.Next() {
-		var i Type
+		var i ListTypesRow
 		if err := rows.Scan(
 			&i.Created,
 			&i.Icon,
@@ -1277,6 +1356,7 @@ func (q *Queries) ListTypes(ctx context.Context) ([]Type, error) {
 			&i.Schema,
 			&i.Singular,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1292,7 +1372,7 @@ func (q *Queries) ListTypes(ctx context.Context) ([]Type, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, COUNT(*) OVER () as total_count
 FROM users
 ORDER BY users.created DESC
 LIMIT ?2 OFFSET ?1
@@ -1303,15 +1383,33 @@ type ListUsersParams struct {
 	Limit  int64 `json:"limit"`
 }
 
-func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
+type ListUsersRow struct {
+	Avatar                 string `json:"avatar"`
+	Created                string `json:"created"`
+	Email                  string `json:"email"`
+	Emailvisibility        bool   `json:"emailvisibility"`
+	ID                     string `json:"id"`
+	Lastloginalertsentat   string `json:"lastloginalertsentat"`
+	Lastresetsentat        string `json:"lastresetsentat"`
+	Lastverificationsentat string `json:"lastverificationsentat"`
+	Name                   string `json:"name"`
+	Passwordhash           string `json:"passwordhash"`
+	Tokenkey               string `json:"tokenkey"`
+	Updated                string `json:"updated"`
+	Username               string `json:"username"`
+	Verified               bool   `json:"verified"`
+	TotalCount             int64  `json:"total_count"`
+}
+
+func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUsers, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []ListUsersRow
 	for rows.Next() {
-		var i User
+		var i ListUsersRow
 		if err := rows.Scan(
 			&i.Avatar,
 			&i.Created,
@@ -1327,6 +1425,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Updated,
 			&i.Username,
 			&i.Verified,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1342,7 +1441,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 }
 
 const listWebhooks = `-- name: ListWebhooks :many
-SELECT collection, created, destination, id, name, updated
+SELECT webhooks.collection, webhooks.created, webhooks.destination, webhooks.id, webhooks.name, webhooks.updated, COUNT(*) OVER () as total_count
 FROM webhooks
 ORDER BY created DESC
 LIMIT ?2 OFFSET ?1
@@ -1353,15 +1452,25 @@ type ListWebhooksParams struct {
 	Limit  int64 `json:"limit"`
 }
 
-func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]Webhook, error) {
+type ListWebhooksRow struct {
+	Collection  string `json:"collection"`
+	Created     string `json:"created"`
+	Destination string `json:"destination"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Updated     string `json:"updated"`
+	TotalCount  int64  `json:"total_count"`
+}
+
+func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]ListWebhooksRow, error) {
 	rows, err := q.db.QueryContext(ctx, listWebhooks, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Webhook
+	var items []ListWebhooksRow
 	for rows.Next() {
-		var i Webhook
+		var i ListWebhooksRow
 		if err := rows.Scan(
 			&i.Collection,
 			&i.Created,
@@ -1369,6 +1478,7 @@ func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]W
 			&i.ID,
 			&i.Name,
 			&i.Updated,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1391,7 +1501,8 @@ SELECT id,
        open,
        type,
        state,
-       owner_name
+       owner_name,
+       COUNT(*) OVER () as total_count
 FROM ticket_search
 WHERE (?1 = '' OR (name LIKE '%' || ?1 || '%'
    OR description LIKE '%' || ?1 || '%'
@@ -1423,6 +1534,7 @@ type SearchTicketsRow struct {
 	Type        string         `json:"type"`
 	State       string         `json:"state"`
 	OwnerName   sql.NullString `json:"owner_name"`
+	TotalCount  int64          `json:"total_count"`
 }
 
 func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([]SearchTicketsRow, error) {
@@ -1449,6 +1561,7 @@ func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([
 			&i.Type,
 			&i.State,
 			&i.OwnerName,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
