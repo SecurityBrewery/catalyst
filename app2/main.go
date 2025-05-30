@@ -76,6 +76,7 @@ func (a *App2) Start(ctx context.Context) error {
 	r.Use(func(next http.Handler) http.Handler {
 		return http.Handler(cors.NewHandler(next))
 	})
+	r.Use(demomode(a.Queries))
 	r.Use(authService.SessionManager.LoadAndSave)
 	r.Use(middleware.Timeout(time.Second * 60))
 	r.Use(middleware.RequestID)
@@ -90,6 +91,15 @@ func (a *App2) Start(ctx context.Context) error {
 	})
 	r.Get("/ui/*", staticFiles)
 	r.Mount("/auth", authService.Server())
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100}); err != nil {
+			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
 	r.Get("/config", func(w http.ResponseWriter, r *http.Request) {
 		features, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
 		if err != nil {
