@@ -3,7 +3,7 @@ import TicketComment from '@/components/ticket/comment/TicketComment.vue'
 import TicketCommentInput from '@/components/ticket/comment/TicketCommentInput.vue'
 import { Card } from '@/components/ui/card'
 
-import type { Comment, Ticket } from '@/lib/types'
+import type { Comment, Ticket } from '@/client/models'
 
 defineProps<{
   ticket: Ticket

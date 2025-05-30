@@ -50,7 +50,8 @@ onMounted(() => {
     <ColumnHeader title="Dashboard" />
     <ColumnBody>
       <ColumnBodyContainer
-        class="grid grid-cols-1 grid-rows-[100px_100px_100px_100px] md:grid-cols-2 md:grid-rows-[100px_100px] xl:grid-cols-4 xl:grid-rows-[100px]">
+        class="grid grid-cols-1 grid-rows-[100px_100px_100px_100px] md:grid-cols-2 md:grid-rows-[100px_100px] xl:grid-cols-4 xl:grid-rows-[100px]"
+      >
         <Card>
           <CardHeader>
             <CardTitle>{{ count('tasks') }}</CardTitle>
@@ -80,12 +81,19 @@ onMounted(() => {
             <CardTitle> Catalyst</CardTitle>
           </CardHeader>
           <CardContent class="flex flex-1 flex-col gap-1">
-            <a href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook" target="_blank"
-              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent">
+            <a
+              href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook"
+              target="_blank"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
+            >
               Open Catalyst Handbook
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>
-            <a href="/_/" target="_blank" class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent">
+            <a
+              href="/_/"
+              target="_blank"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
+            >
               Open Admin Interface
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>

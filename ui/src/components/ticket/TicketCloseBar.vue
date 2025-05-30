@@ -24,7 +24,10 @@ const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    api.updateTicket({ id: props.ticket.id, ticketUpdate: { open: !props.ticket.open, resolution: resolution.value } }),
+    api.updateTicket({
+      id: props.ticket.id,
+      ticketUpdate: { open: !props.ticket.open, resolution: resolution.value }
+    }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     router.push({ name: 'tickets', params: { type: props.ticket.type } })
@@ -48,10 +51,7 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
     >
       <Check v-if="ticket.open" class="mr-2 h-4 w-4" />
       <Repeat v-else class="mr-2 h-4 w-4" />
-      {{
-        ticket?.open
-          ? 'Close ' + props.ticket.type
-          : 'Reopen ' + props.ticket.type
+      {{ ticket?.open ? 'Close ' + props.ticket.type : 'Reopen ' + props.ticket.type
       }}<!-- TODO -->
     </Button>
   </ColumnHeader>

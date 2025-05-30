@@ -32,7 +32,11 @@ const {
 } = useQuery({
   queryKey: ['users', 'search', searchTerm.value],
   queryFn: () =>
-    api.listUsers().then((users) => users.filter((user) => user.name.toLowerCase().includes(searchTerm.value.toLowerCase())))
+    api
+      .listUsers()
+      .then((users) =>
+        users.filter((user) => user.name.toLowerCase().includes(searchTerm.value.toLowerCase()))
+      )
 })
 
 const searchUserDebounced = debounce(() => refetch(), 300)

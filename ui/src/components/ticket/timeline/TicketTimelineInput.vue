@@ -11,8 +11,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, TimelineItem } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket, TimelineEntry } from '@/client/models'
 import { cn, handleError } from '@/lib/utils'
 
 const props = defineProps<{
@@ -26,11 +26,13 @@ const time = ref(new Date())
 const newTimelineItem = ref(false)
 
 const addCommentMutation = useMutation({
-  mutationFn: (): Promise<TimelineItem> =>
-    pb.collection('timeline').create({
-      ticket: props.ticket.id,
-      message: message.value,
-      time: time.value
+  mutationFn: (): Promise<TimelineEntry> =>
+    api.createTimeline({
+      newTimelineEntry: {
+        ticket: props.ticket.id,
+        message: message.value,
+        time: time.value.toISOString() // TODO
+      }
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })

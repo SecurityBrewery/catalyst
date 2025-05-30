@@ -44,7 +44,8 @@ const age = (ticket: Ticket) => {
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">{{ ticket.type }}</span> <!-- TODO: singular -->
+        <span class="text-sm text-muted-foreground">{{ ticket.type }}</span>
+        <!-- TODO: singular -->
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
         <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
         <RouterLink

@@ -14,8 +14,8 @@ import { Input } from '@/components/ui/input'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { File as CFile, Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { File as CFile, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -31,11 +31,13 @@ const addFileMutation = useMutation({
   mutationFn: (): Promise<CFile> => {
     if (!file.value) return Promise.reject('No file selected')
 
-    return pb.collection('files').create({
-      ticket: props.ticket.id,
-      name: file.value.name,
-      blob: file.value,
-      size: file.value.size
+    return api.createFile({
+      newFile: {
+        ticket: props.ticket.id,
+        name: file.value.name,
+        blob: file.value, // TODO
+        size: file.value.size
+      }
     })
   },
   onSuccess: () => {

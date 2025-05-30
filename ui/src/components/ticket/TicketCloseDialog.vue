@@ -15,8 +15,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -32,14 +32,17 @@ const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      open: !props.ticket.open,
-      resolution: resolution.value
+    api.updateTicket({
+      id: props.ticket.id,
+      ticketUpdate: {
+        open: !props.ticket.open,
+        resolution: resolution.value
+      }
     }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     if (!data.open) {
-      router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+      router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }
   },
   onError: handleError

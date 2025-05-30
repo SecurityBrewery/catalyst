@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 
 const route = useRoute()
 
-defineProps<{ 
+defineProps<{
   isCollapsed: boolean
 }>()
 
@@ -29,7 +29,8 @@ const {
   queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 
-const variant = (t: Sidebar): 'default' | 'ghost' => (route.params.type === t.id ? 'default' : 'ghost')
+const variant = (t: Sidebar): 'default' | 'ghost' =>
+  route.params.type === t.id ? 'default' : 'ghost'
 </script>
 
 <template>

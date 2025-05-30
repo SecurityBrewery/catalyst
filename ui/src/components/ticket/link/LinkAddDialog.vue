@@ -16,8 +16,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { onMounted, ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Link, Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Link, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -30,12 +30,14 @@ const isOpen = defineModel<boolean>()
 
 const addLinkMutation = useMutation({
   mutationFn: (values: any): Promise<Link> =>
-    pb.collection('links').create({
-      ticket: props.ticket.id,
-      name: values.name,
-      url: values.url
+    api.createLink({
+      newLink: {
+        ticket: props.ticket.id,
+        name: values.name,
+        url: values.url
+      }
     }),
-  onSuccess: () => {
+  onSuccess: (data: Link) => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     isOpen.value = false
   },

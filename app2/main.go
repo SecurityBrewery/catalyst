@@ -14,11 +14,17 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app2/database"
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app2/fakedata"
 	"github.com/SecurityBrewery/catalyst/app2/openapi"
 )
 
 func App(filename string, _ bool) (*App2, error) {
 	queries, _, err := database.DB(filepath.Join(filename, "data.db"))
+	if err != nil {
+		return nil, err
+	}
+
+	err = fakedata.Generate(queries, 1, 10)
 	if err != nil {
 		return nil, err
 	}

@@ -8,17 +8,17 @@ import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import format from 'date-fns/format'
 import { type ComputedRef, computed } from 'vue'
 
-import type { Ticket, TimelineItem } from '@/lib/types'
+import type { Ticket, TimelineEntry } from '@/client/models'
 
 const props = defineProps<{
   ticket: Ticket
-  timeline?: Array<TimelineItem>
+  timeline?: Array<TimelineEntry>
 }>()
 
-const commentsByDate: ComputedRef<Record<string, Array<TimelineItem>>> = computed(() => {
+const commentsByDate: ComputedRef<Record<string, Array<TimelineEntry>>> = computed(() => {
   if (!props.timeline) return {}
   const commentsByDate = props.timeline.reduce(
-    (acc: Record<string, Array<TimelineItem>>, comment: TimelineItem) => {
+    (acc: Record<string, Array<TimelineEntry>>, comment: TimelineEntry) => {
       const date = format(new Date(comment.time), 'yyyy-MM-dd')
       if (!acc[date]) acc[date] = []
       acc[date].push(comment)
@@ -29,8 +29,8 @@ const commentsByDate: ComputedRef<Record<string, Array<TimelineItem>>> = compute
 
   return Object.keys(commentsByDate)
     .sort()
-    .reduce((acc: Record<string, Array<TimelineItem>>, date: string) => {
-      acc[date] = commentsByDate[date].sort((a: TimelineItem, b: TimelineItem) => {
+    .reduce((acc: Record<string, Array<TimelineEntry>>, date: string) => {
+      acc[date] = commentsByDate[date].sort((a: TimelineEntry, b: TimelineEntry) => {
         return a.time > b.time ? 1 : -1
       })
       return acc

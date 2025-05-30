@@ -6,8 +6,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -19,11 +19,14 @@ const props = defineProps<{
 const name = ref(props.ticket.name)
 
 const editNameMutation = useMutation({
-  mutationFn: () =>
-    pb.collection('tickets').update(props.ticket.id, {
-      name: name.value
+  mutationFn: (): Promise<Ticket> =>
+    api.updateTicket({
+      id: props.ticket.id,
+      ticketUpdate: {
+        name: name.value
+      }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
+  onSuccess: (data: Ticket) => queryClient.invalidateQueries({ queryKey: ['tickets', data.id] }),
   onError: handleError
 })
 

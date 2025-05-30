@@ -38,13 +38,12 @@ const {
   error
 } = useQuery({
   queryKey: ['types'],
-  queryFn: (): Promise<Array<Type>> =>
-    api.listTypes()
+  queryFn: (): Promise<Array<Type>> => api.listTypes()
 })
 
 const changeTypeMutation = useMutation({
   mutationFn: (typeID: string): Promise<Ticket> =>
-    api.updateTicket({ id: props.ticket.id, ticket: { type: typeID } }),
+    api.updateTicket({ id: props.ticket.id, ticketUpdate: { type: typeID } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     // router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
@@ -54,7 +53,7 @@ const changeTypeMutation = useMutation({
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    api.updateTicket({ id: props.ticket.id, ticket: { open: !props.ticket.open } }),
+    api.updateTicket({ id: props.ticket.id, ticketUpdate: { open: !props.ticket.open } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     if (!data.open) {
@@ -64,7 +63,7 @@ const closeTicketMutation = useMutation({
   onError: handleError
 })
 
-const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type)) // TODO 
+const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type)) // TODO
 
 const closeTicketDialogOpen = ref(false)
 </script>
@@ -85,8 +84,8 @@ const closeTicketDialogOpen = ref(false)
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button variant="outline" :disabled="!ticket">
-                <Icon :name="ticket.type" class="mr-2 size-4" /> <!-- TODO -->
-                {{ ticket.type }}
+                <Icon :name="ticket.type" class="mr-2 size-4" />
+                {{ ticket.type }} <!-- TODO -->
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

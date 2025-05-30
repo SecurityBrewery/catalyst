@@ -8,7 +8,7 @@ import ReactionNew from '@/components/reaction/ReactionNew.vue'
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
+import { api } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,9 +16,9 @@ const router = useRouter()
 const id = computed(() => route.params.id as string)
 
 onMounted(() => {
-  if (!pb.authStore.model) {
-    // router.push({ name: 'login' })
-  }
+  /* if (!pb.authStore.model) {
+    // router.push({ name: 'login' }) // TODO
+  } */
 })
 </script>
 

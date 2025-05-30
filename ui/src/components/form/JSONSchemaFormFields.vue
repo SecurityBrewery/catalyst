@@ -14,12 +14,24 @@ import {
 import isEqual from 'lodash.isequal'
 import { onMounted, ref, watch } from 'vue'
 
-import type { JSONSchema } from '@/lib/types'
+interface JSONSchema {
+  type: 'object'
+  properties: Record<
+    string,
+    {
+      title: string
+      type: string
+      description?: string
+      enum?: Array<string>
+    }
+  >
+  required?: Array<string>
+}
 
 const model = defineModel<Record<string, any>>()
 
 const props = defineProps<{
-  schema: JSONSchema
+  schema: JSONSchema | undefined | null // TODO
 }>()
 
 const formdata = ref<Record<string, any>>({})
@@ -27,7 +39,7 @@ const formdata = ref<Record<string, any>>({})
 onMounted(() => {
   if (!model.value) return
 
-  for (const key in props.schema.properties) {
+  for (const key in props.schema?.properties) {
     formdata.value[key] = model.value[key]
   }
 })
@@ -47,7 +59,7 @@ watch(
 </script>
 
 <template>
-  <div v-for="(property, key) in schema.properties" :key="key">
+  <div v-for="(property, key) in schema?.properties" :key="key">
     <FormField v-if="property.enum" :name="key" v-slot="{ componentField }" v-model="formdata[key]">
       <FormItem>
         <FormLabel :for="key" class="text-right">

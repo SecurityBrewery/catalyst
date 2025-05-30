@@ -27,24 +27,30 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { TimelineItem } from '@/lib/types'
+import { api } from '@/api'
+import type { TimelineEntry } from '@/client/models'
 import { cn, handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
 
 const props = defineProps<{
-  timelineItem: TimelineItem
+  timelineItem: TimelineEntry
 }>()
 
 const isOpen = ref(false)
-const time = ref(props.timelineItem.time)
+const time = ref(new Date(props.timelineItem.time))
 const editMode = ref(false)
 const message = ref(props.timelineItem.message)
 
 const updateTimelineMutation = useMutation({
-  mutationFn: (update: { time?: string; message?: string }): Promise<TimelineItem> =>
-    pb.collection('timeline').update(props.timelineItem.id, update),
+  mutationFn: (update: { time?: Date; message?: string }): Promise<TimelineEntry> =>
+    api.updateTimeline({
+      id: props.timelineItem.id,
+      timelineEntryUpdate: {
+        time: update.time?.toISOString(), // TODO
+        message: update.message
+      }
+    }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
     editMode.value = false
@@ -62,7 +68,7 @@ watch(
 )
 
 const deleteTimelineItemMutation = useMutation({
-  mutationFn: () => pb.collection('timeline').delete(props.timelineItem.id),
+  mutationFn: () => api.deleteTimeline({ id: props.timelineItem.id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
     isOpen.value = false

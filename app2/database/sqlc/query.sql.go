@@ -1025,6 +1025,68 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 	return items, nil
 }
 
+const listSearchTickets = `-- name: ListSearchTickets :many
+SELECT 
+    id, 
+    name, 
+    created,
+    description,
+    open,
+    type,
+    state,
+    owner_name
+FROM ticket_search
+LIMIT ?2 OFFSET ?1
+`
+
+type ListSearchTicketsParams struct {
+	Offset int64 `json:"offset"`
+	Limit  int64 `json:"limit"`
+}
+
+type ListSearchTicketsRow struct {
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Created     string         `json:"created"`
+	Description string         `json:"description"`
+	Open        bool           `json:"open"`
+	Type        string         `json:"type"`
+	State       interface{}    `json:"state"`
+	OwnerName   sql.NullString `json:"owner_name"`
+}
+
+func (q *Queries) ListSearchTickets(ctx context.Context, arg ListSearchTicketsParams) ([]ListSearchTicketsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSearchTickets, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListSearchTicketsRow
+	for rows.Next() {
+		var i ListSearchTicketsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Created,
+			&i.Description,
+			&i.Open,
+			&i.Type,
+			&i.State,
+			&i.OwnerName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTasks = `-- name: ListTasks :many
 SELECT created, id, name, open, owner, ticket, updated
 FROM tasks
@@ -1291,7 +1353,15 @@ func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]W
 }
 
 const searchTickets = `-- name: SearchTickets :many
-SELECT id, name, created, description, open, type, state, owner_name, comment_messages, file_names, link_names, link_urls, task_names, timeline_messages
+SELECT 
+    id, 
+    name, 
+    created,
+    description,
+    open,
+    type,
+    state,
+    owner_name
 FROM ticket_search
 WHERE name LIKE '%' || ?1 || '%'
    OR description LIKE '%' || ?1 || '%'
@@ -1310,15 +1380,26 @@ type SearchTicketsParams struct {
 	Limit  int64          `json:"limit"`
 }
 
-func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([]TicketSearch, error) {
+type SearchTicketsRow struct {
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Created     string         `json:"created"`
+	Description string         `json:"description"`
+	Open        bool           `json:"open"`
+	Type        string         `json:"type"`
+	State       interface{}    `json:"state"`
+	OwnerName   sql.NullString `json:"owner_name"`
+}
+
+func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([]SearchTicketsRow, error) {
 	rows, err := q.db.QueryContext(ctx, searchTickets, arg.Query, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TicketSearch
+	var items []SearchTicketsRow
 	for rows.Next() {
-		var i TicketSearch
+		var i SearchTicketsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -1328,12 +1409,6 @@ func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([
 			&i.Type,
 			&i.State,
 			&i.OwnerName,
-			&i.CommentMessages,
-			&i.FileNames,
-			&i.LinkNames,
-			&i.LinkUrls,
-			&i.TaskNames,
-			&i.TimelineMessages,
 		); err != nil {
 			return nil, err
 		}

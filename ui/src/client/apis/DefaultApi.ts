@@ -314,7 +314,7 @@ export interface ListWebhooksRequest {
 }
 
 export interface SearchTicketsRequest {
-    query: string;
+    query?: string;
     offset?: number;
     limit?: number;
 }
@@ -1943,13 +1943,6 @@ export class DefaultApi extends runtime.BaseAPI {
      * Search tickets with full join data
      */
     async searchTicketsRaw(requestParameters: SearchTicketsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<TicketSearch>>> {
-        if (requestParameters['query'] == null) {
-            throw new runtime.RequiredError(
-                'query',
-                'Required parameter "query" was null or undefined when calling searchTickets().'
-            );
-        }
-
         const queryParameters: any = {};
 
         if (requestParameters['query'] != null) {
@@ -1979,7 +1972,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Search tickets with full join data
      */
-    async searchTickets(requestParameters: SearchTicketsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<TicketSearch>> {
+    async searchTickets(requestParameters: SearchTicketsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<TicketSearch>> {
         const response = await this.searchTicketsRaw(requestParameters, initOverrides);
         return await response.value();
     }

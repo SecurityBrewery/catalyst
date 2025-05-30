@@ -9,7 +9,7 @@ import { Trash2 } from 'lucide-vue-next'
 
 import { ref } from 'vue'
 
-import type { Link, Ticket } from '@/lib/types'
+import type { Link, Ticket } from '@/client/models'
 
 defineProps<{
   ticket: Ticket

@@ -5,11 +5,10 @@ import ResourceListElement from '@/components/layout/ResourceListElement.vue'
 import { Button } from '@/components/ui/button'
 
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Reaction } from '@/lib/types'
+import { api } from '@/api'
+import type { Reaction } from '@/client/models'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,10 +21,7 @@ const {
   error
 } = useQuery({
   queryKey: ['reactions'],
-  queryFn: (): Promise<Array<Reaction>> =>
-    pb.collection('reactions').getFullList({
-      sort: '-created'
-    })
+  queryFn: (): Promise<Array<Reaction>> => api.listReactions()
 })
 
 const subtitle = (reaction: Reaction) =>
@@ -56,12 +52,6 @@ const reactionNiceName = (reaction: Reaction) => {
 const openNew = () => {
   router.push({ name: 'reactions', params: { id: 'new' } })
 }
-
-onMounted(() => {
-  pb.collection('reactions').subscribe('*', () => {
-    queryClient.invalidateQueries({ queryKey: ['reactions'] })
-  })
-})
 </script>
 
 <template>

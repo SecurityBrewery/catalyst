@@ -31,8 +31,8 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Reaction } from '@/lib/types'
+import { api } from '@/api'
+import type { Reaction } from '@/client/models'
 
 const submitDisabledReason = ref<string>('')
 
@@ -46,7 +46,12 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: (): Promise<Record<string, Array<String>>> => {
+    // api.getConfig() // TODO
+    return Promise.resolve({
+      flags: ['demo']
+    })
+  }
 })
 
 watch(

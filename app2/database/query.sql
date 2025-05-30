@@ -380,8 +380,29 @@ FROM dashboard_counts;
 SELECT *
 FROM sidebar;
 
+-- name: ListSearchTickets :many
+SELECT 
+    id, 
+    name, 
+    created,
+    description,
+    open,
+    type,
+    state,
+    owner_name
+FROM ticket_search
+LIMIT @limit OFFSET @offset;
+
 -- name: SearchTickets :many
-SELECT *
+SELECT 
+    id, 
+    name, 
+    created,
+    description,
+    open,
+    type,
+    state,
+    owner_name
 FROM ticket_search
 WHERE name LIKE '%' || @query || '%'
    OR description LIKE '%' || @query || '%'

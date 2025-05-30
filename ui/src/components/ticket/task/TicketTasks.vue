@@ -12,8 +12,8 @@ import { Trash2, User2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task, Ticket, User } from '@/lib/types'
+import { api } from '@/api'
+import type { Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -25,8 +25,11 @@ const props = defineProps<{
 
 const setTaskOwnerMutation = useMutation({
   mutationFn: (update: { id: string; user: User }): Promise<Task> =>
-    pb.collection('tasks').update(update.id, {
-      owner: update.user.id
+    api.updateTask({
+      id: update.id,
+      taskUpdate: {
+        owner: update.user.id
+      }
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
   onError: handleError
@@ -36,8 +39,11 @@ const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, use
 
 const checkMutation = useMutation({
   mutationFn: (task: Task): Promise<Task> =>
-    pb.collection('tasks').update(task.id, {
-      open: !task.open
+    api.updateTask({
+      id: task.id,
+      taskUpdate: {
+        open: !task.open
+      }
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
   onError: handleError
@@ -47,8 +53,11 @@ const check = (task: Task) => checkMutation.mutate(task)
 
 const updateTaskNameMutation = useMutation({
   mutationFn: (update: { id: string; name: string }): Promise<Task> =>
-    pb.collection('tasks').update(update.id, {
-      name: update.name
+    api.updateTask({
+      id: update.id,
+      taskUpdate: {
+        name: update.name
+      }
     }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
   onError: handleError
@@ -76,7 +85,7 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           />
         </div>
         <div class="ml-auto flex items-center">
-          <UserSelect v-if="!task.expand.owner" @update:modelValue="update(task.id, $event)">
+          <UserSelect v-if="!task.owner" @update:modelValue="update(task.id, $event)">
             <Button variant="outline" role="combobox" class="h-8">
               <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
               Unassigned
@@ -84,12 +93,12 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           </UserSelect>
           <UserSelect
             v-else
-            :modelValue="task.expand.owner"
+            :modelValue="task.owner.id"
             @update:modelValue="update(task.id, $event)"
           >
             <Button variant="outline" role="combobox" class="mr-2 h-8">
               <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              {{ task.expand.owner.name }}
+              {{ task.owner }} <!-- TODO -->
             </Button>
           </UserSelect>
           <DeleteDialog

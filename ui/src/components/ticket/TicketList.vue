@@ -104,7 +104,7 @@ const {
 watch(
   () => ticketItems.value,
   () => {
-    if (!route.params.id && ticketItems.value && ticketItems.value.items.length > 0) {
+    if (!route.params.id && ticketItems.value && ticketItems.value.length > 0) {
       router.push({
         name: 'tickets',
         params: { type: props.selectedType.id }
@@ -158,24 +158,24 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>
     <div v-else-if="ticketItems" class="flex-1 overflow-y-auto overflow-x-hidden">
-      <TicketListList :tickets="ticketItems.items" />
+      <TicketListList :tickets="ticketItems" />
     </div>
     <Separator />
     <div class="my-2 flex items-center justify-center">
       <span class="text-xs text-muted-foreground">
-        {{ ticketItems ? ticketItems.items.length : '?' }} of
-        {{ ticketItems ? ticketItems.totalItems : '?' }} tickets
+        {{ ticketItems ? ticketItems.length : '?' }} of
+        {{ ticketItems ? ticketItems.length : '?' }} tickets <!-- TODO ticketItems ? ticketItems.totalItems : '?' -->
       </span>
     </div>
     <div class="mb-2 flex items-center justify-center">
       <Pagination
         v-slot="{ page }"
-        :total="ticketItems ? ticketItems.totalItems : 0"
+        :total="ticketItems ? ticketItems.length : 0" 
         :itemsPerPage="perPage"
         :sibling-count="0"
         :default-page="1"
         @update:page="page = $event"
-      >
+      ><!-- TODO ticketItems ? ticketItems.totalItems : 0 -->
         <PaginationList v-slot="{ items }" class="flex items-center gap-1">
           <PaginationFirst />
           <PaginationPrev />

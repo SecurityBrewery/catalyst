@@ -9,10 +9,8 @@ import { useQuery } from '@tanstack/vue-query'
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Type } from '@/client/models/Type'
-
 import { api } from '@/api'
+import type { Type } from '@/client/models'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,9 +37,9 @@ watch(
 )
 
 onMounted(() => {
-  if (!pb.authStore.model) {
+  /* if (!pb.authStore.model) {
     // router.push({ name: 'login' }) // TODO
-  }
+  } */
 })
 </script>
 

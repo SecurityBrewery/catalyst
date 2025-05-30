@@ -9,8 +9,8 @@ import { Download, Trash2 } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { File, Ticket } from '@/lib/types'
+import { api } from '@/api'
+import type { File, Ticket } from '@/client/models'
 import { human } from '@/lib/utils'
 
 defineProps<{
@@ -28,7 +28,12 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: (): Promise<Record<string, Array<String>>> => {
+    // api.getConfig() // TODO
+    return Promise.resolve({
+      flags: ['demo']
+    })
+  }
 })
 
 watch(

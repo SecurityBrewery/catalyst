@@ -549,27 +549,51 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 }
 
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
-	tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
-		Query:  sql.NullString{String: request.Params.Query, Valid: true},
-		Offset: toInt64(request.Params.Offset, defaultOffset),
-		Limit:  toInt64(request.Params.Limit, defaultLimit),
-	})
-	if err != nil {
-		return nil, err
+	var response []openapi.TicketSearch
+
+	if request.Params.Query == nil || *request.Params.Query == "" {
+		tickets, err := s.Queries.ListSearchTickets(ctx, sqlc.ListSearchTicketsParams{
+			Offset: toInt64(request.Params.Offset, defaultOffset),
+			Limit:  toInt64(request.Params.Limit, defaultLimit),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, ticket := range tickets {
+			response = append(response, openapi.TicketSearch{
+				Id:          ticket.ID,
+				Name:        ticket.Name,
+				Created:     ticket.Created,
+				Description: ticket.Description,
+				Open:        ticket.Open,
+				Type:        ticket.Type,
+				// State:       ticket.State,
+			})
+		}
+	} else {
+		tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
+			Query:  toNullString(request.Params.Query),
+			Offset: toInt64(request.Params.Offset, defaultOffset),
+			Limit:  toInt64(request.Params.Limit, defaultLimit),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, ticket := range tickets {
+			response = append(response, openapi.TicketSearch{
+				Id:          ticket.ID,
+				Name:        ticket.Name,
+				Created:     ticket.Created,
+				Description: ticket.Description,
+				Open:        ticket.Open,
+				Type:        ticket.Type,
+				// State:       ticket.State,
+			})
+		}
 	}
 
-	var response []openapi.TicketSearch
-	for _, ticket := range tickets {
-		response = append(response, openapi.TicketSearch{
-			Id:          ticket.ID,
-			Name:        ticket.Name,
-			Created:     ticket.Created,
-			Description: ticket.Description,
-			Open:        ticket.Open,
-			Type:        ticket.Type,
-			// State:       ticket.State,
-		})
-	}
 	return openapi.SearchTickets200JSONResponse(response), nil
 }
 

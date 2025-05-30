@@ -3,7 +3,7 @@ import { Circle } from 'lucide-vue-next'
 
 import format from 'date-fns/format'
 
-import type { Comment } from '@/lib/types'
+import type { Comment } from '@/client/models'
 
 defineProps<{
   comments: Array<Comment>

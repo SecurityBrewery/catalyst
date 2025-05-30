@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 
 import { ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
+import { api } from '@/api'
 import { cn } from '@/lib/utils'
 
 interface AlertData {
@@ -20,7 +20,7 @@ const mail = ref('')
 const alert = ref<AlertData | null>(null)
 
 const resetPassword = () => {
-  pb.collection('users')
+  /* pb.collection('users') // TODO
     .requestPasswordReset(mail.value)
     .then(() => {
       alert.value = {
@@ -36,6 +36,7 @@ const resetPassword = () => {
         message: error.message
       }
     })
+      */
 }
 </script>
 

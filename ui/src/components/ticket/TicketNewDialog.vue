@@ -20,7 +20,7 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { api } from '@/api'
-import type { Ticket, Type } from '@/client/models/Ticket'
+import type { Ticket, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const queryClient = useQueryClient()
@@ -37,14 +37,15 @@ const addTicketMutation = useMutation({
     // if (!pb.authStore.model) return Promise.reject('Not logged in') // TODO
 
     return api.createTicket({
-      ticket: {
+      newTicket: {
         name: name.value,
         description: description.value,
         open: true,
         type: props.selectedType.id,
         schema: props.selectedType.schema,
         state: state.value,
-        owner: '' // TODO
+        owner: '', // TODO
+        resolution: ''
       }
     })
   },
@@ -69,6 +70,7 @@ const validationSchema = computed(() => {
     name: 'required'
   }
 
+  /*
   Object.keys(props.selectedType.schema.properties).forEach((key) => {
     const property = props.selectedType.schema.properties[key]
     if (property.type === 'string') {
@@ -80,6 +82,7 @@ const validationSchema = computed(() => {
       fields[key] = ''
     }
   })
+    */
 
   return fields
 })

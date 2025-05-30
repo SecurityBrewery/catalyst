@@ -27,7 +27,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { api } from '@/api'
-import type { Ticket, Type } from '@/client/models/Ticket'
+import type { Comment, File, Link, Ticket, Task, TimelineEntry, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const route = useRoute()
@@ -49,15 +49,56 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets', id.value],
-  queryFn: (): Promise<Ticket> =>
-    api.getTicket({ id: id.value })
+  queryFn: (): Promise<Ticket> => api.getTicket({ id: id.value })
+})
+
+const {
+  data: timeline,
+  isPending: timelinePending,
+  isError: timelineError
+} = useQuery({
+  queryKey: ['timeline', id.value],
+  queryFn: (): Promise<Array<TimelineEntry>> => api.listTimeline({ ticket: id.value })
+})
+
+const {
+  data: tasks,
+  isPending: tasksPending,
+  isError: tasksError
+} = useQuery({
+  queryKey: ['tasks', id.value],
+  queryFn: (): Promise<Array<Task>> => api.listTasks({ ticket: id.value })
+})
+
+const {
+  data: comments,
+  isPending: commentsPending,
+  isError: commentsError
+} = useQuery({
+  queryKey: ['comments', id.value],
+  queryFn: (): Promise<Array<Comment>> => api.listComments({ ticket: id.value })
+}) 
+
+const {
+  data: files,
+  isPending: filesPending,
+  isError: filesError
+} = useQuery({
+  queryKey: ['files', id.value],
+  queryFn: (): Promise<Array<File>> => api.listFiles({ ticket: id.value })
+})
+
+const {
+  data: links,
+  isPending: linksPending,
+  isError: linksError
+} = useQuery({
+  queryKey: ['links', id.value],
+  queryFn: (): Promise<Array<Link>> => api.listLinks({ ticket: id.value })
 })
 
 const editDescriptionMutation = useMutation({
-  mutationFn: () =>
-    pb.collection('tickets').update(id.value, {
-      description: message.value
-    }),
+  mutationFn: () => api.updateTicket({ id: id.value, ticketUpdate: { description: message.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
     editMode.value = false
@@ -69,7 +110,7 @@ const edit = () => (editMode.value = true)
 
 const editStateMutation = useMutation({
   mutationFn: (state: Record<string, any>): Promise<Ticket> =>
-    api.updateTicket({ id: id.value, ticket: { state } }),
+    api.updateTicket({ id: id.value, ticketUpdate: { state } }),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', id.value] }),
   onError: handleError
 })
@@ -79,28 +120,24 @@ const taskStatus = computed(() => {
     return 'pending'
   }
 
-  /*
-  const tasks = ticket.value.expand.tasks_via_ticket
-
-  if (tasks.every((task) => !task.open)) {
+  if (tasks.value && tasks.value.every((task) => !task.open)) {
     return 'completed'
   }
 
-  if (tasks.every((task) => task.open)) {
+  if (tasks.value && tasks.value.every((task) => task.open)) {
     return 'open'
   }
-    */
 
   return 'pending'
 })
 
-const updateDescription = (value: string) => (message.value = value)
+const updateDescription = (value: string | undefined) => (message.value = value ?? '')
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
     <template v-if="ticket">
-      <TicketActionBar :ticket="ticket" class="shrink-0" />
+      <TicketActionBar :ticket="ticket" />
       <ColumnBody>
         <ColumnBodyContainer class="flex-col gap-4 xl:flex-row">
           <div class="flex flex-1 flex-col gap-4">
@@ -131,59 +168,43 @@ const updateDescription = (value: string) => (message.value = value)
                 <TabsTrigger value="timeline">
                   Timeline
                   <Badge
-                    v-if="
-                      ticket.expand.timeline_via_ticket &&
-                      ticket.expand.timeline_via_ticket.length > 0
-                    "
+                    v-if="timeline && timeline.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{
-                      ticket.expand.timeline_via_ticket
-                        ? ticket.expand.timeline_via_ticket.length
-                        : 0
-                    }}
+                    {{ timeline.length }}
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="tasks">
                   Tasks
                   <Badge
-                    v-if="
-                      ticket.expand.tasks_via_ticket && ticket.expand.tasks_via_ticket.length > 0
-                    "
+                    v-if="tasks && tasks.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{ ticket.expand.tasks_via_ticket ? ticket.expand.tasks_via_ticket.length : 0 }}
+                    {{ tasks.length }}
                     <StatusIcon :status="taskStatus" class="size-6" />
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="comments">
                   Comments
                   <Badge
-                    v-if="
-                      ticket.expand.comments_via_ticket &&
-                      ticket.expand.comments_via_ticket.length > 0
-                    "
+                    v-if="comments && comments.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{
-                      ticket.expand.comments_via_ticket
-                        ? ticket.expand.comments_via_ticket.length
-                        : 0
-                    }}
+                    {{ comments.length }}
                   </Badge>
                 </TabsTrigger>
               </TabsList>
               <TicketTab value="timeline">
-                <TicketTimeline :ticket="ticket" :timeline="ticket.expand.timeline_via_ticket" />
+                <TicketTimeline :ticket="ticket" :timeline="timeline" />
               </TicketTab>
               <TicketTab value="tasks">
-                <TicketTasks :ticket="ticket" :tasks="ticket.expand.tasks_via_ticket" />
+                <TicketTasks :ticket="ticket" :tasks="tasks" />
               </TicketTab>
               <TicketTab value="comments">
-                <TicketComments :ticket="ticket" :comments="ticket.expand.comments_via_ticket" />
+                <TicketComments :ticket="ticket" :comments="comments" />
               </TicketTab>
             </Tabs>
             <Separator class="xl:hidden" />
@@ -200,14 +221,14 @@ const updateDescription = (value: string) => (message.value = value)
               />
             </div>
             <Separator />
-            <TicketLinks :ticket="ticket" :links="ticket.expand.links_via_ticket" />
+            <TicketLinks :ticket="ticket" :links="links" />
             <Separator />
-            <TicketFiles :ticket="ticket" :files="ticket.expand.files_via_ticket" />
+            <TicketFiles :ticket="ticket" :files="files" />
           </div>
         </ColumnBodyContainer>
       </ColumnBody>
       <Separator />
-      <TicketCloseBar :ticket="ticket" class="shrink-0" />
+      <TicketCloseBar :ticket="ticket" />
     </template>
   </TanView>
 </template>

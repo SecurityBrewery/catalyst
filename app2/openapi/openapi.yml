@@ -448,7 +448,7 @@ paths:
       summary: Search tickets with full join data
       operationId: searchTickets
       parameters:
-        - { "name": "query", "in": "query", "required": true, "schema": { "type": "string" } }
+        - { "name": "query", "in": "query", "required": false, "schema": { "type": "string" } }
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:

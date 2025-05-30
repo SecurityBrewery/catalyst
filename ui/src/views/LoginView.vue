@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useQuery } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
+import { api } from '@/api'
 import { cn } from '@/lib/utils'
 
 const mail = ref('')
@@ -17,7 +17,7 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const login = () => {
-  pb.collection('users')
+  /* pb.collection('users') // TODO
     .authWithPassword(mail.value, password.value)
     .then(() => {
       window.location.href = '/ui/'
@@ -26,11 +26,17 @@ const login = () => {
       errorTitle.value = 'Login failed'
       errorMessage.value = error.message
     })
+    */
 }
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: (): Promise<Record<string, Array<String>>> => {
+    //return api.getConfig() // TODO
+    return Promise.resolve({
+      flags: ['demo']
+    })
+  }
 })
 
 watch(
