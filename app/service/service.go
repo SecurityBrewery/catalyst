@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -13,6 +14,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
+	"github.com/SecurityBrewery/catalyst/reaction/schedule"
 )
 
 const (
@@ -21,14 +23,16 @@ const (
 )
 
 type Service struct {
-	queries *sqlc.Queries
-	hooks   *hook.Hooks
+	queries   *sqlc.Queries
+	hooks     *hook.Hooks
+	scheduler *schedule.Scheduler
 }
 
-func New(queries *sqlc.Queries, hooks *hook.Hooks) *Service {
+func New(queries *sqlc.Queries, hooks *hook.Hooks, scheduler *schedule.Scheduler) *Service {
 	return &Service{
-		queries: queries,
-		hooks:   hooks,
+		queries:   queries,
+		hooks:     hooks,
+		scheduler: scheduler,
 	}
 }
 
@@ -556,6 +560,10 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 		return nil, err
 	}
 
+	if err := s.scheduler.AddReaction(&reaction); err != nil {
+		slog.ErrorContext(ctx, "Failed to add reaction to scheduler", "error", err)
+	}
+
 	response := openapi.Reaction{
 		Action:      reaction.Action,
 		Actiondata:  unmarshal(reaction.Actiondata),
@@ -579,6 +587,8 @@ func (s *Service) DeleteReaction(ctx context.Context, request openapi.DeleteReac
 	if err != nil {
 		return nil, err
 	}
+
+	s.scheduler.RemoveReaction(request.Id)
 
 	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "reactions", request.Id)
 
@@ -618,6 +628,12 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	s.scheduler.RemoveReaction(request.Id)
+
+	if err := s.scheduler.AddReaction(&reaction); err != nil {
+		slog.ErrorContext(ctx, "Failed to add reaction to scheduler", "error", err)
 	}
 
 	response := openapi.Reaction{

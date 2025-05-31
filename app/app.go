@@ -12,14 +12,16 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/service"
+	"github.com/SecurityBrewery/catalyst/reaction/schedule"
 )
 
 type App struct {
-	Queries *sqlc.Queries
-	Router  *chi.Mux
-	Service *service.Service
-	Auth    *auth.Service
-	Hooks   *hook.Hooks
+	Queries   *sqlc.Queries
+	Router    *chi.Mux
+	Service   *service.Service
+	Auth      *auth.Service
+	Hooks     *hook.Hooks
+	Scheduler *schedule.Scheduler
 }
 
 func New(ctx context.Context, filename string) (*App, error) {
@@ -50,13 +52,19 @@ func New(ctx context.Context, filename string) (*App, error) {
 		return nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
+	scheduler, err := schedule.New(ctx, queries)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create scheduler: %w", err)
+	}
+
 	hooks := hook.NewHooks()
 
 	return &App{
-		Hooks:   hooks,
-		Queries: queries,
-		Router:  chi.NewRouter(),
-		Service: service.New(queries, hooks),
-		Auth:    authService,
+		Hooks:     hooks,
+		Queries:   queries,
+		Router:    chi.NewRouter(),
+		Service:   service.New(queries, hooks, scheduler),
+		Auth:      authService,
+		Scheduler: scheduler,
 	}, nil
 }

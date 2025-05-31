@@ -3,102 +3,105 @@ package schedule
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/go-co-op/gocron/v2"
-	"go.uber.org/multierr"
 
-	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 )
+
+type Scheduler struct {
+	scheduler gocron.Scheduler
+	queries   *sqlc.Queries
+}
 
 type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func Start(pb *app.App) {
-	s, err := gocron.NewScheduler()
+func New(ctx context.Context, queries *sqlc.Queries) (*Scheduler, error) {
+	innerScheduler, err := gocron.NewScheduler()
 	if err != nil {
-		slog.Error(fmt.Sprintf("failed to create scheduler: %v", err))
+		return nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
-	// add a job to the scheduler
-	_, err = s.NewJob(
-		gocron.CronJob(
-			"* * * * *",
-			false,
-		),
-		gocron.NewTask(
-			func(ctx context.Context) {
-				if err := runSchedule(ctx, pb); err != nil {
-					slog.ErrorContext(ctx, "failed to run schedule", "error", err.Error())
-				}
-			},
-		),
-	)
-	if err != nil {
-		slog.Error(fmt.Sprintf("failed to add cron job: %v", err))
+	scheduler := &Scheduler{
+		scheduler: innerScheduler,
+		queries:   queries,
 	}
 
-	s.Start()
+	if err := scheduler.loadJobs(ctx); err != nil {
+		return nil, fmt.Errorf("failed to load jobs: %w", err)
+	}
+
+	return scheduler, nil
 }
 
-func runSchedule(ctx context.Context, app *app.App) error {
-	var errs error
-
-	records, err := findByScheduleTrigger(ctx, app.Queries)
-	if err != nil {
-		errs = multierr.Append(errs, fmt.Errorf("failed to find schedule reaction: %w", err))
-	}
-
-	if len(records) == 0 {
-		return nil
-	}
-
-	for _, hook := range records {
-		_, err = action.Run(ctx, app, hook.Action, hook.Actiondata, "{}")
-		if err != nil {
-			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
-		}
-	}
-
-	return errs
-}
-
-func findByScheduleTrigger(ctx context.Context, queries *sqlc.Queries) ([]*sqlc.ListReactionsRow, error) {
-	reactions, err := queries.ListReactions(ctx, sqlc.ListReactionsParams{
+func (s *Scheduler) loadJobs(ctx context.Context) error {
+	reactions, err := s.queries.ListReactions(ctx, sqlc.ListReactionsParams{
 		Offset: 0,
-		Limit:  100,
+		Limit:  1000,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to find schedule reaction: %w", err)
+		return fmt.Errorf("failed to find schedule reaction: %w", err)
 	}
 
 	if len(reactions) == 0 {
-		return nil, nil
+		return nil
 	}
 
-	var errs error
-
-	var matchedRecords []*sqlc.ListReactionsRow
+	var errs []error
 
 	for _, reaction := range reactions {
 		if reaction.Trigger != "schedule" {
 			continue
 		}
 
-		var schedule Schedule
-		if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
-			errs = multierr.Append(errs, err)
-
-			continue
+		if err := s.AddReaction(&sqlc.Reaction{
+			Action:      reaction.Action,
+			Actiondata:  reaction.Actiondata,
+			Created:     reaction.Created,
+			ID:          reaction.ID,
+			Name:        reaction.Name,
+			Trigger:     reaction.Trigger,
+			Triggerdata: reaction.Triggerdata,
+			Updated:     reaction.Updated,
+		}); err != nil {
+			errs = append(errs, fmt.Errorf("failed to add reaction %s: %w", reaction.ID, err))
 		}
-
-		// if s.IsDue(moment) { TODO
-		matchedRecords = append(matchedRecords, &reaction)
 	}
 
-	return matchedRecords, errs
+	return errors.Join(errs...)
+}
+
+func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
+	var schedule Schedule
+	if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
+		return fmt.Errorf("failed to unmarshal schedule data: %w", err)
+	}
+
+	_, err := s.scheduler.NewJob(
+		gocron.CronJob(schedule.Expression, false),
+		gocron.NewTask(
+			func(ctx context.Context) {
+				_, err := action.Run(ctx, s.queries, reaction.Action, reaction.Actiondata, "{}")
+				if err != nil {
+					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
+				}
+			},
+		),
+		gocron.WithTags(reaction.ID),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create new job for reaction %s: %w", reaction.ID, err)
+	}
+
+	return nil
+}
+
+func (s *Scheduler) RemoveReaction(id string) {
+	s.scheduler.RemoveByTags(id)
 }

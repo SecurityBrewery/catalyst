@@ -21,7 +21,8 @@ func App(t *testing.T) (*app.App, *Counter) {
 	err = baseApp.SetupRoutes()
 	require.NoError(t, err)
 
-	reaction.BindHooks(baseApp, true)
+	err = reaction.BindHooks(baseApp, true)
+	require.NoError(t, err)
 
 	defaultTestData(t, baseApp)
 

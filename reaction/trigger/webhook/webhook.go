@@ -23,19 +23,19 @@ type Webhook struct {
 const prefix = "/reaction/"
 
 func BindHooks(app *app.App) {
-	app.Router.HandleFunc(prefix+"*", handle(app))
+	app.Router.HandleFunc(prefix+"*", handle(app.Queries))
 }
 
-func handle(app *app.App) http.HandlerFunc {
+func handle(queries *sqlc.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		reaction, payload, status, err := parseRequest(app.Queries, r)
+		reaction, payload, status, err := parseRequest(queries, r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
 
 			return
 		}
 
-		output, err := action.Run(r.Context(), app, reaction.Action, reaction.Actiondata, string(payload))
+		output, err := action.Run(r.Context(), queries, reaction.Action, reaction.Actiondata, string(payload))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 

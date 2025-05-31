@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -33,13 +34,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	reaction.BindHooks(catalyst, false)
+	if err := reaction.BindHooks(catalyst, false); err != nil {
+		log.Fatal(err)
+	}
+
 	webhook.BindHooks(catalyst)
 
 	server := &http.Server{
 		Addr:        ":8090",
 		Handler:     catalyst.Router,
-		ReadTimeout: 10 * 60 * 1000, // 10 minutes
+		ReadTimeout: 10 * time.Minute,
 	}
 
 	if err := server.ListenAndServe(); err != nil {

@@ -5,20 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, app *app.App, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
 	}
 
 	if a, ok := action.(authenticatedAction); ok {
-		token, err := systemToken(ctx, app.Queries)
+		token, err := systemToken(ctx, queries)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get system token: %w", err)
 		}
