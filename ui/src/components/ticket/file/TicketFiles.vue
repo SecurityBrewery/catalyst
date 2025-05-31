@@ -7,15 +7,19 @@ import { Button } from '@/components/ui/button'
 import { Download, Trash2 } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
 import { api } from '@/api'
-import type { File, Ticket } from '@/client/models'
+import type { ModelFile, Ticket } from '@/client/models'
 import { human } from '@/lib/utils'
+import { handleError } from '@/lib/utils'
 
-defineProps<{
+const queryClient = useQueryClient()
+
+const props = defineProps<{
   ticket: Ticket
-  files: Array<File> | undefined
+  files: Array<ModelFile> | undefined
 }>()
 
 const downloadFile = (file: any) => {
@@ -37,6 +41,16 @@ const { data: config } = useQuery({
       throw new Error('Failed to fetch config')
     })
   }
+})
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string) => {
+    return api.deleteFile({ id })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
+  },
+  onError: handleError
 })
 
 watch(
@@ -84,11 +98,9 @@ watch(
       </Button>
       <DeleteDialog
         v-if="file"
-        collection="files"
-        :id="file.id"
         :name="file.name"
         singular="File"
-        :queryKey="['tickets', ticket.id]"
+        @delete="deleteMutation.mutate(file.id)"
       >
         <Button variant="ghost" size="icon" class="h-8 w-8">
           <Trash2 class="size-4" />

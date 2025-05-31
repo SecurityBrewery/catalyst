@@ -68,6 +68,17 @@ const ticketType = computed(() => types.value?.find((t) => t.id === props.ticket
 const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.ticket.type))
 
 const closeTicketDialogOpen = ref(false)
+
+const deleteMutation = useMutation({
+  mutationFn: () => {
+    return api.deleteTicket({ id: props.ticket.id })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    router.push({ name: 'tickets' })
+  },
+  onError: handleError
+})
 </script>
 
 <template>
@@ -148,12 +159,9 @@ const closeTicketDialogOpen = ref(false)
     <div class="-mx-1 flex-1" />
     <DeleteDialog
       v-if="ticket"
-      :collection="'tickets'"
-      :id="ticket.id"
       :name="ticket.name"
       singular="Ticket"
-      :to="{ name: 'tickets' }"
-      :queryKey="['tickets']"
+      @delete="deleteMutation.mutate"
     />
   </ColumnHeader>
 </template>

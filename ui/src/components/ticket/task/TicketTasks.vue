@@ -63,6 +63,16 @@ const updateTaskNameMutation = useMutation({
   onError: handleError
 })
 
+const deleteMutation = useMutation({
+  mutationFn: () => {
+    return api.deleteTask({ id: props.ticket.id })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+  },
+  onError: handleError
+})
+
 const updateTaskName = (id: string, name: string) => updateTaskNameMutation.mutate({ id, name })
 </script>
 
@@ -92,11 +102,9 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           />
           <DeleteDialog
             v-if="task"
-            collection="tasks"
-            :id="task.id"
             :name="task.name"
-            :singular="'Task'"
-            :queryKey="['tasks', ticket.id]"
+            singular="Task"
+            @delete="deleteMutation.mutate"
           >
             <Button variant="ghost" size="icon" class="h-8 w-8">
               <Trash2 class="size-4" />

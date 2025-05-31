@@ -9,8 +9,8 @@ import (
 
 	"go.uber.org/multierr"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/webhook"
 )
@@ -20,19 +20,19 @@ type Hook struct {
 	Events      []string `json:"events"`
 }
 
-func BindHooks(app *app2.App2, test bool) {
-	app.Service.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+func BindHooks(app *app.App, test bool) {
+	app.Hooks.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		hook(ctx, app, "create", table, record, test)
 	})
-	app.Service.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+	app.Hooks.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		hook(ctx, app, "update", table, record, test)
 	})
-	app.Service.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
+	app.Hooks.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		hook(ctx, app, "delete", table, record, test)
 	})
 }
 
-func hook(ctx context.Context, app *app2.App2, event, collection string, record any, test bool) {
+func hook(ctx context.Context, app *app.App, event, collection string, record any, test bool) {
 	user, _, err := app.Auth.SessionManager.Get(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to get user from session", "error", err)
@@ -47,13 +47,13 @@ func hook(ctx context.Context, app *app2.App2, event, collection string, record 
 	}
 }
 
-func mustRunHook(ctx context.Context, app *app2.App2, collection, event string, record any, auth *sqlc.User) {
+func mustRunHook(ctx context.Context, app *app.App, collection, event string, record any, auth *sqlc.User) {
 	if err := runHook(ctx, app, collection, event, record, auth); err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
 	}
 }
 
-func runHook(ctx context.Context, app *app2.App2, collection, event string, record any, auth *sqlc.User) error {
+func runHook(ctx context.Context, app *app.App, collection, event string, record any, auth *sqlc.User) error {
 	payload, err := json.Marshal(&webhook.Payload{
 		Action:     event,
 		Collection: collection,

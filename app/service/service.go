@@ -1,4 +1,4 @@
-package app2
+package service
 
 import (
 	"context"
@@ -10,8 +10,9 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app2/openapi"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/hook"
+	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
 
 const (
@@ -20,48 +21,19 @@ const (
 )
 
 type Service struct {
-	Queries *sqlc.Queries
-
-	OnRecordsListRequest        *Hook
-	OnRecordViewRequest         *Hook
-	OnRecordBeforeCreateRequest *Hook
-	OnRecordAfterCreateRequest  *Hook
-	OnRecordBeforeUpdateRequest *Hook
-	OnRecordAfterUpdateRequest  *Hook
-	OnRecordBeforeDeleteRequest *Hook
-	OnRecordAfterDeleteRequest  *Hook
+	queries *sqlc.Queries
+	hooks   *hook.Hooks
 }
 
-func NewService(queries *sqlc.Queries) *Service {
+func New(queries *sqlc.Queries, hooks *hook.Hooks) *Service {
 	return &Service{
-		Queries:                     queries,
-		OnRecordsListRequest:        &Hook{},
-		OnRecordViewRequest:         &Hook{},
-		OnRecordBeforeCreateRequest: &Hook{},
-		OnRecordAfterCreateRequest:  &Hook{},
-		OnRecordBeforeUpdateRequest: &Hook{},
-		OnRecordAfterUpdateRequest:  &Hook{},
-		OnRecordBeforeDeleteRequest: &Hook{},
-		OnRecordAfterDeleteRequest:  &Hook{},
+		queries: queries,
+		hooks:   hooks,
 	}
-}
-
-type Hook struct {
-	subscribers []func(ctx context.Context, table string, record any)
-}
-
-func (h *Hook) Publish(ctx context.Context, table string, record any) {
-	for _, subscriber := range h.subscribers {
-		subscriber(ctx, table, record)
-	}
-}
-
-func (h *Hook) Subscribe(fn func(ctx context.Context, table string, record any)) {
-	h.subscribers = append(h.subscribers, fn)
 }
 
 func (s *Service) ListComments(ctx context.Context, request openapi.ListCommentsRequestObject) (openapi.ListCommentsResponseObject, error) {
-	comments, err := s.Queries.ListComments(ctx, sqlc.ListCommentsParams{
+	comments, err := s.queries.ListComments(ctx, sqlc.ListCommentsParams{
 		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
@@ -88,7 +60,7 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 		totalCount = int(comments[0].TotalCount)
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "comments", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "comments", response)
 
 	return openapi.ListComments200JSONResponse{
 		Body: response,
@@ -99,9 +71,9 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 }
 
 func (s *Service) CreateComment(ctx context.Context, request openapi.CreateCommentRequestObject) (openapi.CreateCommentResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "comments", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "comments", request.Body)
 
-	comment, err := s.Queries.CreateComment(ctx, sqlc.CreateCommentParams{
+	comment, err := s.queries.CreateComment(ctx, sqlc.CreateCommentParams{
 		ID:      generateID("c"),
 		Author:  request.Body.Author,
 		Message: request.Body.Message,
@@ -120,26 +92,26 @@ func (s *Service) CreateComment(ctx context.Context, request openapi.CreateComme
 		Updated: comment.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "comments", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "comments", response)
 
 	return openapi.CreateComment200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteComment(ctx context.Context, request openapi.DeleteCommentRequestObject) (openapi.DeleteCommentResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "comments", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "comments", request.Id)
 
-	err := s.Queries.DeleteComment(ctx, request.Id)
+	err := s.queries.DeleteComment(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "comments", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "comments", request.Id)
 
 	return openapi.DeleteComment204Response{}, nil
 }
 
 func (s *Service) GetComment(ctx context.Context, request openapi.GetCommentRequestObject) (openapi.GetCommentResponseObject, error) {
-	comment, err := s.Queries.GetComment(ctx, request.Id)
+	comment, err := s.queries.GetComment(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -154,15 +126,15 @@ func (s *Service) GetComment(ctx context.Context, request openapi.GetCommentRequ
 		Updated:    comment.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "comments", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "comments", response)
 
 	return openapi.GetComment200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateCommentRequestObject) (openapi.UpdateCommentResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "comments", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "comments", request.Body)
 
-	comment, err := s.Queries.UpdateComment(ctx, sqlc.UpdateCommentParams{
+	comment, err := s.queries.UpdateComment(ctx, sqlc.UpdateCommentParams{
 		Message: toNullString(request.Body.Message),
 		ID:      request.Id,
 	})
@@ -179,13 +151,13 @@ func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateComme
 		Updated: comment.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "comments", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "comments", response)
 
 	return openapi.UpdateComment200JSONResponse(response), nil
 }
 
 func (s *Service) GetDashboardCounts(ctx context.Context, _ openapi.GetDashboardCountsRequestObject) (openapi.GetDashboardCountsResponseObject, error) {
-	counts, err := s.Queries.GetDashboardCounts(ctx)
+	counts, err := s.queries.GetDashboardCounts(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -198,13 +170,13 @@ func (s *Service) GetDashboardCounts(ctx context.Context, _ openapi.GetDashboard
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "dashboard_counts", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "dashboard_counts", response)
 
 	return openapi.GetDashboardCounts200JSONResponse(response), nil
 }
 
 func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeaturesRequestObject) (openapi.ListFeaturesResponseObject, error) {
-	features, err := s.Queries.ListFeatures(ctx, sqlc.ListFeaturesParams{
+	features, err := s.queries.ListFeatures(ctx, sqlc.ListFeaturesParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -227,7 +199,7 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 		totalCount = int(features[0].TotalCount)
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "features", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "features", response)
 
 	return openapi.ListFeatures200JSONResponse{
 		Body: response,
@@ -238,9 +210,9 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 }
 
 func (s *Service) CreateFeature(ctx context.Context, request openapi.CreateFeatureRequestObject) (openapi.CreateFeatureResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "features", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "features", request.Body)
 
-	feature, err := s.Queries.CreateFeature(ctx, request.Body.Name)
+	feature, err := s.queries.CreateFeature(ctx, request.Body.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -252,26 +224,26 @@ func (s *Service) CreateFeature(ctx context.Context, request openapi.CreateFeatu
 		Updated: feature.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "features", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "features", response)
 
 	return openapi.CreateFeature200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteFeature(ctx context.Context, request openapi.DeleteFeatureRequestObject) (openapi.DeleteFeatureResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "features", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "features", request.Id)
 
-	err := s.Queries.DeleteFeature(ctx, request.Id)
+	err := s.queries.DeleteFeature(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "features", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "features", request.Id)
 
 	return openapi.DeleteFeature204Response{}, nil
 }
 
 func (s *Service) GetFeature(ctx context.Context, request openapi.GetFeatureRequestObject) (openapi.GetFeatureResponseObject, error) {
-	feature, err := s.Queries.GetFeature(ctx, request.Id)
+	feature, err := s.queries.GetFeature(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -283,13 +255,13 @@ func (s *Service) GetFeature(ctx context.Context, request openapi.GetFeatureRequ
 		Updated: feature.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "features", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "features", response)
 
 	return openapi.GetFeature200JSONResponse(response), nil
 }
 
 func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesRequestObject) (openapi.ListFilesResponseObject, error) {
-	files, err := s.Queries.ListFiles(ctx, sqlc.ListFilesParams{
+	files, err := s.queries.ListFiles(ctx, sqlc.ListFilesParams{
 		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
@@ -325,9 +297,9 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 }
 
 func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequestObject) (openapi.CreateFileResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "files", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "files", request.Body)
 
-	file, err := s.Queries.CreateFile(ctx, sqlc.CreateFileParams{
+	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
 		ID:     generateID("f"),
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
@@ -338,7 +310,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 		return nil, err
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "files", file)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "files", file)
 
 	return openapi.CreateFile200JSONResponse(openapi.File{
 		Blob:    file.Blob,
@@ -352,20 +324,20 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 }
 
 func (s *Service) DeleteFile(ctx context.Context, request openapi.DeleteFileRequestObject) (openapi.DeleteFileResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "files", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "files", request.Id)
 
-	err := s.Queries.DeleteFile(ctx, request.Id)
+	err := s.queries.DeleteFile(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "files", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "files", request.Id)
 
 	return openapi.DeleteFile204Response{}, nil
 }
 
 func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObject) (openapi.GetFileResponseObject, error) {
-	file, err := s.Queries.GetFile(ctx, request.Id)
+	file, err := s.queries.GetFile(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -380,15 +352,15 @@ func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObj
 		Updated: file.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "files", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "files", response)
 
 	return openapi.GetFile200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequestObject) (openapi.UpdateFileResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "files", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "files", request.Body)
 
-	file, err := s.Queries.UpdateFile(ctx, sqlc.UpdateFileParams{
+	file, err := s.queries.UpdateFile(ctx, sqlc.UpdateFileParams{
 		ID:   request.Id,
 		Name: toNullString(request.Body.Name),
 		Blob: toNullString(request.Body.Blob),
@@ -408,13 +380,13 @@ func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequ
 		Updated: file.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "files", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "files", response)
 
 	return openapi.UpdateFile200JSONResponse(response), nil
 }
 
 func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksRequestObject) (openapi.ListLinksResponseObject, error) {
-	links, err := s.Queries.ListLinks(ctx, sqlc.ListLinksParams{
+	links, err := s.queries.ListLinks(ctx, sqlc.ListLinksParams{
 		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
@@ -449,9 +421,9 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 }
 
 func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequestObject) (openapi.CreateLinkResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "links", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "links", request.Body)
 
-	link, err := s.Queries.CreateLink(ctx, sqlc.CreateLinkParams{
+	link, err := s.queries.CreateLink(ctx, sqlc.CreateLinkParams{
 		Name:   request.Body.Name,
 		Url:    request.Body.Url,
 		Ticket: request.Body.Ticket,
@@ -469,26 +441,26 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 		Url:     link.Url,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "links", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "links", response)
 
 	return openapi.CreateLink200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteLink(ctx context.Context, request openapi.DeleteLinkRequestObject) (openapi.DeleteLinkResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "links", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "links", request.Id)
 
-	err := s.Queries.DeleteLink(ctx, request.Id)
+	err := s.queries.DeleteLink(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "links", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "links", request.Id)
 
 	return openapi.DeleteLink204Response{}, nil
 }
 
 func (s *Service) GetLink(ctx context.Context, request openapi.GetLinkRequestObject) (openapi.GetLinkResponseObject, error) {
-	link, err := s.Queries.GetLink(ctx, request.Id)
+	link, err := s.queries.GetLink(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -502,15 +474,15 @@ func (s *Service) GetLink(ctx context.Context, request openapi.GetLinkRequestObj
 		Ticket:  link.Ticket,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "links", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "links", response)
 
 	return openapi.GetLink200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequestObject) (openapi.UpdateLinkResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "links", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "links", request.Body)
 
-	link, err := s.Queries.UpdateLink(ctx, sqlc.UpdateLinkParams{
+	link, err := s.queries.UpdateLink(ctx, sqlc.UpdateLinkParams{
 		ID:   request.Id,
 		Name: toNullString(request.Body.Name),
 		Url:  toNullString(request.Body.Url),
@@ -528,13 +500,13 @@ func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequ
 		Url:     link.Url,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "links", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "links", response)
 
 	return openapi.UpdateLink200JSONResponse(response), nil
 }
 
 func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactionsRequestObject) (openapi.ListReactionsResponseObject, error) {
-	reactions, err := s.Queries.ListReactions(ctx, sqlc.ListReactionsParams{
+	reactions, err := s.queries.ListReactions(ctx, sqlc.ListReactionsParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -556,7 +528,7 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "reactions", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "reactions", response)
 
 	totalCount := 0
 	if len(reactions) > 0 {
@@ -572,9 +544,9 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 }
 
 func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReactionRequestObject) (openapi.CreateReactionResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "reactions", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "reactions", request.Body)
 
-	reaction, err := s.Queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+	reaction, err := s.queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		ID:      generateID("r"),
 		Name:    request.Body.Name,
 		Action:  request.Body.Action,
@@ -595,26 +567,26 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 		Updated:     reaction.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "reactions", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "reactions", response)
 
 	return openapi.CreateReaction200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteReaction(ctx context.Context, request openapi.DeleteReactionRequestObject) (openapi.DeleteReactionResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "reactions", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "reactions", request.Id)
 
-	err := s.Queries.DeleteReaction(ctx, request.Id)
+	err := s.queries.DeleteReaction(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "reactions", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "reactions", request.Id)
 
 	return openapi.DeleteReaction204Response{}, nil
 }
 
 func (s *Service) GetReaction(ctx context.Context, request openapi.GetReactionRequestObject) (openapi.GetReactionResponseObject, error) {
-	reaction, err := s.Queries.GetReaction(ctx, request.Id)
+	reaction, err := s.queries.GetReaction(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -630,15 +602,15 @@ func (s *Service) GetReaction(ctx context.Context, request openapi.GetReactionRe
 		Updated:     reaction.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "reactions", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "reactions", response)
 
 	return openapi.GetReaction200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReactionRequestObject) (openapi.UpdateReactionResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "reactions", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "reactions", request.Body)
 
-	reaction, err := s.Queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
+	reaction, err := s.queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
 		ID:      request.Id,
 		Name:    toNullString(request.Body.Name),
 		Action:  toNullString(request.Body.Action),
@@ -659,13 +631,13 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 		Updated:     reaction.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "reactions", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "reactions", response)
 
 	return openapi.UpdateReaction200JSONResponse(response), nil
 }
 
 func (s *Service) GetSidebar(ctx context.Context, _ openapi.GetSidebarRequestObject) (openapi.GetSidebarResponseObject, error) {
-	sidebar, err := s.Queries.GetSidebar(ctx)
+	sidebar, err := s.queries.GetSidebar(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -681,13 +653,13 @@ func (s *Service) GetSidebar(ctx context.Context, _ openapi.GetSidebarRequestObj
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "sidebar", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "sidebar", response)
 
 	return openapi.GetSidebar200JSONResponse(response), nil
 }
 
 func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksRequestObject) (openapi.ListTasksResponseObject, error) {
-	tasks, err := s.Queries.ListTasks(ctx, sqlc.ListTasksParams{
+	tasks, err := s.queries.ListTasks(ctx, sqlc.ListTasksParams{
 		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
@@ -712,7 +684,7 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "tasks", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "tasks", response)
 
 	totalCount := 0
 	if len(tasks) > 0 {
@@ -728,9 +700,9 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 }
 
 func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequestObject) (openapi.CreateTaskResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "tasks", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "tasks", request.Body)
 
-	task, err := s.Queries.CreateTask(ctx, sqlc.CreateTaskParams{
+	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -750,26 +722,26 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 		Updated: task.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "tasks", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "tasks", response)
 
 	return openapi.CreateTask200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteTask(ctx context.Context, request openapi.DeleteTaskRequestObject) (openapi.DeleteTaskResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "tasks", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "tasks", request.Id)
 
-	err := s.Queries.DeleteTask(ctx, request.Id)
+	err := s.queries.DeleteTask(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "tasks", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "tasks", request.Id)
 
 	return openapi.DeleteTask204Response{}, nil
 }
 
 func (s *Service) GetTask(ctx context.Context, request openapi.GetTaskRequestObject) (openapi.GetTaskResponseObject, error) {
-	task, err := s.Queries.GetTask(ctx, request.Id)
+	task, err := s.queries.GetTask(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -787,15 +759,15 @@ func (s *Service) GetTask(ctx context.Context, request openapi.GetTaskRequestObj
 		TicketType: task.TicketType.String,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "tasks", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "tasks", response)
 
 	return openapi.GetTask200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequestObject) (openapi.UpdateTaskResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "tasks", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "tasks", request.Body)
 
-	task, err := s.Queries.UpdateTask(ctx, sqlc.UpdateTaskParams{
+	task, err := s.queries.UpdateTask(ctx, sqlc.UpdateTaskParams{
 		ID:    request.Id,
 		Name:  toNullString(request.Body.Name),
 		Open:  toNullBool(request.Body.Open),
@@ -815,13 +787,13 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 		Updated: task.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "tasks", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "tasks", response)
 
 	return openapi.UpdateTask200JSONResponse(response), nil
 }
 
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
-	tickets, err := s.Queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
+	tickets, err := s.queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
 		Query:  toNullString(request.Params.Query),
 		Type:   toNullString(request.Params.Type),
 		Open:   toNullBool(request.Params.Open),
@@ -847,7 +819,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "tickets", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "tickets", response)
 
 	totalCount := 0
 	if len(tickets) > 0 {
@@ -863,7 +835,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 }
 
 func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRequestObject) (openapi.ListTicketsResponseObject, error) {
-	tickets, err := s.Queries.ListTickets(ctx, sqlc.ListTicketsParams{
+	tickets, err := s.queries.ListTickets(ctx, sqlc.ListTicketsParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -891,7 +863,7 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "tickets", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "tickets", response)
 
 	totalCount := 0
 	if len(tickets) > 0 {
@@ -907,9 +879,9 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 }
 
 func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicketRequestObject) (openapi.CreateTicketResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "tickets", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "tickets", request.Body)
 
-	ticket, err := s.Queries.CreateTicket(ctx, sqlc.CreateTicketParams{
+	ticket, err := s.queries.CreateTicket(ctx, sqlc.CreateTicketParams{
 		ID:          generateID(request.Body.Type),
 		Name:        request.Body.Name,
 		Description: request.Body.Description,
@@ -937,26 +909,26 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 		Updated:     ticket.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "tickets", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "tickets", response)
 
 	return openapi.CreateTicket200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteTicket(ctx context.Context, request openapi.DeleteTicketRequestObject) (openapi.DeleteTicketResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "tickets", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "tickets", request.Id)
 
-	err := s.Queries.DeleteTicket(ctx, request.Id)
+	err := s.queries.DeleteTicket(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "tickets", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "tickets", request.Id)
 
 	return openapi.DeleteTicket204Response{}, nil
 }
 
 func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketRequestObject) (openapi.GetTicketResponseObject, error) {
-	ticket, err := s.Queries.Ticket(ctx, request.Id)
+	ticket, err := s.queries.Ticket(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -978,15 +950,15 @@ func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketReques
 		Updated:      ticket.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "tickets", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "tickets", response)
 
 	return openapi.GetTicket200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicketRequestObject) (openapi.UpdateTicketResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "tickets", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "tickets", request.Body)
 
-	ticket, err := s.Queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
+	ticket, err := s.queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
 		Name:        toNullString(request.Body.Name),
 		Description: toNullString(request.Body.Description),
 		Open:        toNullBool(request.Body.Open),
@@ -1015,13 +987,13 @@ func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicket
 		Updated:     ticket.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "tickets", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "tickets", response)
 
 	return openapi.UpdateTicket200JSONResponse(response), nil
 }
 
 func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimelineRequestObject) (openapi.ListTimelineResponseObject, error) {
-	timeline, err := s.Queries.ListTimeline(ctx, sqlc.ListTimelineParams{
+	timeline, err := s.queries.ListTimeline(ctx, sqlc.ListTimelineParams{
 		Ticket: toString(request.Params.Ticket, ""),
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
@@ -1042,7 +1014,7 @@ func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimeline
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "timeline", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "timeline", response)
 
 	totalCount := 0
 	if len(timeline) > 0 {
@@ -1058,9 +1030,9 @@ func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimeline
 }
 
 func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTimelineRequestObject) (openapi.CreateTimelineResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "timeline", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "timeline", request.Body)
 
-	timeline, err := s.Queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
+	timeline, err := s.queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
 		ID:      generateID("h"),
 		Message: request.Body.Message,
 		Time:    request.Body.Time,
@@ -1079,26 +1051,26 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 		Updated: timeline.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "timeline", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "timeline", response)
 
 	return openapi.CreateTimeline200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteTimeline(ctx context.Context, request openapi.DeleteTimelineRequestObject) (openapi.DeleteTimelineResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "timeline", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "timeline", request.Id)
 
-	err := s.Queries.DeleteTimeline(ctx, request.Id)
+	err := s.queries.DeleteTimeline(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "timeline", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "timeline", request.Id)
 
 	return openapi.DeleteTimeline204Response{}, nil
 }
 
 func (s *Service) GetTimeline(ctx context.Context, request openapi.GetTimelineRequestObject) (openapi.GetTimelineResponseObject, error) {
-	timeline, err := s.Queries.GetTimeline(ctx, request.Id)
+	timeline, err := s.queries.GetTimeline(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -1112,15 +1084,15 @@ func (s *Service) GetTimeline(ctx context.Context, request openapi.GetTimelineRe
 		Ticket:  timeline.Ticket,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "timeline", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "timeline", response)
 
 	return openapi.GetTimeline200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTimelineRequestObject) (openapi.UpdateTimelineResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "timeline", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "timeline", request.Body)
 
-	timeline, err := s.Queries.UpdateTimeline(ctx, sqlc.UpdateTimelineParams{
+	timeline, err := s.queries.UpdateTimeline(ctx, sqlc.UpdateTimelineParams{
 		ID:      request.Id,
 		Message: toNullString(request.Body.Message),
 		Time:    toNullString(request.Body.Time),
@@ -1138,13 +1110,13 @@ func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTime
 		Updated: timeline.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "timeline", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "timeline", response)
 
 	return openapi.UpdateTimeline200JSONResponse(response), nil
 }
 
 func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesRequestObject) (openapi.ListTypesResponseObject, error) {
-	types, err := s.Queries.ListTypes(ctx, sqlc.ListTypesParams{
+	types, err := s.queries.ListTypes(ctx, sqlc.ListTypesParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -1165,7 +1137,7 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 		})
 	}
 
-	s.OnRecordsListRequest.Publish(ctx, "types", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "types", response)
 
 	totalCount := 0
 	if len(types) > 0 {
@@ -1181,9 +1153,9 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 }
 
 func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequestObject) (openapi.CreateTypeResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "types", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "types", request.Body)
 
-	t, err := s.Queries.CreateType(ctx, sqlc.CreateTypeParams{
+	t, err := s.queries.CreateType(ctx, sqlc.CreateTypeParams{
 		ID:       generateID("t"),
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
@@ -1204,26 +1176,26 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 		Updated:  t.Updated,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "types", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "types", response)
 
 	return openapi.CreateType200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteType(ctx context.Context, request openapi.DeleteTypeRequestObject) (openapi.DeleteTypeResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "types", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "types", request.Id)
 
-	err := s.Queries.DeleteType(ctx, request.Id)
+	err := s.queries.DeleteType(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "types", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "types", request.Id)
 
 	return openapi.DeleteType204Response{}, nil
 }
 
 func (s *Service) GetType(ctx context.Context, request openapi.GetTypeRequestObject) (openapi.GetTypeResponseObject, error) {
-	t, err := s.Queries.GetType(ctx, request.Id)
+	t, err := s.queries.GetType(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -1238,15 +1210,15 @@ func (s *Service) GetType(ctx context.Context, request openapi.GetTypeRequestObj
 		Updated:  t.Updated,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "types", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "types", response)
 
 	return openapi.GetType200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequestObject) (openapi.UpdateTypeResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "types", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "types", request.Body)
 
-	t, err := s.Queries.UpdateType(ctx, sqlc.UpdateTypeParams{
+	t, err := s.queries.UpdateType(ctx, sqlc.UpdateTypeParams{
 		ID:       request.Id,
 		Icon:     toNullString(request.Body.Icon),
 		Plural:   toNullString(request.Body.Plural),
@@ -1267,13 +1239,13 @@ func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequ
 		Updated:  t.Updated,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "types", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "types", response)
 
 	return openapi.UpdateType200JSONResponse(response), nil
 }
 
 func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersRequestObject) (openapi.ListUsersResponseObject, error) {
-	users, err := s.Queries.ListUsers(ctx, sqlc.ListUsersParams{
+	users, err := s.queries.ListUsers(ctx, sqlc.ListUsersParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -1315,7 +1287,7 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 }
 
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "users", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "users", request.Body)
 
 	if request.Body.Password != request.Body.PasswordConfirm {
 		return nil, errors.New("passwords do not match")
@@ -1326,7 +1298,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	user, err := s.Queries.CreateUser(ctx, sqlc.CreateUserParams{
+	user, err := s.queries.CreateUser(ctx, sqlc.CreateUserParams{
 		ID:              generateID("u"),
 		Name:            request.Body.Name,
 		Email:           request.Body.Email,
@@ -1358,7 +1330,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		Verified:               user.Verified,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "users", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "users", response)
 
 	return openapi.CreateUser200JSONResponse(response), nil
 }
@@ -1373,20 +1345,20 @@ func hashPassword(password string) (string, error) {
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request openapi.DeleteUserRequestObject) (openapi.DeleteUserResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "users", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "users", request.Id)
 
-	err := s.Queries.DeleteUser(ctx, request.Id)
+	err := s.queries.DeleteUser(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "users", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "users", request.Id)
 
 	return openapi.DeleteUser204Response{}, nil
 }
 
 func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObject) (openapi.GetUserResponseObject, error) {
-	user, err := s.Queries.GetUser(ctx, request.Id)
+	user, err := s.queries.GetUser(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -1408,13 +1380,13 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 		Verified:               user.Verified,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "users", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "users", response)
 
 	return openapi.GetUser200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequestObject) (openapi.UpdateUserResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "users", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "users", request.Body)
 
 	var passwordHash sql.NullString
 
@@ -1435,7 +1407,7 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		return nil, errors.New("password and password confirm must be provided together")
 	}
 
-	user, err := s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+	user, err := s.queries.UpdateUser(ctx, sqlc.UpdateUserParams{
 		Name:            toNullString(request.Body.Name),
 		Email:           toNullString(request.Body.Email),
 		EmailVisibility: toNullBool(request.Body.EmailVisibility),
@@ -1467,13 +1439,13 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		Verified:               user.Verified,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "users", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "users", response)
 
 	return openapi.UpdateUser200JSONResponse(response), nil
 }
 
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {
-	webhooks, err := s.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
+	webhooks, err := s.queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -1503,9 +1475,9 @@ func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooks
 }
 
 func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebhookRequestObject) (openapi.CreateWebhookResponseObject, error) {
-	s.OnRecordBeforeCreateRequest.Publish(ctx, "webhooks", request.Body)
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "webhooks", request.Body)
 
-	webhook, err := s.Queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
+	webhook, err := s.queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
 		ID:          generateID("w"),
 		Name:        request.Body.Name,
 		Destination: request.Body.Destination,
@@ -1524,26 +1496,26 @@ func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebho
 		Collection:  webhook.Collection,
 	}
 
-	s.OnRecordAfterCreateRequest.Publish(ctx, "webhooks", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "webhooks", response)
 
 	return openapi.CreateWebhook200JSONResponse(response), nil
 }
 
 func (s *Service) DeleteWebhook(ctx context.Context, request openapi.DeleteWebhookRequestObject) (openapi.DeleteWebhookResponseObject, error) {
-	s.OnRecordBeforeDeleteRequest.Publish(ctx, "webhooks", request.Id)
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "webhooks", request.Id)
 
-	err := s.Queries.DeleteWebhook(ctx, request.Id)
+	err := s.queries.DeleteWebhook(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.OnRecordAfterDeleteRequest.Publish(ctx, "webhooks", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "webhooks", request.Id)
 
 	return openapi.DeleteWebhook204Response{}, nil
 }
 
 func (s *Service) GetWebhook(ctx context.Context, request openapi.GetWebhookRequestObject) (openapi.GetWebhookResponseObject, error) {
-	webhook, err := s.Queries.GetWebhook(ctx, request.Id)
+	webhook, err := s.queries.GetWebhook(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -1557,15 +1529,15 @@ func (s *Service) GetWebhook(ctx context.Context, request openapi.GetWebhookRequ
 		Collection:  webhook.Collection,
 	}
 
-	s.OnRecordViewRequest.Publish(ctx, "webhooks", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "webhooks", response)
 
 	return openapi.GetWebhook200JSONResponse(response), nil
 }
 
 func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebhookRequestObject) (openapi.UpdateWebhookResponseObject, error) {
-	s.OnRecordBeforeUpdateRequest.Publish(ctx, "webhooks", request.Body)
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "webhooks", request.Body)
 
-	webhook, err := s.Queries.UpdateWebhook(ctx, sqlc.UpdateWebhookParams{
+	webhook, err := s.queries.UpdateWebhook(ctx, sqlc.UpdateWebhookParams{
 		ID:          request.Id,
 		Name:        toNullString(request.Body.Name),
 		Destination: toNullString(request.Body.Destination),
@@ -1584,7 +1556,7 @@ func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebho
 		Collection:  webhook.Collection,
 	}
 
-	s.OnRecordAfterUpdateRequest.Publish(ctx, "webhooks", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "webhooks", response)
 
 	return openapi.UpdateWebhook200JSONResponse(response), nil
 }

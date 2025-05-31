@@ -1,4 +1,4 @@
-package auth
+package sessionmanager
 
 import (
 	"encoding/json"

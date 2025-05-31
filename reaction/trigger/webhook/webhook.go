@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
@@ -22,11 +22,11 @@ type Webhook struct {
 
 const prefix = "/reaction/"
 
-func BindHooks(app *app2.App2) {
+func BindHooks(app *app.App) {
 	app.Router.HandleFunc(prefix+"*", handle(app))
 }
 
-func handle(app *app2.App2) http.HandlerFunc {
+func handle(app *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reaction, payload, status, err := parseRequest(app.Queries, r)
 		if err != nil {

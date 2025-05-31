@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 
-	"github.com/alexedwards/scs/v2"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/auth/sessionmanager"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 type Config struct {
@@ -41,7 +40,7 @@ type UserCreateConfig struct {
 type Service struct {
 	config         *Config
 	queries        *sqlc.Queries
-	SessionManager *SessionManager
+	SessionManager *sessionmanager.SessionManager
 	oauth2Config   oauth2.Config
 	verifier       *oidc.IDTokenVerifier
 }
@@ -53,19 +52,10 @@ func New(ctx context.Context, queries *sqlc.Queries, config *Config) (*Service, 
 	}
 
 	if config.PasswordAuth {
-		sessionManager := scs.New()
-		sessionManager.Cookie.SameSite = http.SameSiteLaxMode
-		sessionManager.Cookie.Domain = config.Domain
-		sessionManager.Cookie.Secure = config.CookieSecure
-		sessionManager.Codec = &JSONCodec{}
-		sessionManager.Store = &SQliteStore{
-			queries: queries,
-		}
-
-		service.SessionManager = &SessionManager{
-			queries:  queries,
-			internal: sessionManager,
-		}
+		service.SessionManager = sessionmanager.New(&sessionmanager.Config{
+			Domain:       config.Domain,
+			CookieSecure: config.CookieSecure,
+		}, queries)
 	}
 
 	if config.OIDCAuth {

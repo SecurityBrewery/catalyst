@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 func randomState() (string, error) {

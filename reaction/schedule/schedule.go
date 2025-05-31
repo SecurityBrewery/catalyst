@@ -9,8 +9,8 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"go.uber.org/multierr"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 )
 
@@ -18,7 +18,7 @@ type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func Start(pb *app2.App2) {
+func Start(pb *app.App) {
 	s, err := gocron.NewScheduler()
 	if err != nil {
 		slog.Error(fmt.Sprintf("failed to create scheduler: %v", err))
@@ -45,7 +45,7 @@ func Start(pb *app2.App2) {
 	s.Start()
 }
 
-func runSchedule(ctx context.Context, app *app2.App2) error {
+func runSchedule(ctx context.Context, app *app.App) error {
 	var errs error
 
 	records, err := findByScheduleTrigger(ctx, app.Queries)

@@ -7,14 +7,30 @@ import { Button } from '@/components/ui/button'
 
 import { Trash2 } from 'lucide-vue-next'
 
+import { useMutation } from '@tanstack/vue-query'
+import { useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
+import { api } from '@/api'
 import type { Link, Ticket } from '@/client/models'
+import { handleError } from '@/lib/utils'
 
-defineProps<{
+const queryClient = useQueryClient()
+
+const props = defineProps<{
   ticket: Ticket
   links: Array<Link> | undefined
 }>()
+
+const deleteMutation = useMutation({
+  mutationFn: () => {
+    return api.deleteLink({ id: props.ticket.id })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
+  },
+  onError: handleError
+})
 
 const dialogOpen = ref(false)
 </script>
@@ -46,14 +62,7 @@ const dialogOpen = ref(false)
         </div>
       </a>
 
-      <DeleteDialog
-        v-if="link"
-        collection="links"
-        :id="link.id"
-        :name="link.name"
-        singular="Link"
-        :queryKey="['tickets', ticket.id]"
-      >
+      <DeleteDialog v-if="link" :name="link.name" singular="Link" @delete="deleteMutation.mutate">
         <Button variant="ghost" size="icon" class="h-8 w-8">
           <Trash2 class="size-4" />
         </Button>

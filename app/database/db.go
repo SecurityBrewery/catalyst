@@ -14,7 +14,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "modernc.org/sqlite" // import sqlite driver
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 //go:embed migrations/*.sql

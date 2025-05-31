@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, app *app2.App2, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, app *app.App, actionName, actionData, payload string) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
@@ -67,16 +67,16 @@ func systemToken(ctx context.Context, queries *sqlc.Queries) (string, error) {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	/*
-		return security.NewJWT(
-			jwt.MapClaims{
-				"id":           authRecord.ID,
-				"type":         tokens.TypeAuthRecord,
-				"collectionId": "users",
-			},
-			authRecord.Tokenkey, // +app.Settings().RecordAuthToken.Secret, TODO
-			int64(time.Second*60),
-		)
+	/* TODO
+	return security.NewJWT(
+		jwt.MapClaims{
+			"id":           authRecord.ID,
+			"type":         tokens.TypeAuthRecord,
+			"collectionId": "users",
+		},
+		authRecord.Tokenkey, // +app.Settings().RecordAuthToken.Secret,
+		int64(time.Second*60),
+	)
 	*/
 	return "", nil
 }

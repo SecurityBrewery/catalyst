@@ -6,15 +6,16 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/fakedata"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/fakedata"
 	"github.com/SecurityBrewery/catalyst/reaction"
+	"github.com/SecurityBrewery/catalyst/webhook"
 )
 
 func main() {
 	ctx := context.Background()
 
-	catalyst, err := app2.App(ctx, "./catalyst_data", false)
+	catalyst, err := app.New(ctx, "./catalyst_data")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,6 +34,7 @@ func main() {
 	}
 
 	reaction.BindHooks(catalyst, false)
+	webhook.BindHooks(catalyst)
 
 	server := &http.Server{
 		Addr:        ":8090",

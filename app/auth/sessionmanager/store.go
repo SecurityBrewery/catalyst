@@ -1,4 +1,4 @@
-package auth
+package sessionmanager
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 var _ scs.CtxStore = &SQliteStore{}

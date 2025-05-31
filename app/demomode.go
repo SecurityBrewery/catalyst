@@ -1,4 +1,4 @@
-package app2
+package app
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-func demomode(queries *sqlc.Queries) func(http.Handler) http.Handler {
+func demoMode(queries *sqlc.Queries) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if criticalPath(r) && criticalMethod(r) && demoMode(r.Context(), queries) {
+			if isCriticalPath(r) && isCriticalMethod(r) && isDemoMode(r.Context(), queries) {
 				http.Error(w, "Cannot modify reactions or files in demo mode", http.StatusForbidden)
 
 				return
@@ -24,7 +24,7 @@ func demomode(queries *sqlc.Queries) func(http.Handler) http.Handler {
 	}
 }
 
-func criticalPath(r *http.Request) bool {
+func isCriticalPath(r *http.Request) bool {
 	// Define critical paths that should not be accessed in demo mode
 	criticalPaths := []string{"/api/reactions", "/api/files"}
 
@@ -37,11 +37,11 @@ func criticalPath(r *http.Request) bool {
 	return false
 }
 
-func criticalMethod(r *http.Request) bool {
+func isCriticalMethod(r *http.Request) bool {
 	return !slices.Contains([]string{http.MethodHead, http.MethodGet}, r.Method)
 }
 
-func demoMode(ctx context.Context, queries *sqlc.Queries) bool {
+func isDemoMode(ctx context.Context, queries *sqlc.Queries) bool {
 	features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to get flags", "error", err)

@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 func defaultData() ([]sqlc.Ticket, []sqlc.Comment, []sqlc.Timeline, []sqlc.Task, []sqlc.Link, []sqlc.Reaction) {
@@ -204,7 +204,7 @@ func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error { //n
 	return nil
 }
 
-func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) error { //nolint:cyclop
+func ValidateDefaultData(ctx context.Context, t *testing.T, app *app.App) error { //nolint:cyclop
 	t.Helper()
 
 	// users

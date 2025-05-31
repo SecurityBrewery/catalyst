@@ -9,7 +9,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 const (

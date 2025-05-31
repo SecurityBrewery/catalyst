@@ -9,8 +9,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 type Webhook struct {
@@ -20,14 +20,14 @@ type Webhook struct {
 	Destination string `db:"destination" json:"destination"`
 }
 
-func BindHooks(app app2.App2) {
-	app.Service.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+func BindHooks(app *app.App) {
+	app.Hooks.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		event(ctx, app, "create", table, record)
 	})
-	app.Service.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+	app.Hooks.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		event(ctx, app, "update", table, record)
 	})
-	app.Service.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
+	app.Hooks.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
 		event(ctx, app, "delete", table, record)
 	})
 }
@@ -40,7 +40,7 @@ type Payload struct {
 	Admin      *sqlc.User `json:"admin,omitempty"`
 }
 
-func event(ctx context.Context, app app2.App2, event, collection string, record any) {
+func event(ctx context.Context, app *app.App, event, collection string, record any) {
 	auth, _, err := app.Auth.SessionManager.Get(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to get auth session", "error", err.Error())

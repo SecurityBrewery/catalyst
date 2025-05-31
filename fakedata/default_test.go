@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/app2/fakedata"
+	"github.com/SecurityBrewery/catalyst/fakedata"
 	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
 

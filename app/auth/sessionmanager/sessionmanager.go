@@ -1,4 +1,4 @@
-package auth
+package sessionmanager
 
 import (
 	"context"
@@ -8,14 +8,34 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 const SessionKey = "user_id"
 
+type Config struct {
+	Domain       string `json:"domain" yaml:"domain"`
+	CookieSecure bool   `json:"cookieSecure,omitempty" yaml:"cookieSecure,omitempty"`
+}
 type SessionManager struct {
 	queries  *sqlc.Queries
 	internal *scs.SessionManager
+}
+
+func New(config *Config, queries *sqlc.Queries) *SessionManager {
+	sessionManager := scs.New()
+	sessionManager.Cookie.SameSite = http.SameSiteLaxMode
+	sessionManager.Cookie.Domain = config.Domain
+	sessionManager.Cookie.Secure = config.CookieSecure
+	sessionManager.Codec = &JSONCodec{}
+	sessionManager.Store = &SQliteStore{
+		queries: queries,
+	}
+
+	return &SessionManager{
+		queries:  queries,
+		internal: sessionManager,
+	}
 }
 
 func (m *SessionManager) Get(ctx context.Context) (sqlc.User, error, error) {

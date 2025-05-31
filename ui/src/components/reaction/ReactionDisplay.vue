@@ -38,6 +38,17 @@ const updateReactionMutation = useMutation({
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reactions'] }),
   onError: handleError
 })
+
+const deleteMutation = useMutation({
+  mutationFn: () => {
+    return api.deleteReaction({ id: props.id })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['reactions'] })
+    router.push({ name: 'reactions' })
+  },
+  onError: handleError
+})
 </script>
 
 <template>
@@ -50,12 +61,9 @@ const updateReactionMutation = useMutation({
       <div class="ml-auto">
         <DeleteDialog
           v-if="reaction"
-          collection="reactions"
-          :id="reaction.id"
           :name="reaction.name"
-          :singular="'Reaction'"
-          :to="{ name: 'reactions' }"
-          :queryKey="['reactions']"
+          singular="Reaction"
+          @delete="deleteMutation.mutate"
         />
       </div>
     </ColumnHeader>

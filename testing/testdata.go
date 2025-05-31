@@ -5,8 +5,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/SecurityBrewery/catalyst/app2"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 	analystEmail = "analyst@catalyst-soar.com"
 )
 
-func defaultTestData(t *testing.T, app *app2.App2) {
+func defaultTestData(t *testing.T, app *app.App) {
 	t.Helper()
 
 	userTestData(t, app)
@@ -22,7 +22,7 @@ func defaultTestData(t *testing.T, app *app2.App2) {
 	reactionTestData(t, app)
 }
 
-func userTestData(t *testing.T, app *app2.App2) {
+func userTestData(t *testing.T, app *app.App) {
 	t.Helper()
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
@@ -43,7 +43,7 @@ func userTestData(t *testing.T, app *app2.App2) {
 	}
 }
 
-func ticketTestData(t *testing.T, app *app2.App2) {
+func ticketTestData(t *testing.T, app *app.App) {
 	t.Helper()
 
 	_, err := app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
@@ -61,7 +61,7 @@ func ticketTestData(t *testing.T, app *app2.App2) {
 	}
 }
 
-func reactionTestData(t *testing.T, app *app2.App2) {
+func reactionTestData(t *testing.T, app *app.App) {
 	t.Helper()
 
 	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{

@@ -13,38 +13,22 @@ import {
 
 import { Trash2 } from 'lucide-vue-next'
 
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
-import { type RouteLocationRaw, useRouter } from 'vue-router'
-
-import { api } from '@/api'
-import { handleError } from '@/lib/utils'
-
-const queryClient = useQueryClient()
-const router = useRouter()
 
 const props = defineProps<{
-  collection: string
-  id: string
   name: string
   singular: string
-  queryKey: string[]
-  to?: RouteLocationRaw
 }>()
 
 const isOpen = ref(false)
 
-const deleteMutation = useMutation({
-  mutationFn: () => {
-    // api.delete(props.collection, props.id), // TODO
-    return Promise.resolve()
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: props.queryKey })
-    if (props.to) router.push(props.to)
-  },
-  onError: handleError
-})
+const emit = defineEmits<{
+  (e: 'delete'): void
+}>()
+
+const deleteRecord = () => {
+  emit('delete')
+}
 </script>
 
 <template>
@@ -67,7 +51,7 @@ const deleteMutation = useMutation({
       </DialogHeader>
 
       <DialogFooter class="mt-2 sm:justify-start">
-        <Button type="button" variant="destructive" @click="deleteMutation.mutate"> Delete </Button>
+        <Button type="button" variant="destructive" @click="deleteRecord"> Delete </Button>
         <DialogClose as-child>
           <Button type="button" variant="secondary">Cancel</Button>
         </DialogClose>

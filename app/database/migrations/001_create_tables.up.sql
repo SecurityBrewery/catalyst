@@ -108,11 +108,6 @@ CREATE TABLE IF NOT EXISTS types
     updated  TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null
 );
 
--- TODO: remove this
-INSERT INTO types (id, singular, plural, icon, schema) VALUES ('alert', 'Alert', 'Alerts', 'AlertTriangle', '{"type": "object", "properties": { "severity": { "title": "Severity", "enum":  ["Low", "Medium", "High"]}}, "required": ["severity"]}');
-INSERT INTO types (id, singular, plural, icon, schema) VALUES ('incident', 'Incident', 'Incidents', 'Flame', '{"type": "object", "properties": { "severity": { "title": "Severity", "enum":  ["Low", "Medium", "High"]}}, "required": ["severity"]}');
-INSERT INTO types (id, singular, plural, icon, schema) VALUES ('vulnerability', 'Vulnerability', 'Vulnerabilities', 'Bug', '{"type": "object", "properties": { "severity": { "title": "Severity", "enum":  ["Low", "Medium", "High"]}}, "required": ["severity"]}');
-
 CREATE TABLE IF NOT EXISTS users
 (
     avatar                 TEXT    default ''                                 not null,
@@ -131,9 +126,6 @@ CREATE TABLE IF NOT EXISTS users
     username               TEXT                                               not null,
     verified               BOOLEAN default FALSE                              not null
 );
-
--- TODO: remove this
-INSERT INTO users (id, name, username, passwordHash, tokenKey) VALUES ('system', 'System', 'system', '', 'foobar');
 
 CREATE TABLE IF NOT EXISTS webhooks
 (
