@@ -16,7 +16,7 @@ type RecordingServer struct {
 func NewRecordingServer() *RecordingServer {
 	e := chi.NewRouter()
 
-	e.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+	e.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
 		b, err := json.Marshal(map[string]any{
 			"status": "ok",
 		})
@@ -26,9 +26,10 @@ func NewRecordingServer() *RecordingServer {
 			return
 		}
 
-		_, err = w.Write(b)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		_, _ = w.Write(b)
 	})
-	e.Handle("/*", func(w http.ResponseWriter, r *http.Request) {
+	e.HandleFunc("/*", func(w http.ResponseWriter, _ *http.Request) {
 		b, err := json.Marshal(map[string]any{
 			"test": true,
 		})
@@ -38,7 +39,8 @@ func NewRecordingServer() *RecordingServer {
 			return
 		}
 
-		_, err = w.Write(b)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		_, _ = w.Write(b)
 	})
 
 	return &RecordingServer{

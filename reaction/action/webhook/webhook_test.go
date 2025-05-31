@@ -53,10 +53,10 @@ func TestWebhook_Run(t *testing.T) {
 			want: map[string]any{
 				"statusCode": 200,
 				"headers": map[string]any{
-					"Content-Length": []any{"14"},
+					"Content-Length": []any{"13"},
 					"Content-Type":   []any{"application/json; charset=UTF-8"},
 				},
-				"body":            "{\"test\":true}\n",
+				"body":            "{\"test\":true}",
 				"isBase64Encoded": false,
 			},
 			wantErr: assert.NoError,
