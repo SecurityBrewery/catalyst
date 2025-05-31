@@ -12,14 +12,14 @@ type codecData struct {
 
 type JSONCodec struct{}
 
-func (J *JSONCodec) Encode(deadline time.Time, values map[string]any) ([]byte, error) {
+func (j *JSONCodec) Encode(deadline time.Time, values map[string]any) ([]byte, error) {
 	return json.Marshal(codecData{
 		Deadline: deadline,
 		Values:   values,
 	})
 }
 
-func (J *JSONCodec) Decode(bytes []byte) (deadline time.Time, values map[string]any, err error) {
+func (j *JSONCodec) Decode(bytes []byte) (deadline time.Time, values map[string]any, err error) {
 	var data codecData
 	if err = json.Unmarshal(bytes, &data); err != nil {
 		return time.Time{}, nil, err

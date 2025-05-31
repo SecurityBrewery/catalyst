@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 type BaseTest struct {
@@ -38,8 +37,7 @@ type catalystTest struct {
 func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	t.Helper()
 
-	baseApp, counter, baseAppCleanup := App(t)
-	defer baseAppCleanup()
+	baseApp, counter := App(t)
 
 	recorder := httptest.NewRecorder()
 	body := bytes.NewBufferString(baseTest.Body)
@@ -50,7 +48,7 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	}
 
 	if userTest.AuthRecord != "" {
-		token := "u_bob_analyst:password"
+		token := "u_bob_analyst:password" //nolint:gosec
 
 		encoded := base64.StdEncoding.EncodeToString([]byte(token))
 
@@ -60,9 +58,6 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	if userTest.Admin != "" {
 		req.Header.Set("Authorization", userTest.Admin)
 	}
-
-	err := baseApp.SetupRoutes()
-	require.NoError(t, err)
 
 	baseApp.Router.ServeHTTP(recorder, req)
 

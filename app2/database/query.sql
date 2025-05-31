@@ -312,7 +312,8 @@ WHERE id = @id;
 -- name: ListTypes :many
 SELECT types.*, COUNT(*) OVER () as total_count
 FROM types
-ORDER BY created DESC;
+ORDER BY created DESC
+LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 

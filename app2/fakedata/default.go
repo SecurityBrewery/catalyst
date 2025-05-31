@@ -100,7 +100,7 @@ func dateTime(updated time.Time) string {
 	return updated.Format(time.RFC3339)
 }
 
-func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error {
+func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error { //nolint:cyclop
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte("1234567890"), bcrypt.DefaultCost)
 	if err != nil {
 		return fmt.Errorf("failed to generate password hash: %w", err)
@@ -204,7 +204,7 @@ func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error {
 	return nil
 }
 
-func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) error { //nolint:cyclop,gocognit
+func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) error { //nolint:cyclop
 	t.Helper()
 
 	// users
@@ -243,11 +243,11 @@ func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) erro
 
 		assert.Equal(t, "phishing-123", ticket.Name)
 		assert.Equal(t, "Phishing email reported by several employees.", ticket.Description)
-		assert.Equal(t, true, ticket.Open)
+		assert.True(t, ticket.Open)
 		assert.Equal(t, "alert", ticket.Type)
 		assert.Equal(t, "u_test", ticket.Owner)
-		assert.Equal(t, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`, ticket.Schema)
-		assert.Equal(t, `{"severity":"Medium"}`, ticket.State)
+		assert.JSONEq(t, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`, ticket.Schema)
+		assert.JSONEq(t, `{"severity":"Medium"}`, ticket.State)
 	}
 
 	for _, comment := range comments {
@@ -295,9 +295,8 @@ func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) erro
 
 		assert.Equal(t, "Create New Ticket", reaction.Name)
 		assert.Equal(t, "schedule", reaction.Trigger)
-		assert.Equal(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
+		assert.JSONEq(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
 		assert.Equal(t, "python", reaction.Action)
-		// assert.Equal(t, reaction.Actiondata, createTicketActionData)
 	}
 
 	return nil

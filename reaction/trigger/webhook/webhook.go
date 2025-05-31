@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -30,16 +31,20 @@ func handle(app *app2.App2) http.HandlerFunc {
 		reaction, payload, status, err := parseRequest(app.Queries, r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
+
 			return
 		}
 
 		output, err := action.Run(r.Context(), app, reaction.Action, reaction.Actiondata, string(payload))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+
 			return
 		}
 
-		writeOutput(w, output)
+		if err := writeOutput(w, output); err != nil {
+			slog.ErrorContext(r.Context(), "failed to write output", "error", err.Error())
+		}
 	}
 }
 

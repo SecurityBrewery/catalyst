@@ -45,6 +45,7 @@ func demoMode(ctx context.Context, queries *sqlc.Queries) bool {
 	features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to get flags", "error", err)
+
 		return false
 	}
 

@@ -30,7 +30,7 @@ func userTestData(t *testing.T, app *app2.App2) {
 		t.Fatal(err)
 	}
 
-	app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+	_, err = app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
 		ID:           "u_bob_analyst",
 		Username:     "u_bob_analyst",
 		Email:        analystEmail,
@@ -38,12 +38,15 @@ func userTestData(t *testing.T, app *app2.App2) {
 		Name:         "Bob Analyst",
 		PasswordHash: string(passwordHash),
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func ticketTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
+	_, err := app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
 		ID:          "test-ticket",
 		Name:        "Test Ticket",
 		Type:        "incident",
@@ -53,35 +56,44 @@ func ticketTestData(t *testing.T, app *app2.App2) {
 		Schema:      `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`,
 		State:       `{"tlp":"AMBER"}`,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func reactionTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-webhook",
 		Name:        "Reaction",
 		Trigger:     "webhook",
 		Triggerdata: `{"token":"1234567890","path":"test"}`,
 		Action:      "python",
 		Actiondata:  `{"requirements":"requests","script":"print('Hello, World!')"}`,
-	})
+	}); err != nil {
+		t.Fatal(err)
+	}
 
-	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-proxy",
 		Name:        "Reaction",
 		Trigger:     "webhook",
 		Triggerdata: `{"path":"test2"}`,
 		Action:      "webhook",
 		Actiondata:  `{"headers":{"Content-Type":"application/json"},"url":"http://127.0.0.1:12345/webhook"}`,
-	})
+	}); err != nil {
+		t.Fatal(err)
+	}
 
-	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-hook",
 		Name:        "Hook",
 		Trigger:     "hook",
 		Triggerdata: `{"collections":["tickets"],"events":["create"]}`,
 		Action:      "python",
 		Actiondata:  `{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`,
-	})
+	}); err != nil {
+		t.Fatal(err)
+	}
 }

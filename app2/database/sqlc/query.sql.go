@@ -1362,7 +1362,13 @@ const listTypes = `-- name: ListTypes :many
 SELECT types.created, types.icon, types.id, types.plural, types.schema, types.singular, types.updated, COUNT(*) OVER () as total_count
 FROM types
 ORDER BY created DESC
+LIMIT ?2 OFFSET ?1
 `
+
+type ListTypesParams struct {
+	Offset int64 `json:"offset"`
+	Limit  int64 `json:"limit"`
+}
 
 type ListTypesRow struct {
 	Created    string `json:"created"`
@@ -1375,8 +1381,8 @@ type ListTypesRow struct {
 	TotalCount int64  `json:"total_count"`
 }
 
-func (q *Queries) ListTypes(ctx context.Context) ([]ListTypesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listTypes)
+func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTypesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTypes, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

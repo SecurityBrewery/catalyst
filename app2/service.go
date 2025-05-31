@@ -184,7 +184,7 @@ func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateComme
 	return openapi.UpdateComment200JSONResponse(response), nil
 }
 
-func (s *Service) GetDashboardCounts(ctx context.Context, request openapi.GetDashboardCountsRequestObject) (openapi.GetDashboardCountsResponseObject, error) {
+func (s *Service) GetDashboardCounts(ctx context.Context, _ openapi.GetDashboardCountsRequestObject) (openapi.GetDashboardCountsResponseObject, error) {
 	counts, err := s.Queries.GetDashboardCounts(ctx)
 	if err != nil {
 		return nil, err
@@ -331,7 +331,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 		ID:     generateID("f"),
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
-		Size:   int64(request.Body.Size),
+		Size:   request.Body.Size,
 		Ticket: request.Body.Ticket,
 	})
 	if err != nil {
@@ -664,7 +664,7 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 	return openapi.UpdateReaction200JSONResponse(response), nil
 }
 
-func (s *Service) GetSidebar(ctx context.Context, request openapi.GetSidebarRequestObject) (openapi.GetSidebarResponseObject, error) {
+func (s *Service) GetSidebar(ctx context.Context, _ openapi.GetSidebarRequestObject) (openapi.GetSidebarResponseObject, error) {
 	sidebar, err := s.Queries.GetSidebar(ctx)
 	if err != nil {
 		return nil, err
@@ -1144,7 +1144,10 @@ func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTime
 }
 
 func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesRequestObject) (openapi.ListTypesResponseObject, error) {
-	types, err := s.Queries.ListTypes(ctx)
+	types, err := s.Queries.ListTypes(ctx, sqlc.ListTypesParams{
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -1590,6 +1593,7 @@ func toString(value *string, defaultValue string) string {
 	if value == nil {
 		return defaultValue
 	}
+
 	return *value
 }
 
@@ -1597,6 +1601,7 @@ func toNullString(value *string) sql.NullString {
 	if value == nil {
 		return sql.NullString{}
 	}
+
 	return sql.NullString{String: *value, Valid: true}
 }
 
@@ -1604,6 +1609,7 @@ func toInt64(value *int, defaultValue int64) int64 {
 	if value == nil {
 		return defaultValue
 	}
+
 	return int64(*value)
 }
 
@@ -1611,18 +1617,21 @@ func toNullInt64(value *int64) sql.NullInt64 {
 	if value == nil {
 		return sql.NullInt64{}
 	}
-	return sql.NullInt64{Int64: int64(*value), Valid: true}
+
+	return sql.NullInt64{Int64: *value, Valid: true}
 }
 
 func toNullBool(value *bool) sql.NullBool {
 	if value == nil {
 		return sql.NullBool{}
 	}
+
 	return sql.NullBool{Bool: *value, Valid: true}
 }
 
 func marshal(state map[string]interface{}) string {
-	b, _ := json.Marshal(state)
+	b, _ := json.Marshal(state) //nolint:errchkjson
+
 	return string(b)
 }
 
@@ -1631,7 +1640,8 @@ func marshalPointer(state *map[string]interface{}) string {
 		return "{}"
 	}
 
-	b, _ := json.Marshal(*state)
+	b, _ := json.Marshal(*state) //nolint:errchkjson
+
 	return string(b)
 }
 

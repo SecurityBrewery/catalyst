@@ -2,30 +2,32 @@ package testing
 
 import (
 	"context"
-	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/reaction"
 )
 
-func App(t *testing.T) (*app2.App2, *Counter, func()) {
+func App(t *testing.T) (*app2.App2, *Counter) {
 	t.Helper()
 
-	temp, err := os.MkdirTemp("", "catalyst_test_data")
-	if err != nil {
-		t.Fatal(err)
-	}
+	temp := t.TempDir()
 
 	baseApp, err := app2.App(t.Context(), temp, true)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
+
+	err = baseApp.SetupRoutes()
+	require.NoError(t, err)
+
+	reaction.BindHooks(baseApp, true)
 
 	defaultTestData(t, baseApp)
 
 	counter := countEvents(baseApp)
 
-	return baseApp, counter, func() { _ = os.RemoveAll(temp) }
+	return baseApp, counter
 }
 
 func countEvents(app *app2.App2) *Counter {
@@ -123,7 +125,7 @@ func countEvents(app *app2.App2) *Counter {
 }
 
 func count(c *Counter, name string) func(ctx context.Context, table string, record any) {
-	return func(ctx context.Context, table string, record any) {
+	return func(_ context.Context, _ string, _ any) {
 		c.Increment(name)
 	}
 }

@@ -32,7 +32,9 @@ func Start(pb *app2.App2) {
 		),
 		gocron.NewTask(
 			func(ctx context.Context) {
-				runSchedule(ctx, pb)
+				if err := runSchedule(ctx, pb); err != nil {
+					slog.ErrorContext(ctx, "failed to run schedule", "error", err.Error())
+				}
 			},
 		),
 	)
@@ -96,7 +98,6 @@ func findByScheduleTrigger(ctx context.Context, queries *sqlc.Queries) ([]*sqlc.
 
 		// if s.IsDue(moment) { TODO
 		matchedRecords = append(matchedRecords, &reaction)
-		// }
 	}
 
 	return matchedRecords, errs

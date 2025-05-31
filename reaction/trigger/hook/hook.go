@@ -36,19 +36,18 @@ func hook(ctx context.Context, app *app2.App2, event, collection string, record 
 	user, _, err := app.Auth.SessionManager.Get(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to get user from session", "error", err)
+
 		return
 	}
 
 	if !test {
-		go mustRunHook(app, collection, event, record, &user)
+		go mustRunHook(ctx, app, collection, event, record, &user)
 	} else {
-		mustRunHook(app, collection, event, record, &user)
+		mustRunHook(ctx, app, collection, event, record, &user)
 	}
 }
 
-func mustRunHook(app *app2.App2, collection, event string, record any, auth *sqlc.User) {
-	ctx := context.Background()
-
+func mustRunHook(ctx context.Context, app *app2.App2, collection, event string, record any, auth *sqlc.User) {
 	if err := runHook(ctx, app, collection, event, record, auth); err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
 	}

@@ -49,12 +49,14 @@ func App(ctx context.Context, filename string, _ bool) (*App2, error) {
 		return nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
-	return &App2{
+	a := &App2{
 		Queries: queries,
 		Router:  chi.NewRouter(),
 		Service: NewService(queries),
 		Auth:    authService,
-	}, nil
+	}
+
+	return a, nil
 }
 
 type App2 struct {
@@ -87,9 +89,12 @@ func (a *App2) SetupRoutes() error {
 		if _, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100}); err != nil {
 			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+
 			return
 		}
+
 		w.WriteHeader(http.StatusOK)
+
 		_, _ = w.Write([]byte("OK"))
 	})
 	a.Router.Get("/config", func(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +102,7 @@ func (a *App2) SetupRoutes() error {
 		if err != nil {
 			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+
 			return
 		}
 
@@ -114,15 +120,6 @@ func (a *App2) SetupRoutes() error {
 	})
 
 	return nil
-}
-
-func (a *App2) Start(ctx context.Context) error {
-	err := a.SetupRoutes()
-	if err != nil {
-		return err
-	}
-
-	return http.ListenAndServe(":8090", a.Router)
 }
 
 func staticFiles(w http.ResponseWriter, r *http.Request) {

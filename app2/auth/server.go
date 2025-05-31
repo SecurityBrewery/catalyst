@@ -11,7 +11,7 @@ func (s *Service) Server() http.Handler {
 	router := chi.NewRouter()
 
 	router.Get("/user", s.HandleUser)
-	router.Get("/config", func(writer http.ResponseWriter, request *http.Request) {
+	router.Get("/config", func(writer http.ResponseWriter, _ *http.Request) {
 		b, _ := json.Marshal(map[string]any{
 			"password": s.config.PasswordAuth,
 			"oidc":     s.config.OIDCAuth,

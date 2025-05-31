@@ -1,7 +1,6 @@
 package webhook_test
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -67,13 +66,11 @@ func TestWebhook_Run(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := context.Background()
-
 			a := &webhook.Webhook{
 				Headers: tt.fields.Headers,
 				URL:     tt.fields.URL,
 			}
-			got, err := a.Run(ctx, tt.args.payload)
+			got, err := a.Run(t.Context(), tt.args.payload)
 			tt.wantErr(t, err)
 
 			want, err := json.Marshal(tt.want)

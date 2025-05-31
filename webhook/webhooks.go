@@ -13,8 +13,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 )
 
-const webhooksCollection = "webhooks"
-
 type Webhook struct {
 	ID          string `db:"id"          json:"id"`
 	Name        string `db:"name"        json:"name"`
@@ -23,15 +21,15 @@ type Webhook struct {
 }
 
 func BindHooks(app app2.App2) {
-	/*app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error {
-		return event(app, "create", e.Collection.Name, e.Record, e.HttpContext)
+	app.Service.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, app, "create", table, record)
 	})
-	app.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
-		return event(app, "update", e.Collection.Name, e.Record, e.HttpContext)
+	app.Service.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, app, "update", table, record)
 	})
-	app.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error {
-		return event(app, "delete", e.Collection.Name, e.Record, e.HttpContext)
-	})*/
+	app.Service.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, app, "delete", table, record)
+	})
 }
 
 type Payload struct {
@@ -42,32 +40,39 @@ type Payload struct {
 	Admin      *sqlc.User `json:"admin,omitempty"`
 }
 
-func event(app app2.App2, event, collection string, record any, ctx context.Context) error {
-	// auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record) // TODO
-	// admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)     // TODO
-	auth, admin := &sqlc.User{}, &sqlc.User{}
+func event(ctx context.Context, app app2.App2, event, collection string, record any) {
+	auth, _, err := app.Auth.SessionManager.Get(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get auth session", "error", err.Error())
+
+		return
+	}
 
 	webhooks, err := app.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
 		Offset: 0,
 		Limit:  100,
 	})
 	if err != nil {
-		return err
+		slog.ErrorContext(ctx, "failed to list webhooks", "error", err.Error())
+
+		return
 	}
 
 	if len(webhooks) == 0 {
-		return nil
+		return
 	}
 
 	payload, err := json.Marshal(&Payload{
 		Action:     event,
 		Collection: collection,
 		Record:     record,
-		Auth:       auth,
-		Admin:      admin,
+		Auth:       &auth,
+		Admin:      nil,
 	})
 	if err != nil {
-		return err
+		slog.ErrorContext(ctx, "failed to marshal payload", "error", err.Error())
+
+		return
 	}
 
 	for _, webhook := range webhooks {
@@ -77,8 +82,6 @@ func event(app app2.App2, event, collection string, record any, ctx context.Cont
 			slog.InfoContext(ctx, "webhook sent", "action", event, "name", webhook.Name, "collection", webhook.Collection, "destination", webhook.Destination)
 		}
 	}
-
-	return nil
 }
 
 func sendWebhook(ctx context.Context, webhook sqlc.ListWebhooksRow, payload []byte) error {

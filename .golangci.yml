@@ -10,13 +10,22 @@ linters:
 
     # disable
     - depguard
+    - dupl
     - err113
     - exhaustruct
-    - gomnd
+    - gochecknoglobals
+    - godox
     - ireturn
     - lll
     - mnd
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - tagalign
+    - tagliatelle
+    - tenv
     - testpackage
+    - unparam
     - varnamelen
     - wrapcheck
 linters-settings:

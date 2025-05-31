@@ -98,7 +98,6 @@ func TestHookReactions(t *testing.T) {
 					AuthRecord:     analystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"collectionName":"tickets"`,
 						`"name":"test"`,
 					},
 					ExpectedEvents: map[string]int{

@@ -2,11 +2,13 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"golang.org/x/net/context"
 
 	"github.com/SecurityBrewery/catalyst/app2"
 	"github.com/SecurityBrewery/catalyst/app2/fakedata"
+	"github.com/SecurityBrewery/catalyst/reaction"
 )
 
 func main() {
@@ -25,7 +27,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := catalyst.Start(ctx); err != nil {
+	err = catalyst.SetupRoutes()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reaction.BindHooks(catalyst, false)
+
+	server := &http.Server{
+		Addr:        ":8090",
+		Handler:     catalyst.Router,
+		ReadTimeout: 10 * 60 * 1000, // 10 minutes
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }

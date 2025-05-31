@@ -30,7 +30,10 @@ func Generate(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount
 }
 
 func Records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
-	types, err := queries.ListTypes(ctx)
+	types, err := queries.ListTypes(ctx, sqlc.ListTypesParams{
+		Limit:  100,
+		Offset: 0,
+	})
 	if err != nil {
 		return fmt.Errorf("failed to list types: %w", err)
 	}
@@ -132,11 +135,11 @@ func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User
 			return fmt.Errorf("failed to create timeline for ticket %s: %w", newTicket.ID, err)
 		}
 
-		if err := taskRecords(ctx, queries, users, created, newTicket); err != nil {
+		if err := taskRecords(ctx, queries, users, newTicket); err != nil {
 			return fmt.Errorf("failed to create tasks for ticket %s: %w", newTicket.ID, err)
 		}
 
-		if err := linkRecords(ctx, queries, created, newTicket); err != nil {
+		if err := linkRecords(ctx, queries, newTicket); err != nil {
 			return fmt.Errorf("failed to create links for ticket %s: %w", newTicket.ID, err)
 		}
 	}
@@ -176,7 +179,7 @@ func timelineRecords(ctx context.Context, queries *sqlc.Queries, created time.Ti
 	return nil
 }
 
-func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, created time.Time, record sqlc.Ticket) error {
+func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateTask(ctx, sqlc.CreateTaskParams{
 			ID:     "test-" + gofakeit.UUID(),
@@ -193,7 +196,7 @@ func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, 
 	return nil
 }
 
-func linkRecords(ctx context.Context, queries *sqlc.Queries, created time.Time, record sqlc.Ticket) error {
+func linkRecords(ctx context.Context, queries *sqlc.Queries, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateLink(ctx, sqlc.CreateLinkParams{
 			ID:     "test-" + gofakeit.UUID(),
@@ -332,6 +335,7 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 }
 
 func marshal(m map[string]interface{}) string {
-	b, _ := json.Marshal(m)
+	b, _ := json.Marshal(m) //nolint:errchkjson
+
 	return string(b)
 }

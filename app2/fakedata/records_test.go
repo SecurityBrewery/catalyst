@@ -12,8 +12,7 @@ import (
 func Test_records(t *testing.T) {
 	t.Parallel()
 
-	app, _, cleanup := catalystTesting.App(t)
-	defer cleanup()
+	app, _ := catalystTesting.App(t)
 
 	err := fakedata.Generate(t.Context(), app.Queries, 2, 2)
 	require.NoError(t, err)
@@ -22,8 +21,7 @@ func Test_records(t *testing.T) {
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
-	app, _, cleanup := catalystTesting.App(t)
-	defer cleanup()
+	app, _ := catalystTesting.App(t)
 
 	err := fakedata.Generate(t.Context(), app.Queries, 0, 0)
 	require.NoError(t, err)
