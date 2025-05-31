@@ -31,6 +31,7 @@ func userTestData(t *testing.T, app *app2.App2) {
 	}
 
 	app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+		ID:           "u_bob_analyst",
 		Username:     "u_bob_analyst",
 		Email:        analystEmail,
 		Verified:     true,
@@ -43,6 +44,7 @@ func ticketTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
 	app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
+		ID:          "test-ticket",
 		Name:        "Test Ticket",
 		Type:        "incident",
 		Description: "This is a test ticket.",
@@ -57,6 +59,7 @@ func reactionTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
 	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		ID:          "r-test-webhook",
 		Name:        "Reaction",
 		Trigger:     "webhook",
 		Triggerdata: `{"token":"1234567890","path":"test"}`,
@@ -65,6 +68,7 @@ func reactionTestData(t *testing.T, app *app2.App2) {
 	})
 
 	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		ID:          "r-test-proxy",
 		Name:        "Reaction",
 		Trigger:     "webhook",
 		Triggerdata: `{"path":"test2"}`,
@@ -73,6 +77,7 @@ func reactionTestData(t *testing.T, app *app2.App2) {
 	})
 
 	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		ID:          "r-test-hook",
 		Name:        "Hook",
 		Trigger:     "hook",
 		Triggerdata: `{"collections":["tickets"],"events":["create"]}`,

@@ -89,7 +89,7 @@ func defaultData() ([]sqlc.Ticket, []sqlc.Comment, []sqlc.Timeline, []sqlc.Task,
 				Updated:     dateTime(reactionUpdated),
 				Name:        "Create New Ticket",
 				Trigger:     "schedule",
-				Triggerdata: `{"schedule":"0 0 * * *"}`,
+				Triggerdata: `{"expression":"12 * * * *"}`,
 				Action:      "python",
 				Actiondata:  createTicketActionData,
 			},
@@ -101,77 +101,95 @@ func dateTime(updated time.Time) string {
 }
 
 func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error {
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte("1234567890"), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to generate password hash: %w", err)
+	}
+
 	// users
-	_, err := queries.CreateUser(ctx, sqlc.CreateUserParams{
-		Username: "u_test",
-		Name:     "Test User",
-		Email:    "user@catalyst-soar.com",
+	_, err = queries.CreateUser(ctx, sqlc.CreateUserParams{
+		ID:           "u_test",
+		Username:     "u_test",
+		Name:         "Test User",
+		Email:        "user@catalyst-soar.com",
+		Verified:     true,
+		PasswordHash: string(passwordHash),
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create test user: %w", err)
 	}
 
 	tickets, comments, timelines, tasks, links, reactions := defaultData()
 
 	for _, ticket := range tickets {
 		_, err := queries.CreateTicket(ctx, sqlc.CreateTicketParams{
+			ID:          ticket.ID,
 			Name:        ticket.Name,
 			Type:        ticket.Type,
 			Description: ticket.Description,
 			Open:        ticket.Open,
+			Schema:      ticket.Schema,
+			State:       ticket.State,
+			Owner:       ticket.Owner,
+			Resolution:  ticket.Resolution,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create ticket: %w", err)
 		}
 	}
 
 	for _, comment := range comments {
 		_, err := queries.CreateComment(ctx, sqlc.CreateCommentParams{
+			ID:      comment.ID,
 			Ticket:  comment.Ticket,
 			Author:  comment.Author,
 			Message: comment.Message,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create comment: %w", err)
 		}
 	}
 
 	for _, timeline := range timelines {
 		_, err := queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
+			ID:      timeline.ID,
 			Ticket:  timeline.Ticket,
 			Time:    timeline.Time,
 			Message: timeline.Message,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create timeline: %w", err)
 		}
 	}
 
 	for _, task := range tasks {
 		_, err := queries.CreateTask(ctx, sqlc.CreateTaskParams{
+			ID:     task.ID,
 			Ticket: task.Ticket,
 			Name:   task.Name,
 			Open:   task.Open,
 			Owner:  task.Owner,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create task: %w", err)
 		}
 	}
 
 	for _, link := range links {
 		_, err := queries.CreateLink(ctx, sqlc.CreateLinkParams{
+			ID:     link.ID,
 			Ticket: link.Ticket,
 			Url:    link.Url,
 			Name:   link.Name,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create link: %w", err)
 		}
 	}
 
 	for _, reaction := range reactions {
 		_, err := queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+			ID:          reaction.ID,
 			Name:        reaction.Name,
 			Trigger:     reaction.Trigger,
 			Triggerdata: reaction.Triggerdata,
@@ -179,16 +197,18 @@ func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error {
 			Actiondata:  reaction.Actiondata,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create reaction: %w", err)
 		}
 	}
 
 	return nil
 }
 
-func ValidateDefaultData(ctx context.Context, t *testing.T, app app2.App2) error { //nolint:cyclop,gocognit
+func ValidateDefaultData(ctx context.Context, t *testing.T, app *app2.App2) error { //nolint:cyclop,gocognit
+	t.Helper()
+
 	// users
-	userRecord, err := app.Queries.GetUser(ctx, "u_test")
+	userRecord, err := app.Queries.UserByUserName(ctx, "u_test")
 	if err != nil {
 		return fmt.Errorf("failed to find user record: %w", err)
 	}
@@ -218,65 +238,65 @@ func ValidateDefaultData(ctx context.Context, t *testing.T, app app2.App2) error
 	for _, ticket := range tickets {
 		ticket, err := app.Queries.Ticket(ctx, ticket.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find ticket: %w", err)
 		}
 
-		assert.Equal(t, ticket.Name, "phishing-123")
-		assert.Equal(t, ticket.Description, "Phishing email reported by several employees.")
-		assert.Equal(t, ticket.Open, true)
-		assert.Equal(t, ticket.Type, "alert")
-		assert.Equal(t, ticket.Owner, "u_test")
-		assert.Equal(t, ticket.Schema, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
-		assert.Equal(t, ticket.State, `{"severity":"Medium"}`)
+		assert.Equal(t, "phishing-123", ticket.Name)
+		assert.Equal(t, "Phishing email reported by several employees.", ticket.Description)
+		assert.Equal(t, true, ticket.Open)
+		assert.Equal(t, "alert", ticket.Type)
+		assert.Equal(t, "u_test", ticket.Owner)
+		assert.Equal(t, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`, ticket.Schema)
+		assert.Equal(t, `{"severity":"Medium"}`, ticket.State)
 	}
 
 	for _, comment := range comments {
 		comment, err := app.Queries.GetComment(ctx, comment.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find comment: %w", err)
 		}
 
-		assert.Equal(t, comment.Message, "This is a test comment.")
+		assert.Equal(t, "This is a test comment.", comment.Message)
 	}
 
 	for _, timeline := range timelines {
 		timeline, err := app.Queries.GetTimeline(ctx, timeline.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find timeline: %w", err)
 		}
 
-		assert.Equal(t, timeline.Message, "This is a test timeline message.")
+		assert.Equal(t, "This is a test timeline message.", timeline.Message)
 	}
 
 	for _, task := range tasks {
 		task, err := app.Queries.GetTask(ctx, task.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find task: %w", err)
 		}
 
-		assert.Equal(t, task.Name, "This is a test task.")
+		assert.Equal(t, "This is a test task.", task.Name)
 	}
 
 	for _, link := range links {
 		link, err := app.Queries.GetLink(ctx, link.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find link: %w", err)
 		}
 
-		assert.Equal(t, link.Url, "https://www.example.com")
-		assert.Equal(t, link.Name, "This is a test link.")
+		assert.Equal(t, "https://www.example.com", link.Url)
+		assert.Equal(t, "This is a test link.", link.Name)
 	}
 
 	for _, reaction := range reactions {
 		reaction, err := app.Queries.GetReaction(ctx, reaction.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to find reaction: %w", err)
 		}
 
-		assert.Equal(t, reaction.Name, "Create New Ticket")
-		assert.Equal(t, reaction.Trigger, "schedule")
-		assert.Equal(t, reaction.Triggerdata, `{"schedule":"0 0 * * *"}`)
-		assert.Equal(t, reaction.Action, "python")
+		assert.Equal(t, "Create New Ticket", reaction.Name)
+		assert.Equal(t, "schedule", reaction.Trigger)
+		assert.Equal(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
+		assert.Equal(t, "python", reaction.Action)
 		// assert.Equal(t, reaction.Actiondata, createTicketActionData)
 	}
 

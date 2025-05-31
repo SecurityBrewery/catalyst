@@ -82,7 +82,7 @@ func TestHookReactions(t *testing.T) {
 				Name:           "TriggerHookReaction",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/collections/tickets/records",
+				URL:            "/api/tickets",
 				Body: s(map[string]any{
 					"name": "test",
 				}),
@@ -102,8 +102,8 @@ func TestHookReactions(t *testing.T) {
 						`"name":"test"`,
 					},
 					ExpectedEvents: map[string]int{
-						"OnModelAfterCreate":          1,
-						"OnModelBeforeCreate":         1,
+						// "OnModelAfterCreate":          1,
+						// "OnModelBeforeCreate":         1,
 						"OnRecordAfterCreateRequest":  1,
 						"OnRecordBeforeCreateRequest": 1,
 					},

@@ -17,7 +17,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(queries *sqlc.Queries, userCount, ticketCount int) error {
+func Generate(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -26,7 +26,7 @@ func Generate(queries *sqlc.Queries, userCount, ticketCount int) error {
 		ticketCount = minimumTicketCount
 	}
 
-	return Records(context.Background(), queries, userCount, ticketCount)
+	return Records(ctx, queries, userCount, ticketCount)
 }
 
 func Records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
@@ -38,6 +38,14 @@ func Records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCo
 	users, err := userRecords(ctx, queries, userCount)
 	if err != nil {
 		return fmt.Errorf("failed to create user records: %w", err)
+	}
+
+	if len(types) == 0 {
+		return fmt.Errorf("no types found")
+	}
+
+	if len(users) == 0 {
+		return fmt.Errorf("no users found")
 	}
 
 	err = ticketRecords(ctx, queries, users, types, ticketCount)
@@ -74,8 +82,11 @@ func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.
 	}
 
 	for range count - 1 {
+		id := "u_" + gofakeit.RandomString([]string{"123456789"})
+
 		newUser, err := queries.CreateUser(ctx, sqlc.CreateUserParams{
-			Username: "u_" + gofakeit.RandomString([]string{"123456789"}),
+			ID:       id,
+			Username: id,
 			Name:     gofakeit.Name(),
 			Email:    gofakeit.Username() + "@catalyst-soar.com",
 		})
@@ -100,6 +111,7 @@ func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User
 		ticketType := random(types)
 
 		newTicket, err := queries.CreateTicket(ctx, sqlc.CreateTicketParams{
+			ID:          "test-" + gofakeit.UUID(),
 			Name:        fmt.Sprintf("%s-%d", strings.ToUpper(ticketType.Singular), number),
 			Type:        ticketType.ID,
 			Description: fakeTicketDescription(),
@@ -135,6 +147,7 @@ func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User
 func commentRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateComment(ctx, sqlc.CreateCommentParams{
+			ID:      "test-" + gofakeit.UUID(),
 			Ticket:  record.ID,
 			Author:  random(users).ID,
 			Message: fakeTicketComment(),
@@ -150,6 +163,7 @@ func commentRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 func timelineRecords(ctx context.Context, queries *sqlc.Queries, created time.Time, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
+			ID:      "test-" + gofakeit.UUID(),
 			Message: fakeTicketTimelineMessage(),
 			Ticket:  record.ID,
 			Time:    created.Format("2006-01-02T15:04:05Z"),
@@ -165,6 +179,7 @@ func timelineRecords(ctx context.Context, queries *sqlc.Queries, created time.Ti
 func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, created time.Time, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateTask(ctx, sqlc.CreateTaskParams{
+			ID:     "test-" + gofakeit.UUID(),
 			Name:   fakeTicketTask(),
 			Open:   gofakeit.Bool(),
 			Owner:  random(users).ID,
@@ -181,6 +196,7 @@ func taskRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, 
 func linkRecords(ctx context.Context, queries *sqlc.Queries, created time.Time, record sqlc.Ticket) error {
 	for range gofakeit.IntN(5) {
 		_, err := queries.CreateLink(ctx, sqlc.CreateLinkParams{
+			ID:     "test-" + gofakeit.UUID(),
 			Ticket: record.ID,
 			Url:    gofakeit.URL(),
 			Name:   random([]string{"Blog", "Forum", "Wiki", "Documentation"}),
@@ -268,6 +284,7 @@ var (
 
 func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	_, err := queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+		ID:          "r-schedule",
 		Name:        "Create New Ticket",
 		Trigger:     "schedule",
 		Triggerdata: marshal(triggerSchedule),
@@ -282,6 +299,7 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	}
 
 	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+		ID:          "r-webhook",
 		Name:        "Alert Ingest Webhook",
 		Trigger:     "webhook",
 		Triggerdata: marshal(triggerWebhook),
@@ -296,6 +314,7 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	}
 
 	_, err = queries.CreateReaction(ctx, sqlc.CreateReactionParams{
+		ID:          "r-hook",
 		Name:        "Assign new Tickets",
 		Trigger:     "hook",
 		Triggerdata: marshal(triggerHook),

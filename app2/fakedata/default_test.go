@@ -12,10 +12,10 @@ import (
 func TestDefaultData(t *testing.T) {
 	t.Parallel()
 
-	app, cleanup := catalystTesting.App(t)
+	app, _, cleanup := catalystTesting.App(t)
 	defer cleanup()
 
 	require.NoError(t, fakedata.GenerateDefaultData(t.Context(), app.Queries))
 
-	require.NoError(t, fakedata.ValidateDefaultData(t.Context(), t, *app))
+	require.NoError(t, fakedata.ValidateDefaultData(t.Context(), t, app))
 }

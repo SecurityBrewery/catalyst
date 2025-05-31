@@ -21,46 +21,46 @@ type Hook struct {
 }
 
 func BindHooks(app *app2.App2, test bool) {
-	/* app.OnRecordAfterCreateRequest().Add(func(e *core.RecordCreateEvent) error { // TODO
-		return hook(e.HttpContext, app, "create", e.Collection.Name, e.Record, test)
-	}) */
-	/* app.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error { // TODO
-		return hook(e.HttpContext, app, "update", e.Collection.Name, e.Record, test)
-	}) */
-	/* app.OnRecordAfterDeleteRequest().Add(func(e *core.RecordDeleteEvent) error { // TODO
-		return hook(e.HttpContext, app, "delete", e.Collection.Name, e.Record, test)
-	}) */
+	app.Service.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		hook(ctx, app, "create", table, record, test)
+	})
+	app.Service.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		hook(ctx, app, "update", table, record, test)
+	})
+	app.Service.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		hook(ctx, app, "delete", table, record, test)
+	})
 }
 
-func hook(ctx context.Context, app *app2.App2, event, collection string, record any, test bool) error {
-	// auth, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record) // TODO
-	// admin, _ := ctx.Get(apis.ContextAdminKey).(*models.Admin)
-	auth, admin := &sqlc.User{}, &sqlc.User{}
-
-	if !test {
-		go mustRunHook(app, collection, event, record, auth, admin)
-	} else {
-		mustRunHook(app, collection, event, record, auth, admin)
+func hook(ctx context.Context, app *app2.App2, event, collection string, record any, test bool) {
+	user, _, err := app.Auth.SessionManager.Get(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get user from session", "error", err)
+		return
 	}
 
-	return nil
+	if !test {
+		go mustRunHook(app, collection, event, record, &user)
+	} else {
+		mustRunHook(app, collection, event, record, &user)
+	}
 }
 
-func mustRunHook(app *app2.App2, collection, event string, record any, auth *sqlc.User, admin *sqlc.User) {
+func mustRunHook(app *app2.App2, collection, event string, record any, auth *sqlc.User) {
 	ctx := context.Background()
 
-	if err := runHook(ctx, app, collection, event, record, auth, admin); err != nil {
+	if err := runHook(ctx, app, collection, event, record, auth); err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
 	}
 }
 
-func runHook(ctx context.Context, app *app2.App2, collection, event string, record any, auth *sqlc.User, admin *sqlc.User) error {
+func runHook(ctx context.Context, app *app2.App2, collection, event string, record any, auth *sqlc.User) error {
 	payload, err := json.Marshal(&webhook.Payload{
 		Action:     event,
 		Collection: collection,
 		Record:     record,
 		Auth:       auth,
-		Admin:      admin,
+		Admin:      nil,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal webhook payload: %w", err)

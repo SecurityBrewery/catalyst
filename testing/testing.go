@@ -2,6 +2,7 @@ package testing
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
@@ -23,6 +24,7 @@ type UserTest struct {
 	AuthRecord         string
 	Admin              string
 	ExpectedStatus     int
+	ExpectedHeaders    map[string]string
 	ExpectedContent    []string
 	NotExpectedContent []string
 	ExpectedEvents     map[string]int
@@ -36,7 +38,7 @@ type catalystTest struct {
 func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	t.Helper()
 
-	baseApp, baseAppCleanup := App(t)
+	baseApp, counter, baseAppCleanup := App(t)
 	defer baseAppCleanup()
 
 	recorder := httptest.NewRecorder()
@@ -48,14 +50,18 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	}
 
 	if userTest.AuthRecord != "" {
-		req.Header.Set("Authorization", userTest.AuthRecord)
+		token := "u_bob_analyst:password"
+
+		encoded := base64.StdEncoding.EncodeToString([]byte(token))
+
+		req.Header.Set("Authorization", "Bearer "+encoded)
 	}
 
 	if userTest.Admin != "" {
 		req.Header.Set("Authorization", userTest.Admin)
 	}
 
-	err := baseApp.Server(t.Context())
+	err := baseApp.SetupRoutes()
 	require.NoError(t, err)
 
 	baseApp.Router.ServeHTTP(recorder, req)
@@ -65,6 +71,10 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 
 	assert.Equal(t, userTest.ExpectedStatus, res.StatusCode)
 
+	for k, v := range userTest.ExpectedHeaders {
+		assert.Equal(t, v, res.Header.Get(k))
+	}
+
 	for _, expectedContent := range userTest.ExpectedContent {
 		assert.Contains(t, recorder.Body.String(), expectedContent)
 	}
@@ -73,9 +83,9 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 		assert.NotContains(t, recorder.Body.String(), notExpectedContent)
 	}
 
-	// for event, count := range userTest.ExpectedEvents { // TODO: add event counting
-	// 	assert.Equal(t, count, counter.Count(event))
-	// }
+	for event, count := range userTest.ExpectedEvents {
+		assert.Equalf(t, count, counter.Count(event), "expected %d events for %s, got %d", count, event, counter.Count(event))
+	}
 }
 
 func b(data map[string]any) []byte {

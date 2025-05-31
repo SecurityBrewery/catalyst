@@ -25,7 +25,7 @@ func Start(pb *app2.App2) {
 	}
 
 	// add a job to the scheduler
-	j, err := s.NewJob(
+	_, err = s.NewJob(
 		gocron.CronJob(
 			"* * * * *",
 			false,

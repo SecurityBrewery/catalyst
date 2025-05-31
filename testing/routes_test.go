@@ -36,7 +36,7 @@ func Test_Routes(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "Config",
 				Method: http.MethodGet,
-				URL:    "/api/config",
+				URL:    "/config",
 			},
 			userTests: []UserTest{
 				{

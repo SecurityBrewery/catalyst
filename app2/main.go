@@ -21,36 +21,17 @@ import (
 	"github.com/SecurityBrewery/catalyst/app2/openapi"
 )
 
-func App(filename string, _ bool) (*App2, error) {
+func App(ctx context.Context, filename string, _ bool) (*App2, error) {
 	queries, _, err := database.DB(filepath.Join(filename, "data.db"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	if _, err := queries.CreateFeature(context.Background(), "dev"); err != nil {
-		return nil, err
-	}
-
-	return &App2{
-		Queries: queries,
-	}, nil
-}
-
-type App2 struct {
-	Queries *sqlc.Queries
-	Router  *chi.Mux
-}
-
-func (a *App2) Server(ctx context.Context) error {
-	service := &Service{
-		Queries: a.Queries,
-	}
-
-	authService, err := auth.New(ctx, a.Queries, &auth.Config{
+	authService, err := auth.New(ctx, queries, &auth.Config{
 		Domain:       "localhost",
 		CookieSecure: false,
 		PasswordAuth: true,
-		BearerAuth:   false,
+		BearerAuth:   true,
 		OIDCAuth:     false,
 		OIDCIssuer:   "",
 		ClientID:     "",
@@ -65,29 +46,44 @@ func (a *App2) Server(ctx context.Context) error {
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create auth service: %w", err)
+		return nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
-	r := chi.NewRouter()
-	r.Use(func(next http.Handler) http.Handler {
+	return &App2{
+		Queries: queries,
+		Router:  chi.NewRouter(),
+		Service: NewService(queries),
+		Auth:    authService,
+	}, nil
+}
+
+type App2 struct {
+	Queries *sqlc.Queries
+	Router  *chi.Mux
+	Service *Service
+	Auth    *auth.Service
+}
+
+func (a *App2) SetupRoutes() error {
+	a.Router.Use(func(next http.Handler) http.Handler {
 		return http.Handler(cors.NewHandler(next))
 	})
-	r.Use(demomode(a.Queries))
-	r.Use(authService.SessionManager.LoadAndSave)
-	r.Use(middleware.Timeout(time.Second * 60))
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	a.Router.Use(demomode(a.Queries))
+	a.Router.Use(a.Auth.SessionManager.LoadAndSave)
+	a.Router.Use(middleware.Timeout(time.Second * 60))
+	a.Router.Use(middleware.RequestID)
+	a.Router.Use(middleware.RealIP)
+	a.Router.Use(middleware.Logger)
+	a.Router.Use(middleware.Recoverer)
 
-	apiHandler := openapi.Handler(openapi.NewStrictHandler(service, nil))
-	r.With(authService.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, nil))
+	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
+	a.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/ui/", http.StatusFound)
 	})
-	r.Get("/ui/*", staticFiles)
-	r.Mount("/auth", authService.Server())
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+	a.Router.Get("/ui/*", staticFiles)
+	a.Router.Mount("/auth", a.Auth.Server())
+	a.Router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100}); err != nil {
 			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -96,7 +92,7 @@ func (a *App2) Server(ctx context.Context) error {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
-	r.Get("/config", func(w http.ResponseWriter, r *http.Request) {
+	a.Router.Get("/config", func(w http.ResponseWriter, r *http.Request) {
 		features, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
 		if err != nil {
 			slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
@@ -117,13 +113,11 @@ func (a *App2) Server(ctx context.Context) error {
 		_, _ = w.Write(b)
 	})
 
-	a.Router = r
-
 	return nil
 }
 
 func (a *App2) Start(ctx context.Context) error {
-	err := a.Server(ctx)
+	err := a.SetupRoutes()
 	if err != nil {
 		return err
 	}

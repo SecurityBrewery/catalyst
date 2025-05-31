@@ -30,12 +30,13 @@ func (q *Queries) CommitSession(ctx context.Context, arg CommitSessionParams) er
 
 const createComment = `-- name: CreateComment :one
 
-INSERT INTO comments (author, message, ticket)
-VALUES (?1, ?2, ?3)
+INSERT INTO comments (id, author, message, ticket)
+VALUES (?1, ?2, ?3, ?4)
 RETURNING author, created, id, message, ticket, updated
 `
 
 type CreateCommentParams struct {
+	ID      string `json:"id"`
 	Author  string `json:"author"`
 	Message string `json:"message"`
 	Ticket  string `json:"ticket"`
@@ -43,7 +44,12 @@ type CreateCommentParams struct {
 
 // ----------------------------------------------------------------
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error) {
-	row := q.db.QueryRowContext(ctx, createComment, arg.Author, arg.Message, arg.Ticket)
+	row := q.db.QueryRowContext(ctx, createComment,
+		arg.ID,
+		arg.Author,
+		arg.Message,
+		arg.Ticket,
+	)
 	var i Comment
 	err := row.Scan(
 		&i.Author,
@@ -78,12 +84,13 @@ func (q *Queries) CreateFeature(ctx context.Context, name string) (Feature, erro
 
 const createFile = `-- name: CreateFile :one
 
-INSERT INTO files (name, blob, size, ticket)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO files (id, name, blob, size, ticket)
+VALUES (?1, ?2, ?3, ?4, ?5)
 RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type CreateFileParams struct {
+	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Blob   string `json:"blob"`
 	Size   int64  `json:"size"`
@@ -93,6 +100,7 @@ type CreateFileParams struct {
 // ----------------------------------------------------------------
 func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, error) {
 	row := q.db.QueryRowContext(ctx, createFile,
+		arg.ID,
 		arg.Name,
 		arg.Blob,
 		arg.Size,
@@ -113,12 +121,13 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, e
 
 const createLink = `-- name: CreateLink :one
 
-INSERT INTO links (name, url, ticket)
-VALUES (?1, ?2, ?3)
+INSERT INTO links (id, name, url, ticket)
+VALUES (?1, ?2, ?3, ?4)
 RETURNING created, id, name, ticket, updated, url
 `
 
 type CreateLinkParams struct {
+	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Url    string `json:"url"`
 	Ticket string `json:"ticket"`
@@ -126,7 +135,12 @@ type CreateLinkParams struct {
 
 // ----------------------------------------------------------------
 func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (Link, error) {
-	row := q.db.QueryRowContext(ctx, createLink, arg.Name, arg.Url, arg.Ticket)
+	row := q.db.QueryRowContext(ctx, createLink,
+		arg.ID,
+		arg.Name,
+		arg.Url,
+		arg.Ticket,
+	)
 	var i Link
 	err := row.Scan(
 		&i.Created,
@@ -141,12 +155,13 @@ func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (Link, e
 
 const createReaction = `-- name: CreateReaction :one
 
-INSERT INTO reactions (name, action, actiondata, trigger, triggerdata)
-VALUES (?1, ?2, ?3, ?4, ?5)
+INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
 RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updated
 `
 
 type CreateReactionParams struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Action      string `json:"action"`
 	Actiondata  string `json:"actiondata"`
@@ -157,6 +172,7 @@ type CreateReactionParams struct {
 // ----------------------------------------------------------------
 func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) (Reaction, error) {
 	row := q.db.QueryRowContext(ctx, createReaction,
+		arg.ID,
 		arg.Name,
 		arg.Action,
 		arg.Actiondata,
@@ -179,12 +195,13 @@ func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) 
 
 const createTask = `-- name: CreateTask :one
 
-INSERT INTO tasks (name, open, owner, ticket)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO tasks (id, name, open, owner, ticket)
+VALUES (?1, ?2, ?3, ?4, ?5)
 RETURNING created, id, name, open, owner, ticket, updated
 `
 
 type CreateTaskParams struct {
+	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Open   bool   `json:"open"`
 	Owner  string `json:"owner"`
@@ -194,6 +211,7 @@ type CreateTaskParams struct {
 // ----------------------------------------------------------------
 func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
 	row := q.db.QueryRowContext(ctx, createTask,
+		arg.ID,
 		arg.Name,
 		arg.Open,
 		arg.Owner,
@@ -213,12 +231,13 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 }
 
 const createTicket = `-- name: CreateTicket :one
-INSERT INTO tickets (name, description, open, owner, resolution, schema, state, type)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
 RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
 `
 
 type CreateTicketParams struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Open        bool   `json:"open"`
@@ -231,6 +250,7 @@ type CreateTicketParams struct {
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
 	row := q.db.QueryRowContext(ctx, createTicket,
+		arg.ID,
 		arg.Name,
 		arg.Description,
 		arg.Open,
@@ -259,12 +279,13 @@ func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Tic
 
 const createTimeline = `-- name: CreateTimeline :one
 
-INSERT INTO timeline (message, ticket, time)
-VALUES (?1, ?2, ?3)
+INSERT INTO timeline (id, message, ticket, time)
+VALUES (?1, ?2, ?3, ?4)
 RETURNING created, id, message, ticket, time, updated
 `
 
 type CreateTimelineParams struct {
+	ID      string `json:"id"`
 	Message string `json:"message"`
 	Ticket  string `json:"ticket"`
 	Time    string `json:"time"`
@@ -272,7 +293,12 @@ type CreateTimelineParams struct {
 
 // ----------------------------------------------------------------
 func (q *Queries) CreateTimeline(ctx context.Context, arg CreateTimelineParams) (Timeline, error) {
-	row := q.db.QueryRowContext(ctx, createTimeline, arg.Message, arg.Ticket, arg.Time)
+	row := q.db.QueryRowContext(ctx, createTimeline,
+		arg.ID,
+		arg.Message,
+		arg.Ticket,
+		arg.Time,
+	)
 	var i Timeline
 	err := row.Scan(
 		&i.Created,
@@ -287,12 +313,13 @@ func (q *Queries) CreateTimeline(ctx context.Context, arg CreateTimelineParams) 
 
 const createType = `-- name: CreateType :one
 
-INSERT INTO types (singular, plural, icon, schema)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO types (id, singular, plural, icon, schema)
+VALUES (?1, ?2, ?3, ?4, ?5)
 RETURNING created, icon, id, plural, schema, singular, updated
 `
 
 type CreateTypeParams struct {
+	ID       string `json:"id"`
 	Singular string `json:"singular"`
 	Plural   string `json:"plural"`
 	Icon     string `json:"icon"`
@@ -302,6 +329,7 @@ type CreateTypeParams struct {
 // ----------------------------------------------------------------
 func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) (Type, error) {
 	row := q.db.QueryRowContext(ctx, createType,
+		arg.ID,
 		arg.Singular,
 		arg.Plural,
 		arg.Icon,
@@ -322,12 +350,13 @@ func (q *Queries) CreateType(ctx context.Context, arg CreateTypeParams) (Type, e
 
 const createUser = `-- name: CreateUser :one
 
-INSERT INTO users (name, email, emailVisibility, username, passwordHash, tokenKey, avatar, verified)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+INSERT INTO users (id, name, email, emailVisibility, username, passwordHash, tokenKey, avatar, verified)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
 RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type CreateUserParams struct {
+	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Email           string `json:"email"`
 	EmailVisibility bool   `json:"emailVisibility"`
@@ -341,6 +370,7 @@ type CreateUserParams struct {
 // ----------------------------------------------------------------
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
+		arg.ID,
 		arg.Name,
 		arg.Email,
 		arg.EmailVisibility,
@@ -372,12 +402,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const createWebhook = `-- name: CreateWebhook :one
 
-INSERT INTO webhooks (name, collection, destination)
-VALUES (?1, ?2, ?3)
+INSERT INTO webhooks (id, name, collection, destination)
+VALUES (?1, ?2, ?3, ?4)
 RETURNING collection, created, destination, id, name, updated
 `
 
 type CreateWebhookParams struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Collection  string `json:"collection"`
 	Destination string `json:"destination"`
@@ -385,7 +416,12 @@ type CreateWebhookParams struct {
 
 // ----------------------------------------------------------------
 func (q *Queries) CreateWebhook(ctx context.Context, arg CreateWebhookParams) (Webhook, error) {
-	row := q.db.QueryRowContext(ctx, createWebhook, arg.Name, arg.Collection, arg.Destination)
+	row := q.db.QueryRowContext(ctx, createWebhook,
+		arg.ID,
+		arg.Name,
+		arg.Collection,
+		arg.Destination,
+	)
 	var i Webhook
 	err := row.Scan(
 		&i.Collection,

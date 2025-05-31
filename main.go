@@ -10,12 +10,16 @@ import (
 )
 
 func main() {
-	catalyst, err := app2.App("./catalyst_data", false)
+	ctx := context.Background()
+
+	catalyst, err := app2.App(ctx, "./catalyst_data", false)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ctx := context.Background()
+	if _, err := catalyst.Queries.CreateFeature(ctx, "dev"); err != nil {
+		log.Fatal(err)
+	}
 
 	if err := fakedata.GenerateDefaultData(ctx, catalyst.Queries); err != nil {
 		log.Fatal(err)

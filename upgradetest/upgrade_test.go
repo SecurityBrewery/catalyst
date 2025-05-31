@@ -26,12 +26,12 @@ func TestUpgrades(t *testing.T) {
 		t.Run(entry.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			pb, err := app2.App(filepath.Join("data", entry.Name()), true)
+			pb, err := app2.App(t.Context(), filepath.Join("data", entry.Name()), true)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			if err := fakedata.ValidateDefaultData(t.Context(), t, *pb); err != nil {
+			if err := fakedata.ValidateDefaultData(t.Context(), t, pb); err != nil {
 				log.Fatal(err)
 			}
 		})
