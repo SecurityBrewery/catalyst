@@ -13,12 +13,14 @@ require (
 	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-co-op/gocron/v2 v2.16.2
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/google/martian/v3 v3.3.3
 	github.com/google/uuid v1.6.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/sjson v1.2.5
+	github.com/wneessen/go-mail v0.6.2
 	go.uber.org/multierr v1.11.0
 	golang.org/x/crypto v0.38.0
 	golang.org/x/net v0.40.0

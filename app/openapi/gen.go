@@ -344,8 +344,6 @@ type User struct {
 	LastResetSentAt        string `json:"lastResetSentAt"`
 	LastVerificationSentAt string `json:"lastVerificationSentAt"`
 	Name                   string `json:"name"`
-	PasswordHash           string `json:"passwordHash"`
-	TokenKey               string `json:"tokenKey"`
 	Updated                string `json:"updated"`
 	Username               string `json:"username"`
 	Verified               bool   `json:"verified"`

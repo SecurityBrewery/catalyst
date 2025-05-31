@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/fakedata"
+	"github.com/SecurityBrewery/catalyst/data"
 )
 
 func TestUpgrades(t *testing.T) {
@@ -36,9 +36,7 @@ func TestUpgrades(t *testing.T) {
 				log.Fatal(err)
 			}
 
-			if err := fakedata.ValidateDefaultData(t.Context(), t, pb); err != nil {
-				log.Fatal(err)
-			}
+			data.ValidateDefaultData(t, pb)
 		})
 	}
 }

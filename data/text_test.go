@@ -1,4 +1,4 @@
-package fakedata
+package data
 
 import (
 	"testing"

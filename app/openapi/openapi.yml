@@ -757,12 +757,10 @@ components:
         lastResetSentAt: { "type": "string" }
         lastVerificationSentAt: { "type": "string" }
         name: { "type": "string" }
-        passwordHash: { "type": "string" }
-        tokenKey: { "type": "string" }
         verified: { "type": "boolean" }
         created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "passwordHash", "tokenKey", "verified", "created", "updated" ]
+      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
     NewWebhook:
       type: object
       properties:

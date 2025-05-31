@@ -1166,7 +1166,11 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type, COUNT(*) OVER () as total_count
+SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated,
+       users.name       as owner_name,
+       tickets.name     as ticket_name,
+       tickets.type     as ticket_type,
+       COUNT(*) OVER () as total_count
 FROM tasks
          LEFT JOIN users ON users.id = tasks.owner
          LEFT JOIN tickets ON tickets.id = tasks.ticket
@@ -1232,7 +1236,11 @@ func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTas
 }
 
 const listTickets = `-- name: ListTickets :many
-SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural, COUNT(*) OVER () as total_count
+SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated,
+       users.name       as owner_name,
+       types.singular   as type_singular,
+       types.plural     as type_plural,
+       COUNT(*) OVER () as total_count
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
          LEFT JOIN types ON types.id = tickets.type
@@ -1547,15 +1555,15 @@ SELECT id,
        COUNT(*) OVER () as total_count
 FROM ticket_search
 WHERE (?1 = '' OR (name LIKE '%' || ?1 || '%'
-   OR description LIKE '%' || ?1 || '%'
-   OR comment_messages LIKE '%' || ?1 || '%'
-   OR file_names LIKE '%' || ?1 || '%'
-   OR link_names LIKE '%' || ?1 || '%'
-   OR link_urls LIKE '%' || ?1 || '%'
-   OR task_names LIKE '%' || ?1 || '%'
-   OR timeline_messages LIKE '%' || ?1 || '%'))
-    AND (?2 IS NULL OR type = ?2)
-    AND (?3 IS NULL OR open = ?3)
+    OR description LIKE '%' || ?1 || '%'
+    OR comment_messages LIKE '%' || ?1 || '%'
+    OR file_names LIKE '%' || ?1 || '%'
+    OR link_names LIKE '%' || ?1 || '%'
+    OR link_urls LIKE '%' || ?1 || '%'
+    OR task_names LIKE '%' || ?1 || '%'
+    OR timeline_messages LIKE '%' || ?1 || '%'))
+  AND (?2 IS NULL OR type = ?2)
+  AND (?3 IS NULL OR open = ?3)
 LIMIT ?5 OFFSET ?4
 `
 
@@ -1989,21 +1997,27 @@ SET name                   = coalesce(?1, name),
     passwordHash           = coalesce(?5, passwordHash),
     tokenKey               = coalesce(?6, tokenKey),
     avatar                 = coalesce(?7, avatar),
-    verified               = coalesce(?8, verified)
-WHERE id = ?9
+    verified               = coalesce(?8, verified),
+    lastLoginAlertSentAt   = coalesce(?9, lastLoginAlertSentAt),
+    lastResetSentAt        = coalesce(?10, lastResetSentAt),
+    lastVerificationSentAt = coalesce(?11, lastVerificationSentAt)
+WHERE id = ?12
 RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type UpdateUserParams struct {
-	Name            sql.NullString `json:"name"`
-	Email           sql.NullString `json:"email"`
-	EmailVisibility sql.NullBool   `json:"emailVisibility"`
-	Username        sql.NullString `json:"username"`
-	PasswordHash    sql.NullString `json:"passwordHash"`
-	TokenKey        sql.NullString `json:"tokenKey"`
-	Avatar          sql.NullString `json:"avatar"`
-	Verified        sql.NullBool   `json:"verified"`
-	ID              string         `json:"id"`
+	Name                   sql.NullString `json:"name"`
+	Email                  sql.NullString `json:"email"`
+	EmailVisibility        sql.NullBool   `json:"emailVisibility"`
+	Username               sql.NullString `json:"username"`
+	PasswordHash           sql.NullString `json:"passwordHash"`
+	TokenKey               sql.NullString `json:"tokenKey"`
+	Avatar                 sql.NullString `json:"avatar"`
+	Verified               sql.NullBool   `json:"verified"`
+	LastLoginAlertSentAt   sql.NullString `json:"lastLoginAlertSentAt"`
+	LastResetSentAt        sql.NullString `json:"lastResetSentAt"`
+	LastVerificationSentAt sql.NullString `json:"lastVerificationSentAt"`
+	ID                     string         `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -2016,6 +2030,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.TokenKey,
 		arg.Avatar,
 		arg.Verified,
+		arg.LastLoginAlertSentAt,
+		arg.LastResetSentAt,
+		arg.LastVerificationSentAt,
 		arg.ID,
 	)
 	var i User

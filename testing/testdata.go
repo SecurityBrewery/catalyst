@@ -3,9 +3,8 @@ package testing
 import (
 	"testing"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -25,7 +24,7 @@ func defaultTestData(t *testing.T, app *app.App) {
 func userTestData(t *testing.T, app *app.App) {
 	t.Helper()
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+	passwordHash, tokenKey, err := auth.HashPassword("password")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +35,8 @@ func userTestData(t *testing.T, app *app.App) {
 		Email:        analystEmail,
 		Verified:     true,
 		Name:         "Bob Analyst",
-		PasswordHash: string(passwordHash),
+		PasswordHash: passwordHash,
+		TokenKey:     tokenKey,
 	})
 	if err != nil {
 		t.Fatal(err)

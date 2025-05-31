@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
@@ -61,10 +63,12 @@ func decode(actionName, actionData string) (action, error) {
 }
 
 func systemToken(ctx context.Context, queries *sqlc.Queries) (string, error) {
-	_, err := queries.UserByUserName(ctx, "system")
+	user, err := queries.UserByUserName(ctx, "system")
 	if err != nil {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
+
+	return auth.createResetToken(user, time.Hour)
 
 	/* TODO
 	return security.NewJWT(

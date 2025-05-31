@@ -11,9 +11,12 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth/sessionmanager"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/mail"
 )
 
 type Config struct {
+	// AppSecret is used to sign JWT tokens and should be kept secret.
+	AppSecret    string `json:"appSecret" yaml:"appSecret"`
 	Domain       string `json:"domain" yaml:"domain"`
 	CookieSecure bool   `json:"cookieSecure,omitempty" yaml:"cookieSecure,omitempty"`
 	PasswordAuth bool   `json:"passwordAuth,omitempty" yaml:"passwordAuth,omitempty"`
@@ -42,13 +45,15 @@ type Service struct {
 	queries        *sqlc.Queries
 	SessionManager *sessionmanager.SessionManager
 	oauth2Config   oauth2.Config
+	mailer         *mail.Mailer
 	verifier       *oidc.IDTokenVerifier
 }
 
-func New(ctx context.Context, queries *sqlc.Queries, config *Config) (*Service, error) {
+func New(ctx context.Context, queries *sqlc.Queries, mailer *mail.Mailer, config *Config) (*Service, error) {
 	service := &Service{
 		config:  config,
 		queries: queries,
+		mailer:  mailer,
 	}
 
 	if config.PasswordAuth {

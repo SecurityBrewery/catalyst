@@ -1,11 +1,11 @@
-package fakedata_test
+package data_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/fakedata"
+	"github.com/SecurityBrewery/catalyst/data"
 	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
 
@@ -14,7 +14,7 @@ func TestDefaultData(t *testing.T) {
 
 	app, _ := catalystTesting.App(t)
 
-	require.NoError(t, fakedata.GenerateDefaultData(t.Context(), app.Queries))
+	require.NoError(t, data.GenerateDefaultData(t.Context(), app.Queries))
 
-	require.NoError(t, fakedata.ValidateDefaultData(t.Context(), t, app))
+	data.ValidateDefaultData(t, app)
 }

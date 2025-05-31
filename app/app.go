@@ -11,6 +11,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
+	"github.com/SecurityBrewery/catalyst/app/mail"
 	"github.com/SecurityBrewery/catalyst/app/service"
 	"github.com/SecurityBrewery/catalyst/reaction/schedule"
 )
@@ -30,7 +31,13 @@ func New(ctx context.Context, filename string) (*App, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	authService, err := auth.New(ctx, queries, &auth.Config{
+	mailer := mail.New(&mail.Config{
+		SMTPServer:   "localhost",
+		SMTPUser:     "",
+		SMTPPassword: "",
+	})
+
+	authService, err := auth.New(ctx, queries, mailer, &auth.Config{
 		Domain:       "localhost",
 		CookieSecure: false,
 		PasswordAuth: true,

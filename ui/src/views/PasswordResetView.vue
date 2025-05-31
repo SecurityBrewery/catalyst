@@ -20,8 +20,19 @@ const mail = ref('')
 const alert = ref<AlertData | null>(null)
 
 const resetPassword = () => {
-  /* pb.collection('users') // TODO
-    .requestPasswordReset(mail.value)
+  fetch('/auth/local/reset-password-request', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email: mail.value })
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to send password reset email')
+      }
+      return response.json()
+    })
     .then(() => {
       alert.value = {
         variant: 'default',
@@ -36,7 +47,6 @@ const resetPassword = () => {
         message: error.message
       }
     })
-      */
 }
 </script>
 

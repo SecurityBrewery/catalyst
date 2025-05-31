@@ -29,7 +29,11 @@ FROM tickets
 WHERE id = @id;
 
 -- name: ListTickets :many
-SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural, COUNT(*) OVER () as total_count
+SELECT tickets.*,
+       users.name       as owner_name,
+       types.singular   as type_singular,
+       types.plural     as type_plural,
+       COUNT(*) OVER () as total_count
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
          LEFT JOIN types ON types.id = tickets.type
@@ -242,7 +246,11 @@ FROM tasks
 WHERE id = @id;
 
 -- name: ListTasks :many
-SELECT tasks.*, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type, COUNT(*) OVER () as total_count
+SELECT tasks.*,
+       users.name       as owner_name,
+       tickets.name     as ticket_name,
+       tickets.type     as ticket_type,
+       COUNT(*) OVER () as total_count
 FROM tasks
          LEFT JOIN users ON users.id = tasks.owner
          LEFT JOIN tickets ON tickets.id = tasks.ticket
@@ -346,7 +354,10 @@ SET name                   = coalesce(sqlc.narg('name'), name),
     passwordHash           = coalesce(sqlc.narg('passwordHash'), passwordHash),
     tokenKey               = coalesce(sqlc.narg('tokenKey'), tokenKey),
     avatar                 = coalesce(sqlc.narg('avatar'), avatar),
-    verified               = coalesce(sqlc.narg('verified'), verified)
+    verified               = coalesce(sqlc.narg('verified'), verified),
+    lastLoginAlertSentAt   = coalesce(sqlc.narg('lastLoginAlertSentAt'), lastLoginAlertSentAt),
+    lastResetSentAt        = coalesce(sqlc.narg('lastResetSentAt'), lastResetSentAt),
+    lastVerificationSentAt = coalesce(sqlc.narg('lastVerificationSentAt'), lastVerificationSentAt)
 WHERE id = @id
 RETURNING *;
 
@@ -414,13 +425,13 @@ SELECT id,
        COUNT(*) OVER () as total_count
 FROM ticket_search
 WHERE (@query = '' OR (name LIKE '%' || @query || '%'
-   OR description LIKE '%' || @query || '%'
-   OR comment_messages LIKE '%' || @query || '%'
-   OR file_names LIKE '%' || @query || '%'
-   OR link_names LIKE '%' || @query || '%'
-   OR link_urls LIKE '%' || @query || '%'
-   OR task_names LIKE '%' || @query || '%'
-   OR timeline_messages LIKE '%' || @query || '%'))
-    AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
-    AND (sqlc.narg('open') IS NULL OR open = sqlc.narg('open'))
+    OR description LIKE '%' || @query || '%'
+    OR comment_messages LIKE '%' || @query || '%'
+    OR file_names LIKE '%' || @query || '%'
+    OR link_names LIKE '%' || @query || '%'
+    OR link_urls LIKE '%' || @query || '%'
+    OR task_names LIKE '%' || @query || '%'
+    OR timeline_messages LIKE '%' || @query || '%'))
+  AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+  AND (sqlc.narg('open') IS NULL OR open = sqlc.narg('open'))
 LIMIT @limit OFFSET @offset;

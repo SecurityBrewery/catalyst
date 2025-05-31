@@ -23,6 +23,9 @@ func (s *Service) Server() http.Handler {
 	if s.config.PasswordAuth {
 		router.Post("/local/login", s.handleLogin)
 		router.Get("/local/logout", s.handleLogout)
+		router.Post("/local/reset-password-request", s.handlePasswordResetRequest)
+		router.Get("/local/reset-password", s.handlePasswordReset)
+		router.Post("/local/reset-password", s.handlePasswordResetPost)
 	}
 
 	if s.config.OIDCAuth {

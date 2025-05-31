@@ -1,10 +1,11 @@
-package fakedata
+package data
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -17,7 +18,9 @@ const (
 	minimumTicketCount = 1
 )
 
-func Generate(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount int) error {
+func GenerateFake(t *testing.T, queries *sqlc.Queries, userCount, ticketCount int) {
+	t.Helper()
+
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -26,10 +29,12 @@ func Generate(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount
 		ticketCount = minimumTicketCount
 	}
 
-	return Records(ctx, queries, userCount, ticketCount)
+	if err := records(t.Context(), queries, userCount, ticketCount); err != nil {
+		t.Fatal(err)
+	}
 }
 
-func Records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
+func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
 	types, err := queries.ListTypes(ctx, sqlc.ListTypesParams{
 		Limit:  100,
 		Offset: 0,

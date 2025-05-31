@@ -1,4 +1,4 @@
-package fakedata
+package data
 
 import "github.com/brianvoe/gofakeit/v7"
 

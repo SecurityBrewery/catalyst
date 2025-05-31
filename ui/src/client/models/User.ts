@@ -77,18 +77,6 @@ export interface User {
   name: string
   /**
    *
-   * @type {string}
-   * @memberof User
-   */
-  passwordHash: string
-  /**
-   *
-   * @type {string}
-   * @memberof User
-   */
-  tokenKey: string
-  /**
-   *
    * @type {boolean}
    * @memberof User
    */
@@ -122,8 +110,6 @@ export function instanceOfUser(value: object): value is User {
   if (!('lastVerificationSentAt' in value) || value['lastVerificationSentAt'] === undefined)
     return false
   if (!('name' in value) || value['name'] === undefined) return false
-  if (!('passwordHash' in value) || value['passwordHash'] === undefined) return false
-  if (!('tokenKey' in value) || value['tokenKey'] === undefined) return false
   if (!('verified' in value) || value['verified'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
@@ -148,8 +134,6 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     lastResetSentAt: json['lastResetSentAt'],
     lastVerificationSentAt: json['lastVerificationSentAt'],
     name: json['name'],
-    passwordHash: json['passwordHash'],
-    tokenKey: json['tokenKey'],
     verified: json['verified'],
     created: json['created'],
     updated: json['updated']
@@ -175,8 +159,6 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
     lastResetSentAt: value['lastResetSentAt'],
     lastVerificationSentAt: value['lastVerificationSentAt'],
     name: value['name'],
-    passwordHash: value['passwordHash'],
-    tokenKey: value['tokenKey'],
     verified: value['verified'],
     created: value['created'],
     updated: value['updated']

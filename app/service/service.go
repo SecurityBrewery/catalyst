@@ -9,8 +9,8 @@ import (
 	"log/slog"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
@@ -1281,8 +1281,6 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 			LastResetSentAt:        user.Lastresetsentat,
 			LastVerificationSentAt: user.Lastverificationsentat,
 			Name:                   user.Name,
-			PasswordHash:           user.Passwordhash,
-			TokenKey:               user.Tokenkey,
 			Updated:                user.Updated,
 			Username:               user.Username,
 			Verified:               user.Verified,
@@ -1309,7 +1307,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		return nil, errors.New("passwords do not match")
 	}
 
-	passwordHash, err := hashPassword(request.Body.Password)
+	passwordHash, tokenKey, err := auth.HashPassword(request.Body.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
@@ -1321,7 +1319,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		EmailVisibility: request.Body.EmailVisibility,
 		Username:        request.Body.Username,
 		PasswordHash:    passwordHash,
-		TokenKey:        "", // TODO
+		TokenKey:        tokenKey,
 		Avatar:          request.Body.Avatar,
 		Verified:        request.Body.Verified,
 	})
@@ -1339,8 +1337,6 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
-		PasswordHash:           user.Passwordhash,
-		TokenKey:               user.Tokenkey,
 		Updated:                user.Updated,
 		Username:               user.Username,
 		Verified:               user.Verified,
@@ -1349,15 +1345,6 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "users", response)
 
 	return openapi.CreateUser200JSONResponse(response), nil
-}
-
-func hashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-
-	return string(hashedPassword), nil
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request openapi.DeleteUserRequestObject) (openapi.DeleteUserResponseObject, error) {
@@ -1389,8 +1376,6 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
-		PasswordHash:           user.Passwordhash,
-		TokenKey:               user.Tokenkey,
 		Updated:                user.Updated,
 		Username:               user.Username,
 		Verified:               user.Verified,
@@ -1404,7 +1389,7 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequestObject) (openapi.UpdateUserResponseObject, error) {
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "users", request.Body)
 
-	var passwordHash sql.NullString
+	var passwordHash, tokenHash sql.NullString
 
 	switch {
 	case request.Body.Password == nil && request.Body.PasswordConfirm == nil:
@@ -1413,12 +1398,13 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 			return nil, errors.New("passwords do not match")
 		}
 
-		passwordHashS, err := hashPassword(*request.Body.Password)
+		passwordHashS, tokenHashS, err := auth.HashPassword(*request.Body.Password)
 		if err != nil {
 			return nil, fmt.Errorf("failed to hash password: %w", err)
 		}
 
 		passwordHash = sql.NullString{String: passwordHashS, Valid: true}
+		tokenHash = sql.NullString{String: tokenHashS, Valid: true}
 	default:
 		return nil, errors.New("password and password confirm must be provided together")
 	}
@@ -1429,7 +1415,7 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		EmailVisibility: toNullBool(request.Body.EmailVisibility),
 		Username:        toNullString(request.Body.Username),
 		PasswordHash:    passwordHash,
-		TokenKey:        sql.NullString{},
+		TokenKey:        tokenHash,
 		Avatar:          toNullString(request.Body.Avatar),
 		Verified:        toNullBool(request.Body.Verified),
 		ID:              request.Id,
@@ -1448,8 +1434,6 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
-		PasswordHash:           user.Passwordhash,
-		TokenKey:               user.Tokenkey,
 		Updated:                user.Updated,
 		Username:               user.Username,
 		Verified:               user.Verified,
