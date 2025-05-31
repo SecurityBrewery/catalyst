@@ -16,7 +16,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/google/martian/v3 v3.3.2
 	github.com/google/uuid v1.6.0
-	github.com/labstack/echo/v5 v5.0.0-20230722203903-ec5b858dab61
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/sjson v1.2.5

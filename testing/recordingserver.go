@@ -1,29 +1,44 @@
 package testing
 
 import (
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo/v5"
+	"github.com/go-chi/chi/v5"
 )
 
 type RecordingServer struct {
-	server *echo.Echo
+	server chi.Router
 
 	Entries []string
 }
 
 func NewRecordingServer() *RecordingServer {
-	e := echo.New()
+	e := chi.NewRouter()
 
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]any{
+	e.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		b, err := json.Marshal(map[string]any{
 			"status": "ok",
 		})
+		if err != nil {
+			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+
+			return
+		}
+
+		_, err = w.Write(b)
 	})
-	e.Any("/*", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]any{
+	e.Handle("/*", func(w http.ResponseWriter, r *http.Request) {
+		b, err := json.Marshal(map[string]any{
 			"test": true,
 		})
+		if err != nil {
+			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+
+			return
+		}
+
+		_, err = w.Write(b)
 	})
 
 	return &RecordingServer{
