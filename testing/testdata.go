@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
+	"golang.org/x/crypto/bcrypt"
 
-	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 )
 
 const (
@@ -14,115 +14,69 @@ const (
 	analystEmail = "analyst@catalyst-soar.com"
 )
 
-func defaultTestData(t *testing.T, app core.App) {
+func defaultTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	adminTestData(t, app)
 	userTestData(t, app)
 	ticketTestData(t, app)
 	reactionTestData(t, app)
 }
 
-func adminTestData(t *testing.T, app core.App) {
+func userTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	admin := &models.Admin{Email: adminEmail}
-
-	if err := admin.SetPassword("password"); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := app.Dao().SaveAdmin(admin); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func userTestData(t *testing.T, app core.App) {
-	t.Helper()
-
-	collection, err := app.Dao().FindCollectionByNameOrId(migrations.UserCollectionName)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	record := models.NewRecord(collection)
-	record.SetId("u_bob_analyst")
-	_ = record.SetUsername("u_bob_analyst")
-	_ = record.SetPassword("password")
-	record.Set("name", "Bob Analyst")
-	record.Set("email", analystEmail)
-	_ = record.SetVerified(true)
-
-	if err := app.Dao().SaveRecord(record); err != nil {
-		t.Fatal(err)
-	}
+	app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+		Username:     "u_bob_analyst",
+		Email:        analystEmail,
+		Verified:     true,
+		Name:         "Bob Analyst",
+		PasswordHash: string(passwordHash),
+	})
 }
 
-func ticketTestData(t *testing.T, app core.App) {
+func ticketTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	collection, err := app.Dao().FindCollectionByNameOrId(migrations.TicketCollectionName)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	record := models.NewRecord(collection)
-	record.SetId("t_test")
-
-	record.Set("name", "Test Ticket")
-	record.Set("type", "incident")
-	record.Set("description", "This is a test ticket.")
-	record.Set("open", true)
-	record.Set("schema", `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)
-	record.Set("state", `{"tlp":"AMBER"}`)
-	record.Set("owner", "u_bob_analyst")
-
-	if err := app.Dao().SaveRecord(record); err != nil {
-		t.Fatal(err)
-	}
+	app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
+		Name:        "Test Ticket",
+		Type:        "incident",
+		Description: "This is a test ticket.",
+		Open:        true,
+		Owner:       "u_bob_analyst",
+		Schema:      `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`,
+		State:       `{"tlp":"AMBER"}`,
+	})
 }
 
-func reactionTestData(t *testing.T, app core.App) {
+func reactionTestData(t *testing.T, app *app2.App2) {
 	t.Helper()
 
-	collection, err := app.Dao().FindCollectionByNameOrId(migrations.ReactionCollectionName)
-	if err != nil {
-		t.Fatal(err)
-	}
+	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		Name:        "Reaction",
+		Trigger:     "webhook",
+		Triggerdata: `{"token":"1234567890","path":"test"}`,
+		Action:      "python",
+		Actiondata:  `{"requirements":"requests","script":"print('Hello, World!')"}`,
+	})
 
-	record := models.NewRecord(collection)
-	record.SetId("r_reaction")
-	record.Set("name", "Reaction")
-	record.Set("trigger", "webhook")
-	record.Set("triggerdata", `{"token":"1234567890","path":"test"}`)
-	record.Set("action", "python")
-	record.Set("actiondata", `{"requirements":"requests","script":"print('Hello, World!')"}`)
+	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		Name:        "Reaction",
+		Trigger:     "webhook",
+		Triggerdata: `{"path":"test2"}`,
+		Action:      "webhook",
+		Actiondata:  `{"headers":{"Content-Type":"application/json"},"url":"http://127.0.0.1:12345/webhook"}`,
+	})
 
-	if err := app.Dao().SaveRecord(record); err != nil {
-		t.Fatal(err)
-	}
-
-	record = models.NewRecord(collection)
-	record.SetId("r_reaction_webhook")
-	record.Set("name", "Reaction")
-	record.Set("trigger", "webhook")
-	record.Set("triggerdata", `{"path":"test2"}`)
-	record.Set("action", "webhook")
-	record.Set("actiondata", `{"headers":{"Content-Type":"application/json"},"url":"http://127.0.0.1:12345/webhook"}`)
-
-	if err := app.Dao().SaveRecord(record); err != nil {
-		t.Fatal(err)
-	}
-
-	record = models.NewRecord(collection)
-	record.SetId("r_reaction_hook")
-	record.Set("name", "Hook")
-	record.Set("trigger", "hook")
-	record.Set("triggerdata", `{"collections":["tickets"],"events":["create"]}`)
-	record.Set("action", "python")
-	record.Set("actiondata", `{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`)
-
-	if err := app.Dao().SaveRecord(record); err != nil {
-		t.Fatal(err)
-	}
+	app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+		Name:        "Hook",
+		Trigger:     "hook",
+		Triggerdata: `{"collections":["tickets"],"events":["create"]}`,
+		Action:      "python",
+		Actiondata:  `{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`,
+	})
 }

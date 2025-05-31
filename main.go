@@ -6,6 +6,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/app2/fakedata"
 )
 
 func main() {
@@ -14,7 +15,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := catalyst.Start(context.Background()); err != nil {
+	ctx := context.Background()
+
+	if err := fakedata.GenerateDefaultData(ctx, catalyst.Queries); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := catalyst.Start(ctx); err != nil {
 		log.Fatal(err)
 	}
 }

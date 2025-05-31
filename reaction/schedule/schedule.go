@@ -5,17 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"time"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/tools/cron"
+	"github.com/go-co-op/gocron/v2"
 	"go.uber.org/multierr"
 
-	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 )
 
@@ -23,28 +18,35 @@ type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func Start(pb *pocketbase.PocketBase) {
-	scheduler := cron.New()
+func Start(pb *app2.App2) {
+	s, err := gocron.NewScheduler()
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to create scheduler: %v", err))
+	}
 
-	if err := scheduler.Add("reactions", "* * * * *", func() {
-		ctx := context.Background()
-
-		moment := cron.NewMoment(time.Now())
-
-		if err := runSchedule(ctx, pb.App, moment); err != nil {
-			slog.ErrorContext(ctx, fmt.Sprintf("failed to run hook reaction: %v", err))
-		}
-	}); err != nil {
+	// add a job to the scheduler
+	j, err := s.NewJob(
+		gocron.CronJob(
+			"* * * * *",
+			false,
+		),
+		gocron.NewTask(
+			func(ctx context.Context) {
+				runSchedule(ctx, pb)
+			},
+		),
+	)
+	if err != nil {
 		slog.Error(fmt.Sprintf("failed to add cron job: %v", err))
 	}
 
-	scheduler.Start()
+	s.Start()
 }
 
-func runSchedule(ctx context.Context, app core.App, moment *cron.Moment) error {
+func runSchedule(ctx context.Context, app *app2.App2) error {
 	var errs error
 
-	records, err := findByScheduleTrigger(app.Dao(), moment)
+	records, err := findByScheduleTrigger(ctx, app.Queries)
 	if err != nil {
 		errs = multierr.Append(errs, fmt.Errorf("failed to find schedule reaction: %w", err))
 	}
@@ -54,7 +56,7 @@ func runSchedule(ctx context.Context, app core.App, moment *cron.Moment) error {
 	}
 
 	for _, hook := range records {
-		_, err = action.Run(ctx, app, hook.GetString("action"), hook.GetString("actiondata"), "{}")
+		_, err = action.Run(ctx, app, hook.Action, hook.Actiondata, "{}")
 		if err != nil {
 			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
 		}
@@ -63,38 +65,38 @@ func runSchedule(ctx context.Context, app core.App, moment *cron.Moment) error {
 	return errs
 }
 
-func findByScheduleTrigger(dao *daos.Dao, moment *cron.Moment) ([]*models.Record, error) {
-	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "schedule"})
+func findByScheduleTrigger(ctx context.Context, queries *sqlc.Queries) ([]*sqlc.ListReactionsRow, error) {
+	reactions, err := queries.ListReactions(ctx, sqlc.ListReactionsParams{
+		Offset: 0,
+		Limit:  100,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find schedule reaction: %w", err)
 	}
 
-	if len(records) == 0 {
+	if len(reactions) == 0 {
 		return nil, nil
 	}
 
 	var errs error
 
-	var matchedRecords []*models.Record
+	var matchedRecords []*sqlc.ListReactionsRow
 
-	for _, record := range records {
+	for _, reaction := range reactions {
+		if reaction.Trigger != "schedule" {
+			continue
+		}
+
 		var schedule Schedule
-		if err := json.Unmarshal([]byte(record.GetString("triggerdata")), &schedule); err != nil {
+		if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
 			errs = multierr.Append(errs, err)
 
 			continue
 		}
 
-		s, err := cron.NewSchedule(schedule.Expression)
-		if err != nil {
-			errs = multierr.Append(errs, err)
-
-			continue
-		}
-
-		if s.IsDue(moment) {
-			matchedRecords = append(matchedRecords, record)
-		}
+		// if s.IsDue(moment) { TODO
+		matchedRecords = append(matchedRecords, &reaction)
+		// }
 	}
 
 	return matchedRecords, errs

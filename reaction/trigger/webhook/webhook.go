@@ -1,21 +1,15 @@
 package webhook
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-
-	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
@@ -27,55 +21,53 @@ type Webhook struct {
 
 const prefix = "/reaction/"
 
-func BindHooks(pb *pocketbase.PocketBase) {
-	pb.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Any(prefix+"*", handle(e.App))
-
-		return nil
-	})
+func BindHooks(app *app2.App2) {
+	app.Router.HandleFunc(prefix+"*", handle(app))
 }
 
-func handle(app core.App) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		record, payload, apiErr := parseRequest(app.Dao(), c.Request())
-		if apiErr != nil {
-			return apiErr
-		}
-
-		output, err := action.Run(c.Request().Context(), app, record.GetString("action"), record.GetString("actiondata"), string(payload))
+func handle(app *app2.App2) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		reaction, payload, status, err := parseRequest(app.Queries, r)
 		if err != nil {
-			return apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
+			http.Error(w, err.Error(), status)
+			return
 		}
 
-		return writeOutput(c, output)
+		output, err := action.Run(r.Context(), app, reaction.Action, reaction.Actiondata, string(payload))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		writeOutput(w, output)
 	}
 }
 
-func parseRequest(dao *daos.Dao, r *http.Request) (*models.Record, []byte, *apis.ApiError) {
+func parseRequest(queries *sqlc.Queries, r *http.Request) (*sqlc.ListReactionsRow, []byte, int, error) {
 	if !strings.HasPrefix(r.URL.Path, prefix) {
-		return nil, nil, apis.NewApiError(http.StatusNotFound, "wrong prefix", nil)
+		return nil, nil, http.StatusNotFound, fmt.Errorf("wrong prefix")
 	}
 
 	reactionName := strings.TrimPrefix(r.URL.Path, prefix)
 
-	record, trigger, found, err := findByWebhookTrigger(dao, reactionName)
+	reaction, trigger, found, err := findByWebhookTrigger(r.Context(), queries, reactionName)
 	if err != nil {
-		return nil, nil, apis.NewNotFoundError(err.Error(), nil)
+		return nil, nil, http.StatusNotFound, err
 	}
 
 	if !found {
-		return nil, nil, apis.NewNotFoundError("reaction not found", nil)
+		return nil, nil, http.StatusNotFound, fmt.Errorf("reaction not found")
 	}
 
 	if trigger.Token != "" {
 		auth := r.Header.Get("Authorization")
 
 		if !strings.HasPrefix(auth, "Bearer ") {
-			return nil, nil, apis.NewUnauthorizedError("missing token", nil)
+			return nil, nil, http.StatusUnauthorized, fmt.Errorf("missing token")
 		}
 
 		if trigger.Token != strings.TrimPrefix(auth, "Bearer ") {
-			return nil, nil, apis.NewUnauthorizedError("invalid token", nil)
+			return nil, nil, http.StatusUnauthorized, fmt.Errorf("invalid token")
 		}
 	}
 
@@ -90,42 +82,49 @@ func parseRequest(dao *daos.Dao, r *http.Request) (*models.Record, []byte, *apis
 		IsBase64Encoded: isBase64Encoded,
 	})
 	if err != nil {
-		return nil, nil, apis.NewApiError(http.StatusInternalServerError, err.Error(), nil)
+		return nil, nil, http.StatusInternalServerError, err
 	}
 
-	return record, payload, nil
+	return reaction, payload, http.StatusOK, nil
 }
 
-func findByWebhookTrigger(dao *daos.Dao, path string) (*models.Record, *Webhook, bool, error) {
-	records, err := dao.FindRecordsByExpr(migrations.ReactionCollectionName, dbx.HashExp{"trigger": "webhook"})
+func findByWebhookTrigger(ctx context.Context, queries *sqlc.Queries, path string) (*sqlc.ListReactionsRow, *Webhook, bool, error) {
+	reactions, err := queries.ListReactions(ctx, sqlc.ListReactionsParams{
+		Offset: 0,
+		Limit:  100,
+	})
 	if err != nil {
 		return nil, nil, false, err
 	}
 
-	if len(records) == 0 {
+	if len(reactions) == 0 {
 		return nil, nil, false, nil
 	}
 
-	for _, record := range records {
+	for _, reaction := range reactions {
+		if reaction.Trigger != "webhook" {
+			continue
+		}
+
 		var webhook Webhook
-		if err := json.Unmarshal([]byte(record.GetString("triggerdata")), &webhook); err != nil {
+		if err := json.Unmarshal([]byte(reaction.Triggerdata), &webhook); err != nil {
 			return nil, nil, false, err
 		}
 
 		if webhook.Path == path {
-			return record, &webhook, true, nil
+			return &reaction, &webhook, true, nil
 		}
 	}
 
 	return nil, nil, false, nil
 }
 
-func writeOutput(c echo.Context, output []byte) error {
+func writeOutput(w http.ResponseWriter, output []byte) error {
 	var catalystResponse webhook.Response
 	if err := json.Unmarshal(output, &catalystResponse); err == nil && catalystResponse.StatusCode != 0 {
 		for key, values := range catalystResponse.Headers {
 			for _, value := range values {
-				c.Response().Header().Add(key, value)
+				w.Header().Add(key, value)
 			}
 		}
 
@@ -139,9 +138,15 @@ func writeOutput(c echo.Context, output []byte) error {
 		}
 	}
 
-	if IsJSON(output) {
-		return c.JSON(http.StatusOK, json.RawMessage(output))
+	if json.Valid(output) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(output)
+	} else {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(output)
 	}
 
-	return c.String(http.StatusOK, string(output))
+	return nil
 }

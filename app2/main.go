@@ -18,7 +18,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/app2/auth"
 	"github.com/SecurityBrewery/catalyst/app2/database"
 	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app2/fakedata"
 	"github.com/SecurityBrewery/catalyst/app2/openapi"
 )
 
@@ -26,10 +25,6 @@ func App(filename string, _ bool) (*App2, error) {
 	queries, _, err := database.DB(filepath.Join(filename, "data.db"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
-	}
-
-	if err := fakedata.Generate(queries, 1, 10); err != nil {
-		return nil, fmt.Errorf("failed to generate fake data: %w", err)
 	}
 
 	if _, err := queries.CreateFeature(context.Background(), "dev"); err != nil {
@@ -43,9 +38,10 @@ func App(filename string, _ bool) (*App2, error) {
 
 type App2 struct {
 	Queries *sqlc.Queries
+	Router  *chi.Mux
 }
 
-func (a *App2) Start(ctx context.Context) error {
+func (a *App2) Server(ctx context.Context) error {
 	service := &Service{
 		Queries: a.Queries,
 	}
@@ -121,7 +117,18 @@ func (a *App2) Start(ctx context.Context) error {
 		_, _ = w.Write(b)
 	})
 
-	return http.ListenAndServe(":8090", r)
+	a.Router = r
+
+	return nil
+}
+
+func (a *App2) Start(ctx context.Context) error {
+	err := a.Server(ctx)
+	if err != nil {
+		return err
+	}
+
+	return http.ListenAndServe(":8090", a.Router)
 }
 
 func staticFiles(w http.ResponseWriter, r *http.Request) {

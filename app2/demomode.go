@@ -2,11 +2,12 @@ package app2
 
 import (
 	"context"
-	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"log/slog"
 	"net/http"
 	"slices"
 	"strings"
+
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 )
 
 func demomode(queries *sqlc.Queries) func(http.Handler) http.Handler {

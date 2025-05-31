@@ -4,32 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tokens"
-	"github.com/pocketbase/pocketbase/tools/security"
-
-	"github.com/SecurityBrewery/catalyst/migrations"
+	"github.com/SecurityBrewery/catalyst/app2"
+	"github.com/SecurityBrewery/catalyst/app2/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, app core.App, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, app *app2.App2, actionName, actionData, payload string) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
 	}
 
 	if a, ok := action.(authenticatedAction); ok {
-		token, err := systemToken(app)
+		token, err := systemToken(ctx, app.Queries)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get system token: %w", err)
 		}
 
 		a.SetEnv([]string{
-			"CATALYST_APP_URL=" + app.Settings().Meta.AppUrl,
+			"CATALYST_APP_URL=", // + app.Settings().Meta.AppUrl, // TODO
 			"CATALYST_TOKEN=" + token,
 		})
 	}
@@ -66,19 +61,22 @@ func decode(actionName, actionData string) (action, error) {
 	}
 }
 
-func systemToken(app core.App) (string, error) {
-	authRecord, err := app.Dao().FindAuthRecordByUsername(migrations.UserCollectionName, migrations.SystemUserID)
+func systemToken(ctx context.Context, queries *sqlc.Queries) (string, error) {
+	_, err := queries.UserByUserName(ctx, "system")
 	if err != nil {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return security.NewJWT(
-		jwt.MapClaims{
-			"id":           authRecord.Id,
-			"type":         tokens.TypeAuthRecord,
-			"collectionId": authRecord.Collection().Id,
-		},
-		authRecord.TokenKey()+app.Settings().RecordAuthToken.Secret,
-		int64(time.Second*60),
-	)
+	/*
+		return security.NewJWT(
+			jwt.MapClaims{
+				"id":           authRecord.ID,
+				"type":         tokens.TypeAuthRecord,
+				"collectionId": "users",
+			},
+			authRecord.Tokenkey, // +app.Settings().RecordAuthToken.Secret, TODO
+			int64(time.Second*60),
+		)
+	*/
+	return "", nil
 }
