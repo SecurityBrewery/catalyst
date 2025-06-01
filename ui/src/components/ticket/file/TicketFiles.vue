@@ -6,18 +6,19 @@ import { Button } from '@/components/ui/button'
 
 import { Download, Trash2 } from 'lucide-vue-next'
 
-import { useQuery } from '@tanstack/vue-query'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
 import { useAPI } from '@/api'
 import type { ModelFile, Ticket } from '@/client/models'
-import { human } from '@/lib/utils'
-import { handleError } from '@/lib/utils'
+import { handleError, human } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 const api = useAPI()
 
 const queryClient = useQueryClient()
+
+const authStore = useAuthStore()
 
 const props = defineProps<{
   ticket: Ticket
@@ -25,7 +26,23 @@ const props = defineProps<{
 }>()
 
 const downloadFile = (file: any) => {
-  window.open(`/api/files/files/${file.id}/${file.blob}?download=1`, '_blank')
+  fetch(`/api/files/${file.id}/download`, {
+    headers: { Authorization: `Bearer ${authStore.token}` }
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      var _url = window.URL.createObjectURL(blob)
+
+      // Create a link element, set its href to the blob URL, and trigger a download
+      const link = document.createElement('a')
+      link.href = _url
+      link.download = file.name
+      document.body.appendChild(link)
+      link.click()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const dialogOpen = ref(false)

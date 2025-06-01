@@ -1,12 +1,15 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 
@@ -277,7 +280,6 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 	var response []openapi.File
 	for _, file := range files {
 		response = append(response, openapi.File{
-			Blob:    file.Blob,
 			Created: file.Created,
 			Id:      file.ID,
 			Name:    file.Name,
@@ -317,7 +319,6 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "files", file)
 
 	return openapi.CreateFile200JSONResponse(openapi.File{
-		Blob:    file.Blob,
 		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
@@ -347,7 +348,6 @@ func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObj
 	}
 
 	response := openapi.File{
-		Blob:    file.Blob,
 		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
@@ -367,15 +367,12 @@ func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequ
 	file, err := s.queries.UpdateFile(ctx, sqlc.UpdateFileParams{
 		ID:   request.Id,
 		Name: toNullString(request.Body.Name),
-		Blob: toNullString(request.Body.Blob),
-		Size: toNullInt64(request.Body.Size),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	response := openapi.File{
-		Blob:    file.Blob,
 		Created: file.Created,
 		Id:      file.ID,
 		Name:    file.Name,
@@ -420,6 +417,32 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 		Body: response,
 		Headers: openapi.ListLinks200ResponseHeaders{
 			XTotalCount: totalCount,
+		},
+	}, nil
+}
+
+func (s *Service) DownloadFile(ctx context.Context, request openapi.DownloadFileRequestObject) (openapi.DownloadFileResponseObject, error) {
+	file, err := s.queries.GetFile(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	header, blob, ok := strings.Cut(file.Blob, ";base64,")
+	if !ok {
+		return nil, fmt.Errorf("invalid file blob format for file ID %s", request.Id)
+	}
+
+	data, err := base64.StdEncoding.DecodeString(blob)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode file blob: %w", err)
+	}
+
+	return openapi.DownloadFile200ApplicationoctetStreamResponse{
+		Body:          bytes.NewReader(data),
+		ContentLength: int64(len(data)),
+		Headers: openapi.DownloadFile200ResponseHeaders{
+			ContentDisposition: "attachment; filename=\"" + file.Name + "\"",
+			ContentType:        strings.TrimPrefix(header, "data:"),
 		},
 	}, nil
 }
@@ -1583,14 +1606,6 @@ func toInt64(value *int, defaultValue int64) int64 {
 	}
 
 	return int64(*value)
-}
-
-func toNullInt64(value *int64) sql.NullInt64 {
-	if value == nil {
-		return sql.NullInt64{}
-	}
-
-	return sql.NullInt64{Int64: *value, Valid: true}
 }
 
 func toNullBool(value *bool) sql.NullBool {

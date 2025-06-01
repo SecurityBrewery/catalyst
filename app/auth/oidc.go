@@ -30,9 +30,14 @@ func (s *Service) verifyClaims(r *http.Request, rawIDToken string) (string, map[
 		return "", nil, fmt.Errorf("failed to parse claims: %w", err)
 	}
 
-	if _, ok := claims["iss"]; !ok {
-		// TODO: verify issuer
-		return "", nil, fmt.Errorf("no issuer in claims")
+	iss, ok := claims["iss"]
+	if !ok {
+		return "", nil, fmt.Errorf("issuer ungültig oder fehlt")
+	}
+
+	issStr, ok := iss.(string)
+	if !ok || iss != s.config.OIDCIssuer {
+		return "", nil, fmt.Errorf("issuer mismatch: expected %s, got %s", s.config.OIDCIssuer, issStr)
 	}
 
 	newUser, err := mapClaims(claims, s.config.UserCreateConfig)

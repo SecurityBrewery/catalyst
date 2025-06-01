@@ -12,7 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, config *auth.Config, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func Run(ctx context.Context, auth *auth.Service, queries *sqlc.Queries, actionN
 		}
 
 		a.SetEnv([]string{
-			"CATALYST_APP_URL=", // + app.Settings().Meta.AppUrl, // TODO
+			"CATALYST_APP_URL=" + config.URL,
 			"CATALYST_TOKEN=" + token,
 		})
 	}

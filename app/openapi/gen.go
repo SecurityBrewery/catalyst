@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -89,7 +90,6 @@ type Feature struct {
 
 // File defines model for File.
 type File struct {
-	Blob    string `json:"blob"`
 	Created string `json:"created"`
 	Id      string `json:"id"`
 	Name    string `json:"name"`
@@ -100,9 +100,7 @@ type File struct {
 
 // FileUpdate defines model for FileUpdate.
 type FileUpdate struct {
-	Blob *string `json:"blob,omitempty"`
 	Name *string `json:"name,omitempty"`
-	Size *int64  `json:"size,omitempty"`
 }
 
 // Link defines model for Link.
@@ -568,6 +566,9 @@ type ServerInterface interface {
 	// Update a file by ID
 	// (PATCH /files/{id})
 	UpdateFile(w http.ResponseWriter, r *http.Request, id string)
+	// Download a file by ID
+	// (GET /files/{id}/download)
+	DownloadFile(w http.ResponseWriter, r *http.Request, id string)
 	// List all links
 	// (GET /links)
 	ListLinks(w http.ResponseWriter, r *http.Request, params ListLinksParams)
@@ -787,6 +788,12 @@ func (_ Unimplemented) GetFile(w http.ResponseWriter, r *http.Request, id string
 // Update a file by ID
 // (PATCH /files/{id})
 func (_ Unimplemented) UpdateFile(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Download a file by ID
+// (GET /files/{id}/download)
+func (_ Unimplemented) DownloadFile(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1419,6 +1426,31 @@ func (siw *ServerInterfaceWrapper) UpdateFile(w http.ResponseWriter, r *http.Req
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateFile(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DownloadFile operation middleware
+func (siw *ServerInterfaceWrapper) DownloadFile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DownloadFile(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2676,6 +2708,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Patch(options.BaseURL+"/files/{id}", wrapper.UpdateFile)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/files/{id}/download", wrapper.DownloadFile)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/links", wrapper.ListLinks)
 	})
 	r.Group(func(r chi.Router) {
@@ -3080,6 +3115,41 @@ func (response UpdateFile200JSONResponse) VisitUpdateFileResponse(w http.Respons
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type DownloadFileRequestObject struct {
+	Id string `json:"id"`
+}
+
+type DownloadFileResponseObject interface {
+	VisitDownloadFileResponse(w http.ResponseWriter) error
+}
+
+type DownloadFile200ResponseHeaders struct {
+	ContentDisposition string
+	ContentType        string
+}
+
+type DownloadFile200ApplicationoctetStreamResponse struct {
+	Body          io.Reader
+	Headers       DownloadFile200ResponseHeaders
+	ContentLength int64
+}
+
+func (response DownloadFile200ApplicationoctetStreamResponse) VisitDownloadFileResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/octet-stream")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.Header().Set("Content-Disposition", fmt.Sprint(response.Headers.ContentDisposition))
+	w.Header().Set("Content-Type", fmt.Sprint(response.Headers.ContentType))
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
 }
 
 type ListLinksRequestObject struct {
@@ -3914,6 +3984,9 @@ type StrictServerInterface interface {
 	// Update a file by ID
 	// (PATCH /files/{id})
 	UpdateFile(ctx context.Context, request UpdateFileRequestObject) (UpdateFileResponseObject, error)
+	// Download a file by ID
+	// (GET /files/{id}/download)
+	DownloadFile(ctx context.Context, request DownloadFileRequestObject) (DownloadFileResponseObject, error)
 	// List all links
 	// (GET /links)
 	ListLinks(ctx context.Context, request ListLinksRequestObject) (ListLinksResponseObject, error)
@@ -4481,6 +4554,32 @@ func (sh *strictHandler) UpdateFile(w http.ResponseWriter, r *http.Request, id s
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateFileResponseObject); ok {
 		if err := validResponse.VisitUpdateFileResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DownloadFile operation middleware
+func (sh *strictHandler) DownloadFile(w http.ResponseWriter, r *http.Request, id string) {
+	var request DownloadFileRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DownloadFile(ctx, request.(DownloadFileRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DownloadFile")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DownloadFileResponseObject); ok {
+		if err := validResponse.VisitDownloadFileResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

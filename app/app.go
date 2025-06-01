@@ -20,6 +20,7 @@ type App struct {
 	Queries   *sqlc.Queries
 	Router    *chi.Mux
 	Service   *service.Service
+	Config    *auth.Config
 	Auth      *auth.Service
 	Hooks     *hook.Hooks
 	Scheduler *schedule.Scheduler
@@ -37,7 +38,7 @@ func New(ctx context.Context, filename string) (*App, error) {
 		SMTPPassword: "",
 	})
 
-	authService, err := auth.New(ctx, queries, mailer, &auth.Config{
+	config := &auth.Config{
 		URL:          "http://localhost:8080",
 		Email:        "info@cataly-soar.com",
 		Domain:       "localhost",
@@ -53,12 +54,14 @@ func New(ctx context.Context, filename string) (*App, error) {
 			OIDCClaimEmail:    "",
 			OIDCClaimName:     "",
 		},
-	})
+	}
+
+	authService, err := auth.New(ctx, queries, mailer, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
-	scheduler, err := schedule.New(ctx, authService, queries)
+	scheduler, err := schedule.New(ctx, config, authService, queries)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
@@ -70,6 +73,7 @@ func New(ctx context.Context, filename string) (*App, error) {
 		Queries:   queries,
 		Router:    chi.NewRouter(),
 		Service:   service.New(queries, hooks, scheduler),
+		Config:    config,
 		Auth:      authService,
 		Scheduler: scheduler,
 	}, nil

@@ -18,53 +18,60 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface ModelFile
+ * @interface ExtendedFile
  */
-export interface ModelFile {
+export interface ExtendedFile {
   /**
    *
    * @type {string}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   id: string
   /**
    *
    * @type {string}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   ticket: string
   /**
    *
+   * @type {Blob}
+   * @memberof ExtendedFile
+   */
+  blob: Blob
+  /**
+   *
    * @type {string}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   name: string
   /**
    *
    * @type {number}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   size: number
   /**
    *
    * @type {string}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   created: string
   /**
    *
    * @type {string}
-   * @memberof ModelFile
+   * @memberof ExtendedFile
    */
   updated: string
 }
 
 /**
- * Check if a given object implements the ModelFile interface.
+ * Check if a given object implements the ExtendedFile interface.
  */
-export function instanceOfModelFile(value: object): value is ModelFile {
+export function instanceOfExtendedFile(value: object): value is ExtendedFile {
   if (!('id' in value) || value['id'] === undefined) return false
   if (!('ticket' in value) || value['ticket'] === undefined) return false
+  if (!('blob' in value) || value['blob'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('size' in value) || value['size'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
@@ -72,17 +79,18 @@ export function instanceOfModelFile(value: object): value is ModelFile {
   return true
 }
 
-export function ModelFileFromJSON(json: any): ModelFile {
-  return ModelFileFromJSONTyped(json, false)
+export function ExtendedFileFromJSON(json: any): ExtendedFile {
+  return ExtendedFileFromJSONTyped(json, false)
 }
 
-export function ModelFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelFile {
+export function ExtendedFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): ExtendedFile {
   if (json == null) {
     return json
   }
   return {
     id: json['id'],
     ticket: json['ticket'],
+    blob: json['blob'],
     name: json['name'],
     size: json['size'],
     created: json['created'],
@@ -90,12 +98,12 @@ export function ModelFileFromJSONTyped(json: any, ignoreDiscriminator: boolean):
   }
 }
 
-export function ModelFileToJSON(json: any): ModelFile {
-  return ModelFileToJSONTyped(json, false)
+export function ExtendedFileToJSON(json: any): ExtendedFile {
+  return ExtendedFileToJSONTyped(json, false)
 }
 
-export function ModelFileToJSONTyped(
-  value?: ModelFile | null,
+export function ExtendedFileToJSONTyped(
+  value?: ExtendedFile | null,
   ignoreDiscriminator: boolean = false
 ): any {
   if (value == null) {
@@ -105,6 +113,7 @@ export function ModelFileToJSONTyped(
   return {
     id: value['id'],
     ticket: value['ticket'],
+    blob: value['blob'],
     name: value['name'],
     size: value['size'],
     created: value['created'],

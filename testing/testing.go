@@ -58,7 +58,6 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 		req.Header.Set("Authorization", "Bearer "+loginToken)
 	}
 
-	/* TODO
 	if userTest.Admin != "" {
 		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.Admin)
 		require.NoError(t, err)
@@ -68,7 +67,6 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 
 		req.Header.Set("Authorization", "Bearer "+loginToken)
 	}
-	*/
 
 	baseApp.Router.ServeHTTP(recorder, req)
 

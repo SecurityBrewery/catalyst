@@ -16,8 +16,6 @@ const fetchUser = () => {
 
   fetch('/auth/user', { headers: { Authorization: `Bearer ${authStore.token}` } }).then(
     (response) => {
-      console.debug('Fetching user data', response)
-
       if (response.ok) {
         response.json().then((user) => {
           if (user) {

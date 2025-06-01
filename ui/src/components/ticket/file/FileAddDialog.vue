@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 import { useAPI } from '@/api'
-import type { File as CFile, Ticket } from '@/client/models'
+import type { ModelFile, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -30,24 +30,32 @@ const isOpen = defineModel<boolean>()
 const file = ref<File | null>(null)
 
 const addFileMutation = useMutation({
-  mutationFn: (): Promise<CFile> => {
+  mutationFn: async (): Promise<ModelFile> => {
     if (!file.value) return Promise.reject('No file selected')
 
     return api.createFile({
       newFile: {
         ticket: props.ticket.id,
         name: file.value.name,
-        blob: file.value, // TODO
+        blob: (await toBase64(file.value)) as string,
         size: file.value.size
       }
     })
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
     isOpen.value = false
   },
   onError: handleError
 })
+
+const toBase64 = (file: File) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+  })
 
 const save = () => addFileMutation.mutate()
 

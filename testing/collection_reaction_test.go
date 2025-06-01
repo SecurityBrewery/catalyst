@@ -39,19 +39,21 @@ func TestReactionsCollection(t *testing.T) {
 					},
 					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
-				/*{ // TODO: fix this
+				{
 					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"totalItems":3`,
-						`"id":"r_reaction"`,
+						`"id":"r-test-webhook"`,
+					},
+					ExpectedHeaders: map[string]string{
+						"X-Total-Count": "3",
 					},
 					NotExpectedContent: []string{
 						`"items":[]`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
-				},*/
+				},
 			},
 		},
 		{
@@ -93,7 +95,7 @@ func TestReactionsCollection(t *testing.T) {
 						"OnRecordBeforeCreateRequest": 1,
 					},
 				},
-				/*{ // TODO: fix this
+				{
 					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
@@ -104,12 +106,12 @@ func TestReactionsCollection(t *testing.T) {
 						`"items":[]`,
 					},
 					ExpectedEvents: map[string]int{
-						"OnModelAfterCreate":          1,
-						"OnModelBeforeCreate":         1,
+						// "OnModelAfterCreate":          1,
+						// "OnModelBeforeCreate":         1,
 						"OnRecordAfterCreateRequest":  1,
 						"OnRecordBeforeCreateRequest": 1,
 					},
-				},*/
+				},
 			},
 		},
 		{
@@ -136,15 +138,15 @@ func TestReactionsCollection(t *testing.T) {
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
-				/* {
+				{
 					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"r_reaction"`,
+						`"id":"r-test-webhook"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
-				},*/
+				},
 			},
 		},
 		{
@@ -178,12 +180,12 @@ func TestReactionsCollection(t *testing.T) {
 						"OnRecordBeforeUpdateRequest": 1,
 					},
 				},
-				/* { // TODO: fix this
+				{
 					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"r_reaction"`,
+						`"id":"r-test-webhook"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -192,7 +194,7 @@ func TestReactionsCollection(t *testing.T) {
 						"OnRecordAfterUpdateRequest":  1,
 						"OnRecordBeforeUpdateRequest": 1,
 					},
-				},*/
+				},
 			},
 		},
 		{
@@ -220,8 +222,8 @@ func TestReactionsCollection(t *testing.T) {
 						"OnRecordBeforeDeleteRequest": 1,
 					},
 				},
-				/* {
-					Name:           "Admin", // TODO: fix this
+				{
+					Name:           "Admin",
 					Admin:          adminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
@@ -230,7 +232,7 @@ func TestReactionsCollection(t *testing.T) {
 						"OnRecordAfterDeleteRequest":  1,
 						"OnRecordBeforeDeleteRequest": 1,
 					},
-				},*/
+				},
 			},
 		},
 	}

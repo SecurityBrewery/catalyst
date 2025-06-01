@@ -132,6 +132,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "File deleted" }
+  /files/{id}/download:
+    get:
+      summary: Download a file by ID
+      operationId: downloadFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "File content", "content": { "application/octet-stream": {} }, "headers": { "Content-Disposition": { "schema": { "type": "string" } }, "Content-Type": { "schema": { "type": "string" } } } }
   /links:
     get:
       summary: List all links
@@ -514,20 +522,17 @@ components:
     FileUpdate:
       type: object
       properties:
-        blob: { "type": "string" }
         name: { "type": "string" }
-        size: { "type": "integer", "format": "int64" }
     File:
       type: object
       properties:
         id: { "type": "string" }
         ticket: { "type": "string" }
-        blob: { "type": "string" }
         name: { "type": "string" }
         size: { "type": "integer", "format": "int64" }
         created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "id", "ticket", "blob", "name", "size", "created", "updated" ]
+      required: [ "id", "ticket", "name", "size", "created", "updated" ]
     NewLink:
       type: object
       properties:

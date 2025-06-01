@@ -218,6 +218,10 @@ export interface DeleteWebhookRequest {
   id: string
 }
 
+export interface DownloadFileRequest {
+  id: string
+}
+
 export interface GetCommentRequest {
   id: string
 }
@@ -1365,6 +1369,50 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
     await this.deleteWebhookRaw(requestParameters, initOverrides)
+  }
+
+  /**
+   * Download a file by ID
+   */
+  async downloadFileRaw(
+    requestParameters: DownloadFileRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling downloadFile().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/files/{id}/download`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Download a file by ID
+   */
+  async downloadFile(
+    requestParameters: DownloadFileRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.downloadFileRaw(requestParameters, initOverrides)
   }
 
   /**

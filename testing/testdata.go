@@ -41,6 +41,24 @@ func userTestData(t *testing.T, app *app.App) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	passwordHash, tokenKey, err = auth.HashPassword("password123")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+		ID:           "u_admin",
+		Username:     "u_admin",
+		Email:        adminEmail,
+		Verified:     true,
+		Name:         "Admin User",
+		PasswordHash: passwordHash,
+		TokenKey:     tokenKey,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func ticketTestData(t *testing.T, app *app.App) {

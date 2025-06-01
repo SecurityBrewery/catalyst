@@ -26,19 +26,7 @@ export interface FileUpdate {
    * @type {string}
    * @memberof FileUpdate
    */
-  blob?: string
-  /**
-   *
-   * @type {string}
-   * @memberof FileUpdate
-   */
   name?: string
-  /**
-   *
-   * @type {number}
-   * @memberof FileUpdate
-   */
-  size?: number
 }
 
 /**
@@ -57,9 +45,7 @@ export function FileUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return json
   }
   return {
-    blob: json['blob'] == null ? undefined : json['blob'],
-    name: json['name'] == null ? undefined : json['name'],
-    size: json['size'] == null ? undefined : json['size']
+    name: json['name'] == null ? undefined : json['name']
   }
 }
 
@@ -76,8 +62,6 @@ export function FileUpdateToJSONTyped(
   }
 
   return {
-    blob: value['blob'],
-    name: value['name'],
-    size: value['size']
+    name: value['name']
   }
 }

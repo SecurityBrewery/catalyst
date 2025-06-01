@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
@@ -24,19 +23,19 @@ type Webhook struct {
 const prefix = "/reaction/"
 
 func BindHooks(app *app.App) {
-	app.Router.HandleFunc(prefix+"*", handle(app.Auth, app.Queries))
+	app.Router.HandleFunc(prefix+"*", handle(app))
 }
 
-func handle(auth *auth.Service, queries *sqlc.Queries) http.HandlerFunc {
+func handle(app *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		reaction, payload, status, err := parseRequest(queries, r)
+		reaction, payload, status, err := parseRequest(app.Queries, r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
 
 			return
 		}
 
-		output, err := action.Run(r.Context(), auth, queries, reaction.Action, reaction.Actiondata, string(payload))
+		output, err := action.Run(r.Context(), app.Config, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, string(payload))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 
