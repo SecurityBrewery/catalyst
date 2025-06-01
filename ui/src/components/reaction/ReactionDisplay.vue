@@ -12,9 +12,11 @@ import { ChevronLeft } from 'lucide-vue-next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Reaction } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()

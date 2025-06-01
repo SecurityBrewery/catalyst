@@ -18,6 +18,7 @@ func (s *Service) createResetToken(user *sqlc.User, duration time.Duration) (str
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	signingKey := s.config.AppSecret + user.Tokenkey
+
 	return token.SignedString([]byte(signingKey))
 }
 
@@ -28,6 +29,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected algorithm: %v", t.Header["alg"])
 		}
+
 		return []byte(signingKey), nil
 	})
 
@@ -39,6 +41,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
 	if !ok {
 		return fmt.Errorf("invalid token claims")
 	}
+
 	if sub, ok := claims["sub"]; !ok || sub != user.ID {
 		return fmt.Errorf("token belongs to a different user")
 	}

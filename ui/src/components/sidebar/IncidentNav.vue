@@ -9,9 +9,11 @@ import { LoaderCircle } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Sidebar, Type } from '@/client/models'
 import { cn } from '@/lib/utils'
+
+const api = useAPI()
 
 const route = useRoute()
 

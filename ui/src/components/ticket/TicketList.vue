@@ -25,9 +25,11 @@ import debounce from 'lodash.debounce'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { TicketSearch } from '@/client/models'
 import type { Type } from '@/client/models/Type'
+
+const api = useAPI()
 
 const router = useRouter()
 const route = useRoute()

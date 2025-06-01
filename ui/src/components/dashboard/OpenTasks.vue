@@ -8,10 +8,12 @@ import { ChevronRight } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ExtendedTask } from '@/client/models'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const authStore = useAuthStore()
 

@@ -5,8 +5,10 @@ import { DonutChart } from '@/components/ui/chart-donut'
 import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Sidebar } from '@/client/models'
+
+const api = useAPI()
 
 const {
   isPending,

@@ -11,15 +11,19 @@ import (
 )
 
 func TestService_createResetToken(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
 		config *Config
 	}
+
 	type args struct {
 		createUser    *sqlc.User
 		tokenDuration time.Duration
 		waitDuration  time.Duration
 		verifyUser    *sqlc.User
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -66,8 +70,11 @@ func TestService_createResetToken(t *testing.T) {
 			wantErr: assert.Error,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := &Service{
 				config: tt.fields.config,
 			}

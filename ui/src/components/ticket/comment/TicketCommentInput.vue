@@ -8,10 +8,12 @@ import { Plus } from 'lucide-vue-next'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Comment, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const authStore = useAuthStore()
 

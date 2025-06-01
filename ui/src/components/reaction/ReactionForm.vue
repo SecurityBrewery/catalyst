@@ -31,8 +31,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Reaction } from '@/client/models'
+
+const api = useAPI()
 
 const submitDisabledReason = ref<string>('')
 

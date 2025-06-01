@@ -3,9 +3,11 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ExtendedTicket, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

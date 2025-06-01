@@ -5,10 +5,6 @@ import (
 	"net/http"
 )
 
-func scimGenericUnauthorized(w http.ResponseWriter) {
-	scimUnauthorized(w, "Unauthorized")
-}
-
 func scimUnauthorized(w http.ResponseWriter, detail string) {
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Header().Set("Content-Type", "application/scim+json; charset=UTF-8")

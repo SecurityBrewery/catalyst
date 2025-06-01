@@ -15,9 +15,11 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()

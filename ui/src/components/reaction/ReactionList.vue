@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Reaction } from '@/client/models'
+
+const api = useAPI()
 
 const route = useRoute()
 const router = useRouter()

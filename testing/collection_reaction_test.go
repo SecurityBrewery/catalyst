@@ -20,7 +20,7 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"no session found"`,
+						`"invalid bearer token"`,
 					},
 					ExpectedEvents: map[string]int{},
 				},
@@ -73,7 +73,7 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"no session found"`,
+						`"invalid bearer token"`,
 					},
 				},
 				{
@@ -124,7 +124,7 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"no session found"`,
+						`"invalid bearer token"`,
 					},
 				},
 				{
@@ -160,7 +160,7 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"no session found"`,
+						`"invalid bearer token"`,
 					},
 				},
 				{
@@ -206,7 +206,7 @@ func TestReactionsCollection(t *testing.T) {
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"no session found"`,
+						`"invalid bearer token"`,
 					},
 				},
 				{

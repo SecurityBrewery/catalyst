@@ -24,9 +24,11 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ExtendedComment } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

@@ -11,9 +11,11 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Ticket, TimelineEntry } from '@/client/models'
 import { cn, handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const props = defineProps<{
   ticket: Ticket

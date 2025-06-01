@@ -27,9 +27,11 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref, watch } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { TimelineEntry } from '@/client/models'
 import { cn, handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

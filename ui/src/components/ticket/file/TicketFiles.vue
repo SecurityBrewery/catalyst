@@ -10,10 +10,12 @@ import { useQuery } from '@tanstack/vue-query'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ModelFile, Ticket } from '@/client/models'
 import { human } from '@/lib/utils'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

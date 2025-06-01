@@ -13,7 +13,9 @@ import { ExternalLink } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
+
+const api = useAPI()
 
 const {
   isPending,

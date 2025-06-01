@@ -30,14 +30,15 @@ func (s *Service) oidcCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, _, apiError := s.verifyClaims(r, rawIDToken)
+	_, _, apiError := s.verifyClaims(r, rawIDToken)
 	if apiError != nil {
 		http.Error(w, apiError.Error(), http.StatusInternalServerError)
 
 		return
 	}
 
-	s.SessionManager.Put(r.Context(), userID)
+	// TODO: login
+	// s.SessionManager.Put(r.Context(), userID)
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }

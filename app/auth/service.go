@@ -2,25 +2,19 @@ package auth
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
 
-	"github.com/SecurityBrewery/catalyst/app/auth/sessionmanager"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/mail"
 )
 
 type Config struct {
-	// AppSecret is used to sign JWT tokens and should be kept secret.
-	AppSecret    string `json:"appSecret" yaml:"appSecret"`
-	Domain       string `json:"domain" yaml:"domain"`
-	CookieSecure bool   `json:"cookieSecure,omitempty" yaml:"cookieSecure,omitempty"`
-	PasswordAuth bool   `json:"passwordAuth,omitempty" yaml:"passwordAuth,omitempty"`
-	BearerAuth   bool   `json:"bearerAuth,omitempty" yaml:"bearerAuth,omitempty"`
+	AppSecret string `json:"appSecret" yaml:"appSecret"`
+	URL       string `json:"url" yaml:"url"`
+	Email     string `json:"email" yaml:"email"`
+	Domain    string `json:"domain" yaml:"domain"`
 
 	OIDCAuth     bool   `json:"oidcAuth,omitempty" yaml:"oidcAuth,omitempty"`
 	OIDCIssuer   string `json:"oidcIssuer,omitempty" yaml:"oidcIssuer,omitempty"`
@@ -41,12 +35,11 @@ type UserCreateConfig struct {
 }
 
 type Service struct {
-	config         *Config
-	queries        *sqlc.Queries
-	SessionManager *sessionmanager.SessionManager
-	oauth2Config   oauth2.Config
-	mailer         *mail.Mailer
-	verifier       *oidc.IDTokenVerifier
+	config       *Config
+	queries      *sqlc.Queries
+	oauth2Config oauth2.Config
+	mailer       *mail.Mailer
+	verifier     *oidc.IDTokenVerifier
 }
 
 func New(ctx context.Context, queries *sqlc.Queries, mailer *mail.Mailer, config *Config) (*Service, error) {
@@ -54,13 +47,6 @@ func New(ctx context.Context, queries *sqlc.Queries, mailer *mail.Mailer, config
 		config:  config,
 		queries: queries,
 		mailer:  mailer,
-	}
-
-	if config.PasswordAuth {
-		service.SessionManager = sessionmanager.New(&sessionmanager.Config{
-			Domain:       config.Domain,
-			CookieSecure: config.CookieSecure,
-		}, queries)
 	}
 
 	if config.OIDCAuth {
@@ -90,44 +76,4 @@ func New(ctx context.Context, queries *sqlc.Queries, mailer *mail.Mailer, config
 	}
 
 	return service, nil
-}
-
-var ErrUserInactive = errors.New("user is inactive")
-
-func (s *Service) loginWithMail(ctx context.Context, mail, password string) error {
-	user, err := s.queries.UserByEmail(ctx, mail)
-	if err != nil {
-		return err
-	}
-
-	if !user.Verified {
-		return ErrUserInactive
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Passwordhash), []byte(password)); err != nil {
-		return fmt.Errorf("invalid credentials: %w", err)
-	}
-
-	s.SessionManager.Put(ctx, user.ID)
-
-	return nil
-}
-
-func (s *Service) loginWithUsername(ctx context.Context, username, password string) error {
-	user, err := s.queries.UserByUserName(ctx, username)
-	if err != nil {
-		return err
-	}
-
-	if !user.Verified {
-		return ErrUserInactive
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Passwordhash), []byte(password)); err != nil {
-		return fmt.Errorf("invalid credentials: %w", err)
-	}
-
-	s.SessionManager.Put(ctx, user.ID)
-
-	return nil
 }

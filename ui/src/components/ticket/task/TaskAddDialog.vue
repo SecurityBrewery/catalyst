@@ -10,10 +10,12 @@ import { Plus, User2 } from 'lucide-vue-next'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const authStore = useAuthStore()

@@ -14,9 +14,11 @@ import { Input } from '@/components/ui/input'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { File as CFile, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

@@ -13,12 +13,6 @@ import (
 const resetTokenExpiration = time.Hour * 24
 
 func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Request) {
-	if !s.config.PasswordAuth {
-		scimGenericUnauthorized(w)
-
-		return
-	}
-
 	type passwordResetData struct {
 		Email string `json:"email"`
 	}
@@ -54,12 +48,12 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 
 	if err := s.mailer.Send(
 		r.Context(),
-		"info@"+s.config.Domain, // TODO
+		s.config.Email,
 		data.Email,
 		"Password Reset Request",
 		"Please follow the instructions to reset your password. "+
 			"Click here to reset your password: "+
-			"https://"+s.config.Domain+"/auth/local/reset-password"+
+			s.config.URL+"/auth/local/reset-password"+
 			"?email="+data.Email+
 			"&token="+resetToken,
 	); err != nil {
@@ -73,12 +67,6 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 }
 
 func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
-	if !s.config.PasswordAuth {
-		scimGenericUnauthorized(w)
-
-		return
-	}
-
 	email := r.URL.Query().Get("email")
 	if email == "" {
 		scimError(w, http.StatusBadRequest, "Missing email parameter")
@@ -124,16 +112,10 @@ func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 	html += `</body></html>`
 
 	w.Header().Set("Content-Type", "text/html")
-	_, err = w.Write([]byte(html))
+	_, _ = w.Write([]byte(html))
 }
 
 func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request) {
-	if !s.config.PasswordAuth {
-		scimGenericUnauthorized(w)
-
-		return
-	}
-
 	email := r.Form.Get("email")
 	if email == "" {
 		scimError(w, http.StatusBadRequest, "Missing email parameter")

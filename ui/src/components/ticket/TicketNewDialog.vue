@@ -19,10 +19,12 @@ import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Ticket, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()

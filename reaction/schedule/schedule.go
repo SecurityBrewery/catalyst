@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 )
@@ -16,19 +17,21 @@ import (
 type Scheduler struct {
 	scheduler gocron.Scheduler
 	queries   *sqlc.Queries
+	auth      *auth.Service
 }
 
 type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func New(ctx context.Context, queries *sqlc.Queries) (*Scheduler, error) {
+func New(ctx context.Context, service *auth.Service, queries *sqlc.Queries) (*Scheduler, error) {
 	innerScheduler, err := gocron.NewScheduler()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
 	scheduler := &Scheduler{
+		auth:      service,
 		scheduler: innerScheduler,
 		queries:   queries,
 	}
@@ -87,7 +90,7 @@ func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
 		gocron.CronJob(schedule.Expression, false),
 		gocron.NewTask(
 			func(ctx context.Context) {
-				_, err := action.Run(ctx, s.queries, reaction.Action, reaction.Actiondata, "{}")
+				_, err := action.Run(ctx, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
 				if err != nil {
 					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
 				}

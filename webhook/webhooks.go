@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -41,9 +42,9 @@ type Payload struct {
 }
 
 func event(ctx context.Context, app *app.App, event, collection string, record any) {
-	auth, _, err := app.Auth.SessionManager.Get(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, "failed to get auth session", "error", err.Error())
+	user, ok := usercontext.UserFromContext(ctx)
+	if !ok {
+		slog.ErrorContext(ctx, "failed to get auth session")
 
 		return
 	}
@@ -66,7 +67,7 @@ func event(ctx context.Context, app *app.App, event, collection string, record a
 		Action:     event,
 		Collection: collection,
 		Record:     record,
-		Auth:       &auth,
+		Auth:       user,
 		Admin:      nil,
 	})
 	if err != nil {

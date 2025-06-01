@@ -6,8 +6,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { getWeek } from 'date-fns'
 import { computed } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Ticket } from '@/client/models'
+
+const api = useAPI()
 
 const {
   isPending,

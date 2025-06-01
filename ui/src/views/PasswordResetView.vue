@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input'
 
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import { cn } from '@/lib/utils'
+
+const api = useAPI()
 
 interface AlertData {
   variant: 'default' | 'destructive'

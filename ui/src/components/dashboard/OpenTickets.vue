@@ -9,10 +9,12 @@ import { ChevronRight } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ExtendedTicket } from '@/client/models'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const authStore = useAuthStore()
 

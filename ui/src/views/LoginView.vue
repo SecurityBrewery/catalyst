@@ -30,7 +30,10 @@ const login = () => {
   })
     .then((response) => {
       if (response.ok) {
-        fetchUser()
+        response.json().then((data) => {
+          authStore.setToken(data.token)
+          router.push({ name: 'dashboard' })
+        })
       } else {
         errorTitle.value = 'Login failed'
         errorMessage.value = 'Invalid username or password'
@@ -66,23 +69,6 @@ watch(
   },
   { immediate: true }
 )
-
-const fetchUser = () => {
-  fetch('/auth/user').then((response) => {
-    if (response.ok) {
-      response.json().then((user) => {
-        if (user) {
-          authStore.setUser(user)
-          router.push({ name: 'dashboard' })
-        }
-      })
-    }
-  })
-}
-
-onMounted(() => {
-  fetchUser()
-})
 </script>
 
 <template>

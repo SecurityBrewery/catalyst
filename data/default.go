@@ -17,6 +17,9 @@ import (
 
 func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error { //nolint:cyclop
 	passwordHash, tokenKey, err := auth.HashPassword("1234567890")
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
 
 	// users
 	_, err = queries.CreateUser(ctx, sqlc.CreateUserParams{
@@ -117,7 +120,7 @@ func GenerateDefaultData(ctx context.Context, queries *sqlc.Queries) error { //n
 	return nil
 }
 
-func ValidateDefaultData(t *testing.T, app *app.App) { //nolint:cyclop
+func ValidateDefaultData(t *testing.T, app *app.App) {
 	t.Helper()
 
 	// users
@@ -129,7 +132,7 @@ func ValidateDefaultData(t *testing.T, app *app.App) { //nolint:cyclop
 	assert.Equal(t, "Test User", userRecord.Name, "name does not match expected value")
 	assert.Equal(t, "user@catalyst-soar.com", userRecord.Email, "email does not match expected value")
 	assert.True(t, userRecord.Verified, "user should be verified")
-	assert.NoError(t, bcrypt.CompareHashAndPassword([]byte(userRecord.Passwordhash), []byte("1234567890")), "password hash does not match expected value")
+	require.NoError(t, bcrypt.CompareHashAndPassword([]byte(userRecord.Passwordhash), []byte("1234567890")), "password hash does not match expected value")
 
 	tickets, comments, timelines, tasks, links, reactions := defaultData()
 

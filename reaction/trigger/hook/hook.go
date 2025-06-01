@@ -10,6 +10,7 @@ import (
 	"go.uber.org/multierr"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/webhook"
@@ -33,17 +34,17 @@ func BindHooks(app *app.App, test bool) {
 }
 
 func hook(ctx context.Context, app *app.App, event, collection string, record any, test bool) {
-	user, _, err := app.Auth.SessionManager.Get(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, "failed to get user from session", "error", err)
+	user, ok := usercontext.UserFromContext(ctx)
+	if !ok {
+		slog.ErrorContext(ctx, "failed to get user from session")
 
 		return
 	}
 
 	if !test {
-		go mustRunHook(ctx, app, collection, event, record, &user)
+		go mustRunHook(ctx, app, collection, event, record, user)
 	} else {
-		mustRunHook(ctx, app, collection, event, record, &user)
+		mustRunHook(ctx, app, collection, event, record, user)
 	}
 }
 
@@ -77,7 +78,7 @@ func runHook(ctx context.Context, app *app.App, collection, event string, record
 	var errs error
 
 	for _, hook := range hooks {
-		_, err = action.Run(ctx, app.Queries, hook.Action, hook.Actiondata, string(payload))
+		_, err = action.Run(ctx, app.Auth, app.Queries, hook.Action, hook.Actiondata, string(payload))
 		if err != nil {
 			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
 		}

@@ -38,10 +38,9 @@ func New(ctx context.Context, filename string) (*App, error) {
 	})
 
 	authService, err := auth.New(ctx, queries, mailer, &auth.Config{
+		URL:          "http://localhost:8080",
+		Email:        "info@cataly-soar.com",
 		Domain:       "localhost",
-		CookieSecure: false,
-		PasswordAuth: true,
-		BearerAuth:   true,
 		OIDCAuth:     false,
 		OIDCIssuer:   "",
 		ClientID:     "",
@@ -59,7 +58,7 @@ func New(ctx context.Context, filename string) (*App, error) {
 		return nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
-	scheduler, err := schedule.New(ctx, queries)
+	scheduler, err := schedule.New(ctx, authService, queries)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}

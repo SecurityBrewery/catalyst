@@ -9,8 +9,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { Type } from '@/client/models'
+
+const api = useAPI()
 
 const route = useRoute()
 

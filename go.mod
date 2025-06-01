@@ -8,7 +8,6 @@ tool (
 )
 
 require (
-	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/go-chi/chi/v5 v5.2.1

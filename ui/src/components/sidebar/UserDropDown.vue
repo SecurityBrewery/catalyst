@@ -12,6 +12,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { CircleUser } from 'lucide-vue-next'
 
+import { useRouter } from 'vue-router'
+
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
 
@@ -22,9 +24,11 @@ defineProps<{
 const variant = 'secondary'
 
 const authStore = useAuthStore()
+const router = useRouter()
 
 const logout = () => {
-  window.location.href = '/auth/local/logout'
+  authStore.setToken('')
+  router.push({ name: 'login' })
 }
 </script>
 

@@ -12,9 +12,11 @@ import { Trash2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { ExtendedTask, Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 

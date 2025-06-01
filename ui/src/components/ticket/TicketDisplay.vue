@@ -26,7 +26,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type {
   ExtendedComment,
   ExtendedTask,
@@ -38,6 +38,8 @@ import type {
   Type
 } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const route = useRoute()
 const queryClient = useQueryClient()

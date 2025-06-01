@@ -14,9 +14,11 @@ import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
-import { api } from '@/api'
+import { useAPI } from '@/api'
 import type { User } from '@/client'
 import { cn } from '@/lib/utils'
+
+const api = useAPI()
 
 defineProps<{
   userID: string | undefined

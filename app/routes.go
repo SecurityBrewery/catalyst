@@ -21,7 +21,6 @@ func (a *App) SetupRoutes() error {
 		return http.Handler(cors.NewHandler(next))
 	})
 	a.Router.Use(demoMode(a.Queries))
-	a.Router.Use(a.Auth.SessionManager.LoadAndSave)
 	a.Router.Use(middleware.Timeout(time.Second * 60))
 	a.Router.Use(middleware.RequestID)
 	a.Router.Use(middleware.RealIP)

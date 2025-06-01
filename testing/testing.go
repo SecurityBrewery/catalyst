@@ -2,12 +2,13 @@ package testing
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type BaseTest struct {
@@ -48,16 +49,26 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	}
 
 	if userTest.AuthRecord != "" {
-		token := "u_bob_analyst:password" //nolint:gosec
+		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.AuthRecord)
+		require.NoError(t, err)
 
-		encoded := base64.StdEncoding.EncodeToString([]byte(token))
+		loginToken, err := baseApp.Auth.CreateLoginToken(&user, time.Hour)
+		require.NoError(t, err)
 
-		req.Header.Set("Authorization", "Bearer "+encoded)
+		req.Header.Set("Authorization", "Bearer "+loginToken)
 	}
 
+	/* TODO
 	if userTest.Admin != "" {
-		req.Header.Set("Authorization", userTest.Admin)
+		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.Admin)
+		require.NoError(t, err)
+
+		loginToken, err := baseApp.Auth.CreateLoginToken(&user, time.Hour)
+		require.NoError(t, err)
+
+		req.Header.Set("Authorization", "Bearer "+loginToken)
 	}
+	*/
 
 	baseApp.Router.ServeHTTP(recorder, req)
 

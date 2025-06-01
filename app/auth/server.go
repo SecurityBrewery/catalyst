@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -10,23 +11,19 @@ import (
 func (s *Service) Server() http.Handler {
 	router := chi.NewRouter()
 
-	router.Get("/user", s.HandleUser)
+	router.Get("/user", s.handleUser)
 	router.Get("/config", func(writer http.ResponseWriter, _ *http.Request) {
 		b, _ := json.Marshal(map[string]any{
-			"password": s.config.PasswordAuth,
-			"oidc":     s.config.OIDCAuth,
+			"oidc": s.config.OIDCAuth,
 		})
 
 		_, _ = writer.Write(b)
 	})
 
-	if s.config.PasswordAuth {
-		router.Post("/local/login", s.handleLogin)
-		router.Get("/local/logout", s.handleLogout)
-		router.Post("/local/reset-password-request", s.handlePasswordResetRequest)
-		router.Get("/local/reset-password", s.handlePasswordReset)
-		router.Post("/local/reset-password", s.handlePasswordResetPost)
-	}
+	router.Post("/local/login", s.handleLogin)
+	router.Post("/local/reset-password-request", s.handlePasswordResetRequest)
+	router.Get("/local/reset-password", s.handlePasswordReset)
+	router.Post("/local/reset-password", s.handlePasswordResetPost)
 
 	if s.config.OIDCAuth {
 		router.Get("/oidc/login", s.oidcLogin)
@@ -36,17 +33,12 @@ func (s *Service) Server() http.Handler {
 	return router
 }
 
-func (s *Service) HandleUser(w http.ResponseWriter, r *http.Request) {
-	r.Header.Set("Content-Type", "application/json")
+func (s *Service) handleUser(w http.ResponseWriter, r *http.Request) {
+	authorizationHeader := r.Header.Get("Authorization")
+	bearerToken := strings.TrimPrefix(authorizationHeader, bearerPrefix)
 
-	user, authErr, err := s.SessionManager.Get(r.Context())
+	user, err := s.verifyAuthToken(r.Context(), bearerToken)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, err.Error())
-
-		return
-	}
-
-	if authErr != nil {
 		_, _ = w.Write([]byte("null"))
 
 		return
@@ -58,6 +50,8 @@ func (s *Service) HandleUser(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	r.Header.Set("Content-Type", "application/json")
 
 	_, _ = w.Write(b)
 }

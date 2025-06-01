@@ -1,100 +1,80 @@
 package auth
 
 import (
-	"encoding/base64"
-	"errors"
+	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 const bearerPrefix = "Bearer "
 
 func (s *Service) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.Header.Get("Authorization"), bearerPrefix) {
-			// delegate to session auth middleware
-			s.SessionAuth(next).ServeHTTP(w, r)
-		} else {
-			// delegate to bearer auth middleware
-			s.BearerAuth(next).ServeHTTP(w, r)
-		}
-	})
-}
-
-func (s *Service) SessionAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// password auth is disabled
-		if !s.config.PasswordAuth {
-			scimUnauthorized(w, "Password auth is disabled")
-
-			return
-		}
-
-		user, authErr, err := s.SessionManager.Get(r.Context())
-		if err != nil {
-			slog.ErrorContext(r.Context(), "SessionAuth", "error", err)
-
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-
-			return
-		}
-
-		if authErr != nil {
-			scimUnauthorized(w, authErr.Error())
-
-			return
-		}
-
-		if !user.Verified {
-			scimUnauthorized(w, "User is not verified")
-
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (s *Service) BearerAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// bearer auth is disabled
-		if !s.config.BearerAuth {
-			scimUnauthorized(w, "Bearer auth is disabled")
-
-			return
-		}
-
 		authorizationHeader := r.Header.Get("Authorization")
-
 		bearerToken := strings.TrimPrefix(authorizationHeader, bearerPrefix)
 
-		token, err := base64.StdEncoding.DecodeString(bearerToken)
+		user, err := s.verifyAuthToken(r.Context(), bearerToken)
 		if err != nil {
-			scimUnauthorized(w, "Invalid token")
+			slog.ErrorContext(r.Context(), "invalid bearer token", "error", err)
+
+			scimUnauthorized(w, "invalid bearer token")
 
 			return
 		}
 
-		username, password, ok := strings.Cut(string(token), ":")
-		if !ok {
-			scimUnauthorized(w, "Invalid token")
-
-			return
-		}
-
-		if err := s.loginWithUsername(r.Context(), username, password); err != nil {
-			if errors.Is(err, ErrUserInactive) {
-				scimUnauthorized(w, "User is inactive")
-
-				return
-			}
-
-			scimUnauthorized(w, "Login failed")
-
-			return
-		}
+		// Set the user in the context
+		r = usercontext.UserRequest(r, user)
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (s *Service) verifyAuthToken(ctx context.Context, bearerToken string) (*sqlc.User, error) {
+	token, _, err := jwt.NewParser().ParseUnverified(bearerToken, jwt.MapClaims{})
+	if err != nil {
+		return nil, fmt.Errorf("invalid token: %w", err)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token claims")
+	}
+
+	subClaim, ok := claims["sub"]
+	if !ok {
+		return nil, fmt.Errorf("token does not contain 'sub' claim")
+	}
+
+	sub, ok := subClaim.(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid 'sub' claim type: expected string, got %T", subClaim)
+	}
+
+	user, err := s.queries.UserByUserName(ctx, sub)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user: %w", err)
+	}
+
+	signingKey := s.config.AppSecret + user.Tokenkey
+
+	token, err = jwt.Parse(bearerToken, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected algorithm: %v", t.Header["alg"])
+		}
+
+		return []byte(signingKey), nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("token invalid: %w", err)
+	}
+
+	return &user, nil
 }
