@@ -58,6 +58,12 @@ const catalystStore = useCatalystStore()
           icon: 'Zap',
           variant: 'ghost',
           to: '/reactions'
+        },
+        {
+          title: 'Users',
+          icon: 'Users',
+          variant: 'ghost',
+          to: '/users'
         }
       ]"
     />

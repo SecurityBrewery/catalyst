@@ -333,17 +333,25 @@ RETURNING *;
 -- name: GetUser :one
 SELECT *
 FROM users
-WHERE id = @id;
+WHERE id = @id
+  AND id != 'system';
 
 -- name: UserByUserName :one
 SELECT *
 FROM users
-WHERE username = @username;
+WHERE username = @username
+  AND id != 'system';
 
 -- name: UserByEmail :one
 SELECT *
 FROM users
-WHERE email = @email;
+WHERE email = @email
+  AND id != 'system';
+
+-- name: SystemUser :one
+SELECT *
+FROM users
+WHERE id = 'system';
 
 -- name: UpdateUser :one
 UPDATE users
@@ -359,16 +367,19 @@ SET name                   = coalesce(sqlc.narg('name'), name),
     lastResetSentAt        = coalesce(sqlc.narg('lastResetSentAt'), lastResetSentAt),
     lastVerificationSentAt = coalesce(sqlc.narg('lastVerificationSentAt'), lastVerificationSentAt)
 WHERE id = @id
+  AND id != 'system'
 RETURNING *;
 
 -- name: DeleteUser :exec
 DELETE
 FROM users
-WHERE id = @id;
+WHERE id = @id
+  AND id != 'system';
 
 -- name: ListUsers :many
 SELECT users.*, COUNT(*) OVER () as total_count
 FROM users
+WHERE id != 'system'
 ORDER BY users.created DESC
 LIMIT @limit OFFSET @offset;
 

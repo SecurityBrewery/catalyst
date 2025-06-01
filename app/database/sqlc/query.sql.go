@@ -548,6 +548,7 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE
 FROM users
 WHERE id = ?1
+  AND id != 'system'
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id string) error {
@@ -842,6 +843,7 @@ const getUser = `-- name: GetUser :one
 SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE id = ?1
+  AND id != 'system'
 `
 
 func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
@@ -1424,6 +1426,7 @@ func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTyp
 const listUsers = `-- name: ListUsers :many
 SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, COUNT(*) OVER () as total_count
 FROM users
+WHERE id != 'system'
 ORDER BY users.created DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -1624,6 +1627,34 @@ func (q *Queries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([
 		return nil, err
 	}
 	return items, nil
+}
+
+const systemUser = `-- name: SystemUser :one
+SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+FROM users
+WHERE id = 'system'
+`
+
+func (q *Queries) SystemUser(ctx context.Context) (User, error) {
+	row := q.db.QueryRowContext(ctx, systemUser)
+	var i User
+	err := row.Scan(
+		&i.Avatar,
+		&i.Created,
+		&i.Email,
+		&i.Emailvisibility,
+		&i.ID,
+		&i.Lastloginalertsentat,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Name,
+		&i.Passwordhash,
+		&i.Tokenkey,
+		&i.Updated,
+		&i.Username,
+		&i.Verified,
+	)
+	return i, err
 }
 
 const ticket = `-- name: Ticket :one
@@ -2002,6 +2033,7 @@ SET name                   = coalesce(?1, name),
     lastResetSentAt        = coalesce(?10, lastResetSentAt),
     lastVerificationSentAt = coalesce(?11, lastVerificationSentAt)
 WHERE id = ?12
+  AND id != 'system'
 RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
@@ -2094,6 +2126,7 @@ const userByEmail = `-- name: UserByEmail :one
 SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE email = ?1
+  AND id != 'system'
 `
 
 func (q *Queries) UserByEmail(ctx context.Context, email string) (User, error) {
@@ -2122,6 +2155,7 @@ const userByUserName = `-- name: UserByUserName :one
 SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE username = ?1
+  AND id != 'system'
 `
 
 func (q *Queries) UserByUserName(ctx context.Context, username string) (User, error) {

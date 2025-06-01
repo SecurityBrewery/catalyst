@@ -6,6 +6,7 @@ import LoginView from '@/views/LoginView.vue'
 import PasswordResetView from '@/views/PasswordResetView.vue'
 import ReactionView from '@/views/ReactionView.vue'
 import TicketView from '@/views/TicketView.vue'
+import UserView from '@/views/UserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,12 @@ const router = createRouter({
       path: '/reactions/:id?',
       name: 'reactions',
       component: ReactionView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/users/:id?',
+      name: 'users',
+      component: UserView,
       meta: { requiresAuth: true }
     },
     {

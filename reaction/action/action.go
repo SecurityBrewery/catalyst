@@ -63,7 +63,7 @@ func decode(actionName, actionData string) (action, error) {
 }
 
 func systemToken(ctx context.Context, auth *auth.Service, queries *sqlc.Queries) (string, error) {
-	user, err := queries.UserByUserName(ctx, "system")
+	user, err := queries.SystemUser(ctx)
 	if err != nil {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
