@@ -7,6 +7,7 @@ import PasswordResetView from '@/views/PasswordResetView.vue'
 import ReactionView from '@/views/ReactionView.vue'
 import TicketView from '@/views/TicketView.vue'
 import UserView from '@/views/UserView.vue'
+import TypeView from '@/views/TypeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,12 @@ const router = createRouter({
       path: '/users/:id?',
       name: 'users',
       component: UserView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/types/:id?',
+      name: 'types',
+      component: TypeView,
       meta: { requiresAuth: true }
     },
     {

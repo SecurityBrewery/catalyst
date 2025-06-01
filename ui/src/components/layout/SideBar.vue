@@ -64,6 +64,12 @@ const catalystStore = useCatalystStore()
           icon: 'Users',
           variant: 'ghost',
           to: '/users'
+        },
+        {
+          title: 'Types',
+          icon: 'Tag',
+          variant: 'ghost',
+          to: '/types'
         }
       ]"
     />

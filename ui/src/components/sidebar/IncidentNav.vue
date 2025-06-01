@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { Sidebar, Type } from '@/client/models'
+import type { Sidebar } from '@/client/models'
 import { cn } from '@/lib/utils'
 
 const api = useAPI()
