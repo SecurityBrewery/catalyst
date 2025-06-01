@@ -2,7 +2,7 @@
 import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
-import TypeForm from '@/components/type/TypeForm.vue'
+import RoleForm from '@/components/role/RoleForm.vue'
 import { Button } from '@/components/ui/button'
 
 import { ChevronLeft } from 'lucide-vue-next'
@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { NewType, Type } from '@/client'
+import type { NewRole, Role } from '@/client'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -19,11 +19,11 @@ const api = useAPI()
 const queryClient = useQueryClient()
 const router = useRouter()
 
-const addTypeMutation = useMutation({
-  mutationFn: (values: NewType): Promise<Type> => api.createType({ newType: values }),
-  onSuccess: (data: Type) => {
-    router.push({ name: 'types', params: { id: data.id } })
-    queryClient.invalidateQueries({ queryKey: ['types'] })
+const addRoleMutation = useMutation({
+  mutationFn: (values: NewRole): Promise<Role> => api.createRole({ newRole: values }),
+  onSuccess: (data: Role) => {
+    router.push({ name: 'roles', params: { id: data.id } })
+    queryClient.invalidateQueries({ queryKey: ['roles'] })
   },
   onError: handleError
 })
@@ -31,7 +31,7 @@ const addTypeMutation = useMutation({
 
 <template>
   <ColumnHeader>
-    <Button @click="router.push({ name: 'types' })" variant="outline" class="sm:hidden">
+    <Button @click="router.push({ name: 'roles' })" variant="outline" class="sm:hidden">
       <ChevronLeft class="mr-2 size-4" />
       Back
     </Button>
@@ -39,7 +39,7 @@ const addTypeMutation = useMutation({
 
   <ColumnBody>
     <ColumnBodyContainer small>
-      <TypeForm @submit="addTypeMutation.mutate" />
+      <RoleForm @submit="addRoleMutation.mutate" />
     </ColumnBodyContainer>
   </ColumnBody>
 </template>

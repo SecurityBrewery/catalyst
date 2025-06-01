@@ -17,6 +17,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
+	"github.com/SecurityBrewery/catalyst/permission"
 	"github.com/SecurityBrewery/catalyst/reaction/schedule"
 )
 
@@ -1465,6 +1466,130 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "users", response)
 
 	return openapi.UpdateUser200JSONResponse(response), nil
+}
+
+func (s *Service) ListRoles(ctx context.Context, request openapi.ListRolesRequestObject) (openapi.ListRolesResponseObject, error) {
+	roles, err := s.queries.ListRoles(ctx, sqlc.ListRolesParams{
+		Offset: toInt64(request.Params.Offset, defaultOffset),
+		Limit:  toInt64(request.Params.Limit, defaultLimit),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	response := []openapi.Role{}
+
+	for _, role := range roles {
+		response = append(response, openapi.Role{
+			Created:     role.Created,
+			Id:          role.ID,
+			Name:        role.Name,
+			Permissions: permission.FromJSONArray(ctx, role.Permissions),
+			Updated:     role.Updated,
+		})
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "roles", response)
+
+	totalCount := 0
+	if len(roles) > 0 {
+		totalCount = int(roles[0].TotalCount)
+	}
+
+	return openapi.ListRoles200JSONResponse{
+		Body: response,
+		Headers: openapi.ListRoles200ResponseHeaders{
+			XTotalCount: totalCount,
+		},
+	}, nil
+}
+
+func (s *Service) CreateRole(ctx context.Context, request openapi.CreateRoleRequestObject) (openapi.CreateRoleResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "roles", request.Body)
+
+	role, err := s.queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          generateID("r"),
+		Name:        request.Body.Name,
+		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	response := openapi.Role{
+		Created:     role.Created,
+		Id:          role.ID,
+		Name:        role.Name,
+		Permissions: permission.FromJSONArray(ctx, role.Permissions),
+		Updated:     role.Updated,
+	}
+
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "roles", response)
+
+	return openapi.CreateRole200JSONResponse(response), nil
+}
+
+func (s *Service) DeleteRole(ctx context.Context, request openapi.DeleteRoleRequestObject) (openapi.DeleteRoleResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "roles", request.Id)
+
+	err := s.queries.DeleteRole(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "roles", request.Id)
+
+	return openapi.DeleteRole204Response{}, nil
+}
+
+func (s *Service) GetRole(ctx context.Context, request openapi.GetRoleRequestObject) (openapi.GetRoleResponseObject, error) {
+	role, err := s.queries.GetRole(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := openapi.Role{
+		Created:     role.Created,
+		Id:          role.ID,
+		Name:        role.Name,
+		Permissions: permission.FromJSONArray(ctx, role.Permissions),
+		Updated:     role.Updated,
+	}
+
+	s.hooks.OnRecordViewRequest.Publish(ctx, "roles", response)
+
+	return openapi.GetRole200JSONResponse(response), nil
+}
+
+func (s *Service) UpdateRole(ctx context.Context, request openapi.UpdateRoleRequestObject) (openapi.UpdateRoleResponseObject, error) {
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "roles", request.Body)
+
+	var permissions sql.NullString
+
+	if request.Body.Permissions != nil {
+		permissions = sql.NullString{String: permission.ToJSONArray(ctx, *request.Body.Permissions), Valid: true}
+	}
+
+	role, err := s.queries.UpdateRole(ctx, sqlc.UpdateRoleParams{
+		Name:        toNullString(request.Body.Name),
+		Permissions: permissions,
+		ID:          request.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	response := openapi.Role{
+		Created:     role.Created,
+		Id:          role.ID,
+		Name:        role.Name,
+		Permissions: permission.FromJSONArray(ctx, role.Permissions),
+		Updated:     role.Updated,
+	}
+
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "roles", response)
+
+	return openapi.UpdateRole200JSONResponse(response), nil
 }
 
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {

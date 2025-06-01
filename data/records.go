@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/permission"
 )
 
 const (
@@ -18,9 +19,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func GenerateFake(t *testing.T, queries *sqlc.Queries, userCount, ticketCount int) {
-	t.Helper()
-
+func GenerateFake(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -29,9 +28,7 @@ func GenerateFake(t *testing.T, queries *sqlc.Queries, userCount, ticketCount in
 		ticketCount = minimumTicketCount
 	}
 
-	if err := records(t.Context(), queries, userCount, ticketCount); err != nil {
-		t.Fatal(err)
-	}
+	return records(ctx, queries, userCount, ticketCount)
 }
 
 func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
@@ -66,19 +63,33 @@ func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCo
 		return fmt.Errorf("failed to create reaction records: %w", err)
 	}
 
+	err = roleRecords(ctx, queries, users)
+	if err != nil {
+		return fmt.Errorf("failed to create role records: %w", err)
+	}
+
 	return nil
 }
 
 func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.User, error) {
 	records := make([]sqlc.User, 0, count)
 
+	passwordHash, tokenKey, err := auth.HashPassword("1234567890")
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+
 	// create the test user
 	user, err := queries.GetUser(ctx, "u_test")
 	if err != nil {
 		newUser, err := queries.CreateUser(ctx, sqlc.CreateUserParams{
-			Username: "u_test",
-			Name:     "Test User",
-			Email:    "user@catalyst-soar.com",
+			ID:           "u_test",
+			Name:         "Test User",
+			Email:        "user@catalyst-soar.com",
+			Username:     "u_test",
+			PasswordHash: passwordHash,
+			TokenKey:     tokenKey,
+			Verified:     true,
 		})
 		if err != nil {
 			return nil, err
@@ -90,13 +101,23 @@ func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.
 	}
 
 	for range count - 1 {
-		id := "u_" + gofakeit.RandomString([]string{"123456789"})
+		id := "u_" + gofakeit.UUID()
+
+		username := gofakeit.Username()
+
+		passwordHash, tokenKey, err := auth.HashPassword(gofakeit.Password(true, true, true, true, false, 16))
+		if err != nil {
+			return nil, fmt.Errorf("failed to hash password: %w", err)
+		}
 
 		newUser, err := queries.CreateUser(ctx, sqlc.CreateUserParams{
-			ID:       id,
-			Username: id,
-			Name:     gofakeit.Name(),
-			Email:    gofakeit.Username() + "@catalyst-soar.com",
+			ID:           id,
+			Name:         gofakeit.Name(),
+			Email:        username + "@catalyst-soar.com",
+			Username:     username,
+			PasswordHash: passwordHash,
+			TokenKey:     tokenKey,
+			Verified:     gofakeit.Bool(),
 		})
 		if err != nil {
 			return nil, err
@@ -334,6 +355,42 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create reaction for hook trigger: %w", err)
+	}
+
+	return nil
+}
+
+func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error {
+	_, err := queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "r-admin",
+		Name:        "Administrator",
+		Permissions: permission.ToJSONArray(ctx, permission.AllPermissions()),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create admin role: %w", err)
+	}
+
+	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "r-analyst",
+		Name:        "Analyst",
+		Permissions: permission.ToJSONArray(ctx, permission.Default()),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create analyst role: %w", err)
+	}
+
+	for _, user := range users {
+		role := "r-analyst"
+		if user.Username == "u_test" || gofakeit.Bool() {
+			role = "r-admin"
+		}
+
+		if err := queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
+			UserID: user.ID,
+			RoleID: role,
+		}); err != nil {
+			return fmt.Errorf("failed to assign role %s to user %s: %w", role, user.ID, err)
+		}
 	}
 
 	return nil

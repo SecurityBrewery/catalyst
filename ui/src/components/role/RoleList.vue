@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { User } from '@/client/models'
+import type { Role } from '@/client/models'
 
 const api = useAPI()
 
@@ -18,48 +18,42 @@ const router = useRouter()
 const {
   isPending,
   isError,
-  data: users,
+  data: roles,
   error
 } = useQuery({
-  queryKey: ['users'],
-  queryFn: (): Promise<Array<User>> => api.listUsers()
+  queryKey: ['roles'],
+  queryFn: (): Promise<Array<Role>> => api.listRoles()
 })
 
-const description = (user: User): string => {
-  var desc = user.email
-
-  if (!user.verified) {
-    desc += ' (unverified)'
-  }
-
-  return desc
+const description = (role: Role): string => {
+  return role.permissions.join(', ')
 }
 
 const openNew = () => {
-  router.push({ name: 'users', params: { id: 'new' } })
+  router.push({ name: 'roles', params: { id: 'new' } })
 }
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Users">
+    <ColumnHeader title="Roles">
       <div class="ml-auto">
-        <Button variant="ghost" @click="openNew">New User</Button>
+        <Button variant="ghost" @click="openNew">New Role</Button>
       </div>
     </ColumnHeader>
     <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
       <ResourceListElement
-        v-for="user in users"
-        :key="user.id"
-        :title="user.name"
-        :created="user.created"
-        :subtitle="user.username"
-        :description="description(user)"
-        :active="route.params.id === user.id"
-        :to="{ name: 'users', params: { id: user.id } }"
+        v-for="role in roles"
+        :key="role.id"
+        :title="role.name"
+        :created="role.created"
+        subtitle=""
+        :description="description(role)"
+        :active="route.params.id === role.id"
+        :to="{ name: 'roles', params: { id: role.id } }"
         :open="false"
       >
-        {{ user.name }}
+        {{ role.name }}
       </ResourceListElement>
     </div>
   </TanView>

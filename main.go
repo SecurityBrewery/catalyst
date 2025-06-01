@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/data"
 	"github.com/SecurityBrewery/catalyst/reaction"
 	"github.com/SecurityBrewery/catalyst/webhook"
 )
@@ -24,21 +25,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*
-		testUser, err := catalyst.Queries.UserByUserName(ctx, "u_test")
-		if err != nil {
-			log.Fatal(err)
-		}
+	testUser, err := catalyst.Queries.UserByUserName(ctx, "u_test")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		if err := catalyst.Queries.DeleteUser(ctx, testUser.ID); err != nil {
-			return
-		}
+	if err := catalyst.Queries.DeleteUser(ctx, testUser.ID); err != nil {
+		log.Fatal(err)
+	}
 
-
-			if err := data.GenerateDefaultData(ctx, catalyst.Queries); err != nil {
-			log.Fatal(err)
-		}
-	*/
+	if err := data.GenerateFake(ctx, catalyst.Queries, 10, 100); err != nil {
+		log.Fatal(err)
+	}
 
 	err = catalyst.SetupRoutes()
 	if err != nil {

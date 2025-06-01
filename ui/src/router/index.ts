@@ -5,9 +5,10 @@ import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
 import PasswordResetView from '@/views/PasswordResetView.vue'
 import ReactionView from '@/views/ReactionView.vue'
+import RoleView from '@/views/RoleView.vue'
 import TicketView from '@/views/TicketView.vue'
-import UserView from '@/views/UserView.vue'
 import TypeView from '@/views/TypeView.vue'
+import UserView from '@/views/UserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,12 @@ const router = createRouter({
       path: '/users/:id?',
       name: 'users',
       component: UserView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/roles/:id?',
+      name: 'roles',
+      component: RoleView,
       meta: { requiresAuth: true }
     },
     {

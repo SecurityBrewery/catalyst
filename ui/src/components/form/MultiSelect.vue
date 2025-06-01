@@ -43,9 +43,9 @@ const filteredItems = computed(() => {
 </script>
 
 <template>
-  <TagsInput class="flex items-center gap-2 px-0" :modelValue="selectedItems">
-    <div class="flex flex-wrap items-center">
-      <TagsInputItem v-for="item in selectedItems" :key="item" :value="item" class="ml-2">
+  <TagsInput class="flex items-center gap-2 px-2" :modelValue="selectedItems">
+    <div class="flex flex-wrap items-center gap-2">
+      <TagsInputItem v-for="item in selectedItems" :key="item" :value="item">
         <TagsInputItemText />
         <TagsInputItemDelete />
       </TagsInputItem>

@@ -63,22 +63,20 @@ const openNew = () => {
         <Button variant="ghost" @click="openNew">New Reaction</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 p-2 pt-0">
-      <TransitionGroup name="list" appear>
-        <ResourceListElement
-          v-for="reaction in reactions"
-          :key="reaction.id"
-          :title="reaction.name"
-          :created="reaction.created"
-          :subtitle="subtitle(reaction)"
-          description=""
-          :active="route.params.id === reaction.id"
-          :to="{ name: 'reactions', params: { id: reaction.id } }"
-          :open="false"
-        >
-          {{ reaction.name }}
-        </ResourceListElement>
-      </TransitionGroup>
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
+      <ResourceListElement
+        v-for="reaction in reactions"
+        :key="reaction.id"
+        :title="reaction.name"
+        :created="reaction.created"
+        :subtitle="subtitle(reaction)"
+        description=""
+        :active="route.params.id === reaction.id"
+        :to="{ name: 'reactions', params: { id: reaction.id } }"
+        :open="false"
+      >
+        {{ reaction.name }}
+      </ResourceListElement>
     </div>
   </TanView>
 </template>

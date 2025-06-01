@@ -17,6 +17,7 @@ models/NewFeature.ts
 models/NewFile.ts
 models/NewLink.ts
 models/NewReaction.ts
+models/NewRole.ts
 models/NewTask.ts
 models/NewTicket.ts
 models/NewTimelineEntry.ts
@@ -25,6 +26,8 @@ models/NewUser.ts
 models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
+models/Role.ts
+models/RoleUpdate.ts
 models/Sidebar.ts
 models/Task.ts
 models/TaskUpdate.ts

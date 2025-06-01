@@ -45,7 +45,7 @@ paths:
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TicketUpdate" } } } }
-      responses:  
+      responses:
         "200": { "description": "Tickets updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
     delete:
       summary: Delete a ticket by ID
@@ -139,7 +139,7 @@ paths:
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "File content", "content": { "application/octet-stream": {} }, "headers": { "Content-Disposition": { "schema": { "type": "string" } }, "Content-Type": { "schema": { "type": "string" } } } }
+        "200": { "description": "File content", "content": { "application/octet-stream": { } }, "headers": { "Content-Disposition": { "schema": { "type": "string" } }, "Content-Type": { "schema": { "type": "string" } } } }
   /links:
     get:
       summary: List all links
@@ -239,7 +239,7 @@ paths:
       summary: Get a single timeline item by ID
       operationId: getTimeline
       parameters:
-        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }  
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single timeline item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
     patch:
@@ -393,7 +393,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } } } }
       responses:
-        "200": { "description": "Users updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }  }
+        "200": { "description": "Users updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
     delete:
       summary: Delete a user by ID
       operationId: deleteUser
@@ -401,6 +401,44 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Users deleted" }
+  /roles:
+    get:
+      summary: List all roles
+      operationId: listRoles
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Role" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of roles" } } }
+    post:
+      summary: Create a new role
+      operationId: createRole
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewRole" } } } }
+      responses:
+        "200": { "description": "Roles created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
+  /roles/{id}:
+    get:
+      summary: Get a single role by ID
+      operationId: getRole
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single role", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
+    patch:
+      summary: Update a role by ID
+      operationId: updateRole
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleUpdate" } } } }
+      responses:
+        "200": { "description": "Roles updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
+    delete:
+      summary: Delete a role by ID
+      operationId: deleteRole
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Roles deleted" }
   /webhooks:
     get:
       summary: List all webhooks
@@ -766,6 +804,26 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
+    NewRole:
+      type: object
+      properties:
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+      required: [ "name", "permissions" ]
+    RoleUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+    Role:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "name", "permissions", "created", "updated" ]
     NewWebhook:
       type: object
       properties:

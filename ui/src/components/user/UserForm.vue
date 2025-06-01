@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { useQuery } from '@tanstack/vue-query'
@@ -216,17 +224,15 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
       </FormItem>
     </FormField>
 
-    <FormField name="verified" v-slot="{ componentField }">
-      <FormItem class="w-full">
-        <FormLabel for="verified" class="text-right">Verified</FormLabel>
-        <Input
-          id="verified"
-          type="checkbox"
-          class="col-span-3"
-          v-bind="componentField"
-          :checked="values.verified"
-          @change="($event) => (values.verified = $event.target.checked)"
-        />
+    <FormField name="verified" v-slot="{ value, handleChange }">
+      <FormItem class="w-full items-center gap-2">
+        <FormLabel>Verified</FormLabel>
+        <div class="flex flex-row items-center gap-2">
+          <FormControl>
+            <Switch :checked="value" @update:checked="handleChange" />
+          </FormControl>
+          <FormDescription> If unchecked, the user will not be able to log in. </FormDescription>
+        </div>
         <FormMessage />
       </FormItem>
     </FormField>

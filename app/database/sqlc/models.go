@@ -59,6 +59,19 @@ type Reaction struct {
 	Updated     string `json:"updated"`
 }
 
+type Role struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+}
+
+type RoleInheritance struct {
+	ParentRoleID string `json:"parent_role_id"`
+	ChildRoleID  string `json:"child_role_id"`
+}
+
 type Session struct {
 	Token  string `json:"token"`
 	Data   []byte `json:"data"`
@@ -148,6 +161,22 @@ type User struct {
 	Updated                string `json:"updated"`
 	Username               string `json:"username"`
 	Verified               bool   `json:"verified"`
+}
+
+type UserEffectivePermission struct {
+	UserID     string `json:"user_id"`
+	Permission string `json:"permission"`
+}
+
+type UserEffectiveRole struct {
+	UserID    string      `json:"user_id"`
+	RoleID    string      `json:"role_id"`
+	RoleTypes interface{} `json:"role_types"`
+}
+
+type UserRole struct {
+	UserID string `json:"user_id"`
+	RoleID string `json:"role_id"`
 }
 
 type Webhook struct {

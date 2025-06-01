@@ -3,6 +3,8 @@ package data_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/SecurityBrewery/catalyst/data"
 	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
@@ -12,7 +14,8 @@ func Test_records(t *testing.T) {
 
 	app, _ := catalystTesting.App(t)
 
-	data.GenerateFake(t, app.Queries, 2, 2)
+	err := data.GenerateFake(t.Context(), app.Queries, 2, 2)
+	require.NoError(t, err, "failed to generate fake data")
 }
 
 func TestGenerate(t *testing.T) {
@@ -20,5 +23,6 @@ func TestGenerate(t *testing.T) {
 
 	app, _ := catalystTesting.App(t)
 
-	data.GenerateFake(t, app.Queries, 0, 0)
+	err := data.GenerateFake(t.Context(), app.Queries, 0, 0)
+	require.NoError(t, err, "failed to generate fake data")
 }

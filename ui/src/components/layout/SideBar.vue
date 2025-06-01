@@ -61,9 +61,15 @@ const catalystStore = useCatalystStore()
         },
         {
           title: 'Users',
-          icon: 'Users',
+          icon: 'User',
           variant: 'ghost',
           to: '/users'
+        },
+        {
+          title: 'Roles',
+          icon: 'Users',
+          variant: 'ghost',
+          to: '/roles'
         },
         {
           title: 'Types',

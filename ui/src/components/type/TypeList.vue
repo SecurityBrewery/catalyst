@@ -47,23 +47,21 @@ const openNew = () => {
         <Button variant="ghost" @click="openNew">New Type</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 p-2 pt-0">
-      <TransitionGroup name="list" appear>
-        <ResourceListElement
-          v-for="type in types"
-          :key="type.id"
-          :icon="type.icon"
-          :title="type.singular"
-          :created="type.created"
-          subtitle=""
-          description=""
-          :active="route.params.id === type.id"
-          :to="{ name: 'types', params: { id: type.id } }"
-          :open="false"
-        >
-          {{ type.name }}
-        </ResourceListElement>
-      </TransitionGroup>
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
+      <ResourceListElement
+        v-for="type in types"
+        :key="type.id"
+        :icon="type.icon"
+        :title="type.singular"
+        :created="type.created"
+        subtitle=""
+        description=""
+        :active="route.params.id === type.id"
+        :to="{ name: 'types', params: { id: type.id } }"
+        :open="false"
+      >
+        {{ type.name }}
+      </ResourceListElement>
     </div>
   </TanView>
 </template>

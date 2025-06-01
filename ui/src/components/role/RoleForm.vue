@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GrowTextarea from '@/components/form/GrowTextarea.vue'
+import MultiSelect from '@/components/form/MultiSelect.vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -10,12 +10,12 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 
-import type { NewType } from '@/client/models'
+import type { NewRole } from '@/client/models'
 
 const submitDisabledReason = ref<string>('')
 
 const props = defineProps<{
-  type?: NewType
+  role?: NewRole
 }>()
 
 const emit = defineEmits(['submit'])
@@ -54,48 +54,30 @@ defineRule('required', (value: string) => {
   return true
 })
 
-defineRule('validate_json', (value: string) => {
-  try {
-    JSON.parse(value)
-    return true
-  } catch (e) {
-    return 'Invalid JSON format'
-  }
-})
-
 const { handleSubmit, validate, values } = useForm({
   initialValues: () => ({
-    singular: props.type?.singular || '',
-    plural: props.type?.plural || '',
-    icon: props.type?.icon || '',
-    schema: JSON.stringify(props.type?.schema, null, 2) || '{}'
+    name: props.role?.name || '',
+    permissions: props.role?.permissions || []
   }),
   validationSchema: {
-    singular: 'required',
-    plural: 'required',
-    schema: 'validate_json'
+    name: 'required'
   }
 })
 
-const equalType = (values: NewType, type?: NewType): boolean => {
-  if (!type) return false
+const equalRole = (values: NewRole, role?: NewRole): boolean => {
+  if (!role) return false
 
-  return (
-    type.singular === values.singular &&
-    type.plural === values.plural &&
-    type.icon === values.icon &&
-    type.schema === values.schema
-  )
+  return role.name === values.name && role.permissions === values.permissions
 }
 
 const updateSubmitDisabledReason = () => {
   if (isDemo.value) {
-    submitDisabledReason.value = 'Types cannot be created or edited in demo mode'
+    submitDisabledReason.value = 'Roles cannot be created or edited in demo mode'
 
     return
   }
 
-  if (equalType(values, props.type)) {
+  if (equalRole(values, props.role)) {
     submitDisabledReason.value = 'Make changes to save'
 
     return
@@ -116,7 +98,7 @@ watch(
 )
 
 watch(
-  () => props.type,
+  () => props.role,
   () => updateSubmitDisabledReason(),
   { immediate: true }
 )
@@ -129,52 +111,51 @@ watch(
 
 const onSubmit = handleSubmit((values) => {
   emit('submit', {
-    singular: values.singular,
-    plural: values.plural,
-    icon: values.icon,
-    schema: JSON.parse(values.schema)
+    name: values.name,
+    permissions: values.permissions
   })
 })
+
+const permissionItems = [
+  'ticket:*:read',
+  'ticket:*:write',
+  'type:read',
+  'type:write',
+  'user:read',
+  'user:write',
+  'role:read',
+  'role:write',
+  'reaction:read',
+  'reaction:write'
+]
 </script>
 
 <template>
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
-    <FormField name="singular" v-slot="{ componentField }" validate-on-input>
+    <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="singular" class="text-right">Singular</FormLabel>
-        <Input id="singular" class="col-span-3" v-bind="componentField" />
+        <FormLabel for="name" class="text-right">Name</FormLabel>
+        <Input id="name" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
     </FormField>
 
-    <FormField name="plural" v-slot="{ componentField }" validate-on-input>
+    <FormField
+      key="permission.name"
+      name="permissions"
+      v-slot="{ componentField }"
+      validate-on-input
+    >
       <FormItem class="w-full">
-        <FormLabel for="plural" class="text-right">Plural</FormLabel>
-        <Input id="plural" class="col-span-3" v-bind="componentField" />
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <FormField name="icon" v-slot="{ componentField }" validate-on-input>
-      <FormItem class="flex w-full flex-col">
-        <FormLabel for="icon" class="text-start">Icon</FormLabel>
-        <span class="text-xs text-muted-foreground">
-          See
-          <a class="text-blue-500" href="https://lucide.dev/icons/" target="_blank"
-            >https://lucide.dev/icons/</a
-          >
-          for available icons.
-        </span>
-        <Input id="icon" class="col-span-3" v-bind="componentField" />
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <FormField name="schema" v-slot="{ componentField }" validate-on-input>
-      <FormItem class="w-full">
-        <FormLabel for="schema" class="text-start">Schema</FormLabel>
+        <div class="space-y-0.5">
+          <FormLabel for="permissions" class="text-right">Permissions</FormLabel>
+        </div>
         <FormControl>
-          <GrowTextarea id="schema" class="col-span-3" v-bind="componentField" />
+          <MultiSelect
+            v-bind="componentField"
+            :items="permissionItems"
+            placeholder="Select permissions..."
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -189,7 +170,7 @@ const onSubmit = handleSubmit((values) => {
         <Tooltip>
           <TooltipTrigger class="cursor-default">
             <Button
-              type="submit"
+              role="submit"
               :variant="submitDisabledReason !== '' ? 'secondary' : 'default'"
               :disabled="submitDisabledReason !== ''"
               :title="submitDisabledReason"
@@ -201,7 +182,7 @@ const onSubmit = handleSubmit((values) => {
             <span v-if="submitDisabledReason !== ''">
               {{ submitDisabledReason }}
             </span>
-            <span v-else> Save the type. </span>
+            <span v-else> Save the role. </span>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

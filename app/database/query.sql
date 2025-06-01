@@ -446,3 +446,65 @@ WHERE (@query = '' OR (name LIKE '%' || @query || '%'
   AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
   AND (sqlc.narg('open') IS NULL OR open = sqlc.narg('open'))
 LIMIT @limit OFFSET @offset;
+
+------------------------------------------------------------------
+
+-- name: CreateRole :one
+INSERT INTO roles (id, name, permissions)
+VALUES (@id, @name, @permissions)
+RETURNING *;
+
+-- name: GetRole :one
+SELECT roles.*, COUNT(*) OVER () as total_count
+FROM roles
+WHERE id = @id;
+
+-- name: UpdateRole :one
+UPDATE roles
+SET name        = coalesce(sqlc.narg('name'), name),
+    permissions = coalesce(sqlc.narg('permissions'), permissions)
+WHERE id = @id
+RETURNING *;
+
+-- name: DeleteRole :exec
+DELETE
+FROM roles
+WHERE id = @id;
+
+-- name: ListRoles :many
+SELECT roles.*, COUNT(*) OVER () as total_count
+FROM roles
+ORDER BY created DESC
+LIMIT @limit OFFSET @offset;
+
+-- name: AssignRoleToUser :exec
+INSERT INTO user_roles (user_id, role_id)
+VALUES (@user_id, @role_id);
+
+-- name: RemoveRoleFromUser :exec
+DELETE
+FROM user_roles
+WHERE user_id = @user_id
+  AND role_id = @role_id;
+
+-- name: AssignParentRole :exec
+INSERT INTO role_inheritance (parent_role_id, child_role_id)
+VALUES (@parent_role_id, @child_role_id);
+
+-- name: RemoveParentRole :exec
+DELETE
+FROM role_inheritance
+WHERE parent_role_id = @parent_role_id
+  AND child_role_id = @child_role_id;
+
+-- name: ListUserRoles :many
+SELECT roles.*, COUNT(*) OVER () as total_count
+FROM user_effective_roles uer
+         JOIN roles ON roles.id = uer.role_id
+WHERE uer.user_id = @user_id
+ORDER BY roles.created DESC
+LIMIT @limit OFFSET @offset;
+
+-- name: ListUserPermissions :many
+SELECT *
+FROM user_effective_permissions;
