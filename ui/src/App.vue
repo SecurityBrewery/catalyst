@@ -5,12 +5,16 @@ import { onMounted, watch } from 'vue'
 import { RouterView } from 'vue-router'
 
 import { useAuthStore } from '@/store/auth'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
+
+const router = useRouter()
 
 const fetchUser = () => {
   if (!authStore.token) {
     authStore.setUser(undefined)
+    authStore.setPermissions([])
     return
   }
 
@@ -19,9 +23,12 @@ const fetchUser = () => {
       if (response.ok) {
         response.json().then((user) => {
           if (user) {
-            authStore.setUser(user)
+            authStore.setUser(user.user)
+            authStore.setPermissions(user.permissions)
           } else {
             authStore.setUser(undefined)
+            authStore.setPermissions([])
+            router.push({ name: 'login' })
           }
         })
       }

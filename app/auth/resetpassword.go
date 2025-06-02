@@ -39,7 +39,7 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	resetToken, err := s.createResetToken(&user, resetTokenExpiration)
+	resetToken, err := s.CreateResetToken(&user, resetTokenExpiration)
 	if err != nil {
 		scimError(w, http.StatusInternalServerError, "Failed to create reset token: "+err.Error())
 

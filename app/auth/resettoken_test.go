@@ -78,7 +78,7 @@ func TestService_createResetToken(t *testing.T) {
 			s := &Service{
 				config: tt.fields.config,
 			}
-			got, err := s.createResetToken(tt.args.createUser, tt.args.tokenDuration)
+			got, err := s.CreateResetToken(tt.args.createUser, tt.args.tokenDuration)
 			require.NoError(t, err, "createResetToken()")
 
 			time.Sleep(tt.args.waitDuration)

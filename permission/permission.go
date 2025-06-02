@@ -9,8 +9,10 @@ import (
 type Permission = string
 
 const (
-	TicketRead    Permission = "ticket:*:read"
-	TicketWrite   Permission = "ticket:*:write"
+	TicketRead    Permission = "ticket:read"
+	TicketWrite   Permission = "ticket:write"
+	FileRead      Permission = "file:read"
+	FileWrite     Permission = "file:write"
 	TypeRead      Permission = "type:read"
 	TypeWrite     Permission = "type:write"
 	UserRead      Permission = "user:read"
@@ -23,6 +25,8 @@ const (
 
 func Default() []Permission {
 	return []Permission{
+		TypeRead,
+		FileRead,
 		TicketRead,
 		TicketWrite,
 	}
@@ -40,6 +44,8 @@ func AllPermissions() []Permission {
 		RoleWrite,
 		ReactionRead,
 		ReactionWrite,
+		FileRead,
+		FileWrite,
 	}
 }
 

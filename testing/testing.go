@@ -52,7 +52,10 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.AuthRecord)
 		require.NoError(t, err)
 
-		loginToken, err := baseApp.Auth.CreateLoginToken(&user, time.Hour)
+		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)
+		require.NoError(t, err)
+
+		loginToken, err := baseApp.Auth.CreateAccessToken(&user, permissions, time.Hour)
 		require.NoError(t, err)
 
 		req.Header.Set("Authorization", "Bearer "+loginToken)
@@ -62,7 +65,10 @@ func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.Admin)
 		require.NoError(t, err)
 
-		loginToken, err := baseApp.Auth.CreateLoginToken(&user, time.Hour)
+		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)
+		require.NoError(t, err)
+
+		loginToken, err := baseApp.Auth.CreateAccessToken(&user, permissions, time.Hour)
 		require.NoError(t, err)
 
 		req.Header.Set("Authorization", "Bearer "+loginToken)

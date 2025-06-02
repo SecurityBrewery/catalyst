@@ -183,91 +183,6 @@ func (s *Service) GetDashboardCounts(ctx context.Context, _ openapi.GetDashboard
 	return openapi.GetDashboardCounts200JSONResponse(response), nil
 }
 
-func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeaturesRequestObject) (openapi.ListFeaturesResponseObject, error) {
-	features, err := s.queries.ListFeatures(ctx, sqlc.ListFeaturesParams{
-		Offset: toInt64(request.Params.Offset, defaultOffset),
-		Limit:  toInt64(request.Params.Limit, defaultLimit),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	response := make([]openapi.Feature, 0, len(features))
-	for _, feature := range features {
-		response = append(response, openapi.Feature{
-			Id:      feature.ID,
-			Name:    feature.Name,
-			Created: feature.Created,
-			Updated: feature.Updated,
-		})
-	}
-
-	totalCount := 0
-	if len(features) > 0 {
-		totalCount = int(features[0].TotalCount)
-	}
-
-	s.hooks.OnRecordsListRequest.Publish(ctx, "features", response)
-
-	return openapi.ListFeatures200JSONResponse{
-		Body: response,
-		Headers: openapi.ListFeatures200ResponseHeaders{
-			XTotalCount: totalCount,
-		},
-	}, nil
-}
-
-func (s *Service) CreateFeature(ctx context.Context, request openapi.CreateFeatureRequestObject) (openapi.CreateFeatureResponseObject, error) {
-	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "features", request.Body)
-
-	feature, err := s.queries.CreateFeature(ctx, request.Body.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	response := openapi.Feature{
-		Id:      feature.ID,
-		Name:    feature.Name,
-		Created: feature.Created,
-		Updated: feature.Updated,
-	}
-
-	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "features", response)
-
-	return openapi.CreateFeature200JSONResponse(response), nil
-}
-
-func (s *Service) DeleteFeature(ctx context.Context, request openapi.DeleteFeatureRequestObject) (openapi.DeleteFeatureResponseObject, error) {
-	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "features", request.Id)
-
-	err := s.queries.DeleteFeature(ctx, request.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "features", request.Id)
-
-	return openapi.DeleteFeature204Response{}, nil
-}
-
-func (s *Service) GetFeature(ctx context.Context, request openapi.GetFeatureRequestObject) (openapi.GetFeatureResponseObject, error) {
-	feature, err := s.queries.GetFeature(ctx, request.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	response := openapi.Feature{
-		Id:      feature.ID,
-		Name:    feature.Name,
-		Created: feature.Created,
-		Updated: feature.Updated,
-	}
-
-	s.hooks.OnRecordViewRequest.Publish(ctx, "features", response)
-
-	return openapi.GetFeature200JSONResponse(response), nil
-}
-
 func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesRequestObject) (openapi.ListFilesResponseObject, error) {
 	files, err := s.queries.ListFiles(ctx, sqlc.ListFilesParams{
 		Ticket: toString(request.Params.Ticket, ""),
@@ -1419,7 +1334,7 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 	switch {
 	case request.Body.Password == nil && request.Body.PasswordConfirm == nil:
 	case request.Body.Password != nil && request.Body.PasswordConfirm != nil:
-		if request.Body.Password != request.Body.PasswordConfirm {
+		if *request.Body.Password != *request.Body.PasswordConfirm {
 			return nil, errors.New("passwords do not match")
 		}
 

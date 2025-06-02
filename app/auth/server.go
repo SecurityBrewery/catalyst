@@ -37,14 +37,24 @@ func (s *Service) handleUser(w http.ResponseWriter, r *http.Request) {
 	authorizationHeader := r.Header.Get("Authorization")
 	bearerToken := strings.TrimPrefix(authorizationHeader, bearerPrefix)
 
-	user, err := s.verifyAuthToken(r.Context(), bearerToken)
+	user, _, err := s.verifyAccessToken(r.Context(), bearerToken)
 	if err != nil {
 		_, _ = w.Write([]byte("null"))
 
 		return
 	}
 
-	b, err := json.Marshal(user)
+	permissions, err := s.queries.ListUserPermissions(r.Context(), user.ID)
+	if err != nil {
+		scimError(w, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	b, err := json.Marshal(map[string]any{
+		"user":        user,
+		"permissions": permissions,
+	})
 	if err != nil {
 		scimError(w, http.StatusInternalServerError, err.Error())
 

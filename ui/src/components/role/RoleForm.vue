@@ -116,9 +116,11 @@ const onSubmit = handleSubmit((values) => {
   })
 })
 
-const permissionItems = [
-  'ticket:*:read',
-  'ticket:*:write',
+const permissionItems = [ // TODO: get from server
+  'ticket:read',
+  'ticket:write',
+  'file:read',
+  'file:write',
   'type:read',
   'type:write',
   'user:read',

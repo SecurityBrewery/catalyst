@@ -76,7 +76,7 @@ watch(
     <Card class="m-auto w-96">
       <CardHeader class="flex flex-row justify-between">
         <CardTitle class="flex flex-row">
-          <CatalystLogo class="size-12" />
+          <CatalystLogo :size="12" />
           <div>
             <h1 class="text-lg font-bold">Catalyst</h1>
             <div class="text-muted-foreground">Login</div>

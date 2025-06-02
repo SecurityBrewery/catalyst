@@ -417,6 +417,9 @@ func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) 
 
 	for _, user := range users {
 		role := gofakeit.RandomString([]string{"team-seceng", "team-ir"})
+		if user.ID == "u_test" {
+			role = "r-admin"
+		}
 
 		if err := queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
 			UserID: user.ID,

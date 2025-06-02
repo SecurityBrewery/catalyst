@@ -20,12 +20,10 @@ import type {
   ExtendedComment,
   ExtendedTask,
   ExtendedTicket,
-  Feature,
   FileUpdate,
   Link,
   LinkUpdate,
   NewComment,
-  NewFeature,
   NewFile,
   NewLink,
   NewReaction,
@@ -71,8 +69,6 @@ import {
   ExtendedTaskToJSON,
   ExtendedTicketFromJSON,
   ExtendedTicketToJSON,
-  FeatureFromJSON,
-  FeatureToJSON,
   FileUpdateFromJSON,
   FileUpdateToJSON,
   LinkFromJSON,
@@ -81,8 +77,6 @@ import {
   LinkUpdateToJSON,
   NewCommentFromJSON,
   NewCommentToJSON,
-  NewFeatureFromJSON,
-  NewFeatureToJSON,
   NewFileFromJSON,
   NewFileToJSON,
   NewLinkFromJSON,
@@ -162,10 +156,6 @@ export interface CreateCommentRequest {
   newComment: NewComment
 }
 
-export interface CreateFeatureRequest {
-  newFeature: NewFeature
-}
-
 export interface CreateFileRequest {
   newFile: NewFile
 }
@@ -207,10 +197,6 @@ export interface CreateWebhookRequest {
 }
 
 export interface DeleteCommentRequest {
-  id: string
-}
-
-export interface DeleteFeatureRequest {
   id: string
 }
 
@@ -262,10 +248,6 @@ export interface GetCommentRequest {
   id: string
 }
 
-export interface GetFeatureRequest {
-  id: string
-}
-
 export interface GetFileRequest {
   id: string
 }
@@ -312,11 +294,6 @@ export interface ListChildRolesRequest {
 
 export interface ListCommentsRequest {
   ticket?: string
-  offset?: number
-  limit?: number
-}
-
-export interface ListFeaturesRequest {
   offset?: number
   limit?: number
 }
@@ -622,51 +599,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Comment> {
     const response = await this.createCommentRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Create a new feature
-   */
-  async createFeatureRaw(
-    requestParameters: CreateFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Feature>> {
-    if (requestParameters['newFeature'] == null) {
-      throw new runtime.RequiredError(
-        'newFeature',
-        'Required parameter "newFeature" was null or undefined when calling createFeature().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    headerParameters['Content-Type'] = 'application/json'
-
-    const response = await this.request(
-      {
-        path: `/features`,
-        method: 'POST',
-        headers: headerParameters,
-        query: queryParameters,
-        body: NewFeatureToJSON(requestParameters['newFeature'])
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => FeatureFromJSON(jsonValue))
-  }
-
-  /**
-   * Create a new feature
-   */
-  async createFeature(
-    requestParameters: CreateFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Feature> {
-    const response = await this.createFeatureRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -1166,50 +1098,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
     await this.deleteCommentRaw(requestParameters, initOverrides)
-  }
-
-  /**
-   * Delete a feature by ID
-   */
-  async deleteFeatureRaw(
-    requestParameters: DeleteFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling deleteFeature().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/features/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'DELETE',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.VoidApiResponse(response)
-  }
-
-  /**
-   * Delete a feature by ID
-   */
-  async deleteFeature(
-    requestParameters: DeleteFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<void> {
-    await this.deleteFeatureRaw(requestParameters, initOverrides)
   }
 
   /**
@@ -1773,51 +1661,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<DashboardCounts>> {
     const response = await this.getDashboardCountsRaw(initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Get a single feature by ID
-   */
-  async getFeatureRaw(
-    requestParameters: GetFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Feature>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling getFeature().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/features/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => FeatureFromJSON(jsonValue))
-  }
-
-  /**
-   * Get a single feature by ID
-   */
-  async getFeature(
-    requestParameters: GetFeatureRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Feature> {
-    const response = await this.getFeatureRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2399,49 +2242,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<ExtendedComment>> {
     const response = await this.listCommentsRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * List all features
-   */
-  async listFeaturesRaw(
-    requestParameters: ListFeaturesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<Feature>>> {
-    const queryParameters: any = {}
-
-    if (requestParameters['offset'] != null) {
-      queryParameters['offset'] = requestParameters['offset']
-    }
-
-    if (requestParameters['limit'] != null) {
-      queryParameters['limit'] = requestParameters['limit']
-    }
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/features`,
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(FeatureFromJSON))
-  }
-
-  /**
-   * List all features
-   */
-  async listFeatures(
-    requestParameters: ListFeaturesRequest = {},
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<Feature>> {
-    const response = await this.listFeaturesRaw(requestParameters, initOverrides)
     return await response.value()
   }
 

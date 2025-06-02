@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
@@ -42,7 +41,14 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := s.CreateLoginToken(user, time.Hour*24)
+	permissions, err := s.queries.ListUserPermissions(r.Context(), user.ID)
+	if err != nil {
+		scimError(w, http.StatusInternalServerError, "Failed to get user permissions")
+
+		return
+	}
+
+	token, err := s.CreateAccessToken(user, permissions, time.Hour*24)
 	if err != nil {
 		scimError(w, http.StatusInternalServerError, "Failed to create login token")
 
@@ -78,17 +84,4 @@ func (s *Service) loginWithMail(ctx context.Context, mail, password string) (*sq
 	}
 
 	return &user, nil
-}
-
-func (s *Service) CreateLoginToken(user *sqlc.User, duration time.Duration) (string, error) {
-	claims := jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(duration).Unix(),
-		"key": user.Tokenkey,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	signingKey := s.config.AppSecret + user.Tokenkey
-
-	return token.SignedString([]byte(signingKey))
 }

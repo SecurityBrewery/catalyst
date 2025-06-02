@@ -15,6 +15,10 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
+const (
+	OAuth2Scopes = "OAuth2.Scopes"
+)
+
 // Comment defines model for Comment.
 type Comment struct {
 	Author  string `json:"author"`
@@ -436,12 +440,6 @@ type ListCommentsParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// ListFeaturesParams defines parameters for ListFeatures.
-type ListFeaturesParams struct {
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
 // ListFilesParams defines parameters for ListFiles.
 type ListFilesParams struct {
 	Ticket *string `form:"ticket,omitempty" json:"ticket,omitempty"`
@@ -520,9 +518,6 @@ type CreateCommentJSONRequestBody = NewComment
 
 // UpdateCommentJSONRequestBody defines body for UpdateComment for application/json ContentType.
 type UpdateCommentJSONRequestBody = CommentUpdate
-
-// CreateFeatureJSONRequestBody defines body for CreateFeature for application/json ContentType.
-type CreateFeatureJSONRequestBody = NewFeature
 
 // CreateFileJSONRequestBody defines body for CreateFile for application/json ContentType.
 type CreateFileJSONRequestBody = NewFile
@@ -610,18 +605,6 @@ type ServerInterface interface {
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
 	GetDashboardCounts(w http.ResponseWriter, r *http.Request)
-	// List all features
-	// (GET /features)
-	ListFeatures(w http.ResponseWriter, r *http.Request, params ListFeaturesParams)
-	// Create a new feature
-	// (POST /features)
-	CreateFeature(w http.ResponseWriter, r *http.Request)
-	// Delete a feature by ID
-	// (DELETE /features/{id})
-	DeleteFeature(w http.ResponseWriter, r *http.Request, id string)
-	// Get a single feature by ID
-	// (GET /features/{id})
-	GetFeature(w http.ResponseWriter, r *http.Request, id string)
 	// List all files
 	// (GET /files)
 	ListFiles(w http.ResponseWriter, r *http.Request, params ListFilesParams)
@@ -850,30 +833,6 @@ func (_ Unimplemented) UpdateComment(w http.ResponseWriter, r *http.Request, id 
 // Get dashboard summary counts
 // (GET /dashboard_counts)
 func (_ Unimplemented) GetDashboardCounts(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all features
-// (GET /features)
-func (_ Unimplemented) ListFeatures(w http.ResponseWriter, r *http.Request, params ListFeaturesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new feature
-// (POST /features)
-func (_ Unimplemented) CreateFeature(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete a feature by ID
-// (DELETE /features/{id})
-func (_ Unimplemented) DeleteFeature(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get a single feature by ID
-// (GET /features/{id})
-func (_ Unimplemented) GetFeature(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1269,6 +1228,12 @@ func (siw *ServerInterfaceWrapper) ListComments(w http.ResponseWriter, r *http.R
 
 	var err error
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListCommentsParams
 
@@ -1310,6 +1275,12 @@ func (siw *ServerInterfaceWrapper) ListComments(w http.ResponseWriter, r *http.R
 // CreateComment operation middleware
 func (siw *ServerInterfaceWrapper) CreateComment(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateComment(w, r)
 	}))
@@ -1334,6 +1305,12 @@ func (siw *ServerInterfaceWrapper) DeleteComment(w http.ResponseWriter, r *http.
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteComment(w, r, id)
@@ -1360,6 +1337,12 @@ func (siw *ServerInterfaceWrapper) GetComment(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetComment(w, r, id)
 	}))
@@ -1385,6 +1368,12 @@ func (siw *ServerInterfaceWrapper) UpdateComment(w http.ResponseWriter, r *http.
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateComment(w, r, id)
 	}))
@@ -1399,107 +1388,14 @@ func (siw *ServerInterfaceWrapper) UpdateComment(w http.ResponseWriter, r *http.
 // GetDashboardCounts operation middleware
 func (siw *ServerInterfaceWrapper) GetDashboardCounts(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDashboardCounts(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListFeatures operation middleware
-func (siw *ServerInterfaceWrapper) ListFeatures(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListFeaturesParams
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListFeatures(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateFeature operation middleware
-func (siw *ServerInterfaceWrapper) CreateFeature(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateFeature(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteFeature operation middleware
-func (siw *ServerInterfaceWrapper) DeleteFeature(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteFeature(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetFeature operation middleware
-func (siw *ServerInterfaceWrapper) GetFeature(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetFeature(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1513,6 +1409,12 @@ func (siw *ServerInterfaceWrapper) GetFeature(w http.ResponseWriter, r *http.Req
 func (siw *ServerInterfaceWrapper) ListFiles(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListFilesParams
@@ -1555,6 +1457,12 @@ func (siw *ServerInterfaceWrapper) ListFiles(w http.ResponseWriter, r *http.Requ
 // CreateFile operation middleware
 func (siw *ServerInterfaceWrapper) CreateFile(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateFile(w, r)
 	}))
@@ -1579,6 +1487,12 @@ func (siw *ServerInterfaceWrapper) DeleteFile(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteFile(w, r, id)
@@ -1605,6 +1519,12 @@ func (siw *ServerInterfaceWrapper) GetFile(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFile(w, r, id)
 	}))
@@ -1629,6 +1549,12 @@ func (siw *ServerInterfaceWrapper) UpdateFile(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateFile(w, r, id)
@@ -1655,6 +1581,12 @@ func (siw *ServerInterfaceWrapper) DownloadFile(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DownloadFile(w, r, id)
 	}))
@@ -1670,6 +1602,12 @@ func (siw *ServerInterfaceWrapper) DownloadFile(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) ListLinks(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListLinksParams
@@ -1712,6 +1650,12 @@ func (siw *ServerInterfaceWrapper) ListLinks(w http.ResponseWriter, r *http.Requ
 // CreateLink operation middleware
 func (siw *ServerInterfaceWrapper) CreateLink(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateLink(w, r)
 	}))
@@ -1736,6 +1680,12 @@ func (siw *ServerInterfaceWrapper) DeleteLink(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteLink(w, r, id)
@@ -1762,6 +1712,12 @@ func (siw *ServerInterfaceWrapper) GetLink(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetLink(w, r, id)
 	}))
@@ -1787,6 +1743,12 @@ func (siw *ServerInterfaceWrapper) UpdateLink(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateLink(w, r, id)
 	}))
@@ -1802,6 +1764,12 @@ func (siw *ServerInterfaceWrapper) UpdateLink(w http.ResponseWriter, r *http.Req
 func (siw *ServerInterfaceWrapper) ListReactions(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"reaction:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListReactionsParams
@@ -1836,6 +1804,12 @@ func (siw *ServerInterfaceWrapper) ListReactions(w http.ResponseWriter, r *http.
 // CreateReaction operation middleware
 func (siw *ServerInterfaceWrapper) CreateReaction(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"reaction:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateReaction(w, r)
 	}))
@@ -1860,6 +1834,12 @@ func (siw *ServerInterfaceWrapper) DeleteReaction(w http.ResponseWriter, r *http
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"reaction:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteReaction(w, r, id)
@@ -1886,6 +1866,12 @@ func (siw *ServerInterfaceWrapper) GetReaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"reaction:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetReaction(w, r, id)
 	}))
@@ -1911,6 +1897,12 @@ func (siw *ServerInterfaceWrapper) UpdateReaction(w http.ResponseWriter, r *http
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"reaction:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateReaction(w, r, id)
 	}))
@@ -1926,6 +1918,12 @@ func (siw *ServerInterfaceWrapper) UpdateReaction(w http.ResponseWriter, r *http
 func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListRolesParams
@@ -1960,6 +1958,12 @@ func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Requ
 // CreateRole operation middleware
 func (siw *ServerInterfaceWrapper) CreateRole(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateRole(w, r)
 	}))
@@ -1984,6 +1988,12 @@ func (siw *ServerInterfaceWrapper) DeleteRole(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteRole(w, r, id)
@@ -2010,6 +2020,12 @@ func (siw *ServerInterfaceWrapper) GetRole(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetRole(w, r, id)
 	}))
@@ -2034,6 +2050,12 @@ func (siw *ServerInterfaceWrapper) UpdateRole(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateRole(w, r, id)
@@ -2060,6 +2082,12 @@ func (siw *ServerInterfaceWrapper) ListChildRoles(w http.ResponseWriter, r *http
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListChildRoles(w, r, id)
 	}))
@@ -2084,6 +2112,12 @@ func (siw *ServerInterfaceWrapper) ListParentRoles(w http.ResponseWriter, r *htt
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListParentRoles(w, r, id)
@@ -2110,6 +2144,12 @@ func (siw *ServerInterfaceWrapper) AddRoleParent(w http.ResponseWriter, r *http.
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddRoleParent(w, r, id)
 	}))
@@ -2134,6 +2174,12 @@ func (siw *ServerInterfaceWrapper) ListParentPermissions(w http.ResponseWriter, 
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListParentPermissions(w, r, id)
@@ -2169,6 +2215,12 @@ func (siw *ServerInterfaceWrapper) RemoveRoleParent(w http.ResponseWriter, r *ht
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoveRoleParent(w, r, id, parentRoleId)
 	}))
@@ -2194,6 +2246,12 @@ func (siw *ServerInterfaceWrapper) ListRoleUsers(w http.ResponseWriter, r *http.
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListRoleUsers(w, r, id)
 	}))
@@ -2207,6 +2265,12 @@ func (siw *ServerInterfaceWrapper) ListRoleUsers(w http.ResponseWriter, r *http.
 
 // GetSidebar operation middleware
 func (siw *ServerInterfaceWrapper) GetSidebar(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetSidebar(w, r)
@@ -2223,6 +2287,12 @@ func (siw *ServerInterfaceWrapper) GetSidebar(w http.ResponseWriter, r *http.Req
 func (siw *ServerInterfaceWrapper) ListTasks(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListTasksParams
@@ -2265,6 +2335,12 @@ func (siw *ServerInterfaceWrapper) ListTasks(w http.ResponseWriter, r *http.Requ
 // CreateTask operation middleware
 func (siw *ServerInterfaceWrapper) CreateTask(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateTask(w, r)
 	}))
@@ -2289,6 +2365,12 @@ func (siw *ServerInterfaceWrapper) DeleteTask(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteTask(w, r, id)
@@ -2315,6 +2397,12 @@ func (siw *ServerInterfaceWrapper) GetTask(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTask(w, r, id)
 	}))
@@ -2340,6 +2428,12 @@ func (siw *ServerInterfaceWrapper) UpdateTask(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateTask(w, r, id)
 	}))
@@ -2355,6 +2449,12 @@ func (siw *ServerInterfaceWrapper) UpdateTask(w http.ResponseWriter, r *http.Req
 func (siw *ServerInterfaceWrapper) SearchTickets(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params SearchTicketsParams
@@ -2415,6 +2515,12 @@ func (siw *ServerInterfaceWrapper) ListTickets(w http.ResponseWriter, r *http.Re
 
 	var err error
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListTicketsParams
 
@@ -2448,6 +2554,12 @@ func (siw *ServerInterfaceWrapper) ListTickets(w http.ResponseWriter, r *http.Re
 // CreateTicket operation middleware
 func (siw *ServerInterfaceWrapper) CreateTicket(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateTicket(w, r)
 	}))
@@ -2472,6 +2584,12 @@ func (siw *ServerInterfaceWrapper) DeleteTicket(w http.ResponseWriter, r *http.R
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteTicket(w, r, id)
@@ -2498,6 +2616,12 @@ func (siw *ServerInterfaceWrapper) GetTicket(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTicket(w, r, id)
 	}))
@@ -2523,6 +2647,12 @@ func (siw *ServerInterfaceWrapper) UpdateTicket(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateTicket(w, r, id)
 	}))
@@ -2538,6 +2668,12 @@ func (siw *ServerInterfaceWrapper) UpdateTicket(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) ListTimeline(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListTimelineParams
@@ -2580,6 +2716,12 @@ func (siw *ServerInterfaceWrapper) ListTimeline(w http.ResponseWriter, r *http.R
 // CreateTimeline operation middleware
 func (siw *ServerInterfaceWrapper) CreateTimeline(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateTimeline(w, r)
 	}))
@@ -2604,6 +2746,12 @@ func (siw *ServerInterfaceWrapper) DeleteTimeline(w http.ResponseWriter, r *http
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteTimeline(w, r, id)
@@ -2630,6 +2778,12 @@ func (siw *ServerInterfaceWrapper) GetTimeline(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTimeline(w, r, id)
 	}))
@@ -2655,6 +2809,12 @@ func (siw *ServerInterfaceWrapper) UpdateTimeline(w http.ResponseWriter, r *http
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"ticket:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateTimeline(w, r, id)
 	}))
@@ -2670,6 +2830,12 @@ func (siw *ServerInterfaceWrapper) UpdateTimeline(w http.ResponseWriter, r *http
 func (siw *ServerInterfaceWrapper) ListTypes(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"type:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListTypesParams
@@ -2704,6 +2870,12 @@ func (siw *ServerInterfaceWrapper) ListTypes(w http.ResponseWriter, r *http.Requ
 // CreateType operation middleware
 func (siw *ServerInterfaceWrapper) CreateType(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"type:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateType(w, r)
 	}))
@@ -2728,6 +2900,12 @@ func (siw *ServerInterfaceWrapper) DeleteType(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"type:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteType(w, r, id)
@@ -2754,6 +2932,12 @@ func (siw *ServerInterfaceWrapper) GetType(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"type:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetType(w, r, id)
 	}))
@@ -2779,6 +2963,12 @@ func (siw *ServerInterfaceWrapper) UpdateType(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"type:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateType(w, r, id)
 	}))
@@ -2794,6 +2984,12 @@ func (siw *ServerInterfaceWrapper) UpdateType(w http.ResponseWriter, r *http.Req
 func (siw *ServerInterfaceWrapper) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListUsersParams
@@ -2828,6 +3024,12 @@ func (siw *ServerInterfaceWrapper) ListUsers(w http.ResponseWriter, r *http.Requ
 // CreateUser operation middleware
 func (siw *ServerInterfaceWrapper) CreateUser(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateUser(w, r)
 	}))
@@ -2852,6 +3054,12 @@ func (siw *ServerInterfaceWrapper) DeleteUser(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteUser(w, r, id)
@@ -2878,6 +3086,12 @@ func (siw *ServerInterfaceWrapper) GetUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetUser(w, r, id)
 	}))
@@ -2902,6 +3116,12 @@ func (siw *ServerInterfaceWrapper) UpdateUser(w http.ResponseWriter, r *http.Req
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUser(w, r, id)
@@ -2928,6 +3148,12 @@ func (siw *ServerInterfaceWrapper) ListUserPermissions(w http.ResponseWriter, r 
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListUserPermissions(w, r, id)
 	}))
@@ -2953,6 +3179,12 @@ func (siw *ServerInterfaceWrapper) ListUserRoles(w http.ResponseWriter, r *http.
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListUserRoles(w, r, id)
 	}))
@@ -2977,6 +3209,12 @@ func (siw *ServerInterfaceWrapper) AddUserRole(w http.ResponseWriter, r *http.Re
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddUserRole(w, r, id)
@@ -3012,6 +3250,12 @@ func (siw *ServerInterfaceWrapper) RemoveUserRole(w http.ResponseWriter, r *http
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoveUserRole(w, r, id, roleId)
 	}))
@@ -3027,6 +3271,12 @@ func (siw *ServerInterfaceWrapper) RemoveUserRole(w http.ResponseWriter, r *http
 func (siw *ServerInterfaceWrapper) ListWebhooks(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"webhook:read"})
+
+	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListWebhooksParams
@@ -3061,6 +3311,12 @@ func (siw *ServerInterfaceWrapper) ListWebhooks(w http.ResponseWriter, r *http.R
 // CreateWebhook operation middleware
 func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"webhook:write"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateWebhook(w, r)
 	}))
@@ -3085,6 +3341,12 @@ func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"webhook:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteWebhook(w, r, id)
@@ -3111,6 +3373,12 @@ func (siw *ServerInterfaceWrapper) GetWebhook(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"webhook:read"})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWebhook(w, r, id)
 	}))
@@ -3135,6 +3403,12 @@ func (siw *ServerInterfaceWrapper) UpdateWebhook(w http.ResponseWriter, r *http.
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"webhook:write"})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateWebhook(w, r, id)
@@ -3277,18 +3551,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/dashboard_counts", wrapper.GetDashboardCounts)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/features", wrapper.ListFeatures)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/features", wrapper.CreateFeature)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/features/{id}", wrapper.DeleteFeature)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/features/{id}", wrapper.GetFeature)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/files", wrapper.ListFiles)
@@ -3586,81 +3848,6 @@ type GetDashboardCountsResponseObject interface {
 type GetDashboardCounts200JSONResponse []DashboardCounts
 
 func (response GetDashboardCounts200JSONResponse) VisitGetDashboardCountsResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type ListFeaturesRequestObject struct {
-	Params ListFeaturesParams
-}
-
-type ListFeaturesResponseObject interface {
-	VisitListFeaturesResponse(w http.ResponseWriter) error
-}
-
-type ListFeatures200ResponseHeaders struct {
-	XTotalCount int
-}
-
-type ListFeatures200JSONResponse struct {
-	Body    []Feature
-	Headers ListFeatures200ResponseHeaders
-}
-
-func (response ListFeatures200JSONResponse) VisitListFeaturesResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response.Body)
-}
-
-type CreateFeatureRequestObject struct {
-	Body *CreateFeatureJSONRequestBody
-}
-
-type CreateFeatureResponseObject interface {
-	VisitCreateFeatureResponse(w http.ResponseWriter) error
-}
-
-type CreateFeature200JSONResponse Feature
-
-func (response CreateFeature200JSONResponse) VisitCreateFeatureResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeleteFeatureRequestObject struct {
-	Id string `json:"id"`
-}
-
-type DeleteFeatureResponseObject interface {
-	VisitDeleteFeatureResponse(w http.ResponseWriter) error
-}
-
-type DeleteFeature204Response struct {
-}
-
-func (response DeleteFeature204Response) VisitDeleteFeatureResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
-}
-
-type GetFeatureRequestObject struct {
-	Id string `json:"id"`
-}
-
-type GetFeatureResponseObject interface {
-	VisitGetFeatureResponse(w http.ResponseWriter) error
-}
-
-type GetFeature200JSONResponse Feature
-
-func (response GetFeature200JSONResponse) VisitGetFeatureResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -4863,18 +5050,6 @@ type StrictServerInterface interface {
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
 	GetDashboardCounts(ctx context.Context, request GetDashboardCountsRequestObject) (GetDashboardCountsResponseObject, error)
-	// List all features
-	// (GET /features)
-	ListFeatures(ctx context.Context, request ListFeaturesRequestObject) (ListFeaturesResponseObject, error)
-	// Create a new feature
-	// (POST /features)
-	CreateFeature(ctx context.Context, request CreateFeatureRequestObject) (CreateFeatureResponseObject, error)
-	// Delete a feature by ID
-	// (DELETE /features/{id})
-	DeleteFeature(ctx context.Context, request DeleteFeatureRequestObject) (DeleteFeatureResponseObject, error)
-	// Get a single feature by ID
-	// (GET /features/{id})
-	GetFeature(ctx context.Context, request GetFeatureRequestObject) (GetFeatureResponseObject, error)
 	// List all files
 	// (GET /files)
 	ListFiles(ctx context.Context, request ListFilesRequestObject) (ListFilesResponseObject, error)
@@ -5254,115 +5429,6 @@ func (sh *strictHandler) GetDashboardCounts(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetDashboardCountsResponseObject); ok {
 		if err := validResponse.VisitGetDashboardCountsResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListFeatures operation middleware
-func (sh *strictHandler) ListFeatures(w http.ResponseWriter, r *http.Request, params ListFeaturesParams) {
-	var request ListFeaturesRequestObject
-
-	request.Params = params
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListFeatures(ctx, request.(ListFeaturesRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListFeatures")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListFeaturesResponseObject); ok {
-		if err := validResponse.VisitListFeaturesResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// CreateFeature operation middleware
-func (sh *strictHandler) CreateFeature(w http.ResponseWriter, r *http.Request) {
-	var request CreateFeatureRequestObject
-
-	var body CreateFeatureJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateFeature(ctx, request.(CreateFeatureRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateFeature")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateFeatureResponseObject); ok {
-		if err := validResponse.VisitCreateFeatureResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// DeleteFeature operation middleware
-func (sh *strictHandler) DeleteFeature(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteFeatureRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteFeature(ctx, request.(DeleteFeatureRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteFeature")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteFeatureResponseObject); ok {
-		if err := validResponse.VisitDeleteFeatureResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// GetFeature operation middleware
-func (sh *strictHandler) GetFeature(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetFeatureRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetFeature(ctx, request.(GetFeatureRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetFeature")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetFeatureResponseObject); ok {
-		if err := validResponse.VisitGetFeatureResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

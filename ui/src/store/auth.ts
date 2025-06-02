@@ -7,7 +7,8 @@ import type { User } from '@/client/models'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: useLocalStorage('token', ''),
-    user: ref<User | undefined>(undefined)
+    user: ref<User | undefined>(undefined),
+    permissions: ref<string[]>([]),
   }),
   getters: {
     isAuthenticated: (state) => !!state.token
@@ -18,6 +19,12 @@ export const useAuthStore = defineStore('auth', {
     },
     setUser(user: User | undefined) {
       this.user = user
-    }
+    },
+    setPermissions(permissions: string[]) {
+      if (!permissions) {
+        permissions = []
+      }
+      this.permissions = permissions
+    },
   }
 })

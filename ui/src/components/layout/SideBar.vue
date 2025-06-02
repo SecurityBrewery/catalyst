@@ -5,13 +5,16 @@ import NavList from '@/components/sidebar/NavList.vue'
 import UserDropDown from '@/components/sidebar/UserDropDown.vue'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 import { Menu } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
 import { useCatalystStore } from '@/store/catalyst'
+import { useAuthStore } from '@/store/auth'
 
 const catalystStore = useCatalystStore()
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -24,14 +27,14 @@ const catalystStore = useCatalystStore()
     "
   >
     <div class="flex h-[57px] items-center border-b bg-background">
-      <CatalystLogo
-        class="size-8"
-        :class="{
-          'flex-1': catalystStore.sidebarCollapsed,
-          'mx-3': !catalystStore.sidebarCollapsed
-        }"
-      />
+      <CatalystLogo :size="8"/>
       <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
+    </div>
+    <div v-if="!catalystStore.sidebarCollapsed && !authStore.permissions.includes('ticket:read')" class="w-full px-2 mt-4">
+      <Alert class="w-full">
+        <AlertTitle>Info</AlertTitle>
+        <AlertDescription>No permission to read tickets</AlertDescription>
+      </Alert>
     </div>
     <NavList
       :is-collapsed="catalystStore.sidebarCollapsed"
@@ -40,16 +43,17 @@ const catalystStore = useCatalystStore()
           title: 'Dashboard',
           icon: 'PanelsTopLeft',
           variant: 'ghost',
-          to: '/dashboard'
+          to: '/dashboard',
+          permission: 'ticket:read'
         }
       ]"
     />
-    <Separator />
+    <Separator v-if="authStore.permissions.includes('ticket:read')" />
     <IncidentNav :is-collapsed="catalystStore.sidebarCollapsed" />
 
     <div class="flex-1" />
 
-    <Separator />
+    <Separator v-if="authStore.permissions.includes('reaction:write') || authStore.permissions.includes('role:write') || authStore.permissions.includes('group:write') || authStore.permissions.includes('type:write')" />
     <NavList
       :is-collapsed="catalystStore.sidebarCollapsed"
       :links="[
@@ -57,25 +61,29 @@ const catalystStore = useCatalystStore()
           title: 'Reactions',
           icon: 'Zap',
           variant: 'ghost',
-          to: '/reactions'
+          to: '/reactions',
+          permission: 'reaction:write'
         },
         {
           title: 'Users',
           icon: 'User',
           variant: 'ghost',
-          to: '/users'
+          to: '/users',
+          permission: 'role:write'
         },
         {
           title: 'Groups',
           icon: 'Users',
           variant: 'ghost',
-          to: '/groups'
+          to: '/groups',
+          permission: 'group:write'
         },
         {
           title: 'Types',
           icon: 'Tag',
           variant: 'ghost',
-          to: '/types'
+          to: '/types',
+          permission: 'type:write'
         }
       ]"
     />

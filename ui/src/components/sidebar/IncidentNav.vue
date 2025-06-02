@@ -8,12 +8,15 @@ import { LoaderCircle } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 
 import { useAPI } from '@/api'
 import type { Sidebar } from '@/client/models'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 const api = useAPI()
+const authStore = useAuthStore()
 
 const route = useRoute()
 
@@ -28,7 +31,13 @@ const {
   error
 } = useQuery({
   queryKey: ['types', 'sidebar'],
-  queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
+  queryFn: (): Promise<Array<Sidebar>> => {
+    if (authStore.permissions.includes('ticket:read')) {
+      return api.getSidebar()
+    }
+
+    return Promise.resolve([])
+  }
 })
 
 const variant = (t: Sidebar): 'default' | 'ghost' =>
@@ -40,10 +49,10 @@ const variant = (t: Sidebar): 'default' | 'ghost' =>
     :data-collapsed="isCollapsed"
     class="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
   >
-    <div v-if="isPending" class="flex h-screen w-screen items-center justify-center">
+    <div v-if="isPending" class="flex items-center justify-center">
       <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
     </div>
-    <Alert v-else-if="isError" variant="destructive" class="mb-4 h-screen w-screen">
+    <Alert v-else-if="isError" variant="destructive" class="mb-4">
       <AlertTitle>Error</AlertTitle>
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>

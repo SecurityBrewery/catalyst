@@ -8,6 +8,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/permission"
 	"github.com/SecurityBrewery/catalyst/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
 )
@@ -68,5 +69,5 @@ func systemToken(ctx context.Context, auth *auth.Service, queries *sqlc.Queries)
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return auth.CreateLoginToken(&user, time.Hour)
+	return auth.CreateAccessToken(&user, permission.AllPermissions(), time.Hour) // TODO: reduce permissions
 }
