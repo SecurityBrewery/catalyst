@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: useLocalStorage('token', ''),
     user: ref<User | undefined>(undefined),
-    permissions: ref<string[]>([]),
+    permissions: ref<string[]>([])
   }),
   getters: {
     isAuthenticated: (state) => !!state.token
@@ -25,6 +25,6 @@ export const useAuthStore = defineStore('auth', {
         permissions = []
       }
       this.permissions = permissions
-    },
+    }
   }
 })

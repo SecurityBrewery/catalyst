@@ -3,9 +3,9 @@ import Toaster from '@/components/ui/toast/Toaster.vue'
 
 import { onMounted, watch } from 'vue'
 import { RouterView } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/store/auth'
-import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 

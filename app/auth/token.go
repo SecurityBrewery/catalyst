@@ -41,7 +41,7 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *Service) verifyToken(tokenStr string, user *sqlc.User) (jwt.MapClaims, error) {
+func (s *Service) verifyToken(tokenStr string, user *sqlc.User) (jwt.MapClaims, error) { //nolint:cyclop
 	signingKey := s.config.AppSecret + user.Tokenkey
 
 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
@@ -138,7 +138,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
 		return fmt.Errorf("failed to get issued at: %w", err)
 	}
 
-	lastUpdated, err := time.Parse(time.RFC3339, user.Updated) // TODO: create a last reset at column
+	lastUpdated, err := time.Parse("2006-01-02 15:04:05.000Z", user.Updated) // TODO: create a last reset at column
 	if err != nil {
 		return fmt.Errorf("failed to parse last reset sent at: %w", err)
 	}
@@ -193,11 +193,13 @@ func scopes(claim jwt.MapClaims) ([]string, error) {
 	}
 
 	scopes := make([]string, 0, len(scopesSlice))
+
 	for _, scope := range scopesSlice {
 		scopeStr, ok := scope.(string)
 		if !ok {
 			return nil, fmt.Errorf("invalid scope claim element type: %T", scope)
 		}
+
 		scopes = append(scopes, scopeStr)
 	}
 

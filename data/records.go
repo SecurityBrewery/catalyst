@@ -360,7 +360,7 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	return nil
 }
 
-func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error {
+func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
 	_, err := queries.CreateRole(ctx, sqlc.CreateRoleParams{
 		ID:          "team-ir",
 		Name:        "IR Team",

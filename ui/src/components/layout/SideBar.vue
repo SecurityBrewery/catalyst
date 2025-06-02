@@ -3,15 +3,15 @@ import CatalystLogo from '@/components/common/CatalystLogo.vue'
 import IncidentNav from '@/components/sidebar/IncidentNav.vue'
 import NavList from '@/components/sidebar/NavList.vue'
 import UserDropDown from '@/components/sidebar/UserDropDown.vue'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 import { Menu } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
-import { useCatalystStore } from '@/store/catalyst'
 import { useAuthStore } from '@/store/auth'
+import { useCatalystStore } from '@/store/catalyst'
 
 const catalystStore = useCatalystStore()
 const authStore = useAuthStore()
@@ -27,10 +27,13 @@ const authStore = useAuthStore()
     "
   >
     <div class="flex h-[57px] items-center border-b bg-background">
-      <CatalystLogo :size="8"/>
+      <CatalystLogo :size="8" />
       <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
     </div>
-    <div v-if="!catalystStore.sidebarCollapsed && !authStore.permissions.includes('ticket:read')" class="w-full px-2 mt-4">
+    <div
+      v-if="!catalystStore.sidebarCollapsed && !authStore.permissions.includes('ticket:read')"
+      class="mt-4 w-full px-2"
+    >
       <Alert class="w-full">
         <AlertTitle>Info</AlertTitle>
         <AlertDescription>No permission to read tickets</AlertDescription>
@@ -53,7 +56,14 @@ const authStore = useAuthStore()
 
     <div class="flex-1" />
 
-    <Separator v-if="authStore.permissions.includes('reaction:write') || authStore.permissions.includes('role:write') || authStore.permissions.includes('group:write') || authStore.permissions.includes('type:write')" />
+    <Separator
+      v-if="
+        authStore.permissions.includes('reaction:write') ||
+        authStore.permissions.includes('role:write') ||
+        authStore.permissions.includes('group:write') ||
+        authStore.permissions.includes('type:write')
+      "
+    />
     <NavList
       :is-collapsed="catalystStore.sidebarCollapsed"
       :links="[

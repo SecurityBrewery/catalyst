@@ -61,6 +61,10 @@ func FromJSONArray(ctx context.Context, permissions string) []string {
 }
 
 func ToJSONArray(ctx context.Context, permissions []string) string {
+	if len(permissions) == 0 {
+		return "[]"
+	}
+
 	data, err := json.Marshal(permissions)
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to marshal permissions", "error", err)

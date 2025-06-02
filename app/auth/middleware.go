@@ -47,11 +47,11 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Service) ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, id string) strictnethttp.StrictHTTPHandlerFunc {
+func (s *Service) ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
 		requiredScopes, err := requiredScopes(r)
 		if err != nil {
-			slog.ErrorContext(r.Context(), "failed to get required scopes", "error", err)
+			slog.ErrorContext(ctx, "failed to get required scopes", "error", err)
 
 			scimUnauthorized(w, "failed to get required scopes")
 
@@ -59,15 +59,16 @@ func (s *Service) ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, id st
 		}
 
 		if len(requiredScopes) > 0 {
-			permissions, ok := usercontext.PermissionFromContext(r.Context())
+			permissions, ok := usercontext.PermissionFromContext(ctx)
 			if !ok {
-				slog.ErrorContext(r.Context(), "missing permissions")
+				slog.ErrorContext(ctx, "missing permissions")
 				scimUnauthorized(w, "missing permissions")
+
 				return
 			}
 
 			if !hasScope(permissions, requiredScopes) {
-				slog.ErrorContext(r.Context(), "missing required scopes", "required", requiredScopes, "permissions", permissions)
+				slog.ErrorContext(ctx, "missing required scopes", "required", requiredScopes, "permissions", permissions)
 
 				scimUnauthorized(w, "missing required scopes")
 

@@ -6,6 +6,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/permission"
 )
 
 const (
@@ -23,6 +24,24 @@ func defaultTestData(t *testing.T, app *app.App) {
 
 func userTestData(t *testing.T, app *app.App) {
 	t.Helper()
+
+	_, err := app.Queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
+		ID:          "r_analyst",
+		Name:        "Analyst",
+		Permissions: permission.ToJSONArray(t.Context(), permission.Default()),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = app.Queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
+		ID:          "r_admin",
+		Name:        "Admin",
+		Permissions: permission.ToJSONArray(t.Context(), permission.AllPermissions()),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	passwordHash, tokenKey, err := auth.HashPassword("password")
 	if err != nil {
@@ -42,6 +61,14 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
+	err = app.Queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
+		UserID: "u_bob_analyst",
+		RoleID: "r_analyst",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	passwordHash, tokenKey, err = auth.HashPassword("password123")
 	if err != nil {
 		t.Fatal(err)
@@ -55,6 +82,14 @@ func userTestData(t *testing.T, app *app.App) {
 		Name:         "Admin User",
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = app.Queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
+		UserID: "u_admin",
+		RoleID: "r_admin",
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import NavItem from '@/components/sidebar/NavItem.vue'
-import { useAuthStore } from '@/store/auth'
+
 import { computed } from 'vue'
+
+import { useAuthStore } from '@/store/auth'
 
 const authStore = useAuthStore()
 

@@ -27,17 +27,10 @@ func TestReactionsCollection(t *testing.T) {
 				{
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
-					ExpectedStatus: http.StatusOK,
-					ExpectedHeaders: map[string]string{
-						"X-Total-Count": "3",
-					},
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
+						`"missing required scopes"`,
 					},
-					NotExpectedContent: []string{
-						`"items":[]`,
-					},
-					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 				{
 					Name:           "Admin",
@@ -81,18 +74,9 @@ func TestReactionsCollection(t *testing.T) {
 				{
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
-					ExpectedStatus: http.StatusOK,
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"name":"test"`,
-					},
-					NotExpectedContent: []string{
-						`"items":[]`,
-					},
-					ExpectedEvents: map[string]int{
-						// "OnModelAfterCreate":          1,
-						// "OnModelBeforeCreate":         1,
-						"OnRecordAfterCreateRequest":  1,
-						"OnRecordBeforeCreateRequest": 1,
+						`"missing required scopes"`,
 					},
 				},
 				{
@@ -132,11 +116,10 @@ func TestReactionsCollection(t *testing.T) {
 				{
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
-					ExpectedStatus: http.StatusOK,
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
+						`"missing required scopes"`,
 					},
-					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:           "Admin",
@@ -168,16 +151,9 @@ func TestReactionsCollection(t *testing.T) {
 				{
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
-					ExpectedStatus: http.StatusOK,
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
-						`"name":"update"`,
-					},
-					ExpectedEvents: map[string]int{
-						// "OnModelAfterUpdate":          1,
-						// "OnModelBeforeUpdate":         1,
-						"OnRecordAfterUpdateRequest":  1,
-						"OnRecordBeforeUpdateRequest": 1,
+						`"missing required scopes"`,
 					},
 				},
 				{
@@ -214,12 +190,9 @@ func TestReactionsCollection(t *testing.T) {
 				{
 					Name:           "Analyst",
 					AuthRecord:     analystEmail,
-					ExpectedStatus: http.StatusNoContent,
-					ExpectedEvents: map[string]int{
-						// "OnModelAfterDelete":          1,
-						// "OnModelBeforeDelete":         1,
-						"OnRecordAfterDeleteRequest":  1,
-						"OnRecordBeforeDeleteRequest": 1,
+					ExpectedStatus: http.StatusUnauthorized,
+					ExpectedContent: []string{
+						`"missing required scopes"`,
 					},
 				},
 				{
@@ -236,6 +209,7 @@ func TestReactionsCollection(t *testing.T) {
 			},
 		},
 	}
+
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
 			t.Parallel()

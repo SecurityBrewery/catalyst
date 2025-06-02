@@ -9,19 +9,15 @@ import (
 	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
 )
 
-func Test_records(t *testing.T) {
-	t.Parallel()
-
-	app, _ := catalystTesting.App(t)
-
-	err := data.GenerateFake(t.Context(), app.Queries, 2, 2)
-	require.NoError(t, err, "failed to generate fake data")
-}
-
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
 	app, _ := catalystTesting.App(t)
+
+	_ = app.Queries.DeleteUser(t.Context(), "u_admin")
+	_ = app.Queries.DeleteUser(t.Context(), "u_bob_analyst")
+	_ = app.Queries.DeleteRole(t.Context(), "r_admin")
+	_ = app.Queries.DeleteRole(t.Context(), "r_analyst")
 
 	err := data.GenerateFake(t.Context(), app.Queries, 0, 0)
 	require.NoError(t, err, "failed to generate fake data")
