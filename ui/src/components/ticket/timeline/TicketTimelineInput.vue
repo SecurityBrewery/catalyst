@@ -37,7 +37,7 @@ const addCommentMutation = useMutation({
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['timeline', props.ticket.id] })
     message.value = ''
     newTimelineItem.value = false
   },

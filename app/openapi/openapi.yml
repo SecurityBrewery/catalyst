@@ -401,6 +401,39 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Users deleted" }
+  /users/{id}/roles:
+    get:
+      summary: List all roles for a user
+      operationId: listUserRoles
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of user roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
+    post:
+      summary: Add a role to a user
+      operationId: addUserRole
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleRelation" } } } }
+      responses:
+        "201": { "description": "Role added to user" }
+  /users/{id}/permissions:
+    get:
+      summary: List all permissions for a user
+      operationId: listUserPermissions
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of user permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
+  /users/{id}/roles/{roleId}:
+    delete:
+      summary: Remove a role from a user
+      operationId: removeUserRole
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Role removed from user" }
   /roles:
     get:
       summary: List all roles
@@ -439,6 +472,24 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Roles deleted" }
+  /roles/{id}/roles:
+    post:
+      summary: Add a parent role to another role
+      operationId: addRoleParent
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleRelation" } } } }
+      responses:
+        "201": { "description": "Role added to role" }
+  /roles/{id}/roles/{parentRoleId}:
+    delete:
+      summary: Remove a parent role from another role
+      operationId: removeRoleParent
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "parentRoleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Role removed from role" }
   /webhooks:
     get:
       summary: List all webhooks
@@ -824,6 +875,21 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "name", "permissions", "created", "updated" ]
+    UserRole:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        type: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "name", "permissions", "type", "created", "updated" ]
+    RoleRelation:
+      type: object
+      properties:
+        role_id: { "type": "string" }
+      required: [ "role_id" ]
     NewWebhook:
       type: object
       properties:

@@ -27,7 +27,7 @@ CREATE TABLE role_inheritance
 );
 
 CREATE VIEW user_effective_roles AS
-WITH RECURSIVE all_roles(user_id, role_id) AS (
+WITH RECURSIVE all_roles(user_id, role_id, role_type) AS (
     -- Direct roles
     SELECT ur.user_id, ur.role_id, 'direct' AS role_type
     FROM user_roles ur
@@ -40,11 +40,12 @@ WITH RECURSIVE all_roles(user_id, role_id) AS (
              JOIN role_inheritance ri ON ri.child_role_id = ar.role_id)
 SELECT user_id,
        role_id,
-       json_group_array(role_type) AS role_types
+       role_type
+       -- json_group_array(role_type) AS role_types
 FROM all_roles;
 
 CREATE VIEW user_effective_permissions AS
-SELECT uer.user_id,
+SELECT DISTINCT uer.user_id,
        CAST(json_each.value AS TEXT) AS permission
 FROM user_effective_roles uer
          JOIN roles r ON r.id = uer.role_id, json_each(r.permissions);

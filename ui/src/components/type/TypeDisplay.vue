@@ -63,7 +63,7 @@ const deleteMutation = useMutation({
       <div class="ml-auto">
         <DeleteDialog
           v-if="type"
-          :name="type.name"
+          :name="type.singular"
           singular="Type"
           @delete="deleteMutation.mutate"
         />

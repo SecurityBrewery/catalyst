@@ -27,6 +27,7 @@ models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
 models/Role.ts
+models/RoleRelation.ts
 models/RoleUpdate.ts
 models/Sidebar.ts
 models/Task.ts
@@ -39,6 +40,7 @@ models/TimelineEntryUpdate.ts
 models/Type.ts
 models/TypeUpdate.ts
 models/User.ts
+models/UserRole.ts
 models/UserUpdate.ts
 models/Webhook.ts
 models/WebhookUpdate.ts

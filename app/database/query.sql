@@ -498,13 +498,14 @@ WHERE parent_role_id = @parent_role_id
   AND child_role_id = @child_role_id;
 
 -- name: ListUserRoles :many
-SELECT roles.*, COUNT(*) OVER () as total_count
+SELECT roles.*, uer.role_type, COUNT(*) OVER () as total_count
 FROM user_effective_roles uer
          JOIN roles ON roles.id = uer.role_id
 WHERE uer.user_id = @user_id
-ORDER BY roles.created DESC
-LIMIT @limit OFFSET @offset;
+ORDER BY roles.name DESC;
 
 -- name: ListUserPermissions :many
-SELECT *
-FROM user_effective_permissions;
+SELECT user_effective_permissions.permission
+FROM user_effective_permissions
+WHERE user_id = @user_id
+ORDER BY permission;

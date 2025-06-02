@@ -5,10 +5,15 @@ import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import UserForm from '@/components/user/UserForm.vue'
+import UserPasswordForm from '@/components/user/UserPasswordForm.vue'
+import UserRole from '@/components/user/UserRole.vue'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
+import CardContent from '../ui/card/CardContent.vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
 
@@ -71,8 +76,69 @@ const deleteMutation = useMutation({
     </ColumnHeader>
 
     <ColumnBody v-if="user">
-      <ColumnBodyContainer small>
-        <UserForm :user="user" @submit="updateUserMutation.mutate" />
+      <ColumnBodyContainer>
+        <div class="flex flex-col gap-4 xl:flex-row">
+          <div class="flex flex-col gap-4 xl:flex-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>User</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserForm :user="user" @submit="updateUserMutation.mutate" />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Set Password</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserPasswordForm @submit="updateUserMutation.mutate" />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div class="flex w-full flex-col gap-4 xl:w-96 xl:shrink-0">
+            <Card>
+              <CardHeader>
+                <CardTitle>Roles</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserRole :id="user.id" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <!--Tabs default-value="roles" class="w-full">
+          <TabsList class="grid w-full grid-cols-3">
+            <TabsTrigger value="user"> User </TabsTrigger>
+            <TabsTrigger value="password"> Password </TabsTrigger>
+            <TabsTrigger value="roles"> Roles </TabsTrigger>
+          </TabsList>
+          <TabsContent value="user" class="mt-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>User</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserForm :user="user" @submit="updateUserMutation.mutate" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="password" class="mt-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Set Password</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserPasswordForm @submit="updateUserMutation.mutate" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="roles" class="mt-2">
+            <UserRole :id="user.id" />
+          </TabsContent>
+        </Tabs-->
       </ColumnBodyContainer>
     </ColumnBody>
   </TanView>

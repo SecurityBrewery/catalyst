@@ -43,7 +43,7 @@ const message = ref(props.comment.message)
 const deleteCommentMutation = useMutation({
   mutationFn: () => api.deleteComment({ id: props.comment.id }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.comment.ticket] })
+    queryClient.invalidateQueries({ queryKey: ['comments', props.comment.ticket] })
     isOpen.value = false
   },
   onError: handleError
@@ -51,11 +51,14 @@ const deleteCommentMutation = useMutation({
 
 const editCommentMutation = useMutation({
   mutationFn: () =>
-    pb.collection('comments').update(props.comment.id, {
-      message: message.value
+    api.updateComment({
+      id: props.comment.id,
+      commentUpdate: {
+        message: message.value
+      }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.comment.ticket] })
+    queryClient.invalidateQueries({ queryKey: ['comments', props.comment.ticket] })
     editMode.value = false
   },
   onError: handleError

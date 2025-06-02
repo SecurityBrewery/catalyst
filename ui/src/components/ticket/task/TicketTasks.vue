@@ -66,8 +66,8 @@ const updateTaskNameMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteTask({ id: props.ticket.id })
+  mutationFn: (id: string) => {
+    return api.deleteTask({ id })
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
@@ -96,7 +96,7 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
             class="mr-2 flex-1"
           />
         </div>
-        <div class="ml-auto flex items-center">
+        <div class="ml-auto flex items-center gap-1">
           <UserSelect
             :userID="task.owner"
             :userName="task.ownerName"
@@ -106,9 +106,9 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
             v-if="task"
             :name="task.name"
             singular="Task"
-            @delete="deleteMutation.mutate"
+            @delete="deleteMutation.mutate(task.id)"
           >
-            <Button variant="ghost" size="icon" class="h-8 w-8">
+            <Button variant="ghost" size="icon" class="size-10">
               <Trash2 class="size-4" />
             </Button>
           </DeleteDialog>

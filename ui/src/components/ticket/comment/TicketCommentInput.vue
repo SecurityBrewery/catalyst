@@ -38,7 +38,7 @@ const addCommentMutation = useMutation({
     })
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['comments', props.ticket.id] })
     message.value = ''
   },
   onError: handleError

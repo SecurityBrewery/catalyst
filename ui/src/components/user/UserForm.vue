@@ -17,12 +17,12 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 
-import type { NewUser } from '@/client/models'
+import type { UserUpdate } from '@/client/models'
 
 const submitDisabledReason = ref<string>('')
 
 const props = defineProps<{
-  user?: NewUser
+  user?: UserUpdate
 }>()
 
 const emit = defineEmits(['submit'])
@@ -79,26 +79,6 @@ defineRule('email', (value: string) => {
   return true
 })
 
-defineRule('password', (value: string) => {
-  if (!value) {
-    return true
-  }
-
-  if (value.length < 8) {
-    return 'Password must be at least 8 characters long'
-  }
-
-  return true
-})
-
-defineRule('passwordConfirm', (value: string) => {
-  if (value !== values.password) {
-    return 'Passwords do not match'
-  }
-
-  return true
-})
-
 const { handleSubmit, validate, values } = useForm({
   initialValues: props.user || {
     username: '',
@@ -106,20 +86,16 @@ const { handleSubmit, validate, values } = useForm({
     email: '',
     emailVisibility: true,
     name: '',
-    password: '',
-    passwordConfirm: '',
     verified: false
   },
   validationSchema: {
     username: 'username',
     email: 'email',
-    name: 'required',
-    password: 'password',
-    passwordConfirm: 'passwordConfirm'
+    name: 'required'
   }
 })
 
-const equalUser = (values: NewUser, user?: NewUser): boolean => {
+const equalUser = (values: UserUpdate, user?: UserUpdate): boolean => {
   if (!user) return false
 
   return (
@@ -128,8 +104,6 @@ const equalUser = (values: NewUser, user?: NewUser): boolean => {
     user.email === values.email &&
     user.emailVisibility === values.emailVisibility &&
     user.name === values.name &&
-    (user.password === '' ||
-      (user.password === values.password && user.passwordConfirm === values.passwordConfirm)) &&
     user.verified === values.verified
   )
 }
@@ -208,22 +182,6 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
       </FormItem>
     </FormField>
 
-    <FormField name="password" v-slot="{ componentField }" validate-on-input>
-      <FormItem class="w-full">
-        <FormLabel for="password" class="text-right">Password</FormLabel>
-        <Input id="password" type="password" class="col-span-3" v-bind="componentField" />
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <FormField name="passwordConfirm" v-slot="{ componentField }" validate-on-input>
-      <FormItem class="w-full">
-        <FormLabel for="passwordConfirm" class="text-right">Confirm Password</FormLabel>
-        <Input id="passwordConfirm" type="password" class="col-span-3" v-bind="componentField" />
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
     <FormField name="verified" v-slot="{ value, handleChange }">
       <FormItem class="w-full items-center gap-2">
         <FormLabel>Verified</FormLabel>
@@ -231,7 +189,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
           <FormControl>
             <Switch :checked="value" @update:checked="handleChange" />
           </FormControl>
-          <FormDescription> If unchecked, the user will not be able to log in. </FormDescription>
+          <FormDescription> Check to allow the user to log in. </FormDescription>
         </div>
         <FormMessage />
       </FormItem>

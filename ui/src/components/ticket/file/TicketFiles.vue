@@ -97,9 +97,9 @@ watch(
       v-for="file in files"
       :key="file.id"
       :title="file.name"
-      class="flex w-full items-center border-t first:rounded-t first:border-none last:rounded-b"
+      class="flex w-full items-center border-t py-1 pl-2 pr-1 first:rounded-t first:border-none last:rounded-b"
     >
-      <div class="flex flex-1 items-center overflow-hidden py-2 pl-4 pr-2">
+      <div class="flex flex-1 items-center overflow-hidden pr-2">
         {{ file.name }}
 
         <div class="ml-1 flex-1 text-nowrap text-sm text-muted-foreground">
@@ -110,7 +110,7 @@ watch(
       <Button
         variant="ghost"
         size="icon"
-        class="mr-1 text-muted-foreground"
+        class="mr-1 size-8 text-muted-foreground"
         @click="downloadFile(file)"
       >
         <Download class="size-4" />
@@ -121,7 +121,7 @@ watch(
         singular="File"
         @delete="deleteMutation.mutate(file.id)"
       >
-        <Button variant="ghost" size="icon" class="h-8 w-8">
+        <Button variant="ghost" size="icon" class="size-8">
           <Trash2 class="size-4" />
         </Button>
       </DeleteDialog>

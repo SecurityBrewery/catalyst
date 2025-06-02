@@ -18,8 +18,8 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div>
-    <div class="flex h-10 flex-row items-center justify-between text-muted-foreground">
-      <span class="text-sm font-semibold">
+    <div class="flex h-10 flex-row items-center justify-between">
+      <span class="text-sm font-medium leading-none">
         {{ title }}
       </span>
 

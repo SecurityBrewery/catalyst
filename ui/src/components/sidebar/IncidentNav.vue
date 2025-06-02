@@ -27,7 +27,7 @@ const {
   data: sidebar,
   error
 } = useQuery({
-  queryKey: ['sidebar'],
+  queryKey: ['types', 'sidebar'],
   queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 

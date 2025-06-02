@@ -223,8 +223,8 @@ const updateDescription = (value: string | undefined) => (message.value = value 
           </div>
           <div class="flex flex-col gap-4 xl:w-96 xl:flex-initial">
             <div>
-              <div class="flex h-10 flex-row items-center justify-between text-muted-foreground">
-                <span class="text-sm font-semibold"> Details </span>
+              <div class="flex h-10 flex-row items-center justify-between">
+                <span class="text-sm font-medium"> Details </span>
               </div>
               <JSONSchemaFormFields
                 :modelValue="ticket.state"

@@ -7,7 +7,9 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="cn('mx-auto flex w-full max-w-[72rem] gap-4 p-4', small && 'max-w-[47rem]')">
+  <div
+    :class="cn('mx-auto flex w-full max-w-[72rem] flex-col gap-4 p-4', small && 'max-w-[47rem]')"
+  >
     <slot />
   </div>
 </template>

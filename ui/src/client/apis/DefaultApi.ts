@@ -39,6 +39,7 @@ import type {
   Reaction,
   ReactionUpdate,
   Role,
+  RoleRelation,
   RoleUpdate,
   Sidebar,
   Task,
@@ -51,6 +52,7 @@ import type {
   Type,
   TypeUpdate,
   User,
+  UserRole,
   UserUpdate,
   Webhook,
   WebhookUpdate
@@ -105,6 +107,8 @@ import {
   ReactionUpdateFromJSON,
   ReactionUpdateToJSON,
   RoleFromJSON,
+  RoleRelationFromJSON,
+  RoleRelationToJSON,
   RoleToJSON,
   RoleUpdateFromJSON,
   RoleUpdateToJSON,
@@ -129,6 +133,8 @@ import {
   TypeUpdateFromJSON,
   TypeUpdateToJSON,
   UserFromJSON,
+  UserRoleFromJSON,
+  UserRoleToJSON,
   UserToJSON,
   UserUpdateFromJSON,
   UserUpdateToJSON,
@@ -138,6 +144,16 @@ import {
   WebhookUpdateToJSON
 } from '../models/index'
 import * as runtime from '../runtime'
+
+export interface AddRoleParentRequest {
+  id: string
+  roleRelation: RoleRelation
+}
+
+export interface AddUserRoleRequest {
+  id: string
+  roleRelation: RoleRelation
+}
 
 export interface CreateCommentRequest {
   newComment: NewComment
@@ -342,6 +358,14 @@ export interface ListTypesRequest {
   limit?: number
 }
 
+export interface ListUserPermissionsRequest {
+  id: string
+}
+
+export interface ListUserRolesRequest {
+  id: string
+}
+
 export interface ListUsersRequest {
   offset?: number
   limit?: number
@@ -350,6 +374,16 @@ export interface ListUsersRequest {
 export interface ListWebhooksRequest {
   offset?: number
   limit?: number
+}
+
+export interface RemoveRoleParentRequest {
+  id: string
+  parentRoleId: string
+}
+
+export interface RemoveUserRoleRequest {
+  id: string
+  roleId: string
 }
 
 export interface SearchTicketsRequest {
@@ -419,6 +453,114 @@ export interface UpdateWebhookRequest {
  *
  */
 export class DefaultApi extends runtime.BaseAPI {
+  /**
+   * Add a parent role to another role
+   */
+  async addRoleParentRaw(
+    requestParameters: AddRoleParentRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling addRoleParent().'
+      )
+    }
+
+    if (requestParameters['roleRelation'] == null) {
+      throw new runtime.RequiredError(
+        'roleRelation',
+        'Required parameter "roleRelation" was null or undefined when calling addRoleParent().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/roles`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: RoleRelationToJSON(requestParameters['roleRelation'])
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Add a parent role to another role
+   */
+  async addRoleParent(
+    requestParameters: AddRoleParentRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.addRoleParentRaw(requestParameters, initOverrides)
+  }
+
+  /**
+   * Add a role to a user
+   */
+  async addUserRoleRaw(
+    requestParameters: AddUserRoleRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling addUserRole().'
+      )
+    }
+
+    if (requestParameters['roleRelation'] == null) {
+      throw new runtime.RequiredError(
+        'roleRelation',
+        'Required parameter "roleRelation" was null or undefined when calling addUserRole().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    const response = await this.request(
+      {
+        path: `/users/{id}/roles`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: RoleRelationToJSON(requestParameters['roleRelation'])
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Add a role to a user
+   */
+  async addUserRole(
+    requestParameters: AddUserRoleRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.addUserRoleRaw(requestParameters, initOverrides)
+  }
+
   /**
    * Create a new comment
    */
@@ -2604,6 +2746,96 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * List all permissions for a user
+   */
+  async listUserPermissionsRaw(
+    requestParameters: ListUserPermissionsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<string>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listUserPermissions().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/users/{id}/permissions`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse<any>(response)
+  }
+
+  /**
+   * List all permissions for a user
+   */
+  async listUserPermissions(
+    requestParameters: ListUserPermissionsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<string>> {
+    const response = await this.listUserPermissionsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * List all roles for a user
+   */
+  async listUserRolesRaw(
+    requestParameters: ListUserRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listUserRoles().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/users/{id}/roles`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
+  }
+
+  /**
+   * List all roles for a user
+   */
+  async listUserRoles(
+    requestParameters: ListUserRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UserRole>> {
+    const response = await this.listUserRolesRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * List all users
    */
   async listUsersRaw(
@@ -2687,6 +2919,109 @@ export class DefaultApi extends runtime.BaseAPI {
   ): Promise<Array<Webhook>> {
     const response = await this.listWebhooksRaw(requestParameters, initOverrides)
     return await response.value()
+  }
+
+  /**
+   * Remove a parent role from another role
+   */
+  async removeRoleParentRaw(
+    requestParameters: RemoveRoleParentRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling removeRoleParent().'
+      )
+    }
+
+    if (requestParameters['parentRoleId'] == null) {
+      throw new runtime.RequiredError(
+        'parentRoleId',
+        'Required parameter "parentRoleId" was null or undefined when calling removeRoleParent().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/roles/{parentRoleId}`
+          .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+          .replace(
+            `{${'parentRoleId'}}`,
+            encodeURIComponent(String(requestParameters['parentRoleId']))
+          ),
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Remove a parent role from another role
+   */
+  async removeRoleParent(
+    requestParameters: RemoveRoleParentRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.removeRoleParentRaw(requestParameters, initOverrides)
+  }
+
+  /**
+   * Remove a role from a user
+   */
+  async removeUserRoleRaw(
+    requestParameters: RemoveUserRoleRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling removeUserRole().'
+      )
+    }
+
+    if (requestParameters['roleId'] == null) {
+      throw new runtime.RequiredError(
+        'roleId',
+        'Required parameter "roleId" was null or undefined when calling removeUserRole().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/users/{id}/roles/{roleId}`
+          .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+          .replace(`{${'roleId'}}`, encodeURIComponent(String(requestParameters['roleId']))),
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Remove a role from a user
+   */
+  async removeUserRole(
+    requestParameters: RemoveUserRoleRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.removeUserRoleRaw(requestParameters, initOverrides)
   }
 
   /**

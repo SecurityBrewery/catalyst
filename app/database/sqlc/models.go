@@ -169,9 +169,9 @@ type UserEffectivePermission struct {
 }
 
 type UserEffectiveRole struct {
-	UserID    string      `json:"user_id"`
-	RoleID    string      `json:"role_id"`
-	RoleTypes interface{} `json:"role_types"`
+	UserID   string `json:"user_id"`
+	RoleID   string `json:"role_id"`
+	RoleType string `json:"role_type"`
 }
 
 type UserRole struct {

@@ -25,8 +25,8 @@ const props = defineProps<{
 }>()
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteLink({ id: props.ticket.id })
+  mutationFn: (id: string) => {
+    return api.deleteLink({ id })
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
@@ -42,7 +42,7 @@ const dialogOpen = ref(false)
     <LinkAddDialog v-model="dialogOpen" :ticket="ticket" />
     <div
       v-if="!links || links.length === 0"
-      class="flex h-10 items-center p-4 text-muted-foreground"
+      class="flex h-10 items-center p-4 text-sm text-muted-foreground"
     >
       No links added yet.
     </div>
@@ -64,7 +64,12 @@ const dialogOpen = ref(false)
         </div>
       </a>
 
-      <DeleteDialog v-if="link" :name="link.name" singular="Link" @delete="deleteMutation.mutate">
+      <DeleteDialog
+        v-if="link"
+        :name="link.name"
+        singular="Link"
+        @delete="deleteMutation.mutate(link.id)"
+      >
         <Button variant="ghost" size="icon" class="h-8 w-8">
           <Trash2 class="size-4" />
         </Button>

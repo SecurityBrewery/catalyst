@@ -50,7 +50,7 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 		return nil, err
 	}
 
-	var response []openapi.ExtendedComment
+	response := make([]openapi.ExtendedComment, 0, len(comments))
 	for _, comment := range comments {
 		response = append(response, openapi.ExtendedComment{
 			Author:     comment.Author,
@@ -170,7 +170,7 @@ func (s *Service) GetDashboardCounts(ctx context.Context, _ openapi.GetDashboard
 		return nil, err
 	}
 
-	var response []openapi.DashboardCounts
+	response := make([]openapi.DashboardCounts, 0, len(counts))
 	for _, count := range counts {
 		response = append(response, openapi.DashboardCounts{
 			Id:    count.ID,
@@ -192,7 +192,7 @@ func (s *Service) ListFeatures(ctx context.Context, request openapi.ListFeatures
 		return nil, err
 	}
 
-	var response []openapi.Feature
+	response := make([]openapi.Feature, 0, len(features))
 	for _, feature := range features {
 		response = append(response, openapi.Feature{
 			Id:      feature.ID,
@@ -278,7 +278,7 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 		return nil, err
 	}
 
-	var response []openapi.File
+	response := make([]openapi.File, 0, len(files))
 	for _, file := range files {
 		response = append(response, openapi.File{
 			Created: file.Created,
@@ -397,7 +397,7 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 		return nil, err
 	}
 
-	var response []openapi.Link
+	response := make([]openapi.Link, 0, len(links))
 	for _, link := range links {
 		response = append(response, openapi.Link{
 			Id:      link.ID,
@@ -542,7 +542,7 @@ func (s *Service) ListReactions(ctx context.Context, request openapi.ListReactio
 		return nil, err
 	}
 
-	var response []openapi.Reaction
+	response := make([]openapi.Reaction, 0, len(reactions))
 	for _, reaction := range reactions {
 		response = append(response, openapi.Reaction{
 			Action:      reaction.Action,
@@ -682,7 +682,7 @@ func (s *Service) GetSidebar(ctx context.Context, _ openapi.GetSidebarRequestObj
 		return nil, err
 	}
 
-	var response []openapi.Sidebar
+	response := make([]openapi.Sidebar, 0, len(sidebar))
 	for _, s := range sidebar {
 		response = append(response, openapi.Sidebar{
 			Id:       s.ID,
@@ -708,7 +708,7 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 		return nil, err
 	}
 
-	var response []openapi.ExtendedTask
+	response := make([]openapi.ExtendedTask, 0, len(tasks))
 	for _, task := range tasks {
 		response = append(response, openapi.ExtendedTask{
 			Id:         task.ID,
@@ -743,6 +743,7 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "tasks", request.Body)
 
 	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
+		ID:     generateID("t"),
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -844,7 +845,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 		return nil, err
 	}
 
-	response := []openapi.TicketSearch{}
+	response := make([]openapi.TicketSearch, 0, len(tickets))
 
 	for _, ticket := range tickets {
 		response = append(response, openapi.TicketSearch{
@@ -883,7 +884,7 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 		return nil, err
 	}
 
-	var response []openapi.ExtendedTicket
+	response := make([]openapi.ExtendedTicket, 0, len(tickets))
 	for _, ticket := range tickets {
 		response = append(response, openapi.ExtendedTicket{
 			Created:      ticket.Created,
@@ -1042,7 +1043,7 @@ func (s *Service) ListTimeline(ctx context.Context, request openapi.ListTimeline
 		return nil, err
 	}
 
-	var response []openapi.TimelineEntry
+	response := make([]openapi.TimelineEntry, 0, len(timeline))
 	for _, timeline := range timeline {
 		response = append(response, openapi.TimelineEntry{
 			Id:      timeline.ID,
@@ -1164,7 +1165,7 @@ func (s *Service) ListTypes(ctx context.Context, request openapi.ListTypesReques
 		return nil, err
 	}
 
-	var response []openapi.Type
+	response := make([]openapi.Type, 0, len(types))
 	for _, t := range types {
 		response = append(response, openapi.Type{
 			Created:  t.Created,
@@ -1293,7 +1294,7 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 		return nil, err
 	}
 
-	var response []openapi.User
+	response := make([]openapi.User, 0, len(users))
 	for _, user := range users {
 		response = append(response, openapi.User{
 			Avatar:                 user.Avatar,
@@ -1477,7 +1478,7 @@ func (s *Service) ListRoles(ctx context.Context, request openapi.ListRolesReques
 		return nil, err
 	}
 
-	response := []openapi.Role{}
+	response := make([]openapi.Role, 0, len(roles))
 
 	for _, role := range roles {
 		response = append(response, openapi.Role{
@@ -1592,6 +1593,104 @@ func (s *Service) UpdateRole(ctx context.Context, request openapi.UpdateRoleRequ
 	return openapi.UpdateRole200JSONResponse(response), nil
 }
 
+func (s *Service) AddRoleParent(ctx context.Context, request openapi.AddRoleParentRequestObject) (openapi.AddRoleParentResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "role_parents", request.Body)
+
+	err := s.queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
+		ChildRoleID:  request.Id,
+		ParentRoleID: request.Body.RoleId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "role_parents", request.Body)
+
+	return openapi.AddRoleParent201Response{}, nil
+}
+
+func (s *Service) RemoveRoleParent(ctx context.Context, request openapi.RemoveRoleParentRequestObject) (openapi.RemoveRoleParentResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "role_parents", request.Id)
+
+	err := s.queries.RemoveParentRole(ctx, sqlc.RemoveParentRoleParams{
+		ChildRoleID:  request.Id,
+		ParentRoleID: request.ParentRoleId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "role_parents", request.Id)
+
+	return openapi.RemoveRoleParent204Response{}, nil
+}
+
+func (s *Service) AddUserRole(ctx context.Context, request openapi.AddUserRoleRequestObject) (openapi.AddUserRoleResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "user_roles", request.Body)
+
+	err := s.queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
+		UserID: request.Id,
+		RoleID: request.Body.RoleId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "user_roles", request.Body)
+
+	return openapi.AddUserRole201Response{}, nil
+}
+
+func (s *Service) RemoveUserRole(ctx context.Context, request openapi.RemoveUserRoleRequestObject) (openapi.RemoveUserRoleResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "user_roles", request.Id)
+
+	err := s.queries.RemoveRoleFromUser(ctx, sqlc.RemoveRoleFromUserParams{
+		UserID: request.Id,
+		RoleID: request.RoleId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "user_roles", request.Id)
+
+	return openapi.RemoveUserRole204Response{}, nil
+}
+
+func (s *Service) ListUserPermissions(ctx context.Context, request openapi.ListUserPermissionsRequestObject) (openapi.ListUserPermissionsResponseObject, error) {
+	permissions, err := s.queries.ListUserPermissions(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "user_permissions", permissions)
+
+	return openapi.ListUserPermissions200JSONResponse(permissions), nil
+}
+
+func (s *Service) ListUserRoles(ctx context.Context, request openapi.ListUserRolesRequestObject) (openapi.ListUserRolesResponseObject, error) {
+	roles, err := s.queries.ListUserRoles(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]openapi.UserRole, 0, len(roles))
+	for _, role := range roles {
+		response = append(response, openapi.UserRole{
+			Created:     role.Created,
+			Id:          role.ID,
+			Name:        role.Name,
+			Permissions: permission.FromJSONArray(ctx, role.Permissions),
+			Type:        role.RoleType,
+			Updated:     role.Updated,
+		})
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "user_roles", response)
+
+	return openapi.ListUserRoles200JSONResponse(response), nil
+}
+
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {
 	webhooks, err := s.queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
@@ -1601,7 +1700,7 @@ func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooks
 		return nil, err
 	}
 
-	var response []openapi.Webhook
+	response := make([]openapi.Webhook, 0, len(webhooks))
 	for _, webhook := range webhooks {
 		response = append(response, openapi.Webhook{
 			Id:   webhook.ID,

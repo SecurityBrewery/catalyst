@@ -1572,23 +1572,25 @@ func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTyp
 }
 
 const listUserPermissions = `-- name: ListUserPermissions :many
-SELECT user_id, permission
+SELECT user_effective_permissions.permission
 FROM user_effective_permissions
+WHERE user_id = ?1
+ORDER BY permission
 `
 
-func (q *Queries) ListUserPermissions(ctx context.Context) ([]UserEffectivePermission, error) {
-	rows, err := q.db.QueryContext(ctx, listUserPermissions)
+func (q *Queries) ListUserPermissions(ctx context.Context, userID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listUserPermissions, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []UserEffectivePermission
+	var items []string
 	for rows.Next() {
-		var i UserEffectivePermission
-		if err := rows.Scan(&i.UserID, &i.Permission); err != nil {
+		var permission string
+		if err := rows.Scan(&permission); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, permission)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -1600,19 +1602,12 @@ func (q *Queries) ListUserPermissions(ctx context.Context) ([]UserEffectivePermi
 }
 
 const listUserRoles = `-- name: ListUserRoles :many
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, COUNT(*) OVER () as total_count
+SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, uer.role_type, COUNT(*) OVER () as total_count
 FROM user_effective_roles uer
          JOIN roles ON roles.id = uer.role_id
 WHERE uer.user_id = ?1
-ORDER BY roles.created DESC
-LIMIT ?3 OFFSET ?2
+ORDER BY roles.name DESC
 `
-
-type ListUserRolesParams struct {
-	UserID string `json:"user_id"`
-	Offset int64  `json:"offset"`
-	Limit  int64  `json:"limit"`
-}
 
 type ListUserRolesRow struct {
 	ID          string `json:"id"`
@@ -1620,11 +1615,12 @@ type ListUserRolesRow struct {
 	Permissions string `json:"permissions"`
 	Created     string `json:"created"`
 	Updated     string `json:"updated"`
+	RoleType    string `json:"role_type"`
 	TotalCount  int64  `json:"total_count"`
 }
 
-func (q *Queries) ListUserRoles(ctx context.Context, arg ListUserRolesParams) ([]ListUserRolesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listUserRoles, arg.UserID, arg.Offset, arg.Limit)
+func (q *Queries) ListUserRoles(ctx context.Context, userID string) ([]ListUserRolesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserRoles, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -1638,6 +1634,7 @@ func (q *Queries) ListUserRoles(ctx context.Context, arg ListUserRolesParams) ([
 			&i.Permissions,
 			&i.Created,
 			&i.Updated,
+			&i.RoleType,
 			&i.TotalCount,
 		); err != nil {
 			return nil, err
