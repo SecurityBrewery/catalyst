@@ -43,8 +43,8 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/roles/:id?',
-      name: 'roles',
+      path: '/groups/:id?',
+      name: 'groups',
       component: RoleView,
       meta: { requiresAuth: true }
     },

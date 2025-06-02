@@ -101,7 +101,7 @@ const deleteMutation = useMutation({
           <div class="flex w-full flex-col gap-4 xl:w-96 xl:shrink-0">
             <Card>
               <CardHeader>
-                <CardTitle>Roles</CardTitle>
+                <CardTitle>Access</CardTitle>
               </CardHeader>
               <CardContent>
                 <UserRole :id="user.id" />

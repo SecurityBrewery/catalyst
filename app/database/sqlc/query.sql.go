@@ -985,6 +985,53 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 	return i, err
 }
 
+const listChildRoles = `-- name: ListChildRoles :many
+SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, role_effective_roles.role_type
+FROM role_effective_roles
+         JOIN roles ON roles.id = role_effective_roles.parent_role_id
+WHERE child_role_id = ?1
+ORDER BY role_effective_roles.role_type
+`
+
+type ListChildRolesRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	RoleType    string `json:"role_type"`
+}
+
+func (q *Queries) ListChildRoles(ctx context.Context, roleID string) ([]ListChildRolesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listChildRoles, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListChildRolesRow
+	for rows.Next() {
+		var i ListChildRolesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Permissions,
+			&i.Created,
+			&i.Updated,
+			&i.RoleType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listComments = `-- name: ListComments :many
 SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name, COUNT(*) OVER () as total_count
 FROM comments
@@ -1207,6 +1254,83 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]ListLin
 	return items, nil
 }
 
+const listParentPermissions = `-- name: ListParentPermissions :many
+SELECT role_effective_permissions.permission
+FROM role_effective_permissions
+WHERE parent_role_id = ?1
+ORDER BY permission
+`
+
+func (q *Queries) ListParentPermissions(ctx context.Context, roleID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listParentPermissions, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var permission string
+		if err := rows.Scan(&permission); err != nil {
+			return nil, err
+		}
+		items = append(items, permission)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParentRoles = `-- name: ListParentRoles :many
+SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, role_effective_roles.role_type
+FROM role_effective_roles
+         JOIN roles ON roles.id = role_effective_roles.child_role_id
+WHERE parent_role_id = ?1
+ORDER BY role_effective_roles.role_type
+`
+
+type ListParentRolesRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	RoleType    string `json:"role_type"`
+}
+
+func (q *Queries) ListParentRoles(ctx context.Context, roleID string) ([]ListParentRolesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParentRoles, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListParentRolesRow
+	for rows.Next() {
+		var i ListParentRolesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Permissions,
+			&i.Created,
+			&i.Updated,
+			&i.RoleType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listReactions = `-- name: ListReactions :many
 SELECT reactions."action", reactions.actiondata, reactions.created, reactions.id, reactions.name, reactions."trigger", reactions.triggerdata, reactions.updated, COUNT(*) OVER () as total_count
 FROM reactions
@@ -1250,6 +1374,71 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 			&i.Triggerdata,
 			&i.Updated,
 			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRoleUsers = `-- name: ListRoleUsers :many
+SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.role_type
+FROM user_effective_roles uer
+         JOIN users ON users.id = uer.user_id
+WHERE uer.role_id = ?1
+ORDER BY users.name DESC
+`
+
+type ListRoleUsersRow struct {
+	Avatar                 string `json:"avatar"`
+	Created                string `json:"created"`
+	Email                  string `json:"email"`
+	Emailvisibility        bool   `json:"emailvisibility"`
+	ID                     string `json:"id"`
+	Lastloginalertsentat   string `json:"lastloginalertsentat"`
+	Lastresetsentat        string `json:"lastresetsentat"`
+	Lastverificationsentat string `json:"lastverificationsentat"`
+	Name                   string `json:"name"`
+	Passwordhash           string `json:"passwordhash"`
+	Tokenkey               string `json:"tokenkey"`
+	Updated                string `json:"updated"`
+	Username               string `json:"username"`
+	Verified               bool   `json:"verified"`
+	RoleType               string `json:"role_type"`
+}
+
+func (q *Queries) ListRoleUsers(ctx context.Context, roleID string) ([]ListRoleUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, listRoleUsers, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListRoleUsersRow
+	for rows.Next() {
+		var i ListRoleUsersRow
+		if err := rows.Scan(
+			&i.Avatar,
+			&i.Created,
+			&i.Email,
+			&i.Emailvisibility,
+			&i.ID,
+			&i.Lastloginalertsentat,
+			&i.Lastresetsentat,
+			&i.Lastverificationsentat,
+			&i.Name,
+			&i.Passwordhash,
+			&i.Tokenkey,
+			&i.Updated,
+			&i.Username,
+			&i.Verified,
+			&i.RoleType,
 		); err != nil {
 			return nil, err
 		}

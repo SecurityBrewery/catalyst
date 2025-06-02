@@ -62,15 +62,15 @@ const removeRoleMutation = useMutation({
 
 const dialogOpen = ref(false)
 
-const select = (role: Role) => {
-  addRoleMutation.mutate(role.id)
+const select = (role: { role: string }) => {
+  addRoleMutation.mutate(role.role)
   dialogOpen.value = false
 }
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
-    <TicketPanel title="Assigned Roles" @add="dialogOpen = true">
+    <TicketPanel title="Groups" @add="dialogOpen = true">
       <RoleSelectDialog
         v-model="dialogOpen"
         @select="select"
@@ -79,15 +79,18 @@ const select = (role: Role) => {
       <PanelListElement
         v-for="userRole in userRoles"
         :key="userRole.id"
-        class="flex-row items-center pr-1"
+        class="flex h-10 flex-row items-center pr-1"
       >
         <div class="flex flex-1 items-center overflow-hidden">
-          {{ userRole.name }}
+          <RouterLink :to="{ name: 'groups', params: { id: userRole.id } }" class="hover:underline">
+            {{ userRole.name }}
+          </RouterLink>
           <span class="ml-1 text-sm text-muted-foreground">({{ userRole.type }})</span>
         </div>
         <DeleteDialog
+          v-if="userRole.type === 'direct'"
           :name="userRole.name"
-          singular="Role"
+          singular="Group"
           @delete="removeRoleMutation.mutate(userRole.id)"
         >
           <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -105,7 +108,7 @@ const select = (role: Role) => {
   </div>
 
   <div class="mt-4 flex flex-col gap-4">
-    <h2 class="text-sm font-medium">User Permissions</h2>
+    <h2 class="text-sm font-medium">Permissions</h2>
     <p class="text-sm text-muted-foreground">
       The following permissions are granted to the user by their roles.
     </p>

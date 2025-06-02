@@ -504,8 +504,35 @@ FROM user_effective_roles uer
 WHERE uer.user_id = @user_id
 ORDER BY roles.name DESC;
 
+-- name: ListRoleUsers :many
+SELECT users.*, uer.role_type
+FROM user_effective_roles uer
+         JOIN users ON users.id = uer.user_id
+WHERE uer.role_id = @role_id
+ORDER BY users.name DESC;
+
 -- name: ListUserPermissions :many
 SELECT user_effective_permissions.permission
 FROM user_effective_permissions
 WHERE user_id = @user_id
+ORDER BY permission;
+
+-- name: ListParentRoles :many
+SELECT roles.*, role_effective_roles.role_type
+FROM role_effective_roles
+         JOIN roles ON roles.id = role_effective_roles.child_role_id
+WHERE parent_role_id = @role_id
+ORDER BY role_effective_roles.role_type;
+
+-- name: ListChildRoles :many
+SELECT roles.*, role_effective_roles.role_type
+FROM role_effective_roles
+         JOIN roles ON roles.id = role_effective_roles.parent_role_id
+WHERE child_role_id = @role_id
+ORDER BY role_effective_roles.role_type;
+
+-- name: ListParentPermissions :many
+SELECT role_effective_permissions.permission
+FROM role_effective_permissions
+WHERE parent_role_id = @role_id
 ORDER BY permission;

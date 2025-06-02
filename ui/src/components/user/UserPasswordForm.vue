@@ -40,6 +40,10 @@ watch(
 )
 
 defineRule('password', (value: string) => {
+  if (!value) {
+    return 'Password is required'
+  }
+
   if (value.length < 8) {
     return 'Password must be at least 8 characters long'
   }
@@ -48,6 +52,10 @@ defineRule('password', (value: string) => {
 })
 
 defineRule('passwordConfirm', (value: string) => {
+  if (!value) {
+    return 'Password confirmation is required'
+  }
+
   if (value !== values.password) {
     return 'Passwords do not match'
   }

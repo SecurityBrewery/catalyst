@@ -29,6 +29,7 @@ models/ReactionUpdate.ts
 models/Role.ts
 models/RoleRelation.ts
 models/RoleUpdate.ts
+models/RoleUser.ts
 models/Sidebar.ts
 models/Task.ts
 models/TaskUpdate.ts

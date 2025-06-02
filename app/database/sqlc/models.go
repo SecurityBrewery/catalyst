@@ -67,6 +67,17 @@ type Role struct {
 	Updated     string `json:"updated"`
 }
 
+type RoleEffectivePermission struct {
+	ParentRoleID string `json:"parent_role_id"`
+	Permission   string `json:"permission"`
+}
+
+type RoleEffectiveRole struct {
+	ChildRoleID  string `json:"child_role_id"`
+	ParentRoleID string `json:"parent_role_id"`
+	RoleType     string `json:"role_type"`
+}
+
 type RoleInheritance struct {
 	ParentRoleID string `json:"parent_role_id"`
 	ChildRoleID  string `json:"child_role_id"`

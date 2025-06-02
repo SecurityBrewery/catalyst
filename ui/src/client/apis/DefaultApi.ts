@@ -41,6 +41,7 @@ import type {
   Role,
   RoleRelation,
   RoleUpdate,
+  RoleUser,
   Sidebar,
   Task,
   TaskUpdate,
@@ -112,6 +113,8 @@ import {
   RoleToJSON,
   RoleUpdateFromJSON,
   RoleUpdateToJSON,
+  RoleUserFromJSON,
+  RoleUserToJSON,
   SidebarFromJSON,
   SidebarToJSON,
   TaskFromJSON,
@@ -303,6 +306,10 @@ export interface GetWebhookRequest {
   id: string
 }
 
+export interface ListChildRolesRequest {
+  id: string
+}
+
 export interface ListCommentsRequest {
   ticket?: string
   offset?: number
@@ -326,9 +333,21 @@ export interface ListLinksRequest {
   limit?: number
 }
 
+export interface ListParentPermissionsRequest {
+  id: string
+}
+
+export interface ListParentRolesRequest {
+  id: string
+}
+
 export interface ListReactionsRequest {
   offset?: number
   limit?: number
+}
+
+export interface ListRoleUsersRequest {
+  id: string
 }
 
 export interface ListRolesRequest {
@@ -482,7 +501,7 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/roles/{id}/roles`.replace(
+        path: `/roles/{id}/parents`.replace(
           `{${'id'}}`,
           encodeURIComponent(String(requestParameters['id']))
         ),
@@ -2290,6 +2309,51 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * List all child roles for a role
+   */
+  async listChildRolesRaw(
+    requestParameters: ListChildRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listChildRoles().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/children`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
+  }
+
+  /**
+   * List all child roles for a role
+   */
+  async listChildRoles(
+    requestParameters: ListChildRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UserRole>> {
+    const response = await this.listChildRolesRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * List all comments
    */
   async listCommentsRaw(
@@ -2476,6 +2540,96 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * List all permissions for a role
+   */
+  async listParentPermissionsRaw(
+    requestParameters: ListParentPermissionsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<string>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listParentPermissions().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/permissions`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse<any>(response)
+  }
+
+  /**
+   * List all permissions for a role
+   */
+  async listParentPermissions(
+    requestParameters: ListParentPermissionsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<string>> {
+    const response = await this.listParentPermissionsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * List all parent roles for a role
+   */
+  async listParentRolesRaw(
+    requestParameters: ListParentRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listParentRoles().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/parents`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
+  }
+
+  /**
+   * List all parent roles for a role
+   */
+  async listParentRoles(
+    requestParameters: ListParentRolesRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UserRole>> {
+    const response = await this.listParentRolesRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * List all reactions
    */
   async listReactionsRaw(
@@ -2515,6 +2669,51 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<Reaction>> {
     const response = await this.listReactionsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * List all users for a role
+   */
+  async listRoleUsersRaw(
+    requestParameters: ListRoleUsersRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<RoleUser>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listRoleUsers().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/roles/{id}/users`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RoleUserFromJSON))
+  }
+
+  /**
+   * List all users for a role
+   */
+  async listRoleUsers(
+    requestParameters: ListRoleUsersRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<RoleUser>> {
+    const response = await this.listRoleUsersRaw(requestParameters, initOverrides)
     return await response.value()
   }
 

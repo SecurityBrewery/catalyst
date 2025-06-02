@@ -30,15 +30,15 @@ const description = (role: Role): string => {
 }
 
 const openNew = () => {
-  router.push({ name: 'roles', params: { id: 'new' } })
+  router.push({ name: 'groups', params: { id: 'new' } })
 }
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Roles">
+    <ColumnHeader title="Groups">
       <div class="ml-auto">
-        <Button variant="ghost" @click="openNew">New Role</Button>
+        <Button variant="ghost" @click="openNew">New Group</Button>
       </div>
     </ColumnHeader>
     <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
@@ -50,7 +50,7 @@ const openNew = () => {
         subtitle=""
         :description="description(role)"
         :active="route.params.id === role.id"
-        :to="{ name: 'roles', params: { id: role.id } }"
+        :to="{ name: 'groups', params: { id: role.id } }"
         :open="false"
       >
         {{ role.name }}

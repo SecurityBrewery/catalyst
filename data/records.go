@@ -362,6 +362,33 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 
 func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error {
 	_, err := queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "team-ir",
+		Name:        "IR Team",
+		Permissions: permission.ToJSONArray(ctx, []string{}),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create IR team role: %w", err)
+	}
+
+	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "team-seceng",
+		Name:        "Security Engineering Team",
+		Permissions: permission.ToJSONArray(ctx, []string{}),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create IR team role: %w", err)
+	}
+
+	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "team-security",
+		Name:        "Security Team",
+		Permissions: permission.ToJSONArray(ctx, []string{}),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create security team role: %w", err)
+	}
+
+	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
 		ID:          "r-admin",
 		Name:        "Administrator",
 		Permissions: permission.ToJSONArray(ctx, permission.AllPermissions()),
@@ -379,11 +406,17 @@ func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) 
 		return fmt.Errorf("failed to create analyst role: %w", err)
 	}
 
+	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+		ID:          "r-engineer",
+		Name:        "Engineer",
+		Permissions: permission.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create analyst role: %w", err)
+	}
+
 	for _, user := range users {
-		role := "r-analyst"
-		if user.Username == "u_test" || gofakeit.Bool() {
-			role = "r-admin"
-		}
+		role := gofakeit.RandomString([]string{"team-seceng", "team-ir"})
 
 		if err := queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
 			UserID: user.ID,
@@ -391,6 +424,38 @@ func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) 
 		}); err != nil {
 			return fmt.Errorf("failed to assign role %s to user %s: %w", role, user.ID, err)
 		}
+	}
+
+	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
+		ParentRoleID: "team-ir",
+		ChildRoleID:  "r-analyst",
+	})
+	if err != nil {
+		return fmt.Errorf("failed to assign parent role: %w", err)
+	}
+
+	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
+		ParentRoleID: "team-seceng",
+		ChildRoleID:  "r-engineer",
+	})
+	if err != nil {
+		return fmt.Errorf("failed to assign parent role: %w", err)
+	}
+
+	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
+		ParentRoleID: "team-ir",
+		ChildRoleID:  "team-security",
+	})
+	if err != nil {
+		return fmt.Errorf("failed to assign parent role: %w", err)
+	}
+
+	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
+		ParentRoleID: "team-seceng",
+		ChildRoleID:  "team-security",
+	})
+	if err != nil {
+		return fmt.Errorf("failed to assign parent role: %w", err)
 	}
 
 	return nil

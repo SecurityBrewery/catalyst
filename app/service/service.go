@@ -1691,6 +1691,93 @@ func (s *Service) ListUserRoles(ctx context.Context, request openapi.ListUserRol
 	return openapi.ListUserRoles200JSONResponse(response), nil
 }
 
+func (s *Service) ListRoleUsers(ctx context.Context, request openapi.ListRoleUsersRequestObject) (openapi.ListRoleUsersResponseObject, error) {
+	users, err := s.queries.ListRoleUsers(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]openapi.RoleUser, 0, len(users))
+	for _, user := range users {
+		response = append(response, openapi.RoleUser{
+			Avatar:                 user.Avatar,
+			Created:                user.Created,
+			Email:                  user.Email,
+			EmailVisibility:        user.Emailvisibility,
+			Id:                     user.ID,
+			LastLoginAlertSentAt:   user.Lastloginalertsentat,
+			LastResetSentAt:        user.Lastresetsentat,
+			LastVerificationSentAt: user.Lastverificationsentat,
+			Name:                   user.Name,
+			Updated:                user.Updated,
+			Username:               user.Username,
+			Verified:               user.Verified,
+			Type:                   user.RoleType,
+		})
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "role_users", response)
+
+	return openapi.ListRoleUsers200JSONResponse(response), nil
+}
+
+func (s *Service) ListParentPermissions(ctx context.Context, request openapi.ListParentPermissionsRequestObject) (openapi.ListParentPermissionsResponseObject, error) {
+	permissions, err := s.queries.ListParentPermissions(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "role_permissions", permissions)
+
+	return openapi.ListParentPermissions200JSONResponse(permissions), nil
+}
+
+func (s *Service) ListParentRoles(ctx context.Context, request openapi.ListParentRolesRequestObject) (openapi.ListParentRolesResponseObject, error) {
+	roles, err := s.queries.ListParentRoles(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]openapi.UserRole, 0, len(roles))
+	for _, role := range roles {
+		response = append(response, openapi.UserRole{
+			Created:     role.Created,
+			Id:          role.ID,
+			Name:        role.Name,
+			Permissions: permission.FromJSONArray(ctx, role.Permissions),
+			Type:        role.RoleType,
+			Updated:     role.Updated,
+		})
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "role_parents", response)
+
+	return openapi.ListParentRoles200JSONResponse(response), nil
+}
+
+func (s *Service) ListChildRoles(ctx context.Context, request openapi.ListChildRolesRequestObject) (openapi.ListChildRolesResponseObject, error) {
+	roles, err := s.queries.ListChildRoles(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]openapi.UserRole, 0, len(roles))
+	for _, role := range roles {
+		response = append(response, openapi.UserRole{
+			Created:     role.Created,
+			Id:          role.ID,
+			Name:        role.Name,
+			Permissions: permission.FromJSONArray(ctx, role.Permissions),
+			Type:        role.RoleType,
+			Updated:     role.Updated,
+		})
+	}
+
+	s.hooks.OnRecordsListRequest.Publish(ctx, "role_children", response)
+
+	return openapi.ListChildRoles200JSONResponse(response), nil
+}
+
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {
 	webhooks, err := s.queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),

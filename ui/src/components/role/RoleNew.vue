@@ -22,7 +22,7 @@ const router = useRouter()
 const addRoleMutation = useMutation({
   mutationFn: (values: NewRole): Promise<Role> => api.createRole({ newRole: values }),
   onSuccess: (data: Role) => {
-    router.push({ name: 'roles', params: { id: data.id } })
+    router.push({ name: 'groups', params: { id: data.id } })
     queryClient.invalidateQueries({ queryKey: ['roles'] })
   },
   onError: handleError
@@ -31,7 +31,7 @@ const addRoleMutation = useMutation({
 
 <template>
   <ColumnHeader>
-    <Button @click="router.push({ name: 'roles' })" variant="outline" class="sm:hidden">
+    <Button @click="router.push({ name: 'groups' })" variant="outline" class="sm:hidden">
       <ChevronLeft class="mr-2 size-4" />
       Back
     </Button>

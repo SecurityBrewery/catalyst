@@ -472,7 +472,14 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Roles deleted" }
-  /roles/{id}/roles:
+  /roles/{id}/parents:
+    get:
+      summary: List all parent roles for a role
+      operationId: listParentRoles
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of role roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
     post:
       summary: Add a parent role to another role
       operationId: addRoleParent
@@ -481,6 +488,30 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleRelation" } } } }
       responses:
         "201": { "description": "Role added to role" }
+  /roles/{id}/children:
+    get:
+      summary: List all child roles for a role
+      operationId: listChildRoles
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of role roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
+  /roles/{id}/users:
+    get:
+      summary: List all users for a role
+      operationId: listRoleUsers
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of role users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/RoleUser" } } } } }
+  /roles/{id}/permissions:
+    get:
+      summary: List all permissions for a role
+      operationId: listParentPermissions
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of role permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
   /roles/{id}/roles/{parentRoleId}:
     delete:
       summary: Remove a parent role from another role
@@ -885,6 +916,23 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "name", "permissions", "type", "created", "updated" ]
+    RoleUser:
+      type: object
+      properties:
+        id: { "type": "string" }
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        emailVisibility: { "type": "boolean" }
+        lastLoginAlertSentAt: { "type": "string" }
+        lastResetSentAt: { "type": "string" }
+        lastVerificationSentAt: { "type": "string" }
+        name: { "type": "string" }
+        verified: { "type": "boolean" }
+        type: { "type": "string" }
+        created: { "type": "string" }
+        updated: { "type": "string" }
+      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "type", "created", "updated" ]
     RoleRelation:
       type: object
       properties:
