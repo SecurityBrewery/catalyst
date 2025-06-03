@@ -69,7 +69,6 @@ func (s *Service) ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ str
 
 			if !hasScope(permissions, requiredScopes) {
 				slog.ErrorContext(ctx, "missing required scopes", "required", requiredScopes, "permissions", permissions)
-
 				scimUnauthorized(w, "missing required scopes")
 
 				return

@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := data.GenerateFake(ctx, catalyst.Queries, 10, 100); err != nil {
+	if err := data.GenerateDemoData(ctx, catalyst.Queries, 10, 100); err != nil {
 		log.Fatal(err)
 	}
 

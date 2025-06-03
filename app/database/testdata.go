@@ -1,31 +1,30 @@
-package testing
+package database
 
 import (
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/permission"
 )
 
 const (
-	adminEmail   = "admin@catalyst-soar.com"
-	analystEmail = "analyst@catalyst-soar.com"
+	AdminEmail   = "admin@catalyst-soar.com"
+	AnalystEmail = "analyst@catalyst-soar.com"
 )
 
-func defaultTestData(t *testing.T, app *app.App) {
+func DefaultTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	userTestData(t, app)
-	ticketTestData(t, app)
-	reactionTestData(t, app)
+	userTestData(t, queries)
+	ticketTestData(t, queries)
+	reactionTestData(t, queries)
 }
 
-func userTestData(t *testing.T, app *app.App) {
+func userTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	_, err := app.Queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
+	_, err := queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
 		ID:          "r_analyst",
 		Name:        "Analyst",
 		Permissions: permission.ToJSONArray(t.Context(), permission.Default()),
@@ -34,7 +33,7 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	_, err = app.Queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
+	_, err = queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
 		ID:          "r_admin",
 		Name:        "Admin",
 		Permissions: permission.ToJSONArray(t.Context(), permission.AllPermissions()),
@@ -43,15 +42,15 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	passwordHash, tokenKey, err := auth.HashPassword("password")
+	passwordHash, tokenKey, err := password.Hash("password")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err = app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+	_, err = queries.CreateUser(t.Context(), sqlc.CreateUserParams{
 		ID:           "u_bob_analyst",
 		Username:     "u_bob_analyst",
-		Email:        analystEmail,
+		Email:        AnalystEmail,
 		Verified:     true,
 		Name:         "Bob Analyst",
 		PasswordHash: passwordHash,
@@ -61,7 +60,7 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	err = app.Queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
+	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
 		UserID: "u_bob_analyst",
 		RoleID: "r_analyst",
 	})
@@ -69,15 +68,15 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	passwordHash, tokenKey, err = auth.HashPassword("password123")
+	passwordHash, tokenKey, err = password.Hash("password123")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err = app.Queries.CreateUser(t.Context(), sqlc.CreateUserParams{
+	_, err = queries.CreateUser(t.Context(), sqlc.CreateUserParams{
 		ID:           "u_admin",
 		Username:     "u_admin",
-		Email:        adminEmail,
+		Email:        AdminEmail,
 		Verified:     true,
 		Name:         "Admin User",
 		PasswordHash: passwordHash,
@@ -87,7 +86,7 @@ func userTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	err = app.Queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
+	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
 		UserID: "u_admin",
 		RoleID: "r_admin",
 	})
@@ -96,10 +95,10 @@ func userTestData(t *testing.T, app *app.App) {
 	}
 }
 
-func ticketTestData(t *testing.T, app *app.App) {
+func ticketTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	_, err := app.Queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
+	_, err := queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
 		ID:          "test-ticket",
 		Name:        "Test Ticket",
 		Type:        "incident",
@@ -114,10 +113,10 @@ func ticketTestData(t *testing.T, app *app.App) {
 	}
 }
 
-func reactionTestData(t *testing.T, app *app.App) {
+func reactionTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-webhook",
 		Name:        "Reaction",
 		Trigger:     "webhook",
@@ -128,7 +127,7 @@ func reactionTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-proxy",
 		Name:        "Reaction",
 		Trigger:     "webhook",
@@ -139,7 +138,7 @@ func reactionTestData(t *testing.T, app *app.App) {
 		t.Fatal(err)
 	}
 
-	if _, err := app.Queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
+	if _, err := queries.CreateReaction(t.Context(), sqlc.CreateReactionParams{
 		ID:          "r-test-hook",
 		Name:        "Hook",
 		Trigger:     "hook",

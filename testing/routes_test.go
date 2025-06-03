@@ -3,6 +3,8 @@ package testing
 import (
 	"net/http"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/app/database"
 )
 
 func Test_Routes(t *testing.T) {
@@ -22,12 +24,12 @@ func Test_Routes(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusFound,
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusFound,
 				},
 			},
@@ -48,7 +50,7 @@ func Test_Routes(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":[]`,
@@ -56,7 +58,7 @@ func Test_Routes(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":[]`,

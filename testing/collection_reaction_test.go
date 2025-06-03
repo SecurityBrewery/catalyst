@@ -3,6 +3,8 @@ package testing
 import (
 	"net/http"
 	"testing"
+
+	"github.com/SecurityBrewery/catalyst/app/database"
 )
 
 func TestReactionsCollection(t *testing.T) {
@@ -26,7 +28,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
 						`"missing required scopes"`,
@@ -34,7 +36,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r-test-webhook"`,
@@ -73,7 +75,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
 						`"missing required scopes"`,
@@ -81,7 +83,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"test"`,
@@ -115,7 +117,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
 						`"missing required scopes"`,
@@ -123,7 +125,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r-test-webhook"`,
@@ -150,7 +152,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
 						`"missing required scopes"`,
@@ -158,7 +160,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"r-test-webhook"`,
@@ -189,7 +191,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
 						`"missing required scopes"`,
@@ -197,7 +199,7 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          adminEmail,
+					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						// "OnModelAfterDelete":          1,

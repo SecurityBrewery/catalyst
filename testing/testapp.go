@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/reaction"
 )
 
@@ -24,7 +25,7 @@ func App(t *testing.T) (*app.App, *Counter) {
 	err = reaction.BindHooks(baseApp, true)
 	require.NoError(t, err)
 
-	defaultTestData(t, baseApp)
+	database.DefaultTestData(t, baseApp.Queries)
 
 	counter := countEvents(baseApp)
 

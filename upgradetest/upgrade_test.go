@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/data"
 )
 
 func TestUpgrades(t *testing.T) {
@@ -36,7 +35,7 @@ func TestUpgrades(t *testing.T) {
 				log.Fatal(err)
 			}
 
-			data.ValidateDefaultData(t, pb)
+			ValidateUpgradeTestData(t, pb)
 		})
 	}
 }

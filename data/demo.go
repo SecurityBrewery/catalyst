@@ -9,7 +9,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 
-	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/permission"
 )
@@ -19,7 +19,7 @@ const (
 	minimumTicketCount = 1
 )
 
-func GenerateFake(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount int) error {
+func GenerateDemoData(ctx context.Context, queries *sqlc.Queries, userCount, ticketCount int) error {
 	if userCount < minimumUserCount {
 		userCount = minimumUserCount
 	}
@@ -28,10 +28,6 @@ func GenerateFake(ctx context.Context, queries *sqlc.Queries, userCount, ticketC
 		ticketCount = minimumTicketCount
 	}
 
-	return records(ctx, queries, userCount, ticketCount)
-}
-
-func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCount int) error {
 	types, err := queries.ListTypes(ctx, sqlc.ListTypesParams{
 		Limit:  100,
 		Offset: 0,
@@ -40,7 +36,7 @@ func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCo
 		return fmt.Errorf("failed to list types: %w", err)
 	}
 
-	users, err := userRecords(ctx, queries, userCount)
+	users, err := generateUsers(ctx, queries, userCount)
 	if err != nil {
 		return fmt.Errorf("failed to create user records: %w", err)
 	}
@@ -53,17 +49,17 @@ func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCo
 		return fmt.Errorf("no users found")
 	}
 
-	err = ticketRecords(ctx, queries, users, types, ticketCount)
+	err = generateTickets(ctx, queries, users, types, ticketCount)
 	if err != nil {
 		return fmt.Errorf("failed to create ticket records: %w", err)
 	}
 
-	err = reactionRecords(ctx, queries)
+	err = generateReactions(ctx, queries)
 	if err != nil {
 		return fmt.Errorf("failed to create reaction records: %w", err)
 	}
 
-	err = roleRecords(ctx, queries, users)
+	err = generateRoles(ctx, queries, users)
 	if err != nil {
 		return fmt.Errorf("failed to create role records: %w", err)
 	}
@@ -71,10 +67,10 @@ func records(ctx context.Context, queries *sqlc.Queries, userCount int, ticketCo
 	return nil
 }
 
-func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.User, error) {
+func generateUsers(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.User, error) {
 	records := make([]sqlc.User, 0, count)
 
-	passwordHash, tokenKey, err := auth.HashPassword("1234567890")
+	passwordHash, tokenKey, err := password.Hash("1234567890")
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
@@ -105,7 +101,7 @@ func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.
 
 		username := gofakeit.Username()
 
-		passwordHash, tokenKey, err := auth.HashPassword(gofakeit.Password(true, true, true, true, false, 16))
+		passwordHash, tokenKey, err := password.Hash(gofakeit.Password(true, true, true, true, false, 16))
 		if err != nil {
 			return nil, fmt.Errorf("failed to hash password: %w", err)
 		}
@@ -129,7 +125,7 @@ func userRecords(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.
 	return records, nil
 }
 
-func ticketRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, types []sqlc.ListTypesRow, count int) error {
+func generateTickets(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, types []sqlc.ListTypesRow, count int) error {
 	created := time.Now()
 	number := gofakeit.Number(200*count, 300*count)
 
@@ -311,7 +307,7 @@ var (
 	triggerHook     = map[string]any{"collections": []any{"tickets"}, "events": []any{"create"}}
 )
 
-func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
+func generateReactions(ctx context.Context, queries *sqlc.Queries) error {
 	_, err := queries.CreateReaction(ctx, sqlc.CreateReactionParams{
 		ID:          "r-schedule",
 		Name:        "Create New Ticket",
@@ -360,7 +356,7 @@ func reactionRecords(ctx context.Context, queries *sqlc.Queries) error {
 	return nil
 }
 
-func roleRecords(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
+func generateRoles(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
 	_, err := queries.CreateRole(ctx, sqlc.CreateRoleParams{
 		ID:          "team-ir",
 		Name:        "IR Team",

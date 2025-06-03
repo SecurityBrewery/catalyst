@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
@@ -1247,7 +1247,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		return nil, errors.New("passwords do not match")
 	}
 
-	passwordHash, tokenKey, err := auth.HashPassword(request.Body.Password)
+	passwordHash, tokenKey, err := password.Hash(request.Body.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
@@ -1338,7 +1338,7 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 			return nil, errors.New("passwords do not match")
 		}
 
-		passwordHashS, tokenHashS, err := auth.HashPassword(*request.Body.Password)
+		passwordHashS, tokenHashS, err := password.Hash(*request.Body.Password)
 		if err != nil {
 			return nil, fmt.Errorf("failed to hash password: %w", err)
 		}

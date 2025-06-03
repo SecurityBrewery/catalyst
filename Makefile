@@ -1,24 +1,19 @@
-.PHONY: install
-install:
-	@echo "Installing..."
-	go install github.com/bombsimon/wsl/v4/cmd...@v4.4.1
-	go install mvdan.cc/gofumpt@v0.6.0
-	go install github.com/daixiang0/gci@v0.13.4
-
 .PHONY: fmt
 fmt:
 	@echo "Formatting..."
 	go mod tidy
-	go fmt ./...
-	gci write -s standard -s default -s "prefix(github.com/SecurityBrewery/catalyst)" .
-	gofumpt -l -w .
-	wsl -fix ./... || true
+	golangci-lint fmt ./...
 	cd ui && bun format
+
+.PHONY: fix
+fix:
+	@echo "Fixing..."
+	golangci-lint run --fix ./...
 
 .PHONY: lint
 lint:
 	golangci-lint version
-	golangci-lint run  ./...
+	golangci-lint run ./...
 
 .PHONY: test
 test:

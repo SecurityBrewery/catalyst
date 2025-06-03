@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/SecurityBrewery/catalyst/app/database"
 )
 
 func TestWebhookReactions(t *testing.T) {
@@ -95,7 +97,7 @@ func TestHookReactions(t *testing.T) {
 				// },
 				{
 					Name:           "Analyst",
-					AuthRecord:     analystEmail,
+					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"test"`,

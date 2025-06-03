@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -130,8 +131,8 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	password := r.Form.Get("newPassword")
-	if password == "" {
+	pw := r.Form.Get("newPassword")
+	if pw == "" {
 		scimError(w, http.StatusBadRequest, "Missing new password")
 
 		return
@@ -156,7 +157,7 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	passwordHash, tokenKey, err := HashPassword(password)
+	passwordHash, tokenKey, err := password.Hash(pw)
 	if err != nil {
 		scimError(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
 
