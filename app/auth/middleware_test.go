@@ -17,7 +17,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
 
-func mockHandler(w http.ResponseWriter, r *http.Request) {
+func mockHandler(w http.ResponseWriter, _ *http.Request) {
 	_, _ = w.Write([]byte(`{"message":"OK"}`))
 }
 
@@ -48,7 +48,7 @@ func TestService_Middleware(t *testing.T) {
 		{
 			name: "invalid token",
 			args: args{
-				createToken: func(t *testing.T, r *http.Request, s *Service) {
+				createToken: func(_ *testing.T, r *http.Request, _ *Service) {
 					r.Header.Set("Authorization", "Bearer invalid_token")
 				},
 				next: mockHandler,
@@ -62,6 +62,8 @@ func TestService_Middleware(t *testing.T) {
 			name: "valid token",
 			args: args{
 				createToken: func(t *testing.T, r *http.Request, s *Service) {
+					t.Helper()
+
 					user, err := s.queries.GetUser(r.Context(), "u_bob_analyst")
 					require.NoError(t, err, "failed to get user for token creation")
 
@@ -104,11 +106,14 @@ func TestService_Middleware(t *testing.T) {
 }
 
 func TestService_ValidateScopes(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		requiredScopes []string
 		permissions    []string
 		next           http.HandlerFunc
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -160,7 +165,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			auth, err := New(t.Context(), queries, nil, &Config{})
 			require.NoError(t, err, "failed to create auth service")
 
-			handler := auth.ValidateScopes(func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
+			handler := auth.ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ interface{}) (response interface{}, err error) {
 				tt.args.next(w, r)
 
 				return w, nil
@@ -169,6 +174,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodGet, "/", nil)
 
+			//nolint: staticcheck
 			r = r.WithContext(context.WithValue(r.Context(), openapi.OAuth2Scopes, tt.args.requiredScopes))
 			r = usercontext.PermissionRequest(r, tt.args.permissions)
 
@@ -183,10 +189,13 @@ func TestService_ValidateScopes(t *testing.T) {
 }
 
 func Test_hasScope(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		scopes         []string
 		requiredScopes []string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -218,15 +227,20 @@ func Test_hasScope(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equalf(t, tt.want, hasScope(tt.args.scopes, tt.args.requiredScopes), "hasScope(%v, %v)", tt.args.scopes, tt.args.requiredScopes)
 		})
 	}
 }
 
 func Test_requiredScopes(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		r *http.Request
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -244,7 +258,8 @@ func Test_requiredScopes(t *testing.T) {
 		{
 			name: "valid required scopes",
 			args: args{
-				r: httptest.NewRequest(http.MethodGet, "/", nil).WithContext(context.WithValue(context.Background(), openapi.OAuth2Scopes, []string{"user:read", "user:write"})),
+				//nolint: staticcheck
+				r: httptest.NewRequest(http.MethodGet, "/", nil).WithContext(context.WithValue(t.Context(), openapi.OAuth2Scopes, []string{"user:read", "user:write"})),
 			},
 			want:    []string{"user:read", "user:write"},
 			wantErr: assert.NoError,
@@ -252,10 +267,13 @@ func Test_requiredScopes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := requiredScopes(tt.args.r)
 			if !tt.wantErr(t, err, fmt.Sprintf("requiredScopes(%v)", tt.args.r)) {
 				return
 			}
+
 			assert.Equalf(t, tt.want, got, "requiredScopes(%v)", tt.args.r)
 		})
 	}

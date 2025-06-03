@@ -87,7 +87,7 @@ func (s *Service) verifyToken(tokenStr string, user *sqlc.User) (jwt.MapClaims, 
 		return nil, fmt.Errorf("failed to get expiration time: %w", err)
 	}
 
-	if iat.Time.Before(time.Now()) {
+	if iat.Before(time.Now()) {
 		return nil, fmt.Errorf("token expired")
 	}
 
@@ -143,7 +143,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
 		return fmt.Errorf("failed to parse last reset sent at: %w", err)
 	}
 
-	if iat.Time.Before(lastUpdated) {
+	if iat.Before(lastUpdated) {
 		return fmt.Errorf("token already used")
 	}
 

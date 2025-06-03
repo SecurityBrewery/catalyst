@@ -45,6 +45,35 @@ func New(ctx context.Context, config *auth.Config, service *auth.Service, querie
 	return scheduler, nil
 }
 
+func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
+	var schedule Schedule
+	if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
+		return fmt.Errorf("failed to unmarshal schedule data: %w", err)
+	}
+
+	_, err := s.scheduler.NewJob(
+		gocron.CronJob(schedule.Expression, false),
+		gocron.NewTask(
+			func(ctx context.Context) {
+				_, err := action.Run(ctx, s.config, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
+				if err != nil {
+					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
+				}
+			},
+		),
+		gocron.WithTags(reaction.ID),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create new job for reaction %s: %w", reaction.ID, err)
+	}
+
+	return nil
+}
+
+func (s *Scheduler) RemoveReaction(id string) {
+	s.scheduler.RemoveByTags(id)
+}
+
 func (s *Scheduler) loadJobs(ctx context.Context) error {
 	reactions, err := s.queries.ListReactions(ctx, sqlc.ListReactionsParams{
 		Offset: 0,
@@ -80,33 +109,4 @@ func (s *Scheduler) loadJobs(ctx context.Context) error {
 	}
 
 	return errors.Join(errs...)
-}
-
-func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
-	var schedule Schedule
-	if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
-		return fmt.Errorf("failed to unmarshal schedule data: %w", err)
-	}
-
-	_, err := s.scheduler.NewJob(
-		gocron.CronJob(schedule.Expression, false),
-		gocron.NewTask(
-			func(ctx context.Context) {
-				_, err := action.Run(ctx, s.config, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
-				if err != nil {
-					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
-				}
-			},
-		),
-		gocron.WithTags(reaction.ID),
-	)
-	if err != nil {
-		return fmt.Errorf("failed to create new job for reaction %s: %w", reaction.ID, err)
-	}
-
-	return nil
-}
-
-func (s *Scheduler) RemoveReaction(id string) {
-	s.scheduler.RemoveByTags(id)
 }

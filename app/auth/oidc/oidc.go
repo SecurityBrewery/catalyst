@@ -1,4 +1,4 @@
-package auth
+package oidc
 
 import (
 	"crypto/rand"
@@ -40,7 +40,7 @@ func (s *Service) verifyClaims(r *http.Request, rawIDToken string) (string, map[
 		return "", nil, fmt.Errorf("issuer mismatch: expected %s, got %s", s.config.OIDCIssuer, issStr)
 	}
 
-	newUser, err := mapClaims(claims, s.config.UserCreateConfig)
+	newUser, err := mapClaims(claims, s.config)
 	if err != nil {
 		return "", nil, fmt.Errorf("could not map claims: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Service) verifyClaims(r *http.Request, rawIDToken string) (string, map[
 	return user.ID, claims, nil
 }
 
-func mapClaims(claims map[string]any, config *UserCreateConfig) (sqlc.CreateUserParams, error) {
+func mapClaims(claims map[string]any, config *Config) (sqlc.CreateUserParams, error) {
 	username, err := getString(claims, config.OIDCClaimUsername)
 	if err != nil {
 		return sqlc.CreateUserParams{}, err

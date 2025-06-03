@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/auth/oidc"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
@@ -39,17 +40,20 @@ func New(ctx context.Context, filename string) (*App, error) {
 	})
 
 	config := &auth.Config{
-		URL:          "http://localhost:8080",
-		Email:        "info@cataly-soar.com",
-		Domain:       "localhost",
-		OIDCAuth:     false,
-		OIDCIssuer:   "",
-		ClientID:     "",
-		ClientSecret: "",
-		RedirectURL:  "",
-		AuthURL:      "",
+		URL:    "http://localhost:8080",
+		Email:  "info@cataly-soar.com",
+		Domain: "localhost",
+
 		UserCreateConfig: &auth.UserCreateConfig{
-			Active:            false,
+			Active: false,
+		},
+		OIDC: &oidc.Config{
+			OIDCAuth:          false,
+			OIDCIssuer:        "",
+			ClientID:          "",
+			ClientSecret:      "",
+			RedirectURL:       "",
+			AuthURL:           "",
 			OIDCClaimUsername: "",
 			OIDCClaimEmail:    "",
 			OIDCClaimName:     "",

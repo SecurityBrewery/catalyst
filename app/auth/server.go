@@ -14,7 +14,7 @@ func (s *Service) Server() http.Handler {
 	router.Get("/user", s.handleUser)
 	router.Get("/config", func(writer http.ResponseWriter, _ *http.Request) {
 		b, _ := json.Marshal(map[string]any{
-			"oidc": s.config.OIDCAuth,
+			"oidc": s.config.OIDC.OIDCAuth,
 		})
 
 		_, _ = writer.Write(b)
@@ -25,9 +25,9 @@ func (s *Service) Server() http.Handler {
 	router.Get("/local/reset-password", s.handlePasswordReset)
 	router.Post("/local/reset-password", s.handlePasswordResetPost)
 
-	if s.config.OIDCAuth {
-		router.Get("/oidc/login", s.oidcLogin)
-		router.Get("/oidc/callback", s.oidcCallback)
+	if s.config.OIDC.OIDCAuth {
+		router.Get("/oidc/login", s.oidc.Login)
+		router.Get("/oidc/callback", s.oidc.Callback)
 	}
 
 	return router

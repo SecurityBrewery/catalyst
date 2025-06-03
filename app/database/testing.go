@@ -10,6 +10,8 @@ import (
 )
 
 func NewTestDB(t *testing.T) *sqlc.Queries {
+	t.Helper()
+
 	queries, _, err := DB(filepath.Join(t.TempDir(), "data.db"))
 	require.NoError(t, err, "failed to create test database")
 
