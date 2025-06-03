@@ -26,8 +26,7 @@ func (s *Service) Server() http.Handler {
 	router.Post("/local/reset-password", s.handlePasswordResetPost)
 
 	if s.config.OIDC.OIDCAuth {
-		router.Get("/oidc/login", s.oidc.Login)
-		router.Get("/oidc/callback", s.oidc.Callback)
+		router.Mount("/oidc", s.oidc)
 	}
 
 	return router

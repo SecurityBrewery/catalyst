@@ -160,12 +160,7 @@ func TestService_ValidateScopes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries := database.NewTestDB(t)
-
-			auth, err := New(t.Context(), queries, nil, &Config{})
-			require.NoError(t, err, "failed to create auth service")
-
-			handler := auth.ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ interface{}) (response interface{}, err error) {
+			handler := ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ interface{}) (response interface{}, err error) {
 				tt.args.next(w, r)
 
 				return w, nil

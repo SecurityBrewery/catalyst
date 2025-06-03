@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/martian/v3/cors"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
@@ -39,7 +40,7 @@ func (a *App) SetupRoutes() error {
 	a.Router.Mount("/auth", a.Auth.Server())
 
 	// API routes
-	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, []openapi.StrictMiddlewareFunc{a.Auth.ValidateScopes}))
+	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, []openapi.StrictMiddlewareFunc{auth.ValidateScopes}))
 	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
 
 	return nil

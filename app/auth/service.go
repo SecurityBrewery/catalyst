@@ -27,7 +27,7 @@ type Service struct {
 	config  *Config
 	queries *sqlc.Queries
 	mailer  *mail.Mailer
-	oidc    *oidc.Service
+	oidc    *oidc.Server
 }
 
 func New(ctx context.Context, queries *sqlc.Queries, mailer *mail.Mailer, config *Config) (*Service, error) {

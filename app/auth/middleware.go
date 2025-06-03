@@ -47,7 +47,7 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Service) ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
+func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
 		requiredScopes, err := requiredScopes(r)
 		if err != nil {

@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/oauth2"
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-type Service struct {
+type Server struct {
 	oauth2Config oauth2.Config
 	verifier     *oidc.IDTokenVerifier
 	config       *Config
@@ -30,8 +31,8 @@ type Config struct {
 	OIDCClaimName     string `json:"oidcClaimName,omitempty" yaml:"oidcClaimName,omitempty"`
 }
 
-func New(ctx context.Context, queries *sqlc.Queries, config *Config) (*Service, error) {
-	service := &Service{
+func New(ctx context.Context, queries *sqlc.Queries, config *Config) (*Server, error) {
+	service := &Server{
 		queries: queries,
 		config:  config,
 	}
@@ -63,7 +64,16 @@ func New(ctx context.Context, queries *sqlc.Queries, config *Config) (*Service, 
 	return service, nil
 }
 
-func (s *Service) Login(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	router := chi.NewRouter()
+
+	router.Get("/login", s.login)
+	router.Get("/callback", s.callback)
+
+	router.ServeHTTP(w, r)
+}
+
+func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	state, err := randomState()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -74,7 +84,7 @@ func (s *Service) Login(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, s.oauth2Config.AuthCodeURL(state), http.StatusFound)
 }
 
-func (s *Service) Callback(w http.ResponseWriter, r *http.Request) {
+func (s *Server) callback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 
 	oauth2Token, err := s.oauth2Config.Exchange(r.Context(), code)

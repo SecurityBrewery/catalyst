@@ -19,7 +19,7 @@ func randomState() (string, error) {
 	return base64.URLEncoding.EncodeToString(rnd), nil
 }
 
-func (s *Service) verifyClaims(r *http.Request, rawIDToken string) (string, map[string]any, error) {
+func (s *Server) verifyClaims(r *http.Request, rawIDToken string) (string, map[string]any, error) {
 	authToken, err := s.verifier.Verify(r.Context(), rawIDToken)
 	if err != nil {
 		return "", nil, fmt.Errorf("could not verify id token: %w", err)
