@@ -19,6 +19,10 @@ func DefaultTestData(t *testing.T, queries *sqlc.Queries) {
 	userTestData(t, queries)
 	ticketTestData(t, queries)
 	reactionTestData(t, queries)
+	linkTestData(t, queries)
+	taskTestData(t, queries)
+	timelineTestData(t, queries)
+	typeTestData(t, queries)
 }
 
 func userTestData(t *testing.T, queries *sqlc.Queries) {
@@ -154,6 +158,60 @@ func reactionTestData(t *testing.T, queries *sqlc.Queries) {
 		Triggerdata: `{"collections":["tickets"],"events":["create"]}`,
 		Action:      "python",
 		Actiondata:  `{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`,
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func linkTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateLink(t.Context(), sqlc.CreateLinkParams{
+		ID:     "l_test_link",
+		Name:   "Catalyst",
+		Url:    "https://example.com",
+		Ticket: "test-ticket",
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func taskTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateTask(t.Context(), sqlc.CreateTaskParams{
+		ID:     "ta_test_task",
+		Name:   "Test Task",
+		Open:   true,
+		Owner:  "u_bob_analyst",
+		Ticket: "test-ticket",
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func timelineTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateTimeline(t.Context(), sqlc.CreateTimelineParams{
+		ID:      "h_test_timeline",
+		Message: "Initial timeline entry.",
+		Ticket:  "test-ticket",
+		Time:    "2023-01-01T00:00:00Z",
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func typeTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
+		ID:       "test-type",
+		Singular: "Test",
+		Plural:   "Tests",
+		Icon:     "Bug",
+		Schema:   `{}`,
 	}); err != nil {
 		t.Fatal(err)
 	}
