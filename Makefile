@@ -12,19 +12,24 @@ fix:
 
 .PHONY: lint
 lint:
+	mkdir -p ui/dist
+	touch ui/dist/index.html
 	golangci-lint version
 	golangci-lint run ./...
 
 .PHONY: test
 test:
 	@echo "Testing..."
+	mkdir -p ui/dist
+	touch ui/dist/index.html
 	go test -v ./...
 	cd ui && bun test
 
 .PHONY: test-coverage
 test-coverage:
 	@echo "Testing with coverage..."
-	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
+	mkdir -p ui/dist
+	touch ui/dist/index.htmlgo test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
