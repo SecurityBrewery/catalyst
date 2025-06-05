@@ -7,33 +7,10 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database"
 )
 
-func Test_Routes(t *testing.T) {
+func TestFeaturesConfig(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
-		{
-			baseTest: BaseTest{
-				Name:   "Root",
-				Method: http.MethodGet,
-				URL:    "/",
-			},
-			userTests: []UserTest{
-				{
-					Name:           "Unauthorized",
-					ExpectedStatus: http.StatusFound,
-				},
-				{
-					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusFound,
-				},
-				{
-					Name:           "Admin",
-					Admin:          database.AdminEmail,
-					ExpectedStatus: http.StatusFound,
-				},
-			},
-		},
 		{
 			baseTest: BaseTest{
 				Name:   "Config",
@@ -42,7 +19,7 @@ func Test_Routes(t *testing.T) {
 			},
 			userTests: []UserTest{
 				{
-					Name:           "Unauthorized",
+					Name:           "NoAuth",
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":`,
@@ -67,6 +44,7 @@ func Test_Routes(t *testing.T) {
 			},
 		},
 	}
+
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
 			t.Parallel()

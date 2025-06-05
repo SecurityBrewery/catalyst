@@ -21,6 +21,8 @@ const (
 	RoleWrite     Permission = "role:write"
 	ReactionRead  Permission = "reaction:read"
 	ReactionWrite Permission = "reaction:write"
+	WebhookRead   Permission = "webhook:read"
+	WebhookWrite  Permission = "webhook:write"
 )
 
 func Default() []Permission {
@@ -46,6 +48,8 @@ func AllPermissions() []Permission {
 		ReactionWrite,
 		FileRead,
 		FileWrite,
+		WebhookRead,
+		WebhookWrite,
 	}
 }
 

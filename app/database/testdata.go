@@ -23,6 +23,9 @@ func DefaultTestData(t *testing.T, queries *sqlc.Queries) {
 	taskTestData(t, queries)
 	timelineTestData(t, queries)
 	typeTestData(t, queries)
+	featureTestData(t, queries)
+	fileTestData(t, queries)
+	webhookTestData(t, queries)
 }
 
 func userTestData(t *testing.T, queries *sqlc.Queries) {
@@ -212,6 +215,41 @@ func typeTestData(t *testing.T, queries *sqlc.Queries) {
 		Plural:   "Tests",
 		Icon:     "Bug",
 		Schema:   `{}`,
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func featureTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateFeature(t.Context(), "dev"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func fileTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateFile(t.Context(), sqlc.CreateFileParams{
+		ID:     "f_test_file",
+		Name:   "hello.txt",
+		Blob:   "data:text/plain;base64,aGVsbG8=",
+		Size:   5,
+		Ticket: "test-ticket",
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func webhookTestData(t *testing.T, queries *sqlc.Queries) {
+	t.Helper()
+
+	if _, err := queries.CreateWebhook(t.Context(), sqlc.CreateWebhookParams{
+		ID:          "w_test_webhook",
+		Name:        "Test Webhook",
+		Collection:  "tickets",
+		Destination: "https://example.com",
 	}); err != nil {
 		t.Fatal(err)
 	}
