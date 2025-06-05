@@ -1,29 +1,14 @@
 package testing
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/database"
-	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 func TestCommentsCollection(t *testing.T) {
 	t.Parallel()
-
-	setup := func(t *testing.T, app *app.App) {
-		_, err := app.Queries.CreateComment(context.Background(), sqlc.CreateCommentParams{
-			ID:      "c_test_comment",
-			Author:  "u_bob_analyst",
-			Message: "comment",
-			Ticket:  "test-ticket",
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
 
 	testSets := []catalystTest{
 		{
@@ -229,7 +214,7 @@ func TestCommentsCollection(t *testing.T) {
 				t.Run(userTest.Name, func(t *testing.T) {
 					t.Parallel()
 
-					runMatrixTestWithSetup(t, testSet.baseTest, userTest, setup)
+					runMatrixTest(t, testSet.baseTest, userTest)
 				})
 			}
 		})

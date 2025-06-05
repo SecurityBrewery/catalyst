@@ -98,7 +98,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 func ticketTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	_, err := queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
+	ticket, err := queries.CreateTicket(t.Context(), sqlc.CreateTicketParams{
 		ID:          "test-ticket",
 		Name:        "Test Ticket",
 		Type:        "incident",
@@ -109,6 +109,15 @@ func ticketTestData(t *testing.T, queries *sqlc.Queries) {
 		State:       `{"tlp":"AMBER"}`,
 	})
 	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := queries.CreateComment(t.Context(), sqlc.CreateCommentParams{
+		ID:      "c_test_comment",
+		Author:  "u_bob_analyst",
+		Message: "Initial comment on the test ticket.",
+		Ticket:  ticket.ID,
+	}); err != nil {
 		t.Fatal(err)
 	}
 }
