@@ -14,13 +14,9 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: |
-          bun install
-          mkdir -p dist
-          touch dist/index.html
+      - run: bun install
         working-directory: ui
 
-      - run: make install
       - run: make fmt
 
       - run: git diff --exit-code
@@ -59,10 +55,6 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
-
-      - run: |
-          mkdir -p ui/dist
-          touch ui/dist/index.html
 
       - run: make test-coverage
 
