@@ -324,6 +324,8 @@ func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksReques
 		})
 	}
 
+	s.hooks.OnRecordsListRequest.Publish(ctx, "links", response)
+
 	totalCount := 0
 	if len(links) > 0 {
 		totalCount = int(links[0].TotalCount)

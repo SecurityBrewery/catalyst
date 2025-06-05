@@ -33,7 +33,7 @@ func TestLinksCollection(t *testing.T) {
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
 					},
-					ExpectedEvents: map[string]int{},
+					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 				{
 					Name:           "Admin",
@@ -42,7 +42,7 @@ func TestLinksCollection(t *testing.T) {
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
 					},
-					ExpectedEvents: map[string]int{},
+					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 			},
 		},
