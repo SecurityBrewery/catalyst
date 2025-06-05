@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"html"
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
@@ -101,12 +102,15 @@ func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	escapedEmail := html.EscapeString(email)
+	escapedToken := html.EscapeString(token)
+
 	html := `<!DOCTYPE html><html><body>`
 	html += `<h1>Password Reset</h1>`
 	html += `<p>Please enter your new password:</p>`
 	html += `<form method="POST" action="/auth/local/reset-password">`
-	html += `<input type="hidden" name="email" value="` + email + `">`
-	html += `<input type="hidden" name="token" value="` + token + `">`
+	html += `<input type="hidden" name="email" value="` + escapedEmail + `">`
+	html += `<input type="hidden" name="token" value="` + escapedToken + `">`
 	html += `<input type="password" name="newPassword" placeholder="New Password" required>`
 	html += `<button type="submit">Reset Password</button>`
 	html += `</form>`
