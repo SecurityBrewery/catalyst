@@ -14,14 +14,10 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: |
-          bun install
-          mkdir -p dist
-          touch dist/index.html
+      - run: bun install
         working-directory: ui
 
-      - run: make install
-      - run: make fmt
+      - run: make install-golangci-lint fmt
 
       - run: git diff --exit-code
 
@@ -37,8 +33,8 @@ jobs:
           mkdir -p ui/dist
           touch ui/dist/index.html
 
-      - uses: golangci/golangci-lint-action@v6
-        with: { version: 'v1.59' }
+      - uses: golangci/golangci-lint-action@v8
+        with: { version: 'v2.1.6' }
 
   build:
     name: Build
@@ -59,10 +55,6 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
-
-      - run: |
-          mkdir -p ui/dist
-          touch ui/dist/index.html
 
       - run: make test-coverage
 

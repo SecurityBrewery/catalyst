@@ -1,3 +1,7 @@
+.PHONY: install-golangci-lint
+install-golangci-lint:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.1.6
+
 .PHONY: fmt
 fmt:
 	@echo "Formatting..."
@@ -29,7 +33,8 @@ test:
 test-coverage:
 	@echo "Testing with coverage..."
 	mkdir -p ui/dist
-	touch ui/dist/index.htmlgo test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
+	touch ui/dist/index.html
+	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
