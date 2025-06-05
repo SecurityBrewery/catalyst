@@ -35,7 +35,7 @@ func TestUpgrades(t *testing.T) {
 				log.Fatal(err)
 			}
 
-			ValidateUpgradeTestData(t, pb)
+			validateUpgradeTestData(t, pb)
 		})
 	}
 }

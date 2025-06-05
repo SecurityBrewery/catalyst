@@ -36,6 +36,8 @@ catalyst
 catalyst_data
 
 # ignore changes, needs to be disabled when adding new upgrade tests
-upgradetest
+upgradetest/**/*.db
+upgradetest/**/*.db-shm
+upgradetest/**/*.db-wal
 
 coverage.out
