@@ -120,11 +120,11 @@ RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type CreateFileParams struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Blob   string `json:"blob"`
-	Size   int64  `json:"size"`
-	Ticket string `json:"ticket"`
+	ID     string  `json:"id"`
+	Name   string  `json:"name"`
+	Blob   string  `json:"blob"`
+	Size   float64 `json:"size"`
+	Ticket string  `json:"ticket"`
 }
 
 // ----------------------------------------------------------------
@@ -1156,14 +1156,14 @@ type ListFilesParams struct {
 }
 
 type ListFilesRow struct {
-	Blob       string `json:"blob"`
-	Created    string `json:"created"`
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Size       int64  `json:"size"`
-	Ticket     string `json:"ticket"`
-	Updated    string `json:"updated"`
-	TotalCount int64  `json:"total_count"`
+	Blob       string  `json:"blob"`
+	Created    string  `json:"created"`
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Size       float64 `json:"size"`
+	Ticket     string  `json:"ticket"`
+	Updated    string  `json:"updated"`
+	TotalCount int64   `json:"total_count"`
 }
 
 func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]ListFilesRow, error) {
@@ -2214,10 +2214,10 @@ RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type UpdateFileParams struct {
-	Name sql.NullString `json:"name"`
-	Blob sql.NullString `json:"blob"`
-	Size sql.NullInt64  `json:"size"`
-	ID   string         `json:"id"`
+	Name sql.NullString  `json:"name"`
+	Blob sql.NullString  `json:"blob"`
+	Size sql.NullFloat64 `json:"size"`
+	ID   string          `json:"id"`
 }
 
 func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error) {

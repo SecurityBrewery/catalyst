@@ -94,12 +94,12 @@ type Feature struct {
 
 // File defines model for File.
 type File struct {
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Size    int64  `json:"size"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	Created string  `json:"created"`
+	Id      string  `json:"id"`
+	Name    string  `json:"name"`
+	Size    float64 `json:"size"`
+	Ticket  string  `json:"ticket"`
+	Updated string  `json:"updated"`
 }
 
 // FileUpdate defines model for FileUpdate.
@@ -137,10 +137,10 @@ type NewFeature struct {
 
 // NewFile defines model for NewFile.
 type NewFile struct {
-	Blob   string `json:"blob"`
-	Name   string `json:"name"`
-	Size   int64  `json:"size"`
-	Ticket string `json:"ticket"`
+	Blob   string  `json:"blob"`
+	Name   string  `json:"name"`
+	Size   float64 `json:"size"`
+	Ticket string  `json:"ticket"`
 }
 
 // NewLink defines model for NewLink.

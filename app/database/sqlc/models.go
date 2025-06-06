@@ -8,6 +8,34 @@ import (
 	"database/sql"
 )
 
+type Admin struct {
+	ID              string      `json:"id"`
+	Avatar          int64       `json:"avatar"`
+	Email           string      `json:"email"`
+	Tokenkey        string      `json:"tokenkey"`
+	Passwordhash    string      `json:"passwordhash"`
+	Lastresetsentat interface{} `json:"lastresetsentat"`
+	Created         string      `json:"created"`
+	Updated         string      `json:"updated"`
+}
+
+type Collection struct {
+	ID         string         `json:"id"`
+	System     bool           `json:"system"`
+	Type       interface{}    `json:"type"`
+	Name       string         `json:"name"`
+	Schema     interface{}    `json:"schema"`
+	Indexes    interface{}    `json:"indexes"`
+	Listrule   sql.NullString `json:"listrule"`
+	Viewrule   sql.NullString `json:"viewrule"`
+	Createrule sql.NullString `json:"createrule"`
+	Updaterule sql.NullString `json:"updaterule"`
+	Deleterule sql.NullString `json:"deleterule"`
+	Options    interface{}    `json:"options"`
+	Created    string         `json:"created"`
+	Updated    string         `json:"updated"`
+}
+
 type Comment struct {
 	Author  string `json:"author"`
 	Created string `json:"created"`
@@ -22,6 +50,16 @@ type DashboardCount struct {
 	Count int64  `json:"count"`
 }
 
+type Externalauth struct {
+	ID           string `json:"id"`
+	Collectionid string `json:"collectionid"`
+	Recordid     string `json:"recordid"`
+	Provider     string `json:"provider"`
+	Providerid   string `json:"providerid"`
+	Created      string `json:"created"`
+	Updated      string `json:"updated"`
+}
+
 type Feature struct {
 	Created string `json:"created"`
 	ID      string `json:"id"`
@@ -30,13 +68,13 @@ type Feature struct {
 }
 
 type File struct {
-	Blob    string `json:"blob"`
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Size    int64  `json:"size"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	Blob    string  `json:"blob"`
+	Created string  `json:"created"`
+	ID      string  `json:"id"`
+	Name    string  `json:"name"`
+	Size    float64 `json:"size"`
+	Ticket  string  `json:"ticket"`
+	Updated string  `json:"updated"`
 }
 
 type Link struct {
@@ -46,6 +84,19 @@ type Link struct {
 	Ticket  string `json:"ticket"`
 	Updated string `json:"updated"`
 	Url     string `json:"url"`
+}
+
+type Migration struct {
+	File    string `json:"file"`
+	Applied int64  `json:"applied"`
+}
+
+type Param struct {
+	ID      string      `json:"id"`
+	Key     string      `json:"key"`
+	Value   interface{} `json:"value"`
+	Created interface{} `json:"created"`
+	Updated interface{} `json:"updated"`
 }
 
 type Reaction struct {

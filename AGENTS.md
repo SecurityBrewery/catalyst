@@ -3,6 +3,7 @@
 ## Dev Environment Tips
 - Go Backend:
     - The sql migrations are located in the `app/database/migrations` directory, queries in `app/database/query.sql`.
+    - Never change existing migrations, add new ones when needed.
     - `sqlc` is used to generate Go code from SQL queries. Make sure to run `make sqlc` after modifying any SQL files.
     - Generated Go code is located in `app/database/sqlc` and should not be modified directly.
     - The OpenAPI spec is located at `app/openapi/openapi.yaml`. This file defines the API endpoints and their schemas.
