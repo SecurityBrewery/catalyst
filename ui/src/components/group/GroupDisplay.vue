@@ -76,7 +76,7 @@ const deleteMutation = useMutation({
       <ColumnBodyContainer>
         <div class="flex flex-col gap-4 xl:flex-row">
           <div class="flex flex-col gap-4 xl:flex-1">
-            <GroupForm :role="group" @submit="updateGroupMutation.mutate" />
+            <GroupForm :group="group" @submit="updateGroupMutation.mutate" />
           </div>
           <div class="flex w-full flex-col gap-4 xl:w-96 xl:shrink-0">
             <GroupGroup :id="group.id" />
