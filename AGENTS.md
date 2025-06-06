@@ -13,14 +13,16 @@
 
 ## Testing Instructions
 - Go Backend:
-    - Use `make fmt` to format the codebase.
-    - Use `make test` to run all tests in the workspace.
-    - Use `make lint` to run all linters in the workspace.
+    - Use `make fmt-go` to format the Go codebase.
+    - Use `make test-go` to run all Go tests in the workspace.
+    - Use `make lint-go` to run all Go linters in the workspace.
     - Format the codebase before running linters and tests.
     - Fix any test or linter errors until the whole suite is green.
     - Add or update tests for the code you change, even if nobody asked.
 - Vue Frontend:
-    - Use `make fmt` to format the codebase.
+    - Use `make fmt-ui` to format the ui codebase.
+    - Use `make test-ui` to run all ui tests in the workspace.
+    - Use `make lint-ui` to run all ui linters in the workspace.
 
 ## PR instructions
 - Use semantic commit messages like `feat: add new feature` or `fix: correct a bug`.

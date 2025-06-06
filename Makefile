@@ -2,32 +2,54 @@
 install-golangci-lint:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.1.6
 
-.PHONY: fmt
-fmt:
+.PHONY: fmt-go
+fmt-go:
 	@echo "Formatting..."
 	go mod tidy
 	golangci-lint fmt ./...
+
+.PHONY: fmt-ui
+fmt-ui:
+	@echo "Formatting..."
 	cd ui && bun format
+
+.PHONY: fmt
+fmt: fmt-go fmt-ui
 
 .PHONY: fix
 fix:
 	@echo "Fixing..."
 	golangci-lint run --fix ./...
 
-.PHONY: lint
-lint:
+.PHONY: lint-go
+lint-go:
 	mkdir -p ui/dist
 	touch ui/dist/index.html
 	golangci-lint version
 	golangci-lint run ./...
 
-.PHONY: test
-test:
+.PHONY: lint-ui
+lint-ui:
+	@echo "Linting..."
+	cd ui && bun lint
+
+.PHONY: lint
+lint: lint-go lint-ui
+
+.PHONY: test-go
+test-go:
 	@echo "Testing..."
 	mkdir -p ui/dist
 	touch ui/dist/index.html
 	go test -v ./...
+
+.PHONY: test-ui
+test-ui:
+	@echo "Testing..."
 	cd ui && bun test
+
+.PHONY: test
+test: test-go test-ui
 
 .PHONY: test-coverage
 test-coverage:
