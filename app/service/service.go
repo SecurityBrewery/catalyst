@@ -222,7 +222,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "files", request.Body)
 
 	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
-		ID:     generateID("f"),
+		ID:     generateID("b"),
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
 		Size:   request.Body.Size,
@@ -369,6 +369,7 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "links", request.Body)
 
 	link, err := s.queries.CreateLink(ctx, sqlc.CreateLinkParams{
+		ID:     generateID("l"),
 		Name:   request.Body.Name,
 		Url:    request.Body.Url,
 		Ticket: request.Body.Ticket,
@@ -660,7 +661,7 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "tasks", request.Body)
 
 	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
-		ID:     generateID("t"),
+		ID:     generateID("k"),
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -1114,7 +1115,7 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "types", request.Body)
 
 	t, err := s.queries.CreateType(ctx, sqlc.CreateTypeParams{
-		ID:       generateID("t"),
+		ID:       generateID("y"),
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
@@ -1426,7 +1427,7 @@ func (s *Service) CreateRole(ctx context.Context, request openapi.CreateRoleRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "roles", request.Body)
 
 	role, err := s.queries.CreateRole(ctx, sqlc.CreateRoleParams{
-		ID:          generateID("r"),
+		ID:          generateID("o"),
 		Name:        request.Body.Name,
 		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
 	})

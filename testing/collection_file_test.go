@@ -80,7 +80,7 @@ func TestFilesCollection(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "GetFile",
 				Method: http.MethodGet,
-				URL:    "/api/files/f_test_file",
+				URL:    "/api/files/b_test_file",
 			},
 			userTests: []UserTest{
 				{
@@ -92,14 +92,14 @@ func TestFilesCollection(t *testing.T) {
 					Name:            "Analyst",
 					AuthRecord:      database.AnalystEmail,
 					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"id":"f_test_file"`},
+					ExpectedContent: []string{`"id":"b_test_file"`},
 					ExpectedEvents:  map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:            "Admin",
 					Admin:           database.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"id":"f_test_file"`},
+					ExpectedContent: []string{`"id":"b_test_file"`},
 					ExpectedEvents:  map[string]int{"OnRecordViewRequest": 1},
 				},
 			},
@@ -109,7 +109,7 @@ func TestFilesCollection(t *testing.T) {
 				Name:           "UpdateFile",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/files/f_test_file",
+				URL:            "/api/files/b_test_file",
 				Body:           s(map[string]any{"name": "update.txt"}),
 			},
 			userTests: []UserTest{
@@ -140,7 +140,7 @@ func TestFilesCollection(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "DeleteFile",
 				Method: http.MethodDelete,
-				URL:    "/api/files/f_test_file",
+				URL:    "/api/files/b_test_file",
 			},
 			userTests: []UserTest{
 				{

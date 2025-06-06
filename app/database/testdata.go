@@ -32,7 +32,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
 	_, err := queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
-		ID:          "r_analyst",
+		ID:          "o_analyst",
 		Name:        "Analyst",
 		Permissions: permission.ToJSONArray(t.Context(), permission.Default()),
 	})
@@ -41,7 +41,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 	}
 
 	_, err = queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
-		ID:          "r_admin",
+		ID:          "o_admin",
 		Name:        "Admin",
 		Permissions: permission.ToJSONArray(t.Context(), permission.AllPermissions()),
 	})
@@ -69,7 +69,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 
 	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
 		UserID: "u_bob_analyst",
-		RoleID: "r_analyst",
+		RoleID: "o_analyst",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +95,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 
 	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
 		UserID: "u_admin",
-		RoleID: "r_admin",
+		RoleID: "o_admin",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -183,7 +183,7 @@ func taskTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
 	if _, err := queries.CreateTask(t.Context(), sqlc.CreateTaskParams{
-		ID:     "ta_test_task",
+		ID:     "k_test_task",
 		Name:   "Test Task",
 		Open:   true,
 		Owner:  "u_bob_analyst",
@@ -232,7 +232,7 @@ func fileTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
 	if _, err := queries.CreateFile(t.Context(), sqlc.CreateFileParams{
-		ID:     "f_test_file",
+		ID:     "b_test_file",
 		Name:   "hello.txt",
 		Blob:   "data:text/plain;base64,aGVsbG8=",
 		Size:   5,

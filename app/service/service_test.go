@@ -106,7 +106,7 @@ func TestService_DownloadFile(t *testing.T) {
 
 	s := newTestService(t)
 
-	resp, err := s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_test_file"})
+	resp, err := s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "b_test_file"})
 	require.NoError(t, err)
 
 	download, ok := resp.(openapi.DownloadFile200ApplicationoctetStreamResponse)

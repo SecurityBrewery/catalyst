@@ -97,7 +97,7 @@ func TestTasksCollection(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "GetTask",
 				Method: http.MethodGet,
-				URL:    "/api/tasks/ta_test_task",
+				URL:    "/api/tasks/k_test_task",
 			},
 			userTests: []UserTest{
 				{
@@ -112,7 +112,7 @@ func TestTasksCollection(t *testing.T) {
 					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"ta_test_task"`,
+						`"id":"k_test_task"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
@@ -121,7 +121,7 @@ func TestTasksCollection(t *testing.T) {
 					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"ta_test_task"`,
+						`"id":"k_test_task"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
@@ -132,7 +132,7 @@ func TestTasksCollection(t *testing.T) {
 				Name:           "UpdateTask",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/tasks/ta_test_task",
+				URL:            "/api/tasks/k_test_task",
 				Body:           s(map[string]any{"name": "update"}),
 			},
 			userTests: []UserTest{
@@ -148,7 +148,7 @@ func TestTasksCollection(t *testing.T) {
 					AuthRecord:     database.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"ta_test_task"`,
+						`"id":"k_test_task"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -161,7 +161,7 @@ func TestTasksCollection(t *testing.T) {
 					Admin:          database.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"ta_test_task"`,
+						`"id":"k_test_task"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -175,7 +175,7 @@ func TestTasksCollection(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "DeleteTask",
 				Method: http.MethodDelete,
-				URL:    "/api/tasks/ta_test_task",
+				URL:    "/api/tasks/k_test_task",
 			},
 			userTests: []UserTest{
 				{

@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS comments
 (
     author  TEXT default ''                                 not null,
     created TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT default ('c' || lower(hex(randomblob(7)))) not null
         primary key,
     message TEXT default ''                                 not null,
     ticket  TEXT default ''                                 not null,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS comments
 CREATE TABLE IF NOT EXISTS features
 (
     created TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT default ('f' || lower(hex(randomblob(7)))) not null
         primary key,
     name    TEXT default ''                                 not null,
     updated TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS files
 (
     blob    TEXT    default ''                                 not null,
     created TEXT    default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT    default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT    default ('b' || lower(hex(randomblob(7)))) not null
         primary key,
     name    TEXT    default ''                                 not null,
     size    INTEGER default 0                                  not null,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS files
 CREATE TABLE IF NOT EXISTS links
 (
     created TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT default ('l' || lower(hex(randomblob(7)))) not null
         primary key,
     name    TEXT default ''                                 not null,
     ticket  TEXT default ''                                 not null,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS reactions
 CREATE TABLE IF NOT EXISTS tasks
 (
     created TEXT    default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT    default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT    default ('k' || lower(hex(randomblob(7)))) not null
         primary key,
     name    TEXT    default ''                                 not null,
     open    BOOLEAN default FALSE                              not null,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS tickets
 CREATE TABLE IF NOT EXISTS timeline
 (
     created TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    id      TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id      TEXT default ('h' || lower(hex(randomblob(7)))) not null
         primary key,
     message TEXT default ''                                 not null,
     ticket  TEXT default ''                                 not null,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS types
 (
     created  TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
     icon     TEXT default ''                                 not null,
-    id       TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id       TEXT default ('y' || lower(hex(randomblob(7)))) not null
         primary key,
     plural   TEXT default ''                                 not null,
     schema   JSON default NULL,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS users
     created                TEXT    default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
     email                  TEXT    default ''                                 not null,
     emailVisibility        BOOLEAN default FALSE                              not null,
-    id                     TEXT    default ('r' || lower(hex(randomblob(7)))) not null
+    id                     TEXT    default ('u' || lower(hex(randomblob(7)))) not null
         primary key,
     lastLoginAlertSentAt   TEXT    default ''                                 not null,
     lastResetSentAt        TEXT    default ''                                 not null,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS webhooks
     collection  TEXT default ''                                 not null,
     created     TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
     destination TEXT default ''                                 not null,
-    id          TEXT default ('r' || lower(hex(randomblob(7)))) not null
+    id          TEXT default ('w' || lower(hex(randomblob(7)))) not null
         primary key,
     name        TEXT default ''                                 not null,
     updated     TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null
