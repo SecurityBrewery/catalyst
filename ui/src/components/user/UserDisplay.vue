@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import UserForm from '@/components/user/UserForm.vue'
+import UserGroup from '@/components/user/UserGroup.vue'
 import UserPasswordForm from '@/components/user/UserPasswordForm.vue'
-import UserRole from '@/components/user/UserRole.vue'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -104,16 +104,16 @@ const deleteMutation = useMutation({
                 <CardTitle>Access</CardTitle>
               </CardHeader>
               <CardContent>
-                <UserRole :id="user.id" />
+                <UserGroup :id="user.id" />
               </CardContent>
             </Card>
           </div>
         </div>
-        <!--Tabs default-value="roles" class="w-full">
+        <!--Tabs default-value="groups" class="w-full">
           <TabsList class="grid w-full grid-cols-3">
             <TabsTrigger value="user"> User </TabsTrigger>
             <TabsTrigger value="password"> Password </TabsTrigger>
-            <TabsTrigger value="roles"> Roles </TabsTrigger>
+            <TabsTrigger value="groups"> Groups </TabsTrigger>
           </TabsList>
           <TabsContent value="user" class="mt-2">
             <Card>
@@ -135,8 +135,8 @@ const deleteMutation = useMutation({
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="roles" class="mt-2">
-            <UserRole :id="user.id" />
+          <TabsContent value="groups" class="mt-2">
+            <UserGroup :id="user.id" />
           </TabsContent>
         </Tabs-->
       </ColumnBodyContainer>

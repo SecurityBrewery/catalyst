@@ -18,37 +18,37 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface NewRole
+ * @interface NewGroup
  */
-export interface NewRole {
+export interface NewGroup {
   /**
    *
    * @type {string}
-   * @memberof NewRole
+   * @memberof NewGroup
    */
   name: string
   /**
    *
    * @type {Array<string>}
-   * @memberof NewRole
+   * @memberof NewGroup
    */
   permissions: Array<string>
 }
 
 /**
- * Check if a given object implements the NewRole interface.
+ * Check if a given object implements the NewGroup interface.
  */
-export function instanceOfNewRole(value: object): value is NewRole {
+export function instanceOfNewGroup(value: object): value is NewGroup {
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('permissions' in value) || value['permissions'] === undefined) return false
   return true
 }
 
-export function NewRoleFromJSON(json: any): NewRole {
-  return NewRoleFromJSONTyped(json, false)
+export function NewGroupFromJSON(json: any): NewGroup {
+  return NewGroupFromJSONTyped(json, false)
 }
 
-export function NewRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewRole {
+export function NewGroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): NewGroup {
   if (json == null) {
     return json
   }
@@ -58,12 +58,12 @@ export function NewRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
   }
 }
 
-export function NewRoleToJSON(json: any): NewRole {
-  return NewRoleToJSONTyped(json, false)
+export function NewGroupToJSON(json: any): NewGroup {
+  return NewGroupToJSONTyped(json, false)
 }
 
-export function NewRoleToJSONTyped(
-  value?: NewRole | null,
+export function NewGroupToJSONTyped(
+  value?: NewGroup | null,
   ignoreDiscriminator: boolean = false
 ): any {
   if (value == null) {

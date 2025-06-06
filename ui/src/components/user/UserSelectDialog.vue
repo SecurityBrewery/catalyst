@@ -76,7 +76,7 @@ watch(
     <DialogContent>
       <DialogHeader>
         <DialogTitle>New User</DialogTitle>
-        <DialogDescription> Add a new user to this role</DialogDescription>
+        <DialogDescription> Add a new user to this group</DialogDescription>
       </DialogHeader>
 
       <form @submit="onSubmit" @change="change">

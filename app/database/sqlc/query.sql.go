@@ -10,33 +10,33 @@ import (
 	"database/sql"
 )
 
-const assignParentRole = `-- name: AssignParentRole :exec
-INSERT INTO role_inheritance (parent_role_id, child_role_id)
+const assignGroupToUser = `-- name: AssignGroupToUser :exec
+INSERT INTO user_groups (user_id, group_id)
 VALUES (?1, ?2)
 `
 
-type AssignParentRoleParams struct {
-	ParentRoleID string `json:"parent_role_id"`
-	ChildRoleID  string `json:"child_role_id"`
+type AssignGroupToUserParams struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
 }
 
-func (q *Queries) AssignParentRole(ctx context.Context, arg AssignParentRoleParams) error {
-	_, err := q.db.ExecContext(ctx, assignParentRole, arg.ParentRoleID, arg.ChildRoleID)
+func (q *Queries) AssignGroupToUser(ctx context.Context, arg AssignGroupToUserParams) error {
+	_, err := q.db.ExecContext(ctx, assignGroupToUser, arg.UserID, arg.GroupID)
 	return err
 }
 
-const assignRoleToUser = `-- name: AssignRoleToUser :exec
-INSERT INTO user_roles (user_id, role_id)
+const assignParentGroup = `-- name: AssignParentGroup :exec
+INSERT INTO group_inheritance (parent_group_id, child_group_id)
 VALUES (?1, ?2)
 `
 
-type AssignRoleToUserParams struct {
-	UserID string `json:"user_id"`
-	RoleID string `json:"role_id"`
+type AssignParentGroupParams struct {
+	ParentGroupID string `json:"parent_group_id"`
+	ChildGroupID  string `json:"child_group_id"`
 }
 
-func (q *Queries) AssignRoleToUser(ctx context.Context, arg AssignRoleToUserParams) error {
-	_, err := q.db.ExecContext(ctx, assignRoleToUser, arg.UserID, arg.RoleID)
+func (q *Queries) AssignParentGroup(ctx context.Context, arg AssignParentGroupParams) error {
+	_, err := q.db.ExecContext(ctx, assignParentGroup, arg.ParentGroupID, arg.ChildGroupID)
 	return err
 }
 
@@ -149,6 +149,33 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, e
 	return i, err
 }
 
+const createGroup = `-- name: CreateGroup :one
+
+INSERT INTO groups (id, name, permissions)
+VALUES (?1, ?2, ?3)
+RETURNING id, name, permissions, created, updated
+`
+
+type CreateGroupParams struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+}
+
+// ----------------------------------------------------------------
+func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error) {
+	row := q.db.QueryRowContext(ctx, createGroup, arg.ID, arg.Name, arg.Permissions)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Permissions,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
 const createLink = `-- name: CreateLink :one
 
 INSERT INTO links (id, name, url, ticket)
@@ -218,33 +245,6 @@ func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) 
 		&i.Name,
 		&i.Trigger,
 		&i.Triggerdata,
-		&i.Updated,
-	)
-	return i, err
-}
-
-const createRole = `-- name: CreateRole :one
-
-INSERT INTO roles (id, name, permissions)
-VALUES (?1, ?2, ?3)
-RETURNING id, name, permissions, created, updated
-`
-
-type CreateRoleParams struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-}
-
-// ----------------------------------------------------------------
-func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error) {
-	row := q.db.QueryRowContext(ctx, createRole, arg.ID, arg.Name, arg.Permissions)
-	var i Role
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Permissions,
-		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -524,6 +524,17 @@ func (q *Queries) DeleteFile(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteGroup = `-- name: DeleteGroup :exec
+DELETE
+FROM groups
+WHERE id = ?1
+`
+
+func (q *Queries) DeleteGroup(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteGroup, id)
+	return err
+}
+
 const deleteLink = `-- name: DeleteLink :exec
 DELETE
 FROM links
@@ -543,17 +554,6 @@ WHERE id = ?1
 
 func (q *Queries) DeleteReaction(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteReaction, id)
-	return err
-}
-
-const deleteRole = `-- name: DeleteRole :exec
-DELETE
-FROM roles
-WHERE id = ?1
-`
-
-func (q *Queries) DeleteRole(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, deleteRole, id)
 	return err
 }
 
@@ -751,6 +751,35 @@ func (q *Queries) GetFile(ctx context.Context, id string) (File, error) {
 	return i, err
 }
 
+const getGroup = `-- name: GetGroup :one
+SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedCOUNT(*) OVER () as total_count
+FROM groups
+WHERE id = ?1
+`
+
+type GetGroupRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	TotalCount  int64  `json:"total_count"`
+}
+
+func (q *Queries) GetGroup(ctx context.Context, id string) (GetGroupRow, error) {
+	row := q.db.QueryRowContext(ctx, getGroup, id)
+	var i GetGroupRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Permissions,
+		&i.Created,
+		&i.Updated,
+		&i.TotalCount,
+	)
+	return i, err
+}
+
 const getLink = `-- name: GetLink :one
 SELECT created, id, name, ticket, updated, url
 FROM links
@@ -789,35 +818,6 @@ func (q *Queries) GetReaction(ctx context.Context, id string) (Reaction, error) 
 		&i.Trigger,
 		&i.Triggerdata,
 		&i.Updated,
-	)
-	return i, err
-}
-
-const getRole = `-- name: GetRole :one
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, COUNT(*) OVER () as total_count
-FROM roles
-WHERE id = ?1
-`
-
-type GetRoleRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
-}
-
-func (q *Queries) GetRole(ctx context.Context, id string) (GetRoleRow, error) {
-	row := q.db.QueryRowContext(ctx, getRole, id)
-	var i GetRoleRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Permissions,
-		&i.Created,
-		&i.Updated,
-		&i.TotalCount,
 	)
 	return i, err
 }
@@ -985,39 +985,39 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 	return i, err
 }
 
-const listChildRoles = `-- name: ListChildRoles :many
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, role_effective_roles.role_type
-FROM role_effective_roles
-         JOIN roles ON roles.id = role_effective_roles.parent_role_id
-WHERE child_role_id = ?1
-ORDER BY role_effective_roles.role_type
+const listChildGroups = `-- name: ListChildGroups :many
+SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedgroup_effective_groups.group_type
+FROM group_effective_groups
+         JOIN groups ON groups.id = group_effective_groups.parent_group_id
+WHERE child_group_id = ?1
+ORDER BY group_effective_groups.group_type
 `
 
-type ListChildRolesRow struct {
+type ListChildGroupsRow struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Permissions string `json:"permissions"`
 	Created     string `json:"created"`
 	Updated     string `json:"updated"`
-	RoleType    string `json:"role_type"`
+	GroupType   string `json:"group_type"`
 }
 
-func (q *Queries) ListChildRoles(ctx context.Context, roleID string) ([]ListChildRolesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listChildRoles, roleID)
+func (q *Queries) ListChildGroups(ctx context.Context, groupID string) ([]ListChildGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listChildGroups, groupID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListChildRolesRow
+	var items []ListChildGroupsRow
 	for rows.Next() {
-		var i ListChildRolesRow
+		var i ListChildGroupsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Permissions,
 			&i.Created,
 			&i.Updated,
-			&i.RoleType,
+			&i.GroupType,
 		); err != nil {
 			return nil, err
 		}
@@ -1198,6 +1198,122 @@ func (q *Queries) ListFiles(ctx context.Context, arg ListFilesParams) ([]ListFil
 	return items, nil
 }
 
+const listGroupUsers = `-- name: ListGroupUsers :many
+SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.group_type
+FROM user_effective_groups uer
+         JOIN users ON users.id = uer.user_id
+WHERE uer.group_id = ?1
+ORDER BY users.name DESC
+`
+
+type ListGroupUsersRow struct {
+	Avatar                 string `json:"avatar"`
+	Created                string `json:"created"`
+	Email                  string `json:"email"`
+	Emailvisibility        bool   `json:"emailvisibility"`
+	ID                     string `json:"id"`
+	Lastloginalertsentat   string `json:"lastloginalertsentat"`
+	Lastresetsentat        string `json:"lastresetsentat"`
+	Lastverificationsentat string `json:"lastverificationsentat"`
+	Name                   string `json:"name"`
+	Passwordhash           string `json:"passwordhash"`
+	Tokenkey               string `json:"tokenkey"`
+	Updated                string `json:"updated"`
+	Username               string `json:"username"`
+	Verified               bool   `json:"verified"`
+	GroupType              string `json:"group_type"`
+}
+
+func (q *Queries) ListGroupUsers(ctx context.Context, groupID string) ([]ListGroupUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupUsers, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGroupUsersRow
+	for rows.Next() {
+		var i ListGroupUsersRow
+		if err := rows.Scan(
+			&i.Avatar,
+			&i.Created,
+			&i.Email,
+			&i.Emailvisibility,
+			&i.ID,
+			&i.Lastloginalertsentat,
+			&i.Lastresetsentat,
+			&i.Lastverificationsentat,
+			&i.Name,
+			&i.Passwordhash,
+			&i.Tokenkey,
+			&i.Updated,
+			&i.Username,
+			&i.Verified,
+			&i.GroupType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroups = `-- name: ListGroups :many
+SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedCOUNT(*) OVER () as total_count
+FROM groups
+ORDER BY created DESC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListGroupsParams struct {
+	Offset int64 `json:"offset"`
+	Limit  int64 `json:"limit"`
+}
+
+type ListGroupsRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	TotalCount  int64  `json:"total_count"`
+}
+
+func (q *Queries) ListGroups(ctx context.Context, arg ListGroupsParams) ([]ListGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGroups, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGroupsRow
+	for rows.Next() {
+		var i ListGroupsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Permissions,
+			&i.Created,
+			&i.Updated,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listLinks = `-- name: ListLinks :many
 SELECT links.created, links.id, links.name, links.ticket, links.updated, links.url, COUNT(*) OVER () as total_count
 FROM links
@@ -1254,15 +1370,62 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]ListLin
 	return items, nil
 }
 
+const listParentGroups = `-- name: ListParentGroups :many
+SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedgroup_effective_groups.group_type
+FROM group_effective_groups
+         JOIN groups ON groups.id = group_effective_groups.child_group_id
+WHERE parent_group_id = ?1
+ORDER BY group_effective_groups.group_type
+`
+
+type ListParentGroupsRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	GroupType   string `json:"group_type"`
+}
+
+func (q *Queries) ListParentGroups(ctx context.Context, groupID string) ([]ListParentGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParentGroups, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListParentGroupsRow
+	for rows.Next() {
+		var i ListParentGroupsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Permissions,
+			&i.Created,
+			&i.Updated,
+			&i.GroupType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listParentPermissions = `-- name: ListParentPermissions :many
-SELECT role_effective_permissions.permission
-FROM role_effective_permissions
-WHERE parent_role_id = ?1
+SELECT group_effective_permissions.permission
+FROM group_effective_permissions
+WHERE parent_group_id = ?1
 ORDER BY permission
 `
 
-func (q *Queries) ListParentPermissions(ctx context.Context, roleID string) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, listParentPermissions, roleID)
+func (q *Queries) ListParentPermissions(ctx context.Context, groupID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listParentPermissions, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -1274,53 +1437,6 @@ func (q *Queries) ListParentPermissions(ctx context.Context, roleID string) ([]s
 			return nil, err
 		}
 		items = append(items, permission)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listParentRoles = `-- name: ListParentRoles :many
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, role_effective_roles.role_type
-FROM role_effective_roles
-         JOIN roles ON roles.id = role_effective_roles.child_role_id
-WHERE parent_role_id = ?1
-ORDER BY role_effective_roles.role_type
-`
-
-type ListParentRolesRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	RoleType    string `json:"role_type"`
-}
-
-func (q *Queries) ListParentRoles(ctx context.Context, roleID string) ([]ListParentRolesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listParentRoles, roleID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListParentRolesRow
-	for rows.Next() {
-		var i ListParentRolesRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Permissions,
-			&i.Created,
-			&i.Updated,
-			&i.RoleType,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -1372,122 +1488,6 @@ func (q *Queries) ListReactions(ctx context.Context, arg ListReactionsParams) ([
 			&i.Name,
 			&i.Trigger,
 			&i.Triggerdata,
-			&i.Updated,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listRoleUsers = `-- name: ListRoleUsers :many
-SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.role_type
-FROM user_effective_roles uer
-         JOIN users ON users.id = uer.user_id
-WHERE uer.role_id = ?1
-ORDER BY users.name DESC
-`
-
-type ListRoleUsersRow struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	Emailvisibility        bool   `json:"emailvisibility"`
-	ID                     string `json:"id"`
-	Lastloginalertsentat   string `json:"lastloginalertsentat"`
-	Lastresetsentat        string `json:"lastresetsentat"`
-	Lastverificationsentat string `json:"lastverificationsentat"`
-	Name                   string `json:"name"`
-	Passwordhash           string `json:"passwordhash"`
-	Tokenkey               string `json:"tokenkey"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
-	RoleType               string `json:"role_type"`
-}
-
-func (q *Queries) ListRoleUsers(ctx context.Context, roleID string) ([]ListRoleUsersRow, error) {
-	rows, err := q.db.QueryContext(ctx, listRoleUsers, roleID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListRoleUsersRow
-	for rows.Next() {
-		var i ListRoleUsersRow
-		if err := rows.Scan(
-			&i.Avatar,
-			&i.Created,
-			&i.Email,
-			&i.Emailvisibility,
-			&i.ID,
-			&i.Lastloginalertsentat,
-			&i.Lastresetsentat,
-			&i.Lastverificationsentat,
-			&i.Name,
-			&i.Passwordhash,
-			&i.Tokenkey,
-			&i.Updated,
-			&i.Username,
-			&i.Verified,
-			&i.RoleType,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listRoles = `-- name: ListRoles :many
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, COUNT(*) OVER () as total_count
-FROM roles
-ORDER BY created DESC
-LIMIT ?2 OFFSET ?1
-`
-
-type ListRolesParams struct {
-	Offset int64 `json:"offset"`
-	Limit  int64 `json:"limit"`
-}
-
-type ListRolesRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
-}
-
-func (q *Queries) ListRoles(ctx context.Context, arg ListRolesParams) ([]ListRolesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listRoles, arg.Offset, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListRolesRow
-	for rows.Next() {
-		var i ListRolesRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Permissions,
-			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -1760,6 +1760,55 @@ func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTyp
 	return items, nil
 }
 
+const listUserGroups = `-- name: ListUserGroups :many
+SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updateduer.group_type, COUNT(*) OVER () as total_count
+FROM user_effective_groups uer
+         JOIN groups ON groups.id = uer.group_id
+WHERE uer.user_id = ?1
+ORDER BY groups.name DESC
+`
+
+type ListUserGroupsRow struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	GroupType   string `json:"group_type"`
+	TotalCount  int64  `json:"total_count"`
+}
+
+func (q *Queries) ListUserGroups(ctx context.Context, userID string) ([]ListUserGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroups, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListUserGroupsRow
+	for rows.Next() {
+		var i ListUserGroupsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Permissions,
+			&i.Created,
+			&i.Updated,
+			&i.GroupType,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUserPermissions = `-- name: ListUserPermissions :many
 SELECT user_effective_permissions.permission
 FROM user_effective_permissions
@@ -1780,55 +1829,6 @@ func (q *Queries) ListUserPermissions(ctx context.Context, userID string) ([]str
 			return nil, err
 		}
 		items = append(items, permission)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listUserRoles = `-- name: ListUserRoles :many
-SELECT roles.id, roles.name, roles.permissions, roles.created, roles.updated, uer.role_type, COUNT(*) OVER () as total_count
-FROM user_effective_roles uer
-         JOIN roles ON roles.id = uer.role_id
-WHERE uer.user_id = ?1
-ORDER BY roles.name DESC
-`
-
-type ListUserRolesRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	RoleType    string `json:"role_type"`
-	TotalCount  int64  `json:"total_count"`
-}
-
-func (q *Queries) ListUserRoles(ctx context.Context, userID string) ([]ListUserRolesRow, error) {
-	rows, err := q.db.QueryContext(ctx, listUserRoles, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListUserRolesRow
-	for rows.Next() {
-		var i ListUserRolesRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Permissions,
-			&i.Created,
-			&i.Updated,
-			&i.RoleType,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -1962,37 +1962,37 @@ func (q *Queries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]L
 	return items, nil
 }
 
-const removeParentRole = `-- name: RemoveParentRole :exec
+const removeGroupFromUser = `-- name: RemoveGroupFromUser :exec
 DELETE
-FROM role_inheritance
-WHERE parent_role_id = ?1
-  AND child_role_id = ?2
+FROM user_groups
+WHERE user_id = ?1
+  AND group_id = ?2
 `
 
-type RemoveParentRoleParams struct {
-	ParentRoleID string `json:"parent_role_id"`
-	ChildRoleID  string `json:"child_role_id"`
+type RemoveGroupFromUserParams struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
 }
 
-func (q *Queries) RemoveParentRole(ctx context.Context, arg RemoveParentRoleParams) error {
-	_, err := q.db.ExecContext(ctx, removeParentRole, arg.ParentRoleID, arg.ChildRoleID)
+func (q *Queries) RemoveGroupFromUser(ctx context.Context, arg RemoveGroupFromUserParams) error {
+	_, err := q.db.ExecContext(ctx, removeGroupFromUser, arg.UserID, arg.GroupID)
 	return err
 }
 
-const removeRoleFromUser = `-- name: RemoveRoleFromUser :exec
+const removeParentGroup = `-- name: RemoveParentGroup :exec
 DELETE
-FROM user_roles
-WHERE user_id = ?1
-  AND role_id = ?2
+FROM group_inheritance
+WHERE parent_group_id = ?1
+  AND child_group_id = ?2
 `
 
-type RemoveRoleFromUserParams struct {
-	UserID string `json:"user_id"`
-	RoleID string `json:"role_id"`
+type RemoveParentGroupParams struct {
+	ParentGroupID string `json:"parent_group_id"`
+	ChildGroupID  string `json:"child_group_id"`
 }
 
-func (q *Queries) RemoveRoleFromUser(ctx context.Context, arg RemoveRoleFromUserParams) error {
-	_, err := q.db.ExecContext(ctx, removeRoleFromUser, arg.UserID, arg.RoleID)
+func (q *Queries) RemoveParentGroup(ctx context.Context, arg RemoveParentGroupParams) error {
+	_, err := q.db.ExecContext(ctx, removeParentGroup, arg.ParentGroupID, arg.ChildGroupID)
 	return err
 }
 
@@ -2240,6 +2240,33 @@ func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, e
 	return i, err
 }
 
+const updateGroup = `-- name: UpdateGroup :one
+UPDATE groups
+SET name        = coalesce(?1, name),
+    permissions = coalesce(?2, permissions)
+WHERE id = ?3
+RETURNING id, name, permissions, created, updated
+`
+
+type UpdateGroupParams struct {
+	Name        sql.NullString `json:"name"`
+	Permissions sql.NullString `json:"permissions"`
+	ID          string         `json:"id"`
+}
+
+func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error) {
+	row := q.db.QueryRowContext(ctx, updateGroup, arg.Name, arg.Permissions, arg.ID)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Permissions,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
 const updateLink = `-- name: UpdateLink :one
 UPDATE links
 SET name = coalesce(?1, name),
@@ -2306,33 +2333,6 @@ func (q *Queries) UpdateReaction(ctx context.Context, arg UpdateReactionParams) 
 		&i.Name,
 		&i.Trigger,
 		&i.Triggerdata,
-		&i.Updated,
-	)
-	return i, err
-}
-
-const updateRole = `-- name: UpdateRole :one
-UPDATE roles
-SET name        = coalesce(?1, name),
-    permissions = coalesce(?2, permissions)
-WHERE id = ?3
-RETURNING id, name, permissions, created, updated
-`
-
-type UpdateRoleParams struct {
-	Name        sql.NullString `json:"name"`
-	Permissions sql.NullString `json:"permissions"`
-	ID          string         `json:"id"`
-}
-
-func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (Role, error) {
-	row := q.db.QueryRowContext(ctx, updateRole, arg.Name, arg.Permissions, arg.ID)
-	var i Role
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Permissions,
-		&i.Created,
 		&i.Updated,
 	)
 	return i, err

@@ -417,23 +417,23 @@ paths:
       responses:
         "204": { "description": "Users deleted" }
       security: [ OAuth2: [ "user:write" ] ]
-  /users/{id}/roles:
+  /users/{id}/groups:
     get:
-      summary: List all roles for a user
-      operationId: listUserRoles
+      summary: List all groups for a user
+      operationId: listUserGroups
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A list of user roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
+        "200": { "description": "A list of user groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
       security: [ OAuth2: [ "user:read" ] ]
     post:
-      summary: Add a role to a user
-      operationId: addUserRole
+      summary: Add a group to a user
+      operationId: addUserGroup
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleRelation" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
       responses:
-        "201": { "description": "Role added to user" }
+        "201": { "description": "Group added to user" }
       security: [ OAuth2: [ "user:write" ] ]
   /users/{id}/permissions:
     get:
@@ -444,114 +444,114 @@ paths:
       responses:
         "200": { "description": "A list of user permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
       security: [ OAuth2: [ "user:read" ] ]
-  /users/{id}/roles/{roleId}:
+  /users/{id}/groups/{groupId}:
     delete:
-      summary: Remove a role from a user
-      operationId: removeUserRole
+      summary: Remove a group from a user
+      operationId: removeUserGroup
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        - { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": { "description": "Role removed from user" }
+        "204": { "description": "Group removed from user" }
       security: [ OAuth2: [ "user:write" ] ]
-  /roles:
+  /groups:
     get:
-      summary: List all roles
-      operationId: listRoles
+      summary: List all groups
+      operationId: listGroups
       parameters:
         - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
-        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Role" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of roles" } } }
-      security: [ OAuth2: [ "role:read" ] ]
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Group" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of groups" } } }
+      security: [ OAuth2: [ "group:read" ] ]
     post:
-      summary: Create a new role
-      operationId: createRole
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewRole" } } } }
+      summary: Create a new group
+      operationId: createGroup
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewGroup" } } } }
       responses:
-        "200": { "description": "Roles created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
-      security: [ OAuth2: [ "role:write" ] ]
-  /roles/{id}:
+        "200": { "description": "Groups created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ OAuth2: [ "group:write" ] ]
+  /groups/{id}:
     get:
-      summary: Get a single role by ID
-      operationId: getRole
+      summary: Get a single group by ID
+      operationId: getGroup
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A single role", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
-      security: [ OAuth2: [ "role:read" ] ]
+        "200": { "description": "A single group", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ OAuth2: [ "group:read" ] ]
     patch:
-      summary: Update a role by ID
-      operationId: updateRole
+      summary: Update a group by ID
+      operationId: updateGroup
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleUpdate" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupUpdate" } } } }
       responses:
-        "200": { "description": "Roles updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Role" } } } }
-      security: [ OAuth2: [ "role:write" ] ]
+        "200": { "description": "Groups updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ OAuth2: [ "group:write" ] ]
     delete:
-      summary: Delete a role by ID
-      operationId: deleteRole
+      summary: Delete a group by ID
+      operationId: deleteGroup
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": { "description": "Roles deleted" }
-      security: [ OAuth2: [ "role:write" ] ]
-  /roles/{id}/parents:
+        "204": { "description": "Groups deleted" }
+      security: [ OAuth2: [ "group:write" ] ]
+  /groups/{id}/parents:
     get:
-      summary: List all parent roles for a role
-      operationId: listParentRoles
+      summary: List all parent groups for a group
+      operationId: listParentGroups
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A list of role roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
-      security: [ OAuth2: [ "role:read" ] ]
+        "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
+      security: [ OAuth2: [ "group:read" ] ]
     post:
-      summary: Add a parent role to another role
-      operationId: addRoleParent
+      summary: Add a parent group to another group
+      operationId: addGroupParent
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoleRelation" } } } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
       responses:
-        "201": { "description": "Role added to role" }
-      security: [ OAuth2: [ "role:write" ] ]
-  /roles/{id}/children:
+        "201": { "description": "Group added to group" }
+      security: [ OAuth2: [ "group:write" ] ]
+  /groups/{id}/children:
     get:
-      summary: List all child roles for a role
-      operationId: listChildRoles
-      parameters:
-        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      responses:
-        "200": { "description": "A list of role roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserRole" } } } } }
-      security: [ OAuth2: [ "role:read" ] ]
-  /roles/{id}/users:
-    get:
-      summary: List all users for a role
-      operationId: listRoleUsers
+      summary: List all child groups for a group
+      operationId: listChildGroups
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A list of role users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/RoleUser" } } } } }
-      security: [ OAuth2: [ "role:read" ] ]
-  /roles/{id}/permissions:
+        "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
+      security: [ OAuth2: [ "group:read" ] ]
+  /groups/{id}/users:
     get:
-      summary: List all permissions for a role
+      summary: List all users for a group
+      operationId: listGroupUsers
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of group users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/GroupUser" } } } } }
+      security: [ OAuth2: [ "group:read" ] ]
+  /groups/{id}/permissions:
+    get:
+      summary: List all permissions for a group
       operationId: listParentPermissions
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "200": { "description": "A list of role permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
-      security: [ OAuth2: [ "role:read" ] ]
-  /roles/{id}/roles/{parentRoleId}:
+        "200": { "description": "A list of group permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
+      security: [ OAuth2: [ "group:read" ] ]
+  /groups/{id}/groups/{parentGroupId}:
     delete:
-      summary: Remove a parent role from another role
-      operationId: removeRoleParent
+      summary: Remove a parent group from another group
+      operationId: removeGroupParent
       parameters:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        - { "name": "parentRoleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "parentGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
-        "204": { "description": "Role removed from role" }
-      security: [ OAuth2: [ "role:write" ] ]
+        "204": { "description": "Group removed from group" }
+      security: [ OAuth2: [ "group:write" ] ]
   /webhooks:
     get:
       summary: List all webhooks
@@ -923,18 +923,18 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
-    NewRole:
+    NewGroup:
       type: object
       properties:
         name: { "type": "string" }
         permissions: { "type": "array", "items": { "type": "string" } }
       required: [ "name", "permissions" ]
-    RoleUpdate:
+    GroupUpdate:
       type: object
       properties:
         name: { "type": "string" }
         permissions: { "type": "array", "items": { "type": "string" } }
-    Role:
+    Group:
       type: object
       properties:
         id: { "type": "string" }
@@ -943,7 +943,7 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "name", "permissions", "created", "updated" ]
-    UserRole:
+    UserGroup:
       type: object
       properties:
         id: { "type": "string" }
@@ -953,7 +953,7 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "name", "permissions", "type", "created", "updated" ]
-    RoleUser:
+    GroupUser:
       type: object
       properties:
         id: { "type": "string" }
@@ -970,11 +970,11 @@ components:
         created: { "type": "string" }
         updated: { "type": "string" }
       required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "type", "created", "updated" ]
-    RoleRelation:
+    GroupRelation:
       type: object
       properties:
-        role_id: { "type": "string" }
-      required: [ "role_id" ]
+        group_id: { "type": "string" }
+      required: [ "group_id" ]
     NewWebhook:
       type: object
       properties:

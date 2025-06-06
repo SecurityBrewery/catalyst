@@ -16,8 +16,8 @@ func TestGenerate(t *testing.T) {
 
 	_ = app.Queries.DeleteUser(t.Context(), "u_admin")
 	_ = app.Queries.DeleteUser(t.Context(), "u_bob_analyst")
-	_ = app.Queries.DeleteRole(t.Context(), "o_admin")
-	_ = app.Queries.DeleteRole(t.Context(), "o_analyst")
+	_ = app.Queries.DeleteGroup(t.Context(), "g_admin")
+	_ = app.Queries.DeleteGroup(t.Context(), "g_analyst")
 
 	err := data.GenerateDemoData(t.Context(), app.Queries, 0, 0)
 	require.NoError(t, err, "failed to generate fake data")

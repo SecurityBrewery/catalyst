@@ -18,84 +18,84 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface Webhooks
+ * @interface UserGroup
  */
-export interface Webhooks {
+export interface UserGroup {
   /**
    *
    * @type {string}
-   * @memberof Webhooks
-   */
-  collection: string
-  /**
-   *
-   * @type {string}
-   * @memberof Webhooks
-   */
-  created: string
-  /**
-   *
-   * @type {string}
-   * @memberof Webhooks
-   */
-  destination: string
-  /**
-   *
-   * @type {string}
-   * @memberof Webhooks
+   * @memberof UserGroup
    */
   id: string
   /**
    *
    * @type {string}
-   * @memberof Webhooks
+   * @memberof UserGroup
    */
   name: string
   /**
    *
+   * @type {Array<string>}
+   * @memberof UserGroup
+   */
+  permissions: Array<string>
+  /**
+   *
    * @type {string}
-   * @memberof Webhooks
+   * @memberof UserGroup
+   */
+  type: string
+  /**
+   *
+   * @type {string}
+   * @memberof UserGroup
+   */
+  created: string
+  /**
+   *
+   * @type {string}
+   * @memberof UserGroup
    */
   updated: string
 }
 
 /**
- * Check if a given object implements the Webhooks interface.
+ * Check if a given object implements the UserGroup interface.
  */
-export function instanceOfWebhooks(value: object): value is Webhooks {
-  if (!('collection' in value) || value['collection'] === undefined) return false
-  if (!('created' in value) || value['created'] === undefined) return false
-  if (!('destination' in value) || value['destination'] === undefined) return false
+export function instanceOfUserGroup(value: object): value is UserGroup {
   if (!('id' in value) || value['id'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
+  if (!('permissions' in value) || value['permissions'] === undefined) return false
+  if (!('type' in value) || value['type'] === undefined) return false
+  if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
   return true
 }
 
-export function WebhooksFromJSON(json: any): Webhooks {
-  return WebhooksFromJSONTyped(json, false)
+export function UserGroupFromJSON(json: any): UserGroup {
+  return UserGroupFromJSONTyped(json, false)
 }
 
-export function WebhooksFromJSONTyped(json: any, ignoreDiscriminator: boolean): Webhooks {
+export function UserGroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserGroup {
   if (json == null) {
     return json
   }
   return {
-    collection: json['collection'],
-    created: json['created'],
-    destination: json['destination'],
     id: json['id'],
     name: json['name'],
+    permissions: json['permissions'],
+    type: json['type'],
+    created: json['created'],
     updated: json['updated']
   }
 }
 
-export function WebhooksToJSON(json: any): Webhooks {
-  return WebhooksToJSONTyped(json, false)
+export function UserGroupToJSON(json: any): UserGroup {
+  return UserGroupToJSONTyped(json, false)
 }
 
-export function WebhooksToJSONTyped(
-  value?: Webhooks | null,
+export function UserGroupToJSONTyped(
+  value?: UserGroup | null,
   ignoreDiscriminator: boolean = false
 ): any {
   if (value == null) {
@@ -103,11 +103,11 @@ export function WebhooksToJSONTyped(
   }
 
   return {
-    collection: value['collection'],
-    created: value['created'],
-    destination: value['destination'],
     id: value['id'],
     name: value['name'],
+    permissions: value['permissions'],
+    type: value['type'],
+    created: value['created'],
     updated: value['updated']
   }
 }

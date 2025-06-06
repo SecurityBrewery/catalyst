@@ -31,8 +31,8 @@ func DefaultTestData(t *testing.T, queries *sqlc.Queries) {
 func userTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	_, err := queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
-		ID:          "o_analyst",
+	_, err := queries.CreateGroup(t.Context(), sqlc.CreateGroupParams{
+		ID:          "g_analyst",
 		Name:        "Analyst",
 		Permissions: permission.ToJSONArray(t.Context(), permission.Default()),
 	})
@@ -40,8 +40,8 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 		t.Fatal(err)
 	}
 
-	_, err = queries.CreateRole(t.Context(), sqlc.CreateRoleParams{
-		ID:          "o_admin",
+	_, err = queries.CreateGroup(t.Context(), sqlc.CreateGroupParams{
+		ID:          "g_admin",
 		Name:        "Admin",
 		Permissions: permission.ToJSONArray(t.Context(), permission.AllPermissions()),
 	})
@@ -67,9 +67,9 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 		t.Fatal(err)
 	}
 
-	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
-		UserID: "u_bob_analyst",
-		RoleID: "o_analyst",
+	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
+		UserID:  "u_bob_analyst",
+		GroupID: "g_analyst",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -93,9 +93,9 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 		t.Fatal(err)
 	}
 
-	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
-		UserID: "u_admin",
-		RoleID: "o_admin",
+	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
+		UserID:  "u_admin",
+		GroupID: "g_admin",
 	})
 	if err != nil {
 		t.Fatal(err)

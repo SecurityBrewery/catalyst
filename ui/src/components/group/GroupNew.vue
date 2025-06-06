@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import GroupForm from '@/components/group/GroupForm.vue'
 import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
-import RoleForm from '@/components/role/RoleForm.vue'
 import { Button } from '@/components/ui/button'
 
 import { ChevronLeft } from 'lucide-vue-next'
@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { NewRole, Role } from '@/client'
+import type { Group, NewGroup } from '@/client'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -19,11 +19,11 @@ const api = useAPI()
 const queryClient = useQueryClient()
 const router = useRouter()
 
-const addRoleMutation = useMutation({
-  mutationFn: (values: NewRole): Promise<Role> => api.createRole({ newRole: values }),
-  onSuccess: (data: Role) => {
+const addGroupMutation = useMutation({
+  mutationFn: (values: NewGroup): Promise<Group> => api.createGroup({ newGroup: values }),
+  onSuccess: (data: Group) => {
     router.push({ name: 'groups', params: { id: data.id } })
-    queryClient.invalidateQueries({ queryKey: ['roles'] })
+    queryClient.invalidateQueries({ queryKey: ['groups'] })
   },
   onError: handleError
 })
@@ -39,7 +39,7 @@ const addRoleMutation = useMutation({
 
   <ColumnBody>
     <ColumnBodyContainer small>
-      <RoleForm @submit="addRoleMutation.mutate" />
+      <GroupForm @submit="addGroupMutation.mutate" />
     </ColumnBodyContainer>
   </ColumnBody>
 </template>

@@ -10,12 +10,12 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 
-import type { NewRole } from '@/client/models'
+import type { NewGroup } from '@/client/models'
 
 const submitDisabledReason = ref<string>('')
 
 const props = defineProps<{
-  role?: NewRole
+  group?: NewGroup
 }>()
 
 const emit = defineEmits(['submit'])
@@ -56,28 +56,28 @@ defineRule('required', (value: string) => {
 
 const { handleSubmit, validate, values } = useForm({
   initialValues: () => ({
-    name: props.role?.name || '',
-    permissions: props.role?.permissions || []
+    name: props.group?.name || '',
+    permissions: props.group?.permissions || []
   }),
   validationSchema: {
     name: 'required'
   }
 })
 
-const equalRole = (values: NewRole, role?: NewRole): boolean => {
-  if (!role) return false
+const equalGroup = (values: NewGroup, group?: NewGroup): boolean => {
+  if (!group) return false
 
-  return role.name === values.name && role.permissions === values.permissions
+  return group.name === values.name && group.permissions === values.permissions
 }
 
 const updateSubmitDisabledReason = () => {
   if (isDemo.value) {
-    submitDisabledReason.value = 'Roles cannot be created or edited in demo mode'
+    submitDisabledReason.value = 'Groups cannot be created or edited in demo mode'
 
     return
   }
 
-  if (equalRole(values, props.role)) {
+  if (equalGroup(values, props.group)) {
     submitDisabledReason.value = 'Make changes to save'
 
     return
@@ -98,7 +98,7 @@ watch(
 )
 
 watch(
-  () => props.role,
+  () => props.group,
   () => updateSubmitDisabledReason(),
   { immediate: true }
 )
@@ -126,8 +126,8 @@ const permissionItems = [
   'type:write',
   'user:read',
   'user:write',
-  'role:read',
-  'role:write',
+  'group:read',
+  'group:write',
   'reaction:read',
   'reaction:write'
 ]
@@ -185,7 +185,7 @@ const permissionItems = [
             <span v-if="submitDisabledReason !== ''">
               {{ submitDisabledReason }}
             </span>
-            <span v-else> Save the role. </span>
+            <span v-else> Save the group. </span>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

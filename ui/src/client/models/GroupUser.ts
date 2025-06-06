@@ -18,167 +18,161 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface Users
+ * @interface GroupUser
  */
-export interface Users {
+export interface GroupUser {
   /**
    *
    * @type {string}
-   * @memberof Users
-   */
-  avatar: string
-  /**
-   *
-   * @type {string}
-   * @memberof Users
-   */
-  created: string
-  /**
-   *
-   * @type {string}
-   * @memberof Users
-   */
-  email: string
-  /**
-   *
-   * @type {boolean}
-   * @memberof Users
-   */
-  emailVisibility: boolean
-  /**
-   *
-   * @type {string}
-   * @memberof Users
+   * @memberof GroupUser
    */
   id: string
   /**
    *
    * @type {string}
-   * @memberof Users
+   * @memberof GroupUser
+   */
+  username: string
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  avatar: string
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  email: string
+  /**
+   *
+   * @type {boolean}
+   * @memberof GroupUser
+   */
+  emailVisibility: boolean
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
    */
   lastLoginAlertSentAt: string
   /**
    *
    * @type {string}
-   * @memberof Users
+   * @memberof GroupUser
    */
   lastResetSentAt: string
   /**
    *
    * @type {string}
-   * @memberof Users
+   * @memberof GroupUser
    */
   lastVerificationSentAt: string
   /**
    *
    * @type {string}
-   * @memberof Users
+   * @memberof GroupUser
    */
   name: string
   /**
    *
-   * @type {string}
-   * @memberof Users
-   */
-  passwordHash: string
-  /**
-   *
-   * @type {string}
-   * @memberof Users
-   */
-  tokenKey: string
-  /**
-   *
-   * @type {string}
-   * @memberof Users
-   */
-  updated: string
-  /**
-   *
-   * @type {string}
-   * @memberof Users
-   */
-  username: string
-  /**
-   *
    * @type {boolean}
-   * @memberof Users
+   * @memberof GroupUser
    */
   verified: boolean
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  type: string
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  created: string
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  updated: string
 }
 
 /**
- * Check if a given object implements the Users interface.
+ * Check if a given object implements the GroupUser interface.
  */
-export function instanceOfUsers(value: object): value is Users {
+export function instanceOfGroupUser(value: object): value is GroupUser {
+  if (!('id' in value) || value['id'] === undefined) return false
+  if (!('username' in value) || value['username'] === undefined) return false
   if (!('avatar' in value) || value['avatar'] === undefined) return false
-  if (!('created' in value) || value['created'] === undefined) return false
   if (!('email' in value) || value['email'] === undefined) return false
   if (!('emailVisibility' in value) || value['emailVisibility'] === undefined) return false
-  if (!('id' in value) || value['id'] === undefined) return false
   if (!('lastLoginAlertSentAt' in value) || value['lastLoginAlertSentAt'] === undefined)
     return false
   if (!('lastResetSentAt' in value) || value['lastResetSentAt'] === undefined) return false
   if (!('lastVerificationSentAt' in value) || value['lastVerificationSentAt'] === undefined)
     return false
   if (!('name' in value) || value['name'] === undefined) return false
-  if (!('passwordHash' in value) || value['passwordHash'] === undefined) return false
-  if (!('tokenKey' in value) || value['tokenKey'] === undefined) return false
-  if (!('updated' in value) || value['updated'] === undefined) return false
-  if (!('username' in value) || value['username'] === undefined) return false
   if (!('verified' in value) || value['verified'] === undefined) return false
+  if (!('type' in value) || value['type'] === undefined) return false
+  if (!('created' in value) || value['created'] === undefined) return false
+  if (!('updated' in value) || value['updated'] === undefined) return false
   return true
 }
 
-export function UsersFromJSON(json: any): Users {
-  return UsersFromJSONTyped(json, false)
+export function GroupUserFromJSON(json: any): GroupUser {
+  return GroupUserFromJSONTyped(json, false)
 }
 
-export function UsersFromJSONTyped(json: any, ignoreDiscriminator: boolean): Users {
+export function GroupUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): GroupUser {
   if (json == null) {
     return json
   }
   return {
+    id: json['id'],
+    username: json['username'],
     avatar: json['avatar'],
-    created: json['created'],
     email: json['email'],
     emailVisibility: json['emailVisibility'],
-    id: json['id'],
     lastLoginAlertSentAt: json['lastLoginAlertSentAt'],
     lastResetSentAt: json['lastResetSentAt'],
     lastVerificationSentAt: json['lastVerificationSentAt'],
     name: json['name'],
-    passwordHash: json['passwordHash'],
-    tokenKey: json['tokenKey'],
-    updated: json['updated'],
-    username: json['username'],
-    verified: json['verified']
+    verified: json['verified'],
+    type: json['type'],
+    created: json['created'],
+    updated: json['updated']
   }
 }
 
-export function UsersToJSON(json: any): Users {
-  return UsersToJSONTyped(json, false)
+export function GroupUserToJSON(json: any): GroupUser {
+  return GroupUserToJSONTyped(json, false)
 }
 
-export function UsersToJSONTyped(value?: Users | null, ignoreDiscriminator: boolean = false): any {
+export function GroupUserToJSONTyped(
+  value?: GroupUser | null,
+  ignoreDiscriminator: boolean = false
+): any {
   if (value == null) {
     return value
   }
 
   return {
+    id: value['id'],
+    username: value['username'],
     avatar: value['avatar'],
-    created: value['created'],
     email: value['email'],
     emailVisibility: value['emailVisibility'],
-    id: value['id'],
     lastLoginAlertSentAt: value['lastLoginAlertSentAt'],
     lastResetSentAt: value['lastResetSentAt'],
     lastVerificationSentAt: value['lastVerificationSentAt'],
     name: value['name'],
-    passwordHash: value['passwordHash'],
-    tokenKey: value['tokenKey'],
-    updated: value['updated'],
-    username: value['username'],
-    verified: value['verified']
+    verified: value['verified'],
+    type: value['type'],
+    created: value['created'],
+    updated: value['updated']
   }
 }

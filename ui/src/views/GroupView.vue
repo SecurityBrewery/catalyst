@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import GroupDisplay from '@/components/group/GroupDisplay.vue'
+import GroupList from '@/components/group/GroupList.vue'
+import GroupNew from '@/components/group/GroupNew.vue'
 import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ThreeColumn from '@/components/layout/ThreeColumn.vue'
-import RoleDisplay from '@/components/role/RoleDisplay.vue'
-import RoleList from '@/components/role/RoleList.vue'
-import RoleNew from '@/components/role/RoleNew.vue'
 
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -16,14 +16,14 @@ const id = computed(() => route.params.id as string)
 <template>
   <ThreeColumn :show-details="!!id">
     <template #list>
-      <RoleList />
+      <GroupList />
     </template>
     <template #single>
       <ColumnBody v-if="!id" class="items-center justify-center text-lg text-gray-500">
         No user selected
       </ColumnBody>
-      <RoleNew v-else-if="id === 'new'" key="new" />
-      <RoleDisplay v-else :key="id" :id="id" />
+      <GroupNew v-else-if="id === 'new'" key="new" />
+      <GroupDisplay v-else :key="id" :id="id" />
     </template>
   </ThreeColumn>
 </template>

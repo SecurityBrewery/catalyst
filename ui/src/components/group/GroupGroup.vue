@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
+import GroupSelectDialog from '@/components/group/GroupSelectDialog.vue'
 import PanelListElement from '@/components/layout/PanelListElement.vue'
-import RoleSelectDialog from '@/components/role/RoleSelectDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 import { useAPI } from '@/api'
-import type { RoleUser, UserRole } from '@/client'
+import type { GroupUser, UserGroup } from '@/client'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -24,9 +24,9 @@ const props = defineProps<{
   id: string
 }>()
 
-const { data: parentRoles } = useQuery({
-  queryKey: ['parent_roles', props.id],
-  queryFn: (): Promise<Array<UserRole>> => api.listParentRoles({ id: props.id })
+const { data: parentGroups } = useQuery({
+  queryKey: ['parent_groups', props.id],
+  queryFn: (): Promise<Array<UserGroup>> => api.listParentGroups({ id: props.id })
 })
 
 const { data: parentPermissions } = useQuery({
@@ -34,92 +34,92 @@ const { data: parentPermissions } = useQuery({
   queryFn: (): Promise<Array<string>> => api.listParentPermissions({ id: props.id })
 })
 
-const { data: childRoles } = useQuery({
-  queryKey: ['child_roles', props.id],
-  queryFn: (): Promise<Array<UserRole>> => api.listChildRoles({ id: props.id })
+const { data: childGroups } = useQuery({
+  queryKey: ['child_groups', props.id],
+  queryFn: (): Promise<Array<UserGroup>> => api.listChildGroups({ id: props.id })
 })
 
-const { data: roleUsers } = useQuery({
-  queryKey: ['role_users', props.id],
-  queryFn: (): Promise<Array<RoleUser>> => api.listRoleUsers({ id: props.id })
+const { data: groupUsers } = useQuery({
+  queryKey: ['group_users', props.id],
+  queryFn: (): Promise<Array<GroupUser>> => api.listGroupUsers({ id: props.id })
 })
 
-const addRoleUserMutation = useMutation({
+const addGroupUserMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.addUserRole({
+    api.addUserGroup({
       id: id,
-      roleRelation: {
-        roleId: props.id
+      groupRelation: {
+        groupId: props.id
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['role_users'] })
+    queryClient.invalidateQueries({ queryKey: ['group_users'] })
   },
   onError: handleError
 })
 
-const addRoleParentMutation = useMutation({
+const addGroupParentMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.addRoleParent({
+    api.addGroupParent({
       id: id,
-      roleRelation: {
-        roleId: props.id
+      groupRelation: {
+        groupId: props.id
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['parent_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['parent_groups'] })
     queryClient.invalidateQueries({ queryKey: ['parent_permissions'] })
   },
   onError: handleError
 })
 
-const addRoleChildMutation = useMutation({
+const addGroupChildMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.addRoleParent({
+    api.addGroupParent({
       id: props.id,
-      roleRelation: {
-        roleId: id
+      groupRelation: {
+        groupId: id
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['child_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['child_groups'] })
   },
   onError: handleError
 })
 
-const removeRoleUserMutation = useMutation({
+const removeGroupUserMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.removeUserRole({
+    api.removeUserGroup({
       id: id,
-      roleId: props.id
+      groupId: props.id
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['role_users'] })
+    queryClient.invalidateQueries({ queryKey: ['group_users'] })
   },
   onError: handleError
 })
 
-const removeRoleParentMutation = useMutation({
+const removeGroupParentMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.removeRoleParent({
+    api.removeGroupParent({
       id: id,
-      parentRoleId: props.id
+      parentGroupId: props.id
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['parent_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['parent_groups'] })
     queryClient.invalidateQueries({ queryKey: ['parent_permissions'] })
   },
   onError: handleError
 })
 
-const removeRoleChildMutation = useMutation({
+const removeGroupChildMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.removeRoleParent({
+    api.removeGroupParent({
       id: props.id,
-      parentRoleId: id
+      parentGroupId: id
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['child_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['child_groups'] })
   },
   onError: handleError
 })
@@ -128,18 +128,18 @@ const dialogOpenParent = ref(false)
 const dialogOpenChild = ref(false)
 const dialogOpenUser = ref(false)
 
-const selectParent = (role: { role: string }) => {
-  addRoleParentMutation.mutate(role.role)
+const selectParent = (group: { group: string }) => {
+  addGroupParentMutation.mutate(group.group)
   dialogOpenParent.value = false
 }
 
-const selectChild = (role: { role: string }) => {
-  addRoleChildMutation.mutate(role.role)
+const selectChild = (group: { group: string }) => {
+  addGroupChildMutation.mutate(group.group)
   dialogOpenChild.value = false
 }
 
 const selectUser = (user: { user: string }) => {
-  addRoleUserMutation.mutate(user.user)
+  addGroupUserMutation.mutate(user.user)
   dialogOpenUser.value = false
 }
 </script>
@@ -152,30 +152,30 @@ const selectUser = (user: { user: string }) => {
     <CardContent>
       <div class="flex flex-col gap-4">
         <TicketPanel title="Groups" @add="dialogOpenChild = true">
-          <RoleSelectDialog
+          <GroupSelectDialog
             v-model="dialogOpenChild"
             @select="selectChild"
-            :exclude="childRoles?.map((role) => role.id).concat([id]) ?? [id]"
+            :exclude="childGroups?.map((group) => group.id).concat([id]) ?? [id]"
           />
           <PanelListElement
-            v-for="roleRole in childRoles"
-            :key="roleRole.id"
+            v-for="groupGroup in childGroups"
+            :key="groupGroup.id"
             class="flex h-10 flex-row items-center pr-1"
           >
             <div class="flex flex-1 items-center overflow-hidden">
               <RouterLink
-                :to="{ name: 'groups', params: { id: roleRole.id } }"
+                :to="{ name: 'groups', params: { id: groupGroup.id } }"
                 class="hover:underline"
               >
-                {{ roleRole.name }}
+                {{ groupGroup.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ roleRole.type }})</span>
+              <span class="ml-1 text-sm text-muted-foreground">({{ groupGroup.type }})</span>
             </div>
             <DeleteDialog
-              v-if="roleRole.type === 'direct'"
-              :name="roleRole.name"
+              v-if="groupGroup.type === 'direct'"
+              :name="groupGroup.name"
               singular="Group"
-              @delete="removeRoleChildMutation.mutate(roleRole.id)"
+              @delete="removeGroupChildMutation.mutate(groupGroup.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
                 <Trash2 class="size-4" />
@@ -183,7 +183,7 @@ const selectUser = (user: { user: string }) => {
             </DeleteDialog>
           </PanelListElement>
           <div
-            v-if="!childRoles || childRoles.length === 0"
+            v-if="!childGroups || childGroups.length === 0"
             class="flex h-10 items-center p-4 text-sm text-muted-foreground"
           >
             No groups assigned yet.
@@ -196,27 +196,27 @@ const selectUser = (user: { user: string }) => {
           <UserSelectDialog
             v-model="dialogOpenUser"
             @select="selectUser"
-            :exclude="roleUsers?.map((user) => user.id) ?? []"
+            :exclude="groupUsers?.map((user) => user.id) ?? []"
           />
           <PanelListElement
-            v-for="roleUser in roleUsers"
-            :key="roleUser.id"
+            v-for="groupUser in groupUsers"
+            :key="groupUser.id"
             class="flex h-10 flex-row items-center pr-1"
           >
             <div class="flex flex-1 items-center overflow-hidden">
               <RouterLink
-                :to="{ name: 'users', params: { id: roleUser.id } }"
+                :to="{ name: 'users', params: { id: groupUser.id } }"
                 class="hover:underline"
               >
-                {{ roleUser.name }}
+                {{ groupUser.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ roleUser.type }})</span>
+              <span class="ml-1 text-sm text-muted-foreground">({{ groupUser.type }})</span>
             </div>
             <DeleteDialog
-              v-if="roleUser.type === 'direct'"
-              :name="roleUser.name"
+              v-if="groupUser.type === 'direct'"
+              :name="groupUser.name"
               singular="User"
-              @delete="removeRoleUserMutation.mutate(roleUser.id)"
+              @delete="removeGroupUserMutation.mutate(groupUser.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
                 <Trash2 class="size-4" />
@@ -224,7 +224,7 @@ const selectUser = (user: { user: string }) => {
             </DeleteDialog>
           </PanelListElement>
           <div
-            v-if="!roleUsers || roleUsers.length === 0"
+            v-if="!groupUsers || groupUsers.length === 0"
             class="flex h-10 items-center p-4 text-sm text-muted-foreground"
           >
             No users assigned yet.
@@ -241,30 +241,30 @@ const selectUser = (user: { user: string }) => {
     <CardContent>
       <div class="mt-4 flex flex-col gap-4">
         <TicketPanel title="Groups" @add="dialogOpenParent = true">
-          <RoleSelectDialog
+          <GroupSelectDialog
             v-model="dialogOpenParent"
             @select="selectParent"
-            :exclude="parentRoles?.map((role) => role.id).concat([id]) ?? [id]"
+            :exclude="parentGroups?.map((group) => group.id).concat([id]) ?? [id]"
           />
           <PanelListElement
-            v-for="roleRole in parentRoles"
-            :key="roleRole.id"
+            v-for="groupGroup in parentGroups"
+            :key="groupGroup.id"
             class="flex h-10 flex-row items-center pr-1"
           >
             <div class="flex flex-1 items-center overflow-hidden">
               <RouterLink
-                :to="{ name: 'groups', params: { id: roleRole.id } }"
+                :to="{ name: 'groups', params: { id: groupGroup.id } }"
                 class="hover:underline"
               >
-                {{ roleRole.name }}
+                {{ groupGroup.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ roleRole.type }})</span>
+              <span class="ml-1 text-sm text-muted-foreground">({{ groupGroup.type }})</span>
             </div>
             <DeleteDialog
-              v-if="roleRole.type === 'direct'"
-              :name="roleRole.name"
+              v-if="groupGroup.type === 'direct'"
+              :name="groupGroup.name"
               singular="Group"
-              @delete="removeRoleParentMutation.mutate(roleRole.id)"
+              @delete="removeGroupParentMutation.mutate(groupGroup.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
                 <Trash2 class="size-4" />
@@ -272,7 +272,7 @@ const selectUser = (user: { user: string }) => {
             </DeleteDialog>
           </PanelListElement>
           <div
-            v-if="!parentRoles || parentRoles.length === 0"
+            v-if="!parentGroups || parentGroups.length === 0"
             class="flex h-10 items-center p-4 text-sm text-muted-foreground"
           >
             No groups assigned yet.

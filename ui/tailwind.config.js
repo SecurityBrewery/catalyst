@@ -1,3 +1,4 @@
+/* eslint-env node */
 const animate = require('tailwindcss-animate')
 const typography = require('@tailwindcss/typography')
 

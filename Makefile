@@ -132,6 +132,7 @@ sqlc:
 openapi:
 	@echo "OpenAPI..."
 	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
+	rm -r ui/src/client
 	openapi-generator generate -i app/openapi/openapi.yml -g typescript-fetch -o ui/src/client
 	@echo "Done."
 

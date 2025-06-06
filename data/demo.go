@@ -59,9 +59,9 @@ func GenerateDemoData(ctx context.Context, queries *sqlc.Queries, userCount, tic
 		return fmt.Errorf("failed to create reaction records: %w", err)
 	}
 
-	err = generateRoles(ctx, queries, users)
+	err = generateGroups(ctx, queries, users)
 	if err != nil {
-		return fmt.Errorf("failed to create role records: %w", err)
+		return fmt.Errorf("failed to create group records: %w", err)
 	}
 
 	return nil
@@ -356,105 +356,105 @@ func generateReactions(ctx context.Context, queries *sqlc.Queries) error {
 	return nil
 }
 
-func generateRoles(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
-	_, err := queries.CreateRole(ctx, sqlc.CreateRoleParams{
+func generateGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
+	_, err := queries.CreateGroup(ctx, sqlc.CreateGroupParams{
 		ID:          "team-ir",
 		Name:        "IR Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create IR team role: %w", err)
+		return fmt.Errorf("failed to create IR team group: %w", err)
 	}
 
-	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
 		ID:          "team-seceng",
 		Name:        "Security Engineering Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create IR team role: %w", err)
+		return fmt.Errorf("failed to create IR team group: %w", err)
 	}
 
-	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
+	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
 		ID:          "team-security",
 		Name:        "Security Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create security team role: %w", err)
+		return fmt.Errorf("failed to create security team group: %w", err)
 	}
 
-	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
-		ID:          "r-admin",
+	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
+		ID:          "g-admin",
 		Name:        "Administrator",
 		Permissions: permission.ToJSONArray(ctx, permission.AllPermissions()),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create admin role: %w", err)
+		return fmt.Errorf("failed to create admin group: %w", err)
 	}
 
-	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
-		ID:          "r-analyst",
+	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
+		ID:          "g-analyst",
 		Name:        "Analyst",
 		Permissions: permission.ToJSONArray(ctx, permission.Default()),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create analyst role: %w", err)
+		return fmt.Errorf("failed to create analyst group: %w", err)
 	}
 
-	_, err = queries.CreateRole(ctx, sqlc.CreateRoleParams{
-		ID:          "r-engineer",
+	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
+		ID:          "g-engineer",
 		Name:        "Engineer",
 		Permissions: permission.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create analyst role: %w", err)
+		return fmt.Errorf("failed to create analyst group: %w", err)
 	}
 
 	for _, user := range users {
-		role := gofakeit.RandomString([]string{"team-seceng", "team-ir"})
+		group := gofakeit.RandomString([]string{"team-seceng", "team-ir"})
 		if user.ID == "u_test" {
-			role = "r-admin"
+			group = "g-admin"
 		}
 
-		if err := queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
-			UserID: user.ID,
-			RoleID: role,
+		if err := queries.AssignGroupToUser(ctx, sqlc.AssignGroupToUserParams{
+			UserID:  user.ID,
+			GroupID: group,
 		}); err != nil {
-			return fmt.Errorf("failed to assign role %s to user %s: %w", role, user.ID, err)
+			return fmt.Errorf("failed to assign group %s to user %s: %w", group, user.ID, err)
 		}
 	}
 
-	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
-		ParentRoleID: "team-ir",
-		ChildRoleID:  "r-analyst",
+	err = queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
+		ParentGroupID: "team-ir",
+		ChildGroupID:  "g-analyst",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to assign parent role: %w", err)
+		return fmt.Errorf("failed to assign parent group: %w", err)
 	}
 
-	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
-		ParentRoleID: "team-seceng",
-		ChildRoleID:  "r-engineer",
+	err = queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
+		ParentGroupID: "team-seceng",
+		ChildGroupID:  "g-engineer",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to assign parent role: %w", err)
+		return fmt.Errorf("failed to assign parent group: %w", err)
 	}
 
-	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
-		ParentRoleID: "team-ir",
-		ChildRoleID:  "team-security",
+	err = queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
+		ParentGroupID: "team-ir",
+		ChildGroupID:  "team-security",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to assign parent role: %w", err)
+		return fmt.Errorf("failed to assign parent group: %w", err)
 	}
 
-	err = queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
-		ParentRoleID: "team-seceng",
-		ChildRoleID:  "team-security",
+	err = queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
+		ParentGroupID: "team-seceng",
+		ChildGroupID:  "team-security",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to assign parent role: %w", err)
+		return fmt.Errorf("failed to assign parent group: %w", err)
 	}
 
 	return nil

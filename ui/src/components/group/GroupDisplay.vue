@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import TanView from '@/components/TanView.vue'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
+import GroupForm from '@/components/group/GroupForm.vue'
+import GroupGroup from '@/components/group/GroupGroup.vue'
 import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
-import RoleForm from '@/components/role/RoleForm.vue'
-import RoleRole from '@/components/role/RoleRole.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -15,7 +15,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { Role, RoleUpdate } from '@/client/models'
+import type { Group, GroupUpdate } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -30,25 +30,25 @@ const props = defineProps<{
 const {
   isPending,
   isError,
-  data: role,
+  data: group,
   error
 } = useQuery({
-  queryKey: ['roles', props.id],
-  queryFn: (): Promise<Role> => api.getRole({ id: props.id })
+  queryKey: ['groups', props.id],
+  queryFn: (): Promise<Group> => api.getGroup({ id: props.id })
 })
 
-const updateRoleMutation = useMutation({
-  mutationFn: (update: RoleUpdate) => api.updateRole({ id: props.id, roleUpdate: update }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['roles'] }),
+const updateGroupMutation = useMutation({
+  mutationFn: (update: GroupUpdate) => api.updateGroup({ id: props.id, groupUpdate: update }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['groups'] }),
   onError: handleError
 })
 
 const deleteMutation = useMutation({
   mutationFn: () => {
-    return api.deleteRole({ id: props.id })
+    return api.deleteGroup({ id: props.id })
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['roles'] })
+    queryClient.invalidateQueries({ queryKey: ['groups'] })
     router.push({ name: 'groups' })
   },
   onError: handleError
@@ -64,22 +64,22 @@ const deleteMutation = useMutation({
       </Button>
       <div class="ml-auto">
         <DeleteDialog
-          v-if="role"
-          :name="role.name"
+          v-if="group"
+          :name="group.name"
           singular="Group"
           @delete="deleteMutation.mutate"
         />
       </div>
     </ColumnHeader>
 
-    <ColumnBody v-if="role">
+    <ColumnBody v-if="group">
       <ColumnBodyContainer>
         <div class="flex flex-col gap-4 xl:flex-row">
           <div class="flex flex-col gap-4 xl:flex-1">
-            <RoleForm :role="role" @submit="updateRoleMutation.mutate" />
+            <GroupForm :role="group" @submit="updateGroupMutation.mutate" />
           </div>
           <div class="flex w-full flex-col gap-4 xl:w-96 xl:shrink-0">
-            <RoleRole :id="role.id" />
+            <GroupGroup :id="group.id" />
           </div>
         </div>
       </ColumnBodyContainer>

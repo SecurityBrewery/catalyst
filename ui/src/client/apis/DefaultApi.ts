@@ -21,13 +21,17 @@ import type {
   ExtendedTask,
   ExtendedTicket,
   FileUpdate,
+  Group,
+  GroupRelation,
+  GroupUpdate,
+  GroupUser,
   Link,
   LinkUpdate,
   NewComment,
   NewFile,
+  NewGroup,
   NewLink,
   NewReaction,
-  NewRole,
   NewTask,
   NewTicket,
   NewTimelineEntry,
@@ -36,10 +40,6 @@ import type {
   NewWebhook,
   Reaction,
   ReactionUpdate,
-  Role,
-  RoleRelation,
-  RoleUpdate,
-  RoleUser,
   Sidebar,
   Task,
   TaskUpdate,
@@ -51,7 +51,7 @@ import type {
   Type,
   TypeUpdate,
   User,
-  UserRole,
+  UserGroup,
   UserUpdate,
   Webhook,
   WebhookUpdate
@@ -71,6 +71,14 @@ import {
   ExtendedTicketToJSON,
   FileUpdateFromJSON,
   FileUpdateToJSON,
+  GroupFromJSON,
+  GroupRelationFromJSON,
+  GroupRelationToJSON,
+  GroupToJSON,
+  GroupUpdateFromJSON,
+  GroupUpdateToJSON,
+  GroupUserFromJSON,
+  GroupUserToJSON,
   LinkFromJSON,
   LinkToJSON,
   LinkUpdateFromJSON,
@@ -79,12 +87,12 @@ import {
   NewCommentToJSON,
   NewFileFromJSON,
   NewFileToJSON,
+  NewGroupFromJSON,
+  NewGroupToJSON,
   NewLinkFromJSON,
   NewLinkToJSON,
   NewReactionFromJSON,
   NewReactionToJSON,
-  NewRoleFromJSON,
-  NewRoleToJSON,
   NewTaskFromJSON,
   NewTaskToJSON,
   NewTicketFromJSON,
@@ -101,14 +109,6 @@ import {
   ReactionToJSON,
   ReactionUpdateFromJSON,
   ReactionUpdateToJSON,
-  RoleFromJSON,
-  RoleRelationFromJSON,
-  RoleRelationToJSON,
-  RoleToJSON,
-  RoleUpdateFromJSON,
-  RoleUpdateToJSON,
-  RoleUserFromJSON,
-  RoleUserToJSON,
   SidebarFromJSON,
   SidebarToJSON,
   TaskFromJSON,
@@ -130,8 +130,8 @@ import {
   TypeUpdateFromJSON,
   TypeUpdateToJSON,
   UserFromJSON,
-  UserRoleFromJSON,
-  UserRoleToJSON,
+  UserGroupFromJSON,
+  UserGroupToJSON,
   UserToJSON,
   UserUpdateFromJSON,
   UserUpdateToJSON,
@@ -142,14 +142,14 @@ import {
 } from '../models/index'
 import * as runtime from '../runtime'
 
-export interface AddRoleParentRequest {
+export interface AddGroupParentRequest {
   id: string
-  roleRelation: RoleRelation
+  groupRelation: GroupRelation
 }
 
-export interface AddUserRoleRequest {
+export interface AddUserGroupRequest {
   id: string
-  roleRelation: RoleRelation
+  groupRelation: GroupRelation
 }
 
 export interface CreateCommentRequest {
@@ -160,16 +160,16 @@ export interface CreateFileRequest {
   newFile: NewFile
 }
 
+export interface CreateGroupRequest {
+  newGroup: NewGroup
+}
+
 export interface CreateLinkRequest {
   newLink: NewLink
 }
 
 export interface CreateReactionRequest {
   newReaction: NewReaction
-}
-
-export interface CreateRoleRequest {
-  newRole: NewRole
 }
 
 export interface CreateTaskRequest {
@@ -204,15 +204,15 @@ export interface DeleteFileRequest {
   id: string
 }
 
+export interface DeleteGroupRequest {
+  id: string
+}
+
 export interface DeleteLinkRequest {
   id: string
 }
 
 export interface DeleteReactionRequest {
-  id: string
-}
-
-export interface DeleteRoleRequest {
   id: string
 }
 
@@ -252,15 +252,15 @@ export interface GetFileRequest {
   id: string
 }
 
+export interface GetGroupRequest {
+  id: string
+}
+
 export interface GetLinkRequest {
   id: string
 }
 
 export interface GetReactionRequest {
-  id: string
-}
-
-export interface GetRoleRequest {
   id: string
 }
 
@@ -288,7 +288,7 @@ export interface GetWebhookRequest {
   id: string
 }
 
-export interface ListChildRolesRequest {
+export interface ListChildGroupsRequest {
   id: string
 }
 
@@ -304,30 +304,30 @@ export interface ListFilesRequest {
   limit?: number
 }
 
+export interface ListGroupUsersRequest {
+  id: string
+}
+
+export interface ListGroupsRequest {
+  offset?: number
+  limit?: number
+}
+
 export interface ListLinksRequest {
   ticket?: string
   offset?: number
   limit?: number
 }
 
+export interface ListParentGroupsRequest {
+  id: string
+}
+
 export interface ListParentPermissionsRequest {
   id: string
 }
 
-export interface ListParentRolesRequest {
-  id: string
-}
-
 export interface ListReactionsRequest {
-  offset?: number
-  limit?: number
-}
-
-export interface ListRoleUsersRequest {
-  id: string
-}
-
-export interface ListRolesRequest {
   offset?: number
   limit?: number
 }
@@ -354,11 +354,11 @@ export interface ListTypesRequest {
   limit?: number
 }
 
-export interface ListUserPermissionsRequest {
+export interface ListUserGroupsRequest {
   id: string
 }
 
-export interface ListUserRolesRequest {
+export interface ListUserPermissionsRequest {
   id: string
 }
 
@@ -372,14 +372,14 @@ export interface ListWebhooksRequest {
   limit?: number
 }
 
-export interface RemoveRoleParentRequest {
+export interface RemoveGroupParentRequest {
   id: string
-  parentRoleId: string
+  parentGroupId: string
 }
 
-export interface RemoveUserRoleRequest {
+export interface RemoveUserGroupRequest {
   id: string
-  roleId: string
+  groupId: string
 }
 
 export interface SearchTicketsRequest {
@@ -400,6 +400,11 @@ export interface UpdateFileRequest {
   fileUpdate: FileUpdate
 }
 
+export interface UpdateGroupRequest {
+  id: string
+  groupUpdate: GroupUpdate
+}
+
 export interface UpdateLinkRequest {
   id: string
   linkUpdate: LinkUpdate
@@ -408,11 +413,6 @@ export interface UpdateLinkRequest {
 export interface UpdateReactionRequest {
   id: string
   reactionUpdate: ReactionUpdate
-}
-
-export interface UpdateRoleRequest {
-  id: string
-  roleUpdate: RoleUpdate
 }
 
 export interface UpdateTaskRequest {
@@ -450,23 +450,23 @@ export interface UpdateWebhookRequest {
  */
 export class DefaultApi extends runtime.BaseAPI {
   /**
-   * Add a parent role to another role
+   * Add a parent group to another group
    */
-  async addRoleParentRaw(
-    requestParameters: AddRoleParentRequest,
+  async addGroupParentRaw(
+    requestParameters: AddGroupParentRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<runtime.ApiResponse<void>> {
     if (requestParameters['id'] == null) {
       throw new runtime.RequiredError(
         'id',
-        'Required parameter "id" was null or undefined when calling addRoleParent().'
+        'Required parameter "id" was null or undefined when calling addGroupParent().'
       )
     }
 
-    if (requestParameters['roleRelation'] == null) {
+    if (requestParameters['groupRelation'] == null) {
       throw new runtime.RequiredError(
-        'roleRelation',
-        'Required parameter "roleRelation" was null or undefined when calling addRoleParent().'
+        'groupRelation',
+        'Required parameter "groupRelation" was null or undefined when calling addGroupParent().'
       )
     }
 
@@ -478,14 +478,14 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/roles/{id}/parents`.replace(
+        path: `/groups/{id}/parents`.replace(
           `{${'id'}}`,
           encodeURIComponent(String(requestParameters['id']))
         ),
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
-        body: RoleRelationToJSON(requestParameters['roleRelation'])
+        body: GroupRelationToJSON(requestParameters['groupRelation'])
       },
       initOverrides
     )
@@ -494,33 +494,33 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * Add a parent role to another role
+   * Add a parent group to another group
    */
-  async addRoleParent(
-    requestParameters: AddRoleParentRequest,
+  async addGroupParent(
+    requestParameters: AddGroupParentRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
-    await this.addRoleParentRaw(requestParameters, initOverrides)
+    await this.addGroupParentRaw(requestParameters, initOverrides)
   }
 
   /**
-   * Add a role to a user
+   * Add a group to a user
    */
-  async addUserRoleRaw(
-    requestParameters: AddUserRoleRequest,
+  async addUserGroupRaw(
+    requestParameters: AddUserGroupRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<runtime.ApiResponse<void>> {
     if (requestParameters['id'] == null) {
       throw new runtime.RequiredError(
         'id',
-        'Required parameter "id" was null or undefined when calling addUserRole().'
+        'Required parameter "id" was null or undefined when calling addUserGroup().'
       )
     }
 
-    if (requestParameters['roleRelation'] == null) {
+    if (requestParameters['groupRelation'] == null) {
       throw new runtime.RequiredError(
-        'roleRelation',
-        'Required parameter "roleRelation" was null or undefined when calling addUserRole().'
+        'groupRelation',
+        'Required parameter "groupRelation" was null or undefined when calling addUserGroup().'
       )
     }
 
@@ -532,14 +532,14 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/users/{id}/roles`.replace(
+        path: `/users/{id}/groups`.replace(
           `{${'id'}}`,
           encodeURIComponent(String(requestParameters['id']))
         ),
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
-        body: RoleRelationToJSON(requestParameters['roleRelation'])
+        body: GroupRelationToJSON(requestParameters['groupRelation'])
       },
       initOverrides
     )
@@ -548,13 +548,13 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * Add a role to a user
+   * Add a group to a user
    */
-  async addUserRole(
-    requestParameters: AddUserRoleRequest,
+  async addUserGroup(
+    requestParameters: AddUserGroupRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
-    await this.addUserRoleRaw(requestParameters, initOverrides)
+    await this.addUserGroupRaw(requestParameters, initOverrides)
   }
 
   /**
@@ -652,6 +652,51 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * Create a new group
+   */
+  async createGroupRaw(
+    requestParameters: CreateGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Group>> {
+    if (requestParameters['newGroup'] == null) {
+      throw new runtime.RequiredError(
+        'newGroup',
+        'Required parameter "newGroup" was null or undefined when calling createGroup().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    const response = await this.request(
+      {
+        path: `/groups`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: NewGroupToJSON(requestParameters['newGroup'])
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => GroupFromJSON(jsonValue))
+  }
+
+  /**
+   * Create a new group
+   */
+  async createGroup(
+    requestParameters: CreateGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Group> {
+    const response = await this.createGroupRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * Create a new link
    */
   async createLinkRaw(
@@ -738,51 +783,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Reaction> {
     const response = await this.createReactionRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Create a new role
-   */
-  async createRoleRaw(
-    requestParameters: CreateRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Role>> {
-    if (requestParameters['newRole'] == null) {
-      throw new runtime.RequiredError(
-        'newRole',
-        'Required parameter "newRole" was null or undefined when calling createRole().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    headerParameters['Content-Type'] = 'application/json'
-
-    const response = await this.request(
-      {
-        path: `/roles`,
-        method: 'POST',
-        headers: headerParameters,
-        query: queryParameters,
-        body: NewRoleToJSON(requestParameters['newRole'])
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue))
-  }
-
-  /**
-   * Create a new role
-   */
-  async createRole(
-    requestParameters: CreateRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Role> {
-    const response = await this.createRoleRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -1145,6 +1145,50 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * Delete a group by ID
+   */
+  async deleteGroupRaw(
+    requestParameters: DeleteGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling deleteGroup().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/groups/{id}`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * Delete a group by ID
+   */
+  async deleteGroup(
+    requestParameters: DeleteGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.deleteGroupRaw(requestParameters, initOverrides)
+  }
+
+  /**
    * Delete a link by ID
    */
   async deleteLinkRaw(
@@ -1230,50 +1274,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
     await this.deleteReactionRaw(requestParameters, initOverrides)
-  }
-
-  /**
-   * Delete a role by ID
-   */
-  async deleteRoleRaw(
-    requestParameters: DeleteRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling deleteRole().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/roles/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'DELETE',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.VoidApiResponse(response)
-  }
-
-  /**
-   * Delete a role by ID
-   */
-  async deleteRole(
-    requestParameters: DeleteRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<void> {
-    await this.deleteRoleRaw(requestParameters, initOverrides)
   }
 
   /**
@@ -1714,6 +1714,51 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * Get a single group by ID
+   */
+  async getGroupRaw(
+    requestParameters: GetGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Group>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling getGroup().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/groups/{id}`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => GroupFromJSON(jsonValue))
+  }
+
+  /**
+   * Get a single group by ID
+   */
+  async getGroup(
+    requestParameters: GetGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Group> {
+    const response = await this.getGroupRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * Get a single link by ID
    */
   async getLinkRaw(
@@ -1800,51 +1845,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Reaction> {
     const response = await this.getReactionRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Get a single role by ID
-   */
-  async getRoleRaw(
-    requestParameters: GetRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Role>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling getRole().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/roles/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue))
-  }
-
-  /**
-   * Get a single role by ID
-   */
-  async getRole(
-    requestParameters: GetRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Role> {
-    const response = await this.getRoleRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2152,16 +2152,16 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * List all child roles for a role
+   * List all child groups for a group
    */
-  async listChildRolesRaw(
-    requestParameters: ListChildRolesRequest,
+  async listChildGroupsRaw(
+    requestParameters: ListChildGroupsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
+  ): Promise<runtime.ApiResponse<Array<UserGroup>>> {
     if (requestParameters['id'] == null) {
       throw new runtime.RequiredError(
         'id',
-        'Required parameter "id" was null or undefined when calling listChildRoles().'
+        'Required parameter "id" was null or undefined when calling listChildGroups().'
       )
     }
 
@@ -2171,7 +2171,7 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/roles/{id}/children`.replace(
+        path: `/groups/{id}/children`.replace(
           `{${'id'}}`,
           encodeURIComponent(String(requestParameters['id']))
         ),
@@ -2182,17 +2182,17 @@ export class DefaultApi extends runtime.BaseAPI {
       initOverrides
     )
 
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserGroupFromJSON))
   }
 
   /**
-   * List all child roles for a role
+   * List all child groups for a group
    */
-  async listChildRoles(
-    requestParameters: ListChildRolesRequest,
+  async listChildGroups(
+    requestParameters: ListChildGroupsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<UserRole>> {
-    const response = await this.listChildRolesRaw(requestParameters, initOverrides)
+  ): Promise<Array<UserGroup>> {
+    const response = await this.listChildGroupsRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2293,6 +2293,94 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * List all users for a group
+   */
+  async listGroupUsersRaw(
+    requestParameters: ListGroupUsersRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<GroupUser>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listGroupUsers().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/groups/{id}/users`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(GroupUserFromJSON))
+  }
+
+  /**
+   * List all users for a group
+   */
+  async listGroupUsers(
+    requestParameters: ListGroupUsersRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<GroupUser>> {
+    const response = await this.listGroupUsersRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * List all groups
+   */
+  async listGroupsRaw(
+    requestParameters: ListGroupsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<Group>>> {
+    const queryParameters: any = {}
+
+    if (requestParameters['offset'] != null) {
+      queryParameters['offset'] = requestParameters['offset']
+    }
+
+    if (requestParameters['limit'] != null) {
+      queryParameters['limit'] = requestParameters['limit']
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/groups`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(GroupFromJSON))
+  }
+
+  /**
+   * List all groups
+   */
+  async listGroups(
+    requestParameters: ListGroupsRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<Group>> {
+    const response = await this.listGroupsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * List all links
    */
   async listLinksRaw(
@@ -2340,7 +2428,52 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * List all permissions for a role
+   * List all parent groups for a group
+   */
+  async listParentGroupsRaw(
+    requestParameters: ListParentGroupsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UserGroup>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listParentGroups().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/groups/{id}/parents`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserGroupFromJSON))
+  }
+
+  /**
+   * List all parent groups for a group
+   */
+  async listParentGroups(
+    requestParameters: ListParentGroupsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UserGroup>> {
+    const response = await this.listParentGroupsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * List all permissions for a group
    */
   async listParentPermissionsRaw(
     requestParameters: ListParentPermissionsRequest,
@@ -2359,7 +2492,7 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/roles/{id}/permissions`.replace(
+        path: `/groups/{id}/permissions`.replace(
           `{${'id'}}`,
           encodeURIComponent(String(requestParameters['id']))
         ),
@@ -2374,58 +2507,13 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * List all permissions for a role
+   * List all permissions for a group
    */
   async listParentPermissions(
     requestParameters: ListParentPermissionsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<string>> {
     const response = await this.listParentPermissionsRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * List all parent roles for a role
-   */
-  async listParentRolesRaw(
-    requestParameters: ListParentRolesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling listParentRoles().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/roles/{id}/parents`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
-  }
-
-  /**
-   * List all parent roles for a role
-   */
-  async listParentRoles(
-    requestParameters: ListParentRolesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<UserRole>> {
-    const response = await this.listParentRolesRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2469,94 +2557,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<Reaction>> {
     const response = await this.listReactionsRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * List all users for a role
-   */
-  async listRoleUsersRaw(
-    requestParameters: ListRoleUsersRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<RoleUser>>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling listRoleUsers().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/roles/{id}/users`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RoleUserFromJSON))
-  }
-
-  /**
-   * List all users for a role
-   */
-  async listRoleUsers(
-    requestParameters: ListRoleUsersRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<RoleUser>> {
-    const response = await this.listRoleUsersRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * List all roles
-   */
-  async listRolesRaw(
-    requestParameters: ListRolesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<Role>>> {
-    const queryParameters: any = {}
-
-    if (requestParameters['offset'] != null) {
-      queryParameters['offset'] = requestParameters['offset']
-    }
-
-    if (requestParameters['limit'] != null) {
-      queryParameters['limit'] = requestParameters['limit']
-    }
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/roles`,
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RoleFromJSON))
-  }
-
-  /**
-   * List all roles
-   */
-  async listRoles(
-    requestParameters: ListRolesRequest = {},
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<Role>> {
-    const response = await this.listRolesRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2745,6 +2745,51 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * List all groups for a user
+   */
+  async listUserGroupsRaw(
+    requestParameters: ListUserGroupsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Array<UserGroup>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling listUserGroups().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/users/{id}/groups`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserGroupFromJSON))
+  }
+
+  /**
+   * List all groups for a user
+   */
+  async listUserGroups(
+    requestParameters: ListUserGroupsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Array<UserGroup>> {
+    const response = await this.listUserGroupsRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * List all permissions for a user
    */
   async listUserPermissionsRaw(
@@ -2786,51 +2831,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Array<string>> {
     const response = await this.listUserPermissionsRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * List all roles for a user
-   */
-  async listUserRolesRaw(
-    requestParameters: ListUserRolesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Array<UserRole>>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling listUserRoles().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    const response = await this.request(
-      {
-        path: `/users/{id}/roles`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'GET',
-        headers: headerParameters,
-        query: queryParameters
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserRoleFromJSON))
-  }
-
-  /**
-   * List all roles for a user
-   */
-  async listUserRoles(
-    requestParameters: ListUserRolesRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Array<UserRole>> {
-    const response = await this.listUserRolesRaw(requestParameters, initOverrides)
     return await response.value()
   }
 
@@ -2921,23 +2921,23 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * Remove a parent role from another role
+   * Remove a parent group from another group
    */
-  async removeRoleParentRaw(
-    requestParameters: RemoveRoleParentRequest,
+  async removeGroupParentRaw(
+    requestParameters: RemoveGroupParentRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<runtime.ApiResponse<void>> {
     if (requestParameters['id'] == null) {
       throw new runtime.RequiredError(
         'id',
-        'Required parameter "id" was null or undefined when calling removeRoleParent().'
+        'Required parameter "id" was null or undefined when calling removeGroupParent().'
       )
     }
 
-    if (requestParameters['parentRoleId'] == null) {
+    if (requestParameters['parentGroupId'] == null) {
       throw new runtime.RequiredError(
-        'parentRoleId',
-        'Required parameter "parentRoleId" was null or undefined when calling removeRoleParent().'
+        'parentGroupId',
+        'Required parameter "parentGroupId" was null or undefined when calling removeGroupParent().'
       )
     }
 
@@ -2947,11 +2947,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/roles/{id}/roles/{parentRoleId}`
+        path: `/groups/{id}/groups/{parentGroupId}`
           .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
           .replace(
-            `{${'parentRoleId'}}`,
-            encodeURIComponent(String(requestParameters['parentRoleId']))
+            `{${'parentGroupId'}}`,
+            encodeURIComponent(String(requestParameters['parentGroupId']))
           ),
         method: 'DELETE',
         headers: headerParameters,
@@ -2964,33 +2964,33 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * Remove a parent role from another role
+   * Remove a parent group from another group
    */
-  async removeRoleParent(
-    requestParameters: RemoveRoleParentRequest,
+  async removeGroupParent(
+    requestParameters: RemoveGroupParentRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
-    await this.removeRoleParentRaw(requestParameters, initOverrides)
+    await this.removeGroupParentRaw(requestParameters, initOverrides)
   }
 
   /**
-   * Remove a role from a user
+   * Remove a group from a user
    */
-  async removeUserRoleRaw(
-    requestParameters: RemoveUserRoleRequest,
+  async removeUserGroupRaw(
+    requestParameters: RemoveUserGroupRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<runtime.ApiResponse<void>> {
     if (requestParameters['id'] == null) {
       throw new runtime.RequiredError(
         'id',
-        'Required parameter "id" was null or undefined when calling removeUserRole().'
+        'Required parameter "id" was null or undefined when calling removeUserGroup().'
       )
     }
 
-    if (requestParameters['roleId'] == null) {
+    if (requestParameters['groupId'] == null) {
       throw new runtime.RequiredError(
-        'roleId',
-        'Required parameter "roleId" was null or undefined when calling removeUserRole().'
+        'groupId',
+        'Required parameter "groupId" was null or undefined when calling removeUserGroup().'
       )
     }
 
@@ -3000,9 +3000,9 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const response = await this.request(
       {
-        path: `/users/{id}/roles/{roleId}`
+        path: `/users/{id}/groups/{groupId}`
           .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
-          .replace(`{${'roleId'}}`, encodeURIComponent(String(requestParameters['roleId']))),
+          .replace(`{${'groupId'}}`, encodeURIComponent(String(requestParameters['groupId']))),
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -3014,13 +3014,13 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
-   * Remove a role from a user
+   * Remove a group from a user
    */
-  async removeUserRole(
-    requestParameters: RemoveUserRoleRequest,
+  async removeUserGroup(
+    requestParameters: RemoveUserGroupRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<void> {
-    await this.removeUserRoleRaw(requestParameters, initOverrides)
+    await this.removeUserGroupRaw(requestParameters, initOverrides)
   }
 
   /**
@@ -3193,6 +3193,61 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * Update a group by ID
+   */
+  async updateGroupRaw(
+    requestParameters: UpdateGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Group>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling updateGroup().'
+      )
+    }
+
+    if (requestParameters['groupUpdate'] == null) {
+      throw new runtime.RequiredError(
+        'groupUpdate',
+        'Required parameter "groupUpdate" was null or undefined when calling updateGroup().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    const response = await this.request(
+      {
+        path: `/groups/{id}`.replace(
+          `{${'id'}}`,
+          encodeURIComponent(String(requestParameters['id']))
+        ),
+        method: 'PATCH',
+        headers: headerParameters,
+        query: queryParameters,
+        body: GroupUpdateToJSON(requestParameters['groupUpdate'])
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => GroupFromJSON(jsonValue))
+  }
+
+  /**
+   * Update a group by ID
+   */
+  async updateGroup(
+    requestParameters: UpdateGroupRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Group> {
+    const response = await this.updateGroupRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
    * Update a link by ID
    */
   async updateLinkRaw(
@@ -3299,61 +3354,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Reaction> {
     const response = await this.updateReactionRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Update a role by ID
-   */
-  async updateRoleRaw(
-    requestParameters: UpdateRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<Role>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling updateRole().'
-      )
-    }
-
-    if (requestParameters['roleUpdate'] == null) {
-      throw new runtime.RequiredError(
-        'roleUpdate',
-        'Required parameter "roleUpdate" was null or undefined when calling updateRole().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    headerParameters['Content-Type'] = 'application/json'
-
-    const response = await this.request(
-      {
-        path: `/roles/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'PATCH',
-        headers: headerParameters,
-        query: queryParameters,
-        body: RoleUpdateToJSON(requestParameters['roleUpdate'])
-      },
-      initOverrides
-    )
-
-    return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue))
-  }
-
-  /**
-   * Update a role by ID
-   */
-  async updateRole(
-    requestParameters: UpdateRoleRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<Role> {
-    const response = await this.updateRoleRaw(requestParameters, initOverrides)
     return await response.value()
   }
 

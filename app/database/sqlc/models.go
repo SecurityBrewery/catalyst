@@ -77,6 +77,30 @@ type File struct {
 	Updated string  `json:"updated"`
 }
 
+type Group struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+}
+
+type GroupEffectiveGroup struct {
+	ChildGroupID  string `json:"child_group_id"`
+	ParentGroupID string `json:"parent_group_id"`
+	GroupType     string `json:"group_type"`
+}
+
+type GroupEffectivePermission struct {
+	ParentGroupID string `json:"parent_group_id"`
+	Permission    string `json:"permission"`
+}
+
+type GroupInheritance struct {
+	ParentGroupID string `json:"parent_group_id"`
+	ChildGroupID  string `json:"child_group_id"`
+}
+
 type Link struct {
 	Created string `json:"created"`
 	ID      string `json:"id"`
@@ -108,30 +132,6 @@ type Reaction struct {
 	Trigger     string `json:"trigger"`
 	Triggerdata string `json:"triggerdata"`
 	Updated     string `json:"updated"`
-}
-
-type Role struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-}
-
-type RoleEffectivePermission struct {
-	ParentRoleID string `json:"parent_role_id"`
-	Permission   string `json:"permission"`
-}
-
-type RoleEffectiveRole struct {
-	ChildRoleID  string `json:"child_role_id"`
-	ParentRoleID string `json:"parent_role_id"`
-	RoleType     string `json:"role_type"`
-}
-
-type RoleInheritance struct {
-	ParentRoleID string `json:"parent_role_id"`
-	ChildRoleID  string `json:"child_role_id"`
 }
 
 type Session struct {
@@ -225,20 +225,20 @@ type User struct {
 	Verified               bool   `json:"verified"`
 }
 
+type UserEffectiveGroup struct {
+	UserID    string `json:"user_id"`
+	GroupID   string `json:"group_id"`
+	GroupType string `json:"group_type"`
+}
+
 type UserEffectivePermission struct {
 	UserID     string `json:"user_id"`
 	Permission string `json:"permission"`
 }
 
-type UserEffectiveRole struct {
-	UserID   string `json:"user_id"`
-	RoleID   string `json:"role_id"`
-	RoleType string `json:"role_type"`
-}
-
-type UserRole struct {
-	UserID string `json:"user_id"`
-	RoleID string `json:"role_id"`
+type UserGroup struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
 }
 
 type Webhook struct {

@@ -449,66 +449,66 @@ LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------
 
--- name: CreateRole :one
-INSERT INTO roles (id, name, permissions)
+-- name: CreateGroup :one
+INSERT INTO groups (id, name, permissions)
 VALUES (@id, @name, @permissions)
 RETURNING *;
 
--- name: GetRole :one
-SELECT roles.*, COUNT(*) OVER () as total_count
-FROM roles
+-- name: GetGroup :one
+SELECT groups.*, COUNT(*) OVER () as total_count
+FROM groups
 WHERE id = @id;
 
--- name: UpdateRole :one
-UPDATE roles
+-- name: UpdateGroup :one
+UPDATE groups
 SET name        = coalesce(sqlc.narg('name'), name),
     permissions = coalesce(sqlc.narg('permissions'), permissions)
 WHERE id = @id
 RETURNING *;
 
--- name: DeleteRole :exec
+-- name: DeleteGroup :exec
 DELETE
-FROM roles
+FROM groups
 WHERE id = @id;
 
--- name: ListRoles :many
-SELECT roles.*, COUNT(*) OVER () as total_count
-FROM roles
+-- name: ListGroups :many
+SELECT groups.*, COUNT(*) OVER () as total_count
+FROM groups
 ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
--- name: AssignRoleToUser :exec
-INSERT INTO user_roles (user_id, role_id)
-VALUES (@user_id, @role_id);
+-- name: AssignGroupToUser :exec
+INSERT INTO user_groups (user_id, group_id)
+VALUES (@user_id, @group_id);
 
--- name: RemoveRoleFromUser :exec
+-- name: RemoveGroupFromUser :exec
 DELETE
-FROM user_roles
+FROM user_groups
 WHERE user_id = @user_id
-  AND role_id = @role_id;
+  AND group_id = @group_id;
 
--- name: AssignParentRole :exec
-INSERT INTO role_inheritance (parent_role_id, child_role_id)
-VALUES (@parent_role_id, @child_role_id);
+-- name: AssignParentGroup :exec
+INSERT INTO group_inheritance (parent_group_id, child_group_id)
+VALUES (@parent_group_id, @child_group_id);
 
--- name: RemoveParentRole :exec
+-- name: RemoveParentGroup :exec
 DELETE
-FROM role_inheritance
-WHERE parent_role_id = @parent_role_id
-  AND child_role_id = @child_role_id;
+FROM group_inheritance
+WHERE parent_group_id = @parent_group_id
+  AND child_group_id = @child_group_id;
 
--- name: ListUserRoles :many
-SELECT roles.*, uer.role_type, COUNT(*) OVER () as total_count
-FROM user_effective_roles uer
-         JOIN roles ON roles.id = uer.role_id
+-- name: ListUserGroups :many
+SELECT groups.*, uer.group_type, COUNT(*) OVER () as total_count
+FROM user_effective_groups uer
+         JOIN groups ON groups.id = uer.group_id
 WHERE uer.user_id = @user_id
-ORDER BY roles.name DESC;
+ORDER BY groups.name DESC;
 
--- name: ListRoleUsers :many
-SELECT users.*, uer.role_type
-FROM user_effective_roles uer
+-- name: ListGroupUsers :many
+SELECT users.*, uer.group_type
+FROM user_effective_groups uer
          JOIN users ON users.id = uer.user_id
-WHERE uer.role_id = @role_id
+WHERE uer.group_id = @group_id
 ORDER BY users.name DESC;
 
 -- name: ListUserPermissions :many
@@ -517,22 +517,22 @@ FROM user_effective_permissions
 WHERE user_id = @user_id
 ORDER BY permission;
 
--- name: ListParentRoles :many
-SELECT roles.*, role_effective_roles.role_type
-FROM role_effective_roles
-         JOIN roles ON roles.id = role_effective_roles.child_role_id
-WHERE parent_role_id = @role_id
-ORDER BY role_effective_roles.role_type;
+-- name: ListParentGroups :many
+SELECT groups.*, group_effective_groups.group_type
+FROM group_effective_groups
+         JOIN groups ON groups.id = group_effective_groups.child_group_id
+WHERE parent_group_id = @group_id
+ORDER BY group_effective_groups.group_type;
 
--- name: ListChildRoles :many
-SELECT roles.*, role_effective_roles.role_type
-FROM role_effective_roles
-         JOIN roles ON roles.id = role_effective_roles.parent_role_id
-WHERE child_role_id = @role_id
-ORDER BY role_effective_roles.role_type;
+-- name: ListChildGroups :many
+SELECT groups.*, group_effective_groups.group_type
+FROM group_effective_groups
+         JOIN groups ON groups.id = group_effective_groups.parent_group_id
+WHERE child_group_id = @group_id
+ORDER BY group_effective_groups.group_type;
 
 -- name: ListParentPermissions :many
-SELECT role_effective_permissions.permission
-FROM role_effective_permissions
-WHERE parent_role_id = @role_id
+SELECT group_effective_permissions.permission
+FROM group_effective_permissions
+WHERE parent_group_id = @group_id
 ORDER BY permission;

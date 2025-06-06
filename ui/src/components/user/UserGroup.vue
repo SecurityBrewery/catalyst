@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
+import GroupSelectDialog from '@/components/group/GroupSelectDialog.vue'
 import PanelListElement from '@/components/layout/PanelListElement.vue'
-import RoleSelectDialog from '@/components/role/RoleSelectDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 
 import { useAPI } from '@/api'
-import type { Role, UserRole } from '@/client'
+import type { Group, UserGroup } from '@/client'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()
@@ -22,9 +22,9 @@ const props = defineProps<{
   id: string
 }>()
 
-const { data: userRoles } = useQuery({
-  queryKey: ['user_roles', props.id],
-  queryFn: (): Promise<Array<UserRole>> => api.listUserRoles({ id: props.id })
+const { data: userGroups } = useQuery({
+  queryKey: ['user_groups', props.id],
+  queryFn: (): Promise<Array<UserGroup>> => api.listUserGroups({ id: props.id })
 })
 
 const { data: userPermissions } = useQuery({
@@ -32,29 +32,29 @@ const { data: userPermissions } = useQuery({
   queryFn: (): Promise<Array<string>> => api.listUserPermissions({ id: props.id })
 })
 
-const addRoleMutation = useMutation({
+const addGroupMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.addUserRole({
+    api.addUserGroup({
       id: props.id,
-      roleRelation: {
-        roleId: id
+      groupRelation: {
+        groupId: id
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['user_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['user_groups'] })
     queryClient.invalidateQueries({ queryKey: ['user_permissions'] })
   },
   onError: handleError
 })
 
-const removeRoleMutation = useMutation({
+const removeGroupMutation = useMutation({
   mutationFn: (id: string): Promise<void> =>
-    api.removeUserRole({
+    api.removeUserGroup({
       id: props.id,
-      roleId: id
+      groupId: id
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['user_roles'] })
+    queryClient.invalidateQueries({ queryKey: ['user_groups'] })
     queryClient.invalidateQueries({ queryKey: ['user_permissions'] })
   },
   onError: handleError
@@ -62,8 +62,8 @@ const removeRoleMutation = useMutation({
 
 const dialogOpen = ref(false)
 
-const select = (role: { role: string }) => {
-  addRoleMutation.mutate(role.role)
+const select = (group: { group: string }) => {
+  addGroupMutation.mutate(group.group)
   dialogOpen.value = false
 }
 </script>
@@ -71,27 +71,30 @@ const select = (role: { role: string }) => {
 <template>
   <div class="flex flex-col gap-4">
     <TicketPanel title="Groups" @add="dialogOpen = true">
-      <RoleSelectDialog
+      <GroupSelectDialog
         v-model="dialogOpen"
         @select="select"
-        :exclude="userRoles?.map((role) => role.id) ?? []"
+        :exclude="userGroups?.map((group) => group.id) ?? []"
       />
       <PanelListElement
-        v-for="userRole in userRoles"
-        :key="userRole.id"
+        v-for="userGroup in userGroups"
+        :key="userGroup.id"
         class="flex h-10 flex-row items-center pr-1"
       >
         <div class="flex flex-1 items-center overflow-hidden">
-          <RouterLink :to="{ name: 'groups', params: { id: userRole.id } }" class="hover:underline">
-            {{ userRole.name }}
+          <RouterLink
+            :to="{ name: 'groups', params: { id: userGroup.id } }"
+            class="hover:underline"
+          >
+            {{ userGroup.name }}
           </RouterLink>
-          <span class="ml-1 text-sm text-muted-foreground">({{ userRole.type }})</span>
+          <span class="ml-1 text-sm text-muted-foreground">({{ userGroup.type }})</span>
         </div>
         <DeleteDialog
-          v-if="userRole.type === 'direct'"
-          :name="userRole.name"
+          v-if="userGroup.type === 'direct'"
+          :name="userGroup.name"
           singular="Group"
-          @delete="removeRoleMutation.mutate(userRole.id)"
+          @delete="removeGroupMutation.mutate(userGroup.id)"
         >
           <Button variant="ghost" size="icon" class="h-8 w-8">
             <Trash2 class="size-4" />
@@ -99,10 +102,10 @@ const select = (role: { role: string }) => {
         </DeleteDialog>
       </PanelListElement>
       <div
-        v-if="!userRoles || userRoles.length === 0"
+        v-if="!userGroups || userGroups.length === 0"
         class="flex h-10 items-center p-4 text-sm text-muted-foreground"
       >
-        No roles assigned yet.
+        No groups assigned yet.
       </div>
     </TicketPanel>
   </div>
@@ -110,7 +113,7 @@ const select = (role: { role: string }) => {
   <div class="mt-4 flex flex-col gap-4">
     <h2 class="text-sm font-medium">Permissions</h2>
     <p class="text-sm text-muted-foreground">
-      The following permissions are granted to the user by their roles.
+      The following permissions are granted to the user by their groups.
     </p>
     <div class="flex flex-wrap gap-2">
       <Badge v-for="(permission, index) in userPermissions" :key="index">{{ permission }}</Badge>

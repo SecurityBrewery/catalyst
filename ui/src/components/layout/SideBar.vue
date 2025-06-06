@@ -59,7 +59,7 @@ const authStore = useAuthStore()
     <Separator
       v-if="
         authStore.permissions.includes('reaction:write') ||
-        authStore.permissions.includes('role:write') ||
+        authStore.permissions.includes('group:write') ||
         authStore.permissions.includes('group:write') ||
         authStore.permissions.includes('type:write')
       "
@@ -79,7 +79,7 @@ const authStore = useAuthStore()
           icon: 'User',
           variant: 'ghost',
           to: '/users',
-          permission: 'role:write'
+          permission: 'group:write'
         },
         {
           title: 'Groups',

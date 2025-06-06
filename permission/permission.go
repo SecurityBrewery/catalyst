@@ -17,8 +17,8 @@ const (
 	TypeWrite     Permission = "type:write"
 	UserRead      Permission = "user:read"
 	UserWrite     Permission = "user:write"
-	RoleRead      Permission = "role:read"
-	RoleWrite     Permission = "role:write"
+	GroupRead     Permission = "group:read"
+	GroupWrite    Permission = "group:write"
 	ReactionRead  Permission = "reaction:read"
 	ReactionWrite Permission = "reaction:write"
 	WebhookRead   Permission = "webhook:read"
@@ -42,8 +42,8 @@ func AllPermissions() []Permission {
 		TypeWrite,
 		UserRead,
 		UserWrite,
-		RoleRead,
-		RoleWrite,
+		GroupRead,
+		GroupWrite,
 		ReactionRead,
 		ReactionWrite,
 		FileRead,

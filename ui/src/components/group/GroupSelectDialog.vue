@@ -23,7 +23,7 @@ import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
 import { useAPI } from '@/api'
-import type { Role } from '@/client'
+import type { Group } from '@/client'
 
 const api = useAPI()
 
@@ -35,13 +35,13 @@ const props = defineProps<{
 
 const emit = defineEmits(['select'])
 
-const { data: roles } = useQuery({
-  queryKey: ['roles'],
-  queryFn: (): Promise<Array<Role>> => api.listRoles()
+const { data: groups } = useQuery({
+  queryKey: ['groups'],
+  queryFn: (): Promise<Array<Group>> => api.listGroups()
 })
 
-const filteredRoles = computed(() => {
-  return roles.value?.filter((role) => !props.exclude.includes(role.id)) ?? []
+const filteredGroups = computed(() => {
+  return groups.value?.filter((group) => !props.exclude.includes(group.id)) ?? []
 })
 
 defineRule('required', (value: string) => {
@@ -54,7 +54,7 @@ defineRule('required', (value: string) => {
 
 const { handleSubmit, validate, values } = useForm({
   validationSchema: {
-    role: 'required'
+    group: 'required'
   }
 })
 
@@ -75,21 +75,21 @@ watch(
   <Dialog v-model:open="isOpen">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>New Role</DialogTitle>
-        <DialogDescription> Add a new role to this user</DialogDescription>
+        <DialogTitle>New Group</DialogTitle>
+        <DialogDescription> Add a new group to this user</DialogDescription>
       </DialogHeader>
 
       <form @submit="onSubmit" @change="change">
-        <FormField name="role" v-slot="{ componentField }">
+        <FormField name="group" v-slot="{ componentField }">
           <FormItem>
-            <FormLabel for="role" class="text-right"> Role</FormLabel>
-            <Select id="role" v-bind="componentField">
+            <FormLabel for="group" class="text-right"> Group</FormLabel>
+            <Select id="group" v-bind="componentField">
               <SelectTrigger>
-                <SelectValue placeholder="Select a role" />
+                <SelectValue placeholder="Select a group" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem v-for="role in filteredRoles" :key="role.id" :value="role.id"
-                  >{{ role.name }}
+                <SelectItem v-for="group in filteredGroups" :key="group.id" :value="group.id"
+                  >{{ group.name }}
                 </SelectItem>
               </SelectContent>
             </Select>

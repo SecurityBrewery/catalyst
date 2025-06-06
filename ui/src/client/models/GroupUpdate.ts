@@ -18,35 +18,35 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface RoleUpdate
+ * @interface GroupUpdate
  */
-export interface RoleUpdate {
+export interface GroupUpdate {
   /**
    *
    * @type {string}
-   * @memberof RoleUpdate
+   * @memberof GroupUpdate
    */
   name?: string
   /**
    *
    * @type {Array<string>}
-   * @memberof RoleUpdate
+   * @memberof GroupUpdate
    */
   permissions?: Array<string>
 }
 
 /**
- * Check if a given object implements the RoleUpdate interface.
+ * Check if a given object implements the GroupUpdate interface.
  */
-export function instanceOfRoleUpdate(value: object): value is RoleUpdate {
+export function instanceOfGroupUpdate(value: object): value is GroupUpdate {
   return true
 }
 
-export function RoleUpdateFromJSON(json: any): RoleUpdate {
-  return RoleUpdateFromJSONTyped(json, false)
+export function GroupUpdateFromJSON(json: any): GroupUpdate {
+  return GroupUpdateFromJSONTyped(json, false)
 }
 
-export function RoleUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean): RoleUpdate {
+export function GroupUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean): GroupUpdate {
   if (json == null) {
     return json
   }
@@ -56,12 +56,12 @@ export function RoleUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
   }
 }
 
-export function RoleUpdateToJSON(json: any): RoleUpdate {
-  return RoleUpdateToJSONTyped(json, false)
+export function GroupUpdateToJSON(json: any): GroupUpdate {
+  return GroupUpdateToJSONTyped(json, false)
 }
 
-export function RoleUpdateToJSONTyped(
-  value?: RoleUpdate | null,
+export function GroupUpdateToJSONTyped(
+  value?: GroupUpdate | null,
   ignoreDiscriminator: boolean = false
 ): any {
   if (value == null) {

@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
-import type { Role } from '@/client/models'
+import type { Group } from '@/client/models'
 
 const api = useAPI()
 
@@ -18,15 +18,15 @@ const router = useRouter()
 const {
   isPending,
   isError,
-  data: roles,
+  data: groups,
   error
 } = useQuery({
-  queryKey: ['roles'],
-  queryFn: (): Promise<Array<Role>> => api.listRoles()
+  queryKey: ['groups'],
+  queryFn: (): Promise<Array<Group>> => api.listGroups()
 })
 
-const description = (role: Role): string => {
-  return role.permissions.join(', ')
+const description = (group: Group): string => {
+  return group.permissions.join(', ')
 }
 
 const openNew = () => {
@@ -43,17 +43,17 @@ const openNew = () => {
     </ColumnHeader>
     <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
       <ResourceListElement
-        v-for="role in roles"
-        :key="role.id"
-        :title="role.name"
-        :created="role.created"
+        v-for="group in groups"
+        :key="group.id"
+        :title="group.name"
+        :created="group.created"
         subtitle=""
-        :description="description(role)"
-        :active="route.params.id === role.id"
-        :to="{ name: 'groups', params: { id: role.id } }"
+        :description="description(group)"
+        :active="route.params.id === group.id"
+        :to="{ name: 'groups', params: { id: group.id } }"
         :open="false"
       >
-        {{ role.name }}
+        {{ group.name }}
       </ResourceListElement>
     </div>
   </TanView>

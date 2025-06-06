@@ -18,104 +18,83 @@ import { mapValues } from '../runtime'
 /**
  *
  * @export
- * @interface ExtendedFile
+ * @interface Group
  */
-export interface ExtendedFile {
+export interface Group {
   /**
    *
    * @type {string}
-   * @memberof ExtendedFile
+   * @memberof Group
    */
   id: string
   /**
    *
    * @type {string}
-   * @memberof ExtendedFile
-   */
-  ticket: string
-  /**
-   *
-   * @type {Blob}
-   * @memberof ExtendedFile
-   */
-  blob: Blob
-  /**
-   *
-   * @type {string}
-   * @memberof ExtendedFile
+   * @memberof Group
    */
   name: string
   /**
    *
-   * @type {number}
-   * @memberof ExtendedFile
+   * @type {Array<string>}
+   * @memberof Group
    */
-  size: number
+  permissions: Array<string>
   /**
    *
    * @type {string}
-   * @memberof ExtendedFile
+   * @memberof Group
    */
   created: string
   /**
    *
    * @type {string}
-   * @memberof ExtendedFile
+   * @memberof Group
    */
   updated: string
 }
 
 /**
- * Check if a given object implements the ExtendedFile interface.
+ * Check if a given object implements the Group interface.
  */
-export function instanceOfExtendedFile(value: object): value is ExtendedFile {
+export function instanceOfGroup(value: object): value is Group {
   if (!('id' in value) || value['id'] === undefined) return false
-  if (!('ticket' in value) || value['ticket'] === undefined) return false
-  if (!('blob' in value) || value['blob'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
-  if (!('size' in value) || value['size'] === undefined) return false
+  if (!('permissions' in value) || value['permissions'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
   return true
 }
 
-export function ExtendedFileFromJSON(json: any): ExtendedFile {
-  return ExtendedFileFromJSONTyped(json, false)
+export function GroupFromJSON(json: any): Group {
+  return GroupFromJSONTyped(json, false)
 }
 
-export function ExtendedFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): ExtendedFile {
+export function GroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): Group {
   if (json == null) {
     return json
   }
   return {
     id: json['id'],
-    ticket: json['ticket'],
-    blob: json['blob'],
     name: json['name'],
-    size: json['size'],
+    permissions: json['permissions'],
     created: json['created'],
     updated: json['updated']
   }
 }
 
-export function ExtendedFileToJSON(json: any): ExtendedFile {
-  return ExtendedFileToJSONTyped(json, false)
+export function GroupToJSON(json: any): Group {
+  return GroupToJSONTyped(json, false)
 }
 
-export function ExtendedFileToJSONTyped(
-  value?: ExtendedFile | null,
-  ignoreDiscriminator: boolean = false
-): any {
+export function GroupToJSONTyped(value?: Group | null, ignoreDiscriminator: boolean = false): any {
   if (value == null) {
     return value
   }
 
   return {
     id: value['id'],
-    ticket: value['ticket'],
-    blob: value['blob'],
     name: value['name'],
-    size: value['size'],
+    permissions: value['permissions'],
     created: value['created'],
     updated: value['updated']
   }

@@ -34,9 +34,9 @@ func TestDBForeignKeyConstraints(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 
-	err = queries.AssignRoleToUser(t.Context(), sqlc.AssignRoleToUserParams{
-		UserID: "does_not_exist",
-		RoleID: "also_missing",
+	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
+		UserID:  "does_not_exist",
+		GroupID: "also_missing",
 	})
 	assert.Error(t, err)
 }

@@ -107,6 +107,43 @@ type FileUpdate struct {
 	Name *string `json:"name,omitempty"`
 }
 
+// Group defines model for Group.
+type Group struct {
+	Created     string   `json:"created"`
+	Id          string   `json:"id"`
+	Name        string   `json:"name"`
+	Permissions []string `json:"permissions"`
+	Updated     string   `json:"updated"`
+}
+
+// GroupRelation defines model for GroupRelation.
+type GroupRelation struct {
+	GroupId string `json:"group_id"`
+}
+
+// GroupUpdate defines model for GroupUpdate.
+type GroupUpdate struct {
+	Name        *string   `json:"name,omitempty"`
+	Permissions *[]string `json:"permissions,omitempty"`
+}
+
+// GroupUser defines model for GroupUser.
+type GroupUser struct {
+	Avatar                 string `json:"avatar"`
+	Created                string `json:"created"`
+	Email                  string `json:"email"`
+	EmailVisibility        bool   `json:"emailVisibility"`
+	Id                     string `json:"id"`
+	LastLoginAlertSentAt   string `json:"lastLoginAlertSentAt"`
+	LastResetSentAt        string `json:"lastResetSentAt"`
+	LastVerificationSentAt string `json:"lastVerificationSentAt"`
+	Name                   string `json:"name"`
+	Type                   string `json:"type"`
+	Updated                string `json:"updated"`
+	Username               string `json:"username"`
+	Verified               bool   `json:"verified"`
+}
+
 // Link defines model for Link.
 type Link struct {
 	Created string `json:"created"`
@@ -143,6 +180,12 @@ type NewFile struct {
 	Ticket string  `json:"ticket"`
 }
 
+// NewGroup defines model for NewGroup.
+type NewGroup struct {
+	Name        string   `json:"name"`
+	Permissions []string `json:"permissions"`
+}
+
 // NewLink defines model for NewLink.
 type NewLink struct {
 	Name   string `json:"name"`
@@ -157,12 +200,6 @@ type NewReaction struct {
 	Name        string                 `json:"name"`
 	Trigger     string                 `json:"trigger"`
 	Triggerdata map[string]interface{} `json:"triggerdata"`
-}
-
-// NewRole defines model for NewRole.
-type NewRole struct {
-	Name        string   `json:"name"`
-	Permissions []string `json:"permissions"`
 }
 
 // NewTask defines model for NewTask.
@@ -236,43 +273,6 @@ type ReactionUpdate struct {
 	Name        *string                 `json:"name,omitempty"`
 	Trigger     *string                 `json:"trigger,omitempty"`
 	Triggerdata *map[string]interface{} `json:"triggerdata,omitempty"`
-}
-
-// Role defines model for Role.
-type Role struct {
-	Created     string   `json:"created"`
-	Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	Permissions []string `json:"permissions"`
-	Updated     string   `json:"updated"`
-}
-
-// RoleRelation defines model for RoleRelation.
-type RoleRelation struct {
-	RoleId string `json:"role_id"`
-}
-
-// RoleUpdate defines model for RoleUpdate.
-type RoleUpdate struct {
-	Name        *string   `json:"name,omitempty"`
-	Permissions *[]string `json:"permissions,omitempty"`
-}
-
-// RoleUser defines model for RoleUser.
-type RoleUser struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	EmailVisibility        bool   `json:"emailVisibility"`
-	Id                     string `json:"id"`
-	LastLoginAlertSentAt   string `json:"lastLoginAlertSentAt"`
-	LastResetSentAt        string `json:"lastResetSentAt"`
-	LastVerificationSentAt string `json:"lastVerificationSentAt"`
-	Name                   string `json:"name"`
-	Type                   string `json:"type"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
 }
 
 // Sidebar defines model for Sidebar.
@@ -392,8 +392,8 @@ type User struct {
 	Verified               bool   `json:"verified"`
 }
 
-// UserRole defines model for UserRole.
-type UserRole struct {
+// UserGroup defines model for UserGroup.
+type UserGroup struct {
 	Created     string   `json:"created"`
 	Id          string   `json:"id"`
 	Name        string   `json:"name"`
@@ -445,6 +445,12 @@ type ListFilesParams struct {
 	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// ListGroupsParams defines parameters for ListGroups.
+type ListGroupsParams struct {
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // ListLinksParams defines parameters for ListLinks.
 type ListLinksParams struct {
 	Ticket *string `form:"ticket,omitempty" json:"ticket,omitempty"`
@@ -454,12 +460,6 @@ type ListLinksParams struct {
 
 // ListReactionsParams defines parameters for ListReactions.
 type ListReactionsParams struct {
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
-// ListRolesParams defines parameters for ListRoles.
-type ListRolesParams struct {
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
@@ -523,6 +523,15 @@ type CreateFileJSONRequestBody = NewFile
 // UpdateFileJSONRequestBody defines body for UpdateFile for application/json ContentType.
 type UpdateFileJSONRequestBody = FileUpdate
 
+// CreateGroupJSONRequestBody defines body for CreateGroup for application/json ContentType.
+type CreateGroupJSONRequestBody = NewGroup
+
+// UpdateGroupJSONRequestBody defines body for UpdateGroup for application/json ContentType.
+type UpdateGroupJSONRequestBody = GroupUpdate
+
+// AddGroupParentJSONRequestBody defines body for AddGroupParent for application/json ContentType.
+type AddGroupParentJSONRequestBody = GroupRelation
+
 // CreateLinkJSONRequestBody defines body for CreateLink for application/json ContentType.
 type CreateLinkJSONRequestBody = NewLink
 
@@ -534,15 +543,6 @@ type CreateReactionJSONRequestBody = NewReaction
 
 // UpdateReactionJSONRequestBody defines body for UpdateReaction for application/json ContentType.
 type UpdateReactionJSONRequestBody = ReactionUpdate
-
-// CreateRoleJSONRequestBody defines body for CreateRole for application/json ContentType.
-type CreateRoleJSONRequestBody = NewRole
-
-// UpdateRoleJSONRequestBody defines body for UpdateRole for application/json ContentType.
-type UpdateRoleJSONRequestBody = RoleUpdate
-
-// AddRoleParentJSONRequestBody defines body for AddRoleParent for application/json ContentType.
-type AddRoleParentJSONRequestBody = RoleRelation
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
 type CreateTaskJSONRequestBody = NewTask
@@ -574,8 +574,8 @@ type CreateUserJSONRequestBody = NewUser
 // UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
 type UpdateUserJSONRequestBody = UserUpdate
 
-// AddUserRoleJSONRequestBody defines body for AddUserRole for application/json ContentType.
-type AddUserRoleJSONRequestBody = RoleRelation
+// AddUserGroupJSONRequestBody defines body for AddUserGroup for application/json ContentType.
+type AddUserGroupJSONRequestBody = GroupRelation
 
 // CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
 type CreateWebhookJSONRequestBody = NewWebhook
@@ -621,6 +621,39 @@ type ServerInterface interface {
 	// Download a file by ID
 	// (GET /files/{id}/download)
 	DownloadFile(w http.ResponseWriter, r *http.Request, id string)
+	// List all groups
+	// (GET /groups)
+	ListGroups(w http.ResponseWriter, r *http.Request, params ListGroupsParams)
+	// Create a new group
+	// (POST /groups)
+	CreateGroup(w http.ResponseWriter, r *http.Request)
+	// Delete a group by ID
+	// (DELETE /groups/{id})
+	DeleteGroup(w http.ResponseWriter, r *http.Request, id string)
+	// Get a single group by ID
+	// (GET /groups/{id})
+	GetGroup(w http.ResponseWriter, r *http.Request, id string)
+	// Update a group by ID
+	// (PATCH /groups/{id})
+	UpdateGroup(w http.ResponseWriter, r *http.Request, id string)
+	// List all child groups for a group
+	// (GET /groups/{id}/children)
+	ListChildGroups(w http.ResponseWriter, r *http.Request, id string)
+	// Remove a parent group from another group
+	// (DELETE /groups/{id}/groups/{parentGroupId})
+	RemoveGroupParent(w http.ResponseWriter, r *http.Request, id string, parentGroupId string)
+	// List all parent groups for a group
+	// (GET /groups/{id}/parents)
+	ListParentGroups(w http.ResponseWriter, r *http.Request, id string)
+	// Add a parent group to another group
+	// (POST /groups/{id}/parents)
+	AddGroupParent(w http.ResponseWriter, r *http.Request, id string)
+	// List all permissions for a group
+	// (GET /groups/{id}/permissions)
+	ListParentPermissions(w http.ResponseWriter, r *http.Request, id string)
+	// List all users for a group
+	// (GET /groups/{id}/users)
+	ListGroupUsers(w http.ResponseWriter, r *http.Request, id string)
 	// List all links
 	// (GET /links)
 	ListLinks(w http.ResponseWriter, r *http.Request, params ListLinksParams)
@@ -651,39 +684,6 @@ type ServerInterface interface {
 	// Update a reaction by ID
 	// (PATCH /reactions/{id})
 	UpdateReaction(w http.ResponseWriter, r *http.Request, id string)
-	// List all roles
-	// (GET /roles)
-	ListRoles(w http.ResponseWriter, r *http.Request, params ListRolesParams)
-	// Create a new role
-	// (POST /roles)
-	CreateRole(w http.ResponseWriter, r *http.Request)
-	// Delete a role by ID
-	// (DELETE /roles/{id})
-	DeleteRole(w http.ResponseWriter, r *http.Request, id string)
-	// Get a single role by ID
-	// (GET /roles/{id})
-	GetRole(w http.ResponseWriter, r *http.Request, id string)
-	// Update a role by ID
-	// (PATCH /roles/{id})
-	UpdateRole(w http.ResponseWriter, r *http.Request, id string)
-	// List all child roles for a role
-	// (GET /roles/{id}/children)
-	ListChildRoles(w http.ResponseWriter, r *http.Request, id string)
-	// List all parent roles for a role
-	// (GET /roles/{id}/parents)
-	ListParentRoles(w http.ResponseWriter, r *http.Request, id string)
-	// Add a parent role to another role
-	// (POST /roles/{id}/parents)
-	AddRoleParent(w http.ResponseWriter, r *http.Request, id string)
-	// List all permissions for a role
-	// (GET /roles/{id}/permissions)
-	ListParentPermissions(w http.ResponseWriter, r *http.Request, id string)
-	// Remove a parent role from another role
-	// (DELETE /roles/{id}/roles/{parentRoleId})
-	RemoveRoleParent(w http.ResponseWriter, r *http.Request, id string, parentRoleId string)
-	// List all users for a role
-	// (GET /roles/{id}/users)
-	ListRoleUsers(w http.ResponseWriter, r *http.Request, id string)
 	// Get sidebar data
 	// (GET /sidebar)
 	GetSidebar(w http.ResponseWriter, r *http.Request)
@@ -765,18 +765,18 @@ type ServerInterface interface {
 	// Update a user by ID
 	// (PATCH /users/{id})
 	UpdateUser(w http.ResponseWriter, r *http.Request, id string)
+	// List all groups for a user
+	// (GET /users/{id}/groups)
+	ListUserGroups(w http.ResponseWriter, r *http.Request, id string)
+	// Add a group to a user
+	// (POST /users/{id}/groups)
+	AddUserGroup(w http.ResponseWriter, r *http.Request, id string)
+	// Remove a group from a user
+	// (DELETE /users/{id}/groups/{groupId})
+	RemoveUserGroup(w http.ResponseWriter, r *http.Request, id string, groupId string)
 	// List all permissions for a user
 	// (GET /users/{id}/permissions)
 	ListUserPermissions(w http.ResponseWriter, r *http.Request, id string)
-	// List all roles for a user
-	// (GET /users/{id}/roles)
-	ListUserRoles(w http.ResponseWriter, r *http.Request, id string)
-	// Add a role to a user
-	// (POST /users/{id}/roles)
-	AddUserRole(w http.ResponseWriter, r *http.Request, id string)
-	// Remove a role from a user
-	// (DELETE /users/{id}/roles/{roleId})
-	RemoveUserRole(w http.ResponseWriter, r *http.Request, id string, roleId string)
 	// List all webhooks
 	// (GET /webhooks)
 	ListWebhooks(w http.ResponseWriter, r *http.Request, params ListWebhooksParams)
@@ -870,6 +870,72 @@ func (_ Unimplemented) DownloadFile(w http.ResponseWriter, r *http.Request, id s
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// List all groups
+// (GET /groups)
+func (_ Unimplemented) ListGroups(w http.ResponseWriter, r *http.Request, params ListGroupsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new group
+// (POST /groups)
+func (_ Unimplemented) CreateGroup(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete a group by ID
+// (DELETE /groups/{id})
+func (_ Unimplemented) DeleteGroup(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a single group by ID
+// (GET /groups/{id})
+func (_ Unimplemented) GetGroup(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update a group by ID
+// (PATCH /groups/{id})
+func (_ Unimplemented) UpdateGroup(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all child groups for a group
+// (GET /groups/{id}/children)
+func (_ Unimplemented) ListChildGroups(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove a parent group from another group
+// (DELETE /groups/{id}/groups/{parentGroupId})
+func (_ Unimplemented) RemoveGroupParent(w http.ResponseWriter, r *http.Request, id string, parentGroupId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all parent groups for a group
+// (GET /groups/{id}/parents)
+func (_ Unimplemented) ListParentGroups(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Add a parent group to another group
+// (POST /groups/{id}/parents)
+func (_ Unimplemented) AddGroupParent(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all permissions for a group
+// (GET /groups/{id}/permissions)
+func (_ Unimplemented) ListParentPermissions(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all users for a group
+// (GET /groups/{id}/users)
+func (_ Unimplemented) ListGroupUsers(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // List all links
 // (GET /links)
 func (_ Unimplemented) ListLinks(w http.ResponseWriter, r *http.Request, params ListLinksParams) {
@@ -927,72 +993,6 @@ func (_ Unimplemented) GetReaction(w http.ResponseWriter, r *http.Request, id st
 // Update a reaction by ID
 // (PATCH /reactions/{id})
 func (_ Unimplemented) UpdateReaction(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all roles
-// (GET /roles)
-func (_ Unimplemented) ListRoles(w http.ResponseWriter, r *http.Request, params ListRolesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new role
-// (POST /roles)
-func (_ Unimplemented) CreateRole(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete a role by ID
-// (DELETE /roles/{id})
-func (_ Unimplemented) DeleteRole(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get a single role by ID
-// (GET /roles/{id})
-func (_ Unimplemented) GetRole(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update a role by ID
-// (PATCH /roles/{id})
-func (_ Unimplemented) UpdateRole(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all child roles for a role
-// (GET /roles/{id}/children)
-func (_ Unimplemented) ListChildRoles(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all parent roles for a role
-// (GET /roles/{id}/parents)
-func (_ Unimplemented) ListParentRoles(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Add a parent role to another role
-// (POST /roles/{id}/parents)
-func (_ Unimplemented) AddRoleParent(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all permissions for a role
-// (GET /roles/{id}/permissions)
-func (_ Unimplemented) ListParentPermissions(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Remove a parent role from another role
-// (DELETE /roles/{id}/roles/{parentRoleId})
-func (_ Unimplemented) RemoveRoleParent(w http.ResponseWriter, r *http.Request, id string, parentRoleId string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all users for a role
-// (GET /roles/{id}/users)
-func (_ Unimplemented) ListRoleUsers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1158,27 +1158,27 @@ func (_ Unimplemented) UpdateUser(w http.ResponseWriter, r *http.Request, id str
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// List all groups for a user
+// (GET /users/{id}/groups)
+func (_ Unimplemented) ListUserGroups(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Add a group to a user
+// (POST /users/{id}/groups)
+func (_ Unimplemented) AddUserGroup(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove a group from a user
+// (DELETE /users/{id}/groups/{groupId})
+func (_ Unimplemented) RemoveUserGroup(w http.ResponseWriter, r *http.Request, id string, groupId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // List all permissions for a user
 // (GET /users/{id}/permissions)
 func (_ Unimplemented) ListUserPermissions(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all roles for a user
-// (GET /users/{id}/roles)
-func (_ Unimplemented) ListUserRoles(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Add a role to a user
-// (POST /users/{id}/roles)
-func (_ Unimplemented) AddUserRole(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Remove a role from a user
-// (DELETE /users/{id}/roles/{roleId})
-func (_ Unimplemented) RemoveUserRole(w http.ResponseWriter, r *http.Request, id string, roleId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1596,6 +1596,355 @@ func (siw *ServerInterfaceWrapper) DownloadFile(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
+// ListGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListGroupsParams
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListGroups(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateGroup operation middleware
+func (siw *ServerInterfaceWrapper) CreateGroup(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateGroup(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteGroup operation middleware
+func (siw *ServerInterfaceWrapper) DeleteGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteGroup(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetGroup operation middleware
+func (siw *ServerInterfaceWrapper) GetGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGroup(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateGroup operation middleware
+func (siw *ServerInterfaceWrapper) UpdateGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateGroup(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListChildGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListChildGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListChildGroups(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveGroupParent operation middleware
+func (siw *ServerInterfaceWrapper) RemoveGroupParent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "parentGroupId" -------------
+	var parentGroupId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "parentGroupId", chi.URLParam(r, "parentGroupId"), &parentGroupId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parentGroupId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveGroupParent(w, r, id, parentGroupId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListParentGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListParentGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListParentGroups(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AddGroupParent operation middleware
+func (siw *ServerInterfaceWrapper) AddGroupParent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddGroupParent(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListParentPermissions operation middleware
+func (siw *ServerInterfaceWrapper) ListParentPermissions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListParentPermissions(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListGroupUsers operation middleware
+func (siw *ServerInterfaceWrapper) ListGroupUsers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"group:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListGroupUsers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListLinks operation middleware
 func (siw *ServerInterfaceWrapper) ListLinks(w http.ResponseWriter, r *http.Request) {
 
@@ -1903,355 +2252,6 @@ func (siw *ServerInterfaceWrapper) UpdateReaction(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateReaction(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListRoles operation middleware
-func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListRolesParams
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListRoles(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateRole operation middleware
-func (siw *ServerInterfaceWrapper) CreateRole(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateRole(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteRole operation middleware
-func (siw *ServerInterfaceWrapper) DeleteRole(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteRole(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetRole operation middleware
-func (siw *ServerInterfaceWrapper) GetRole(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetRole(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateRole operation middleware
-func (siw *ServerInterfaceWrapper) UpdateRole(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateRole(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListChildRoles operation middleware
-func (siw *ServerInterfaceWrapper) ListChildRoles(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListChildRoles(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListParentRoles operation middleware
-func (siw *ServerInterfaceWrapper) ListParentRoles(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListParentRoles(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AddRoleParent operation middleware
-func (siw *ServerInterfaceWrapper) AddRoleParent(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AddRoleParent(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListParentPermissions operation middleware
-func (siw *ServerInterfaceWrapper) ListParentPermissions(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListParentPermissions(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// RemoveRoleParent operation middleware
-func (siw *ServerInterfaceWrapper) RemoveRoleParent(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "parentRoleId" -------------
-	var parentRoleId string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "parentRoleId", chi.URLParam(r, "parentRoleId"), &parentRoleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parentRoleId", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.RemoveRoleParent(w, r, id, parentRoleId)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListRoleUsers operation middleware
-func (siw *ServerInterfaceWrapper) ListRoleUsers(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"role:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListRoleUsers(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3132,6 +3132,108 @@ func (siw *ServerInterfaceWrapper) UpdateUser(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// ListUserGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListUserGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListUserGroups(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AddUserGroup operation middleware
+func (siw *ServerInterfaceWrapper) AddUserGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddUserGroup(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveUserGroup operation middleware
+func (siw *ServerInterfaceWrapper) RemoveUserGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "groupId" -------------
+	var groupId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "groupId", chi.URLParam(r, "groupId"), &groupId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "groupId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveUserGroup(w, r, id, groupId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListUserPermissions operation middleware
 func (siw *ServerInterfaceWrapper) ListUserPermissions(w http.ResponseWriter, r *http.Request) {
 
@@ -3154,108 +3256,6 @@ func (siw *ServerInterfaceWrapper) ListUserPermissions(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListUserPermissions(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListUserRoles operation middleware
-func (siw *ServerInterfaceWrapper) ListUserRoles(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:read"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListUserRoles(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AddUserRole operation middleware
-func (siw *ServerInterfaceWrapper) AddUserRole(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AddUserRole(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// RemoveUserRole operation middleware
-func (siw *ServerInterfaceWrapper) RemoveUserRole(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "roleId" -------------
-	var roleId string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "roleId", chi.URLParam(r, "roleId"), &roleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "roleId", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"user:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.RemoveUserRole(w, r, id, roleId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3569,6 +3569,39 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/files/{id}/download", wrapper.DownloadFile)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups", wrapper.ListGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/groups", wrapper.CreateGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/groups/{id}", wrapper.DeleteGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}", wrapper.GetGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/groups/{id}", wrapper.UpdateGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}/children", wrapper.ListChildGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/groups/{id}/groups/{parentGroupId}", wrapper.RemoveGroupParent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}/parents", wrapper.ListParentGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/groups/{id}/parents", wrapper.AddGroupParent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}/permissions", wrapper.ListParentPermissions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}/users", wrapper.ListGroupUsers)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/links", wrapper.ListLinks)
 	})
 	r.Group(func(r chi.Router) {
@@ -3597,39 +3630,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/reactions/{id}", wrapper.UpdateReaction)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles", wrapper.ListRoles)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/roles", wrapper.CreateRole)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/roles/{id}", wrapper.DeleteRole)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}", wrapper.GetRole)
-	})
-	r.Group(func(r chi.Router) {
-		r.Patch(options.BaseURL+"/roles/{id}", wrapper.UpdateRole)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}/children", wrapper.ListChildRoles)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}/parents", wrapper.ListParentRoles)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/roles/{id}/parents", wrapper.AddRoleParent)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}/permissions", wrapper.ListParentPermissions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/roles/{id}/roles/{parentRoleId}", wrapper.RemoveRoleParent)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}/users", wrapper.ListRoleUsers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/sidebar", wrapper.GetSidebar)
@@ -3713,16 +3713,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Patch(options.BaseURL+"/users/{id}", wrapper.UpdateUser)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/users/{id}/groups", wrapper.ListUserGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/users/{id}/groups", wrapper.AddUserGroup)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/users/{id}/groups/{groupId}", wrapper.RemoveUserGroup)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/users/{id}/permissions", wrapper.ListUserPermissions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{id}/roles", wrapper.ListUserRoles)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/users/{id}/roles", wrapper.AddUserRole)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/users/{id}/roles/{roleId}", wrapper.RemoveUserRole)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/webhooks", wrapper.ListWebhooks)
@@ -3980,6 +3980,201 @@ func (response DownloadFile200ApplicationoctetStreamResponse) VisitDownloadFileR
 	return err
 }
 
+type ListGroupsRequestObject struct {
+	Params ListGroupsParams
+}
+
+type ListGroupsResponseObject interface {
+	VisitListGroupsResponse(w http.ResponseWriter) error
+}
+
+type ListGroups200ResponseHeaders struct {
+	XTotalCount int
+}
+
+type ListGroups200JSONResponse struct {
+	Body    []Group
+	Headers ListGroups200ResponseHeaders
+}
+
+func (response ListGroups200JSONResponse) VisitListGroupsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response.Body)
+}
+
+type CreateGroupRequestObject struct {
+	Body *CreateGroupJSONRequestBody
+}
+
+type CreateGroupResponseObject interface {
+	VisitCreateGroupResponse(w http.ResponseWriter) error
+}
+
+type CreateGroup200JSONResponse Group
+
+func (response CreateGroup200JSONResponse) VisitCreateGroupResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteGroupRequestObject struct {
+	Id string `json:"id"`
+}
+
+type DeleteGroupResponseObject interface {
+	VisitDeleteGroupResponse(w http.ResponseWriter) error
+}
+
+type DeleteGroup204Response struct {
+}
+
+func (response DeleteGroup204Response) VisitDeleteGroupResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GetGroupRequestObject struct {
+	Id string `json:"id"`
+}
+
+type GetGroupResponseObject interface {
+	VisitGetGroupResponse(w http.ResponseWriter) error
+}
+
+type GetGroup200JSONResponse Group
+
+func (response GetGroup200JSONResponse) VisitGetGroupResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateGroupRequestObject struct {
+	Id   string `json:"id"`
+	Body *UpdateGroupJSONRequestBody
+}
+
+type UpdateGroupResponseObject interface {
+	VisitUpdateGroupResponse(w http.ResponseWriter) error
+}
+
+type UpdateGroup200JSONResponse Group
+
+func (response UpdateGroup200JSONResponse) VisitUpdateGroupResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListChildGroupsRequestObject struct {
+	Id string `json:"id"`
+}
+
+type ListChildGroupsResponseObject interface {
+	VisitListChildGroupsResponse(w http.ResponseWriter) error
+}
+
+type ListChildGroups200JSONResponse []UserGroup
+
+func (response ListChildGroups200JSONResponse) VisitListChildGroupsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RemoveGroupParentRequestObject struct {
+	Id            string `json:"id"`
+	ParentGroupId string `json:"parentGroupId"`
+}
+
+type RemoveGroupParentResponseObject interface {
+	VisitRemoveGroupParentResponse(w http.ResponseWriter) error
+}
+
+type RemoveGroupParent204Response struct {
+}
+
+func (response RemoveGroupParent204Response) VisitRemoveGroupParentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type ListParentGroupsRequestObject struct {
+	Id string `json:"id"`
+}
+
+type ListParentGroupsResponseObject interface {
+	VisitListParentGroupsResponse(w http.ResponseWriter) error
+}
+
+type ListParentGroups200JSONResponse []UserGroup
+
+func (response ListParentGroups200JSONResponse) VisitListParentGroupsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type AddGroupParentRequestObject struct {
+	Id   string `json:"id"`
+	Body *AddGroupParentJSONRequestBody
+}
+
+type AddGroupParentResponseObject interface {
+	VisitAddGroupParentResponse(w http.ResponseWriter) error
+}
+
+type AddGroupParent201Response struct {
+}
+
+func (response AddGroupParent201Response) VisitAddGroupParentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type ListParentPermissionsRequestObject struct {
+	Id string `json:"id"`
+}
+
+type ListParentPermissionsResponseObject interface {
+	VisitListParentPermissionsResponse(w http.ResponseWriter) error
+}
+
+type ListParentPermissions200JSONResponse []string
+
+func (response ListParentPermissions200JSONResponse) VisitListParentPermissionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListGroupUsersRequestObject struct {
+	Id string `json:"id"`
+}
+
+type ListGroupUsersResponseObject interface {
+	VisitListGroupUsersResponse(w http.ResponseWriter) error
+}
+
+type ListGroupUsers200JSONResponse []GroupUser
+
+func (response ListGroupUsers200JSONResponse) VisitListGroupUsersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type ListLinksRequestObject struct {
 	Params ListLinksParams
 }
@@ -4160,201 +4355,6 @@ type UpdateReactionResponseObject interface {
 type UpdateReaction200JSONResponse Reaction
 
 func (response UpdateReaction200JSONResponse) VisitUpdateReactionResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type ListRolesRequestObject struct {
-	Params ListRolesParams
-}
-
-type ListRolesResponseObject interface {
-	VisitListRolesResponse(w http.ResponseWriter) error
-}
-
-type ListRoles200ResponseHeaders struct {
-	XTotalCount int
-}
-
-type ListRoles200JSONResponse struct {
-	Body    []Role
-	Headers ListRoles200ResponseHeaders
-}
-
-func (response ListRoles200JSONResponse) VisitListRolesResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("X-Total-Count", fmt.Sprint(response.Headers.XTotalCount))
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response.Body)
-}
-
-type CreateRoleRequestObject struct {
-	Body *CreateRoleJSONRequestBody
-}
-
-type CreateRoleResponseObject interface {
-	VisitCreateRoleResponse(w http.ResponseWriter) error
-}
-
-type CreateRole200JSONResponse Role
-
-func (response CreateRole200JSONResponse) VisitCreateRoleResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeleteRoleRequestObject struct {
-	Id string `json:"id"`
-}
-
-type DeleteRoleResponseObject interface {
-	VisitDeleteRoleResponse(w http.ResponseWriter) error
-}
-
-type DeleteRole204Response struct {
-}
-
-func (response DeleteRole204Response) VisitDeleteRoleResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
-}
-
-type GetRoleRequestObject struct {
-	Id string `json:"id"`
-}
-
-type GetRoleResponseObject interface {
-	VisitGetRoleResponse(w http.ResponseWriter) error
-}
-
-type GetRole200JSONResponse Role
-
-func (response GetRole200JSONResponse) VisitGetRoleResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateRoleRequestObject struct {
-	Id   string `json:"id"`
-	Body *UpdateRoleJSONRequestBody
-}
-
-type UpdateRoleResponseObject interface {
-	VisitUpdateRoleResponse(w http.ResponseWriter) error
-}
-
-type UpdateRole200JSONResponse Role
-
-func (response UpdateRole200JSONResponse) VisitUpdateRoleResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type ListChildRolesRequestObject struct {
-	Id string `json:"id"`
-}
-
-type ListChildRolesResponseObject interface {
-	VisitListChildRolesResponse(w http.ResponseWriter) error
-}
-
-type ListChildRoles200JSONResponse []UserRole
-
-func (response ListChildRoles200JSONResponse) VisitListChildRolesResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type ListParentRolesRequestObject struct {
-	Id string `json:"id"`
-}
-
-type ListParentRolesResponseObject interface {
-	VisitListParentRolesResponse(w http.ResponseWriter) error
-}
-
-type ListParentRoles200JSONResponse []UserRole
-
-func (response ListParentRoles200JSONResponse) VisitListParentRolesResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type AddRoleParentRequestObject struct {
-	Id   string `json:"id"`
-	Body *AddRoleParentJSONRequestBody
-}
-
-type AddRoleParentResponseObject interface {
-	VisitAddRoleParentResponse(w http.ResponseWriter) error
-}
-
-type AddRoleParent201Response struct {
-}
-
-func (response AddRoleParent201Response) VisitAddRoleParentResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
-}
-
-type ListParentPermissionsRequestObject struct {
-	Id string `json:"id"`
-}
-
-type ListParentPermissionsResponseObject interface {
-	VisitListParentPermissionsResponse(w http.ResponseWriter) error
-}
-
-type ListParentPermissions200JSONResponse []string
-
-func (response ListParentPermissions200JSONResponse) VisitListParentPermissionsResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type RemoveRoleParentRequestObject struct {
-	Id           string `json:"id"`
-	ParentRoleId string `json:"parentRoleId"`
-}
-
-type RemoveRoleParentResponseObject interface {
-	VisitRemoveRoleParentResponse(w http.ResponseWriter) error
-}
-
-type RemoveRoleParent204Response struct {
-}
-
-func (response RemoveRoleParent204Response) VisitRemoveRoleParentResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
-}
-
-type ListRoleUsersRequestObject struct {
-	Id string `json:"id"`
-}
-
-type ListRoleUsersResponseObject interface {
-	VisitListRoleUsersResponse(w http.ResponseWriter) error
-}
-
-type ListRoleUsers200JSONResponse []RoleUser
-
-func (response ListRoleUsers200JSONResponse) VisitListRoleUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -4867,6 +4867,57 @@ func (response UpdateUser200JSONResponse) VisitUpdateUserResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListUserGroupsRequestObject struct {
+	Id string `json:"id"`
+}
+
+type ListUserGroupsResponseObject interface {
+	VisitListUserGroupsResponse(w http.ResponseWriter) error
+}
+
+type ListUserGroups200JSONResponse []UserGroup
+
+func (response ListUserGroups200JSONResponse) VisitListUserGroupsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type AddUserGroupRequestObject struct {
+	Id   string `json:"id"`
+	Body *AddUserGroupJSONRequestBody
+}
+
+type AddUserGroupResponseObject interface {
+	VisitAddUserGroupResponse(w http.ResponseWriter) error
+}
+
+type AddUserGroup201Response struct {
+}
+
+func (response AddUserGroup201Response) VisitAddUserGroupResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type RemoveUserGroupRequestObject struct {
+	Id      string `json:"id"`
+	GroupId string `json:"groupId"`
+}
+
+type RemoveUserGroupResponseObject interface {
+	VisitRemoveUserGroupResponse(w http.ResponseWriter) error
+}
+
+type RemoveUserGroup204Response struct {
+}
+
+func (response RemoveUserGroup204Response) VisitRemoveUserGroupResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
 type ListUserPermissionsRequestObject struct {
 	Id string `json:"id"`
 }
@@ -4882,57 +4933,6 @@ func (response ListUserPermissions200JSONResponse) VisitListUserPermissionsRespo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
-}
-
-type ListUserRolesRequestObject struct {
-	Id string `json:"id"`
-}
-
-type ListUserRolesResponseObject interface {
-	VisitListUserRolesResponse(w http.ResponseWriter) error
-}
-
-type ListUserRoles200JSONResponse []UserRole
-
-func (response ListUserRoles200JSONResponse) VisitListUserRolesResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type AddUserRoleRequestObject struct {
-	Id   string `json:"id"`
-	Body *AddUserRoleJSONRequestBody
-}
-
-type AddUserRoleResponseObject interface {
-	VisitAddUserRoleResponse(w http.ResponseWriter) error
-}
-
-type AddUserRole201Response struct {
-}
-
-func (response AddUserRole201Response) VisitAddUserRoleResponse(w http.ResponseWriter) error {
-	w.WriteHeader(201)
-	return nil
-}
-
-type RemoveUserRoleRequestObject struct {
-	Id     string `json:"id"`
-	RoleId string `json:"roleId"`
-}
-
-type RemoveUserRoleResponseObject interface {
-	VisitRemoveUserRoleResponse(w http.ResponseWriter) error
-}
-
-type RemoveUserRole204Response struct {
-}
-
-func (response RemoveUserRole204Response) VisitRemoveUserRoleResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
 }
 
 type ListWebhooksRequestObject struct {
@@ -5066,6 +5066,39 @@ type StrictServerInterface interface {
 	// Download a file by ID
 	// (GET /files/{id}/download)
 	DownloadFile(ctx context.Context, request DownloadFileRequestObject) (DownloadFileResponseObject, error)
+	// List all groups
+	// (GET /groups)
+	ListGroups(ctx context.Context, request ListGroupsRequestObject) (ListGroupsResponseObject, error)
+	// Create a new group
+	// (POST /groups)
+	CreateGroup(ctx context.Context, request CreateGroupRequestObject) (CreateGroupResponseObject, error)
+	// Delete a group by ID
+	// (DELETE /groups/{id})
+	DeleteGroup(ctx context.Context, request DeleteGroupRequestObject) (DeleteGroupResponseObject, error)
+	// Get a single group by ID
+	// (GET /groups/{id})
+	GetGroup(ctx context.Context, request GetGroupRequestObject) (GetGroupResponseObject, error)
+	// Update a group by ID
+	// (PATCH /groups/{id})
+	UpdateGroup(ctx context.Context, request UpdateGroupRequestObject) (UpdateGroupResponseObject, error)
+	// List all child groups for a group
+	// (GET /groups/{id}/children)
+	ListChildGroups(ctx context.Context, request ListChildGroupsRequestObject) (ListChildGroupsResponseObject, error)
+	// Remove a parent group from another group
+	// (DELETE /groups/{id}/groups/{parentGroupId})
+	RemoveGroupParent(ctx context.Context, request RemoveGroupParentRequestObject) (RemoveGroupParentResponseObject, error)
+	// List all parent groups for a group
+	// (GET /groups/{id}/parents)
+	ListParentGroups(ctx context.Context, request ListParentGroupsRequestObject) (ListParentGroupsResponseObject, error)
+	// Add a parent group to another group
+	// (POST /groups/{id}/parents)
+	AddGroupParent(ctx context.Context, request AddGroupParentRequestObject) (AddGroupParentResponseObject, error)
+	// List all permissions for a group
+	// (GET /groups/{id}/permissions)
+	ListParentPermissions(ctx context.Context, request ListParentPermissionsRequestObject) (ListParentPermissionsResponseObject, error)
+	// List all users for a group
+	// (GET /groups/{id}/users)
+	ListGroupUsers(ctx context.Context, request ListGroupUsersRequestObject) (ListGroupUsersResponseObject, error)
 	// List all links
 	// (GET /links)
 	ListLinks(ctx context.Context, request ListLinksRequestObject) (ListLinksResponseObject, error)
@@ -5096,39 +5129,6 @@ type StrictServerInterface interface {
 	// Update a reaction by ID
 	// (PATCH /reactions/{id})
 	UpdateReaction(ctx context.Context, request UpdateReactionRequestObject) (UpdateReactionResponseObject, error)
-	// List all roles
-	// (GET /roles)
-	ListRoles(ctx context.Context, request ListRolesRequestObject) (ListRolesResponseObject, error)
-	// Create a new role
-	// (POST /roles)
-	CreateRole(ctx context.Context, request CreateRoleRequestObject) (CreateRoleResponseObject, error)
-	// Delete a role by ID
-	// (DELETE /roles/{id})
-	DeleteRole(ctx context.Context, request DeleteRoleRequestObject) (DeleteRoleResponseObject, error)
-	// Get a single role by ID
-	// (GET /roles/{id})
-	GetRole(ctx context.Context, request GetRoleRequestObject) (GetRoleResponseObject, error)
-	// Update a role by ID
-	// (PATCH /roles/{id})
-	UpdateRole(ctx context.Context, request UpdateRoleRequestObject) (UpdateRoleResponseObject, error)
-	// List all child roles for a role
-	// (GET /roles/{id}/children)
-	ListChildRoles(ctx context.Context, request ListChildRolesRequestObject) (ListChildRolesResponseObject, error)
-	// List all parent roles for a role
-	// (GET /roles/{id}/parents)
-	ListParentRoles(ctx context.Context, request ListParentRolesRequestObject) (ListParentRolesResponseObject, error)
-	// Add a parent role to another role
-	// (POST /roles/{id}/parents)
-	AddRoleParent(ctx context.Context, request AddRoleParentRequestObject) (AddRoleParentResponseObject, error)
-	// List all permissions for a role
-	// (GET /roles/{id}/permissions)
-	ListParentPermissions(ctx context.Context, request ListParentPermissionsRequestObject) (ListParentPermissionsResponseObject, error)
-	// Remove a parent role from another role
-	// (DELETE /roles/{id}/roles/{parentRoleId})
-	RemoveRoleParent(ctx context.Context, request RemoveRoleParentRequestObject) (RemoveRoleParentResponseObject, error)
-	// List all users for a role
-	// (GET /roles/{id}/users)
-	ListRoleUsers(ctx context.Context, request ListRoleUsersRequestObject) (ListRoleUsersResponseObject, error)
 	// Get sidebar data
 	// (GET /sidebar)
 	GetSidebar(ctx context.Context, request GetSidebarRequestObject) (GetSidebarResponseObject, error)
@@ -5210,18 +5210,18 @@ type StrictServerInterface interface {
 	// Update a user by ID
 	// (PATCH /users/{id})
 	UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
+	// List all groups for a user
+	// (GET /users/{id}/groups)
+	ListUserGroups(ctx context.Context, request ListUserGroupsRequestObject) (ListUserGroupsResponseObject, error)
+	// Add a group to a user
+	// (POST /users/{id}/groups)
+	AddUserGroup(ctx context.Context, request AddUserGroupRequestObject) (AddUserGroupResponseObject, error)
+	// Remove a group from a user
+	// (DELETE /users/{id}/groups/{groupId})
+	RemoveUserGroup(ctx context.Context, request RemoveUserGroupRequestObject) (RemoveUserGroupResponseObject, error)
 	// List all permissions for a user
 	// (GET /users/{id}/permissions)
 	ListUserPermissions(ctx context.Context, request ListUserPermissionsRequestObject) (ListUserPermissionsResponseObject, error)
-	// List all roles for a user
-	// (GET /users/{id}/roles)
-	ListUserRoles(ctx context.Context, request ListUserRolesRequestObject) (ListUserRolesResponseObject, error)
-	// Add a role to a user
-	// (POST /users/{id}/roles)
-	AddUserRole(ctx context.Context, request AddUserRoleRequestObject) (AddUserRoleResponseObject, error)
-	// Remove a role from a user
-	// (DELETE /users/{id}/roles/{roleId})
-	RemoveUserRole(ctx context.Context, request RemoveUserRoleRequestObject) (RemoveUserRoleResponseObject, error)
 	// List all webhooks
 	// (GET /webhooks)
 	ListWebhooks(ctx context.Context, request ListWebhooksRequestObject) (ListWebhooksResponseObject, error)
@@ -5602,6 +5602,312 @@ func (sh *strictHandler) DownloadFile(w http.ResponseWriter, r *http.Request, id
 	}
 }
 
+// ListGroups operation middleware
+func (sh *strictHandler) ListGroups(w http.ResponseWriter, r *http.Request, params ListGroupsParams) {
+	var request ListGroupsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListGroups(ctx, request.(ListGroupsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListGroups")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListGroupsResponseObject); ok {
+		if err := validResponse.VisitListGroupsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateGroup operation middleware
+func (sh *strictHandler) CreateGroup(w http.ResponseWriter, r *http.Request) {
+	var request CreateGroupRequestObject
+
+	var body CreateGroupJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateGroup(ctx, request.(CreateGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateGroupResponseObject); ok {
+		if err := validResponse.VisitCreateGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteGroup operation middleware
+func (sh *strictHandler) DeleteGroup(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteGroupRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteGroup(ctx, request.(DeleteGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteGroupResponseObject); ok {
+		if err := validResponse.VisitDeleteGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetGroup operation middleware
+func (sh *strictHandler) GetGroup(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetGroupRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetGroup(ctx, request.(GetGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetGroupResponseObject); ok {
+		if err := validResponse.VisitGetGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateGroup operation middleware
+func (sh *strictHandler) UpdateGroup(w http.ResponseWriter, r *http.Request, id string) {
+	var request UpdateGroupRequestObject
+
+	request.Id = id
+
+	var body UpdateGroupJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateGroup(ctx, request.(UpdateGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateGroupResponseObject); ok {
+		if err := validResponse.VisitUpdateGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListChildGroups operation middleware
+func (sh *strictHandler) ListChildGroups(w http.ResponseWriter, r *http.Request, id string) {
+	var request ListChildGroupsRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListChildGroups(ctx, request.(ListChildGroupsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListChildGroups")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListChildGroupsResponseObject); ok {
+		if err := validResponse.VisitListChildGroupsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RemoveGroupParent operation middleware
+func (sh *strictHandler) RemoveGroupParent(w http.ResponseWriter, r *http.Request, id string, parentGroupId string) {
+	var request RemoveGroupParentRequestObject
+
+	request.Id = id
+	request.ParentGroupId = parentGroupId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RemoveGroupParent(ctx, request.(RemoveGroupParentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RemoveGroupParent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RemoveGroupParentResponseObject); ok {
+		if err := validResponse.VisitRemoveGroupParentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListParentGroups operation middleware
+func (sh *strictHandler) ListParentGroups(w http.ResponseWriter, r *http.Request, id string) {
+	var request ListParentGroupsRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListParentGroups(ctx, request.(ListParentGroupsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListParentGroups")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListParentGroupsResponseObject); ok {
+		if err := validResponse.VisitListParentGroupsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AddGroupParent operation middleware
+func (sh *strictHandler) AddGroupParent(w http.ResponseWriter, r *http.Request, id string) {
+	var request AddGroupParentRequestObject
+
+	request.Id = id
+
+	var body AddGroupParentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AddGroupParent(ctx, request.(AddGroupParentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AddGroupParent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AddGroupParentResponseObject); ok {
+		if err := validResponse.VisitAddGroupParentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListParentPermissions operation middleware
+func (sh *strictHandler) ListParentPermissions(w http.ResponseWriter, r *http.Request, id string) {
+	var request ListParentPermissionsRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListParentPermissions(ctx, request.(ListParentPermissionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListParentPermissions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListParentPermissionsResponseObject); ok {
+		if err := validResponse.VisitListParentPermissionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListGroupUsers operation middleware
+func (sh *strictHandler) ListGroupUsers(w http.ResponseWriter, r *http.Request, id string) {
+	var request ListGroupUsersRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListGroupUsers(ctx, request.(ListGroupUsersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListGroupUsers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListGroupUsersResponseObject); ok {
+		if err := validResponse.VisitListGroupUsersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListLinks operation middleware
 func (sh *strictHandler) ListLinks(w http.ResponseWriter, r *http.Request, params ListLinksParams) {
 	var request ListLinksRequestObject
@@ -5879,312 +6185,6 @@ func (sh *strictHandler) UpdateReaction(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateReactionResponseObject); ok {
 		if err := validResponse.VisitUpdateReactionResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListRoles operation middleware
-func (sh *strictHandler) ListRoles(w http.ResponseWriter, r *http.Request, params ListRolesParams) {
-	var request ListRolesRequestObject
-
-	request.Params = params
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListRoles(ctx, request.(ListRolesRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListRoles")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListRolesResponseObject); ok {
-		if err := validResponse.VisitListRolesResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// CreateRole operation middleware
-func (sh *strictHandler) CreateRole(w http.ResponseWriter, r *http.Request) {
-	var request CreateRoleRequestObject
-
-	var body CreateRoleJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateRole(ctx, request.(CreateRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(CreateRoleResponseObject); ok {
-		if err := validResponse.VisitCreateRoleResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// DeleteRole operation middleware
-func (sh *strictHandler) DeleteRole(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteRoleRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteRole(ctx, request.(DeleteRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteRoleResponseObject); ok {
-		if err := validResponse.VisitDeleteRoleResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// GetRole operation middleware
-func (sh *strictHandler) GetRole(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetRoleRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetRole(ctx, request.(GetRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetRoleResponseObject); ok {
-		if err := validResponse.VisitGetRoleResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// UpdateRole operation middleware
-func (sh *strictHandler) UpdateRole(w http.ResponseWriter, r *http.Request, id string) {
-	var request UpdateRoleRequestObject
-
-	request.Id = id
-
-	var body UpdateRoleJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.UpdateRole(ctx, request.(UpdateRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "UpdateRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(UpdateRoleResponseObject); ok {
-		if err := validResponse.VisitUpdateRoleResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListChildRoles operation middleware
-func (sh *strictHandler) ListChildRoles(w http.ResponseWriter, r *http.Request, id string) {
-	var request ListChildRolesRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListChildRoles(ctx, request.(ListChildRolesRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListChildRoles")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListChildRolesResponseObject); ok {
-		if err := validResponse.VisitListChildRolesResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListParentRoles operation middleware
-func (sh *strictHandler) ListParentRoles(w http.ResponseWriter, r *http.Request, id string) {
-	var request ListParentRolesRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListParentRoles(ctx, request.(ListParentRolesRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListParentRoles")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListParentRolesResponseObject); ok {
-		if err := validResponse.VisitListParentRolesResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// AddRoleParent operation middleware
-func (sh *strictHandler) AddRoleParent(w http.ResponseWriter, r *http.Request, id string) {
-	var request AddRoleParentRequestObject
-
-	request.Id = id
-
-	var body AddRoleParentJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.AddRoleParent(ctx, request.(AddRoleParentRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AddRoleParent")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(AddRoleParentResponseObject); ok {
-		if err := validResponse.VisitAddRoleParentResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListParentPermissions operation middleware
-func (sh *strictHandler) ListParentPermissions(w http.ResponseWriter, r *http.Request, id string) {
-	var request ListParentPermissionsRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListParentPermissions(ctx, request.(ListParentPermissionsRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListParentPermissions")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListParentPermissionsResponseObject); ok {
-		if err := validResponse.VisitListParentPermissionsResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// RemoveRoleParent operation middleware
-func (sh *strictHandler) RemoveRoleParent(w http.ResponseWriter, r *http.Request, id string, parentRoleId string) {
-	var request RemoveRoleParentRequestObject
-
-	request.Id = id
-	request.ParentRoleId = parentRoleId
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.RemoveRoleParent(ctx, request.(RemoveRoleParentRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "RemoveRoleParent")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(RemoveRoleParentResponseObject); ok {
-		if err := validResponse.VisitRemoveRoleParentResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListRoleUsers operation middleware
-func (sh *strictHandler) ListRoleUsers(w http.ResponseWriter, r *http.Request, id string) {
-	var request ListRoleUsersRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListRoleUsers(ctx, request.(ListRoleUsersRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListRoleUsers")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListRoleUsersResponseObject); ok {
-		if err := validResponse.VisitListRoleUsersResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -6952,6 +6952,92 @@ func (sh *strictHandler) UpdateUser(w http.ResponseWriter, r *http.Request, id s
 	}
 }
 
+// ListUserGroups operation middleware
+func (sh *strictHandler) ListUserGroups(w http.ResponseWriter, r *http.Request, id string) {
+	var request ListUserGroupsRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListUserGroups(ctx, request.(ListUserGroupsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListUserGroups")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListUserGroupsResponseObject); ok {
+		if err := validResponse.VisitListUserGroupsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AddUserGroup operation middleware
+func (sh *strictHandler) AddUserGroup(w http.ResponseWriter, r *http.Request, id string) {
+	var request AddUserGroupRequestObject
+
+	request.Id = id
+
+	var body AddUserGroupJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AddUserGroup(ctx, request.(AddUserGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AddUserGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AddUserGroupResponseObject); ok {
+		if err := validResponse.VisitAddUserGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RemoveUserGroup operation middleware
+func (sh *strictHandler) RemoveUserGroup(w http.ResponseWriter, r *http.Request, id string, groupId string) {
+	var request RemoveUserGroupRequestObject
+
+	request.Id = id
+	request.GroupId = groupId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RemoveUserGroup(ctx, request.(RemoveUserGroupRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RemoveUserGroup")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RemoveUserGroupResponseObject); ok {
+		if err := validResponse.VisitRemoveUserGroupResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListUserPermissions operation middleware
 func (sh *strictHandler) ListUserPermissions(w http.ResponseWriter, r *http.Request, id string) {
 	var request ListUserPermissionsRequestObject
@@ -6971,92 +7057,6 @@ func (sh *strictHandler) ListUserPermissions(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListUserPermissionsResponseObject); ok {
 		if err := validResponse.VisitListUserPermissionsResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// ListUserRoles operation middleware
-func (sh *strictHandler) ListUserRoles(w http.ResponseWriter, r *http.Request, id string) {
-	var request ListUserRolesRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.ListUserRoles(ctx, request.(ListUserRolesRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListUserRoles")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(ListUserRolesResponseObject); ok {
-		if err := validResponse.VisitListUserRolesResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// AddUserRole operation middleware
-func (sh *strictHandler) AddUserRole(w http.ResponseWriter, r *http.Request, id string) {
-	var request AddUserRoleRequestObject
-
-	request.Id = id
-
-	var body AddUserRoleJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.AddUserRole(ctx, request.(AddUserRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AddUserRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(AddUserRoleResponseObject); ok {
-		if err := validResponse.VisitAddUserRoleResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// RemoveUserRole operation middleware
-func (sh *strictHandler) RemoveUserRole(w http.ResponseWriter, r *http.Request, id string, roleId string) {
-	var request RemoveUserRoleRequestObject
-
-	request.Id = id
-	request.RoleId = roleId
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.RemoveUserRole(ctx, request.(RemoveUserRoleRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "RemoveUserRole")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(RemoveUserRoleResponseObject); ok {
-		if err := validResponse.VisitRemoveUserRoleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

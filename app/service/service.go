@@ -1383,8 +1383,8 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 	return openapi.UpdateUser200JSONResponse(response), nil
 }
 
-func (s *Service) ListRoles(ctx context.Context, request openapi.ListRolesRequestObject) (openapi.ListRolesResponseObject, error) {
-	roles, err := s.queries.ListRoles(ctx, sqlc.ListRolesParams{
+func (s *Service) ListGroups(ctx context.Context, request openapi.ListGroupsRequestObject) (openapi.ListGroupsResponseObject, error) {
+	groups, err := s.queries.ListGroups(ctx, sqlc.ListGroupsParams{
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -1392,38 +1392,38 @@ func (s *Service) ListRoles(ctx context.Context, request openapi.ListRolesReques
 		return nil, err
 	}
 
-	response := make([]openapi.Role, 0, len(roles))
+	response := make([]openapi.Group, 0, len(groups))
 
-	for _, role := range roles {
-		response = append(response, openapi.Role{
-			Created:     role.Created,
-			Id:          role.ID,
-			Name:        role.Name,
-			Permissions: permission.FromJSONArray(ctx, role.Permissions),
-			Updated:     role.Updated,
+	for _, group := range groups {
+		response = append(response, openapi.Group{
+			Created:     group.Created,
+			Id:          group.ID,
+			Name:        group.Name,
+			Permissions: permission.FromJSONArray(ctx, group.Permissions),
+			Updated:     group.Updated,
 		})
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "roles", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "groups", response)
 
 	totalCount := 0
-	if len(roles) > 0 {
-		totalCount = int(roles[0].TotalCount)
+	if len(groups) > 0 {
+		totalCount = int(groups[0].TotalCount)
 	}
 
-	return openapi.ListRoles200JSONResponse{
+	return openapi.ListGroups200JSONResponse{
 		Body: response,
-		Headers: openapi.ListRoles200ResponseHeaders{
+		Headers: openapi.ListGroups200ResponseHeaders{
 			XTotalCount: totalCount,
 		},
 	}, nil
 }
 
-func (s *Service) CreateRole(ctx context.Context, request openapi.CreateRoleRequestObject) (openapi.CreateRoleResponseObject, error) {
-	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "roles", request.Body)
+func (s *Service) CreateGroup(ctx context.Context, request openapi.CreateGroupRequestObject) (openapi.CreateGroupResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "groups", request.Body)
 
-	role, err := s.queries.CreateRole(ctx, sqlc.CreateRoleParams{
-		ID:          generateID("o"),
+	group, err := s.queries.CreateGroup(ctx, sqlc.CreateGroupParams{
+		ID:          generateID("g"),
 		Name:        request.Body.Name,
 		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
 	})
@@ -1431,53 +1431,53 @@ func (s *Service) CreateRole(ctx context.Context, request openapi.CreateRoleRequ
 		return nil, err
 	}
 
-	response := openapi.Role{
-		Created:     role.Created,
-		Id:          role.ID,
-		Name:        role.Name,
-		Permissions: permission.FromJSONArray(ctx, role.Permissions),
-		Updated:     role.Updated,
+	response := openapi.Group{
+		Created:     group.Created,
+		Id:          group.ID,
+		Name:        group.Name,
+		Permissions: permission.FromJSONArray(ctx, group.Permissions),
+		Updated:     group.Updated,
 	}
 
-	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "roles", response)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "groups", response)
 
-	return openapi.CreateRole200JSONResponse(response), nil
+	return openapi.CreateGroup200JSONResponse(response), nil
 }
 
-func (s *Service) DeleteRole(ctx context.Context, request openapi.DeleteRoleRequestObject) (openapi.DeleteRoleResponseObject, error) {
-	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "roles", request.Id)
+func (s *Service) DeleteGroup(ctx context.Context, request openapi.DeleteGroupRequestObject) (openapi.DeleteGroupResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "groups", request.Id)
 
-	err := s.queries.DeleteRole(ctx, request.Id)
+	err := s.queries.DeleteGroup(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "roles", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "groups", request.Id)
 
-	return openapi.DeleteRole204Response{}, nil
+	return openapi.DeleteGroup204Response{}, nil
 }
 
-func (s *Service) GetRole(ctx context.Context, request openapi.GetRoleRequestObject) (openapi.GetRoleResponseObject, error) {
-	role, err := s.queries.GetRole(ctx, request.Id)
+func (s *Service) GetGroup(ctx context.Context, request openapi.GetGroupRequestObject) (openapi.GetGroupResponseObject, error) {
+	group, err := s.queries.GetGroup(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := openapi.Role{
-		Created:     role.Created,
-		Id:          role.ID,
-		Name:        role.Name,
-		Permissions: permission.FromJSONArray(ctx, role.Permissions),
-		Updated:     role.Updated,
+	response := openapi.Group{
+		Created:     group.Created,
+		Id:          group.ID,
+		Name:        group.Name,
+		Permissions: permission.FromJSONArray(ctx, group.Permissions),
+		Updated:     group.Updated,
 	}
 
-	s.hooks.OnRecordViewRequest.Publish(ctx, "roles", response)
+	s.hooks.OnRecordViewRequest.Publish(ctx, "groups", response)
 
-	return openapi.GetRole200JSONResponse(response), nil
+	return openapi.GetGroup200JSONResponse(response), nil
 }
 
-func (s *Service) UpdateRole(ctx context.Context, request openapi.UpdateRoleRequestObject) (openapi.UpdateRoleResponseObject, error) {
-	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "roles", request.Body)
+func (s *Service) UpdateGroup(ctx context.Context, request openapi.UpdateGroupRequestObject) (openapi.UpdateGroupResponseObject, error) {
+	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, "groups", request.Body)
 
 	var permissions sql.NullString
 
@@ -1485,7 +1485,7 @@ func (s *Service) UpdateRole(ctx context.Context, request openapi.UpdateRoleRequ
 		permissions = sql.NullString{String: permission.ToJSONArray(ctx, *request.Body.Permissions), Valid: true}
 	}
 
-	role, err := s.queries.UpdateRole(ctx, sqlc.UpdateRoleParams{
+	group, err := s.queries.UpdateGroup(ctx, sqlc.UpdateGroupParams{
 		Name:        toNullString(request.Body.Name),
 		Permissions: permissions,
 		ID:          request.Id,
@@ -1494,81 +1494,81 @@ func (s *Service) UpdateRole(ctx context.Context, request openapi.UpdateRoleRequ
 		return nil, err
 	}
 
-	response := openapi.Role{
-		Created:     role.Created,
-		Id:          role.ID,
-		Name:        role.Name,
-		Permissions: permission.FromJSONArray(ctx, role.Permissions),
-		Updated:     role.Updated,
+	response := openapi.Group{
+		Created:     group.Created,
+		Id:          group.ID,
+		Name:        group.Name,
+		Permissions: permission.FromJSONArray(ctx, group.Permissions),
+		Updated:     group.Updated,
 	}
 
-	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "roles", response)
+	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "groups", response)
 
-	return openapi.UpdateRole200JSONResponse(response), nil
+	return openapi.UpdateGroup200JSONResponse(response), nil
 }
 
-func (s *Service) AddRoleParent(ctx context.Context, request openapi.AddRoleParentRequestObject) (openapi.AddRoleParentResponseObject, error) {
-	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "role_parents", request.Body)
+func (s *Service) AddGroupParent(ctx context.Context, request openapi.AddGroupParentRequestObject) (openapi.AddGroupParentResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "group_parents", request.Body)
 
-	err := s.queries.AssignParentRole(ctx, sqlc.AssignParentRoleParams{
-		ChildRoleID:  request.Id,
-		ParentRoleID: request.Body.RoleId,
+	err := s.queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
+		ChildGroupID:  request.Id,
+		ParentGroupID: request.Body.GroupId,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "role_parents", request.Body)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "group_parents", request.Body)
 
-	return openapi.AddRoleParent201Response{}, nil
+	return openapi.AddGroupParent201Response{}, nil
 }
 
-func (s *Service) RemoveRoleParent(ctx context.Context, request openapi.RemoveRoleParentRequestObject) (openapi.RemoveRoleParentResponseObject, error) {
-	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "role_parents", request.Id)
+func (s *Service) RemoveGroupParent(ctx context.Context, request openapi.RemoveGroupParentRequestObject) (openapi.RemoveGroupParentResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "group_parents", request.Id)
 
-	err := s.queries.RemoveParentRole(ctx, sqlc.RemoveParentRoleParams{
-		ChildRoleID:  request.Id,
-		ParentRoleID: request.ParentRoleId,
+	err := s.queries.RemoveParentGroup(ctx, sqlc.RemoveParentGroupParams{
+		ChildGroupID:  request.Id,
+		ParentGroupID: request.ParentGroupId,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "role_parents", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "group_parents", request.Id)
 
-	return openapi.RemoveRoleParent204Response{}, nil
+	return openapi.RemoveGroupParent204Response{}, nil
 }
 
-func (s *Service) AddUserRole(ctx context.Context, request openapi.AddUserRoleRequestObject) (openapi.AddUserRoleResponseObject, error) {
-	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "user_roles", request.Body)
+func (s *Service) AddUserGroup(ctx context.Context, request openapi.AddUserGroupRequestObject) (openapi.AddUserGroupResponseObject, error) {
+	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "user_groups", request.Body)
 
-	err := s.queries.AssignRoleToUser(ctx, sqlc.AssignRoleToUserParams{
-		UserID: request.Id,
-		RoleID: request.Body.RoleId,
+	err := s.queries.AssignGroupToUser(ctx, sqlc.AssignGroupToUserParams{
+		UserID:  request.Id,
+		GroupID: request.Body.GroupId,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "user_roles", request.Body)
+	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, "user_groups", request.Body)
 
-	return openapi.AddUserRole201Response{}, nil
+	return openapi.AddUserGroup201Response{}, nil
 }
 
-func (s *Service) RemoveUserRole(ctx context.Context, request openapi.RemoveUserRoleRequestObject) (openapi.RemoveUserRoleResponseObject, error) {
-	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "user_roles", request.Id)
+func (s *Service) RemoveUserGroup(ctx context.Context, request openapi.RemoveUserGroupRequestObject) (openapi.RemoveUserGroupResponseObject, error) {
+	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, "user_groups", request.Id)
 
-	err := s.queries.RemoveRoleFromUser(ctx, sqlc.RemoveRoleFromUserParams{
-		UserID: request.Id,
-		RoleID: request.RoleId,
+	err := s.queries.RemoveGroupFromUser(ctx, sqlc.RemoveGroupFromUserParams{
+		UserID:  request.Id,
+		GroupID: request.GroupId,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "user_roles", request.Id)
+	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, "user_groups", request.Id)
 
-	return openapi.RemoveUserRole204Response{}, nil
+	return openapi.RemoveUserGroup204Response{}, nil
 }
 
 func (s *Service) ListUserPermissions(ctx context.Context, request openapi.ListUserPermissionsRequestObject) (openapi.ListUserPermissionsResponseObject, error) {
@@ -1582,38 +1582,38 @@ func (s *Service) ListUserPermissions(ctx context.Context, request openapi.ListU
 	return openapi.ListUserPermissions200JSONResponse(permissions), nil
 }
 
-func (s *Service) ListUserRoles(ctx context.Context, request openapi.ListUserRolesRequestObject) (openapi.ListUserRolesResponseObject, error) {
-	roles, err := s.queries.ListUserRoles(ctx, request.Id)
+func (s *Service) ListUserGroups(ctx context.Context, request openapi.ListUserGroupsRequestObject) (openapi.ListUserGroupsResponseObject, error) {
+	groups, err := s.queries.ListUserGroups(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]openapi.UserRole, 0, len(roles))
-	for _, role := range roles {
-		response = append(response, openapi.UserRole{
-			Created:     role.Created,
-			Id:          role.ID,
-			Name:        role.Name,
-			Permissions: permission.FromJSONArray(ctx, role.Permissions),
-			Type:        role.RoleType,
-			Updated:     role.Updated,
+	response := make([]openapi.UserGroup, 0, len(groups))
+	for _, group := range groups {
+		response = append(response, openapi.UserGroup{
+			Created:     group.Created,
+			Id:          group.ID,
+			Name:        group.Name,
+			Permissions: permission.FromJSONArray(ctx, group.Permissions),
+			Type:        group.GroupType,
+			Updated:     group.Updated,
 		})
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "user_roles", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "user_groups", response)
 
-	return openapi.ListUserRoles200JSONResponse(response), nil
+	return openapi.ListUserGroups200JSONResponse(response), nil
 }
 
-func (s *Service) ListRoleUsers(ctx context.Context, request openapi.ListRoleUsersRequestObject) (openapi.ListRoleUsersResponseObject, error) {
-	users, err := s.queries.ListRoleUsers(ctx, request.Id)
+func (s *Service) ListGroupUsers(ctx context.Context, request openapi.ListGroupUsersRequestObject) (openapi.ListGroupUsersResponseObject, error) {
+	users, err := s.queries.ListGroupUsers(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]openapi.RoleUser, 0, len(users))
+	response := make([]openapi.GroupUser, 0, len(users))
 	for _, user := range users {
-		response = append(response, openapi.RoleUser{
+		response = append(response, openapi.GroupUser{
 			Avatar:                 user.Avatar,
 			Created:                user.Created,
 			Email:                  user.Email,
@@ -1626,13 +1626,13 @@ func (s *Service) ListRoleUsers(ctx context.Context, request openapi.ListRoleUse
 			Updated:                user.Updated,
 			Username:               user.Username,
 			Verified:               user.Verified,
-			Type:                   user.RoleType,
+			Type:                   user.GroupType,
 		})
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "role_users", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "group_users", response)
 
-	return openapi.ListRoleUsers200JSONResponse(response), nil
+	return openapi.ListGroupUsers200JSONResponse(response), nil
 }
 
 func (s *Service) ListParentPermissions(ctx context.Context, request openapi.ListParentPermissionsRequestObject) (openapi.ListParentPermissionsResponseObject, error) {
@@ -1641,55 +1641,55 @@ func (s *Service) ListParentPermissions(ctx context.Context, request openapi.Lis
 		return nil, err
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "role_permissions", permissions)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "group_permissions", permissions)
 
 	return openapi.ListParentPermissions200JSONResponse(permissions), nil
 }
 
-func (s *Service) ListParentRoles(ctx context.Context, request openapi.ListParentRolesRequestObject) (openapi.ListParentRolesResponseObject, error) {
-	roles, err := s.queries.ListParentRoles(ctx, request.Id)
+func (s *Service) ListParentGroups(ctx context.Context, request openapi.ListParentGroupsRequestObject) (openapi.ListParentGroupsResponseObject, error) {
+	groups, err := s.queries.ListParentGroups(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]openapi.UserRole, 0, len(roles))
-	for _, role := range roles {
-		response = append(response, openapi.UserRole{
-			Created:     role.Created,
-			Id:          role.ID,
-			Name:        role.Name,
-			Permissions: permission.FromJSONArray(ctx, role.Permissions),
-			Type:        role.RoleType,
-			Updated:     role.Updated,
+	response := make([]openapi.UserGroup, 0, len(groups))
+	for _, group := range groups {
+		response = append(response, openapi.UserGroup{
+			Created:     group.Created,
+			Id:          group.ID,
+			Name:        group.Name,
+			Permissions: permission.FromJSONArray(ctx, group.Permissions),
+			Type:        group.GroupType,
+			Updated:     group.Updated,
 		})
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "role_parents", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "group_parents", response)
 
-	return openapi.ListParentRoles200JSONResponse(response), nil
+	return openapi.ListParentGroups200JSONResponse(response), nil
 }
 
-func (s *Service) ListChildRoles(ctx context.Context, request openapi.ListChildRolesRequestObject) (openapi.ListChildRolesResponseObject, error) {
-	roles, err := s.queries.ListChildRoles(ctx, request.Id)
+func (s *Service) ListChildGroups(ctx context.Context, request openapi.ListChildGroupsRequestObject) (openapi.ListChildGroupsResponseObject, error) {
+	groups, err := s.queries.ListChildGroups(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]openapi.UserRole, 0, len(roles))
-	for _, role := range roles {
-		response = append(response, openapi.UserRole{
-			Created:     role.Created,
-			Id:          role.ID,
-			Name:        role.Name,
-			Permissions: permission.FromJSONArray(ctx, role.Permissions),
-			Type:        role.RoleType,
-			Updated:     role.Updated,
+	response := make([]openapi.UserGroup, 0, len(groups))
+	for _, group := range groups {
+		response = append(response, openapi.UserGroup{
+			Created:     group.Created,
+			Id:          group.ID,
+			Name:        group.Name,
+			Permissions: permission.FromJSONArray(ctx, group.Permissions),
+			Type:        group.GroupType,
+			Updated:     group.Updated,
 		})
 	}
 
-	s.hooks.OnRecordsListRequest.Publish(ctx, "role_children", response)
+	s.hooks.OnRecordsListRequest.Publish(ctx, "group_children", response)
 
-	return openapi.ListChildRoles200JSONResponse(response), nil
+	return openapi.ListChildGroups200JSONResponse(response), nil
 }
 
 func (s *Service) ListWebhooks(ctx context.Context, request openapi.ListWebhooksRequestObject) (openapi.ListWebhooksResponseObject, error) {

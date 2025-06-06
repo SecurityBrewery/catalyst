@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
@@ -9,15 +10,19 @@ models/ExtendedTask.ts
 models/ExtendedTicket.ts
 models/Feature.ts
 models/FileUpdate.ts
+models/Group.ts
+models/GroupRelation.ts
+models/GroupUpdate.ts
+models/GroupUser.ts
 models/Link.ts
 models/LinkUpdate.ts
 models/ModelFile.ts
 models/NewComment.ts
 models/NewFeature.ts
 models/NewFile.ts
+models/NewGroup.ts
 models/NewLink.ts
 models/NewReaction.ts
-models/NewRole.ts
 models/NewTask.ts
 models/NewTicket.ts
 models/NewTimelineEntry.ts
@@ -26,10 +31,6 @@ models/NewUser.ts
 models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
-models/Role.ts
-models/RoleRelation.ts
-models/RoleUpdate.ts
-models/RoleUser.ts
 models/Sidebar.ts
 models/Task.ts
 models/TaskUpdate.ts
@@ -41,7 +42,7 @@ models/TimelineEntryUpdate.ts
 models/Type.ts
 models/TypeUpdate.ts
 models/User.ts
-models/UserRole.ts
+models/UserGroup.ts
 models/UserUpdate.ts
 models/Webhook.ts
 models/WebhookUpdate.ts
