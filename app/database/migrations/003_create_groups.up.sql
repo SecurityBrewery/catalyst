@@ -1,6 +1,6 @@
 CREATE TABLE groups
 (
-    id          TEXT default ('o' || lower(hex(randomblob(7)))) not null
+    id          TEXT default ('g' || lower(hex(randomblob(7)))) not null
         primary key,
     name        TEXT UNIQUE                                     NOT NULL,
     permissions TEXT                                            NOT NULL, -- JSON array string like '["read:article","write:article"]'

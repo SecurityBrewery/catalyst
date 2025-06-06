@@ -97,7 +97,7 @@ dev2:
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
-	go run .
+	UI_DEVSERVER=http://localhost:3000 go run .
 
 .PHONY: dev-10000
 dev-10000:

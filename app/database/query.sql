@@ -455,7 +455,7 @@ VALUES (@id, @name, @permissions)
 RETURNING *;
 
 -- name: GetGroup :one
-SELECT groups.*, COUNT(*) OVER () as total_count
+SELECT *
 FROM groups
 WHERE id = @id;
 
@@ -472,9 +472,9 @@ FROM groups
 WHERE id = @id;
 
 -- name: ListGroups :many
-SELECT groups.*, COUNT(*) OVER () as total_count
-FROM groups
-ORDER BY created DESC
+SELECT g.*, COUNT(*) OVER () as total_count
+FROM groups AS g
+ORDER BY g.created DESC
 LIMIT @limit OFFSET @offset;
 
 -- name: AssignGroupToUser :exec
@@ -498,11 +498,11 @@ WHERE parent_group_id = @parent_group_id
   AND child_group_id = @child_group_id;
 
 -- name: ListUserGroups :many
-SELECT groups.*, uer.group_type, COUNT(*) OVER () as total_count
+SELECT g.*, uer.group_type, COUNT(*) OVER () as total_count
 FROM user_effective_groups uer
-         JOIN groups ON groups.id = uer.group_id
+         JOIN groups AS g ON g.id = uer.group_id
 WHERE uer.user_id = @user_id
-ORDER BY groups.name DESC;
+ORDER BY g.name DESC;
 
 -- name: ListGroupUsers :many
 SELECT users.*, uer.group_type
@@ -518,16 +518,16 @@ WHERE user_id = @user_id
 ORDER BY permission;
 
 -- name: ListParentGroups :many
-SELECT groups.*, group_effective_groups.group_type
+SELECT g.*, group_effective_groups.group_type
 FROM group_effective_groups
-         JOIN groups ON groups.id = group_effective_groups.child_group_id
+         JOIN groups AS g ON g.id = group_effective_groups.child_group_id
 WHERE parent_group_id = @group_id
 ORDER BY group_effective_groups.group_type;
 
 -- name: ListChildGroups :many
-SELECT groups.*, group_effective_groups.group_type
+SELECT g.*, group_effective_groups.group_type
 FROM group_effective_groups
-         JOIN groups ON groups.id = group_effective_groups.parent_group_id
+         JOIN groups AS g ON g.id = group_effective_groups.parent_group_id
 WHERE child_group_id = @group_id
 ORDER BY group_effective_groups.group_type;
 

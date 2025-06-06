@@ -752,30 +752,20 @@ func (q *Queries) GetFile(ctx context.Context, id string) (File, error) {
 }
 
 const getGroup = `-- name: GetGroup :one
-SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedCOUNT(*) OVER () as total_count
+SELECT id, name, permissions, created, updated
 FROM groups
 WHERE id = ?1
 `
 
-type GetGroupRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
-}
-
-func (q *Queries) GetGroup(ctx context.Context, id string) (GetGroupRow, error) {
+func (q *Queries) GetGroup(ctx context.Context, id string) (Group, error) {
 	row := q.db.QueryRowContext(ctx, getGroup, id)
-	var i GetGroupRow
+	var i Group
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Permissions,
 		&i.Created,
 		&i.Updated,
-		&i.TotalCount,
 	)
 	return i, err
 }
@@ -986,9 +976,9 @@ func (q *Queries) GetWebhook(ctx context.Context, id string) (Webhook, error) {
 }
 
 const listChildGroups = `-- name: ListChildGroups :many
-SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedgroup_effective_groups.group_type
+SELECT g.id, g.name, g.permissions, g.created, g.updated, group_effective_groups.group_type
 FROM group_effective_groups
-         JOIN groups ON groups.id = group_effective_groups.parent_group_id
+         JOIN groups AS g ON g.id = group_effective_groups.parent_group_id
 WHERE child_group_id = ?1
 ORDER BY group_effective_groups.group_type
 `
@@ -1264,9 +1254,9 @@ func (q *Queries) ListGroupUsers(ctx context.Context, groupID string) ([]ListGro
 }
 
 const listGroups = `-- name: ListGroups :many
-SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedCOUNT(*) OVER () as total_count
-FROM groups
-ORDER BY created DESC
+SELECT g.id, g.name, g.permissions, g.created, g.updated, COUNT(*) OVER () as total_count
+FROM groups AS g
+ORDER BY g.created DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -1371,9 +1361,9 @@ func (q *Queries) ListLinks(ctx context.Context, arg ListLinksParams) ([]ListLin
 }
 
 const listParentGroups = `-- name: ListParentGroups :many
-SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updatedgroup_effective_groups.group_type
+SELECT g.id, g.name, g.permissions, g.created, g.updated, group_effective_groups.group_type
 FROM group_effective_groups
-         JOIN groups ON groups.id = group_effective_groups.child_group_id
+         JOIN groups AS g ON g.id = group_effective_groups.child_group_id
 WHERE parent_group_id = ?1
 ORDER BY group_effective_groups.group_type
 `
@@ -1761,11 +1751,11 @@ func (q *Queries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTyp
 }
 
 const listUserGroups = `-- name: ListUserGroups :many
-SELECT "groups".id, "groups".name, "groups".permissions, "groups".created, "groups".updateduer.group_type, COUNT(*) OVER () as total_count
+SELECT g.id, g.name, g.permissions, g.created, g.updated, uer.group_type, COUNT(*) OVER () as total_count
 FROM user_effective_groups uer
-         JOIN groups ON groups.id = uer.group_id
+         JOIN groups AS g ON g.id = uer.group_id
 WHERE uer.user_id = ?1
-ORDER BY groups.name DESC
+ORDER BY g.name DESC
 `
 
 type ListUserGroupsRow struct {
