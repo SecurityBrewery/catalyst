@@ -22,6 +22,14 @@ func New(config *Config) *Mailer {
 	return &Mailer{config: config}
 }
 
+type smtpClient interface {
+	DialAndSend(msgs ...*mail.Msg) error
+}
+
+var newSMTPClient = func(server string, opts ...mail.Option) (smtpClient, error) {
+	return mail.NewClient(server, opts...)
+}
+
 func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error {
 	message := mail.NewMsg()
 
@@ -37,7 +45,7 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 	message.SetBodyString(mail.TypeTextPlain, body)
 
 	// Deliver the mails via SMTP
-	client, err := mail.NewClient(m.config.SMTPServer,
+	client, err := newSMTPClient(m.config.SMTPServer,
 		mail.WithSMTPAuth(mail.SMTPAuthPlain),
 		mail.WithTLSPortPolicy(mail.TLSMandatory),
 		mail.WithUsername(m.config.SMTPUser),
