@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,6 +16,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
+	"github.com/SecurityBrewery/catalyst/ui"
 )
 
 func (a *App) SetupRoutes() error {
@@ -47,11 +50,29 @@ func (a *App) SetupRoutes() error {
 }
 
 func (a *App) staticFiles(w http.ResponseWriter, r *http.Request) {
-	u, _ := url.Parse("http://localhost:3000/")
+	if devServer := os.Getenv("UI_DEVSERVER"); devServer != "" {
+		u, _ := url.Parse(devServer)
 
-	r.Host = r.URL.Host
+		r.Host = r.URL.Host
 
-	httputil.NewSingleHostReverseProxy(u).ServeHTTP(w, r)
+		httputil.NewSingleHostReverseProxy(u).ServeHTTP(w, r)
+
+		return
+	}
+
+	fsys := http.FS(ui.UI())
+
+	path := strings.TrimPrefix(r.URL.Path, "/ui")
+	if path == "" || path == "/" {
+		path = "/index.html"
+	}
+
+	if _, err := fsys.Open(strings.TrimPrefix(path, "/")); err != nil {
+		path = "/index.html"
+	}
+
+	r.URL.Path = path
+	http.FileServer(fsys).ServeHTTP(w, r)
 }
 
 func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
