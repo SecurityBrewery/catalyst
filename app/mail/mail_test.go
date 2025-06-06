@@ -20,17 +20,14 @@ func (f *fakeClient) DialAndSend(msgs ...*gm.Msg) error {
 	return f.err
 }
 
-func withFakeClient(fc *fakeClient, errNew error) func() {
-	original := newSMTPClient
-	newSMTPClient = func(_ string, _ ...gm.Option) (smtpClient, error) {
+func withFakeClient(fc *fakeClient, errNew error) MailerOption {
+	return WithSMTPClient(func(_ string, _ ...gm.Option) (smtpClient, error) {
 		if errNew != nil {
 			return nil, errNew
 		}
 
 		return fc, nil
-	}
-
-	return func() { newSMTPClient = original }
+	})
 }
 
 func TestMailer_Send(t *testing.T) {
@@ -38,11 +35,11 @@ func TestMailer_Send(t *testing.T) {
 
 	ctx := t.Context()
 	cfg := &Config{SMTPServer: "localhost"}
-	m := New(cfg)
 
 	t.Run("invalid from", func(t *testing.T) {
 		t.Parallel()
 
+		m := New(cfg)
 		err := m.Send(ctx, "invalid", "to@example.com", "sub", "body")
 		require.Error(t, err)
 	})
@@ -50,6 +47,7 @@ func TestMailer_Send(t *testing.T) {
 	t.Run("invalid to", func(t *testing.T) {
 		t.Parallel()
 
+		m := New(cfg)
 		err := m.Send(ctx, "from@example.com", "invalid", "sub", "body")
 		require.Error(t, err)
 	})
@@ -57,9 +55,7 @@ func TestMailer_Send(t *testing.T) {
 	t.Run("client creation failure", func(t *testing.T) {
 		t.Parallel()
 
-		restore := withFakeClient(nil, errors.New("new client error"))
-		defer restore()
-
+		m := New(cfg, withFakeClient(nil, errors.New("new client error")))
 		err := m.Send(ctx, "from@example.com", "to@example.com", "sub", "body")
 		require.Error(t, err)
 	})
@@ -68,9 +64,7 @@ func TestMailer_Send(t *testing.T) {
 		t.Parallel()
 
 		fc := &fakeClient{err: errors.New("dial fail")}
-		restore := withFakeClient(fc, nil)
-
-		defer restore()
+		m := New(cfg, withFakeClient(fc, nil))
 
 		err := m.Send(ctx, "from@example.com", "to@example.com", "sub", "body")
 		require.Error(t, err)
@@ -81,9 +75,7 @@ func TestMailer_Send(t *testing.T) {
 		t.Parallel()
 
 		fc := &fakeClient{}
-		restore := withFakeClient(fc, nil)
-
-		defer restore()
+		m := New(cfg, withFakeClient(fc, nil))
 
 		err := m.Send(ctx, "from@example.com", "to@example.com", "subject", "hello")
 		require.NoError(t, err)

@@ -14,20 +14,43 @@ type Config struct {
 	SMTPPassword string `json:"smtp_password" yaml:"smtp_password"`
 }
 
-type Mailer struct {
-	config *Config
-}
-
-func New(config *Config) *Mailer {
-	return &Mailer{config: config}
-}
-
 type smtpClient interface {
 	DialAndSend(msgs ...*mail.Msg) error
 }
 
-var newSMTPClient = func(server string, opts ...mail.Option) (smtpClient, error) {
-	return mail.NewClient(server, opts...)
+type Mailer struct {
+	config        *Config
+	newSMTPClient func(server string, opts ...mail.Option) (smtpClient, error)
+}
+
+type MailerOption func(*Mailer)
+
+func WithSMTPClient(fn func(server string, opts ...mail.Option) (smtpClient, error)) MailerOption {
+	return func(m *Mailer) {
+		m.newSMTPClient = fn
+	}
+}
+
+func defaultSMTPClient(server string, opts ...mail.Option) (smtpClient, error) {
+	client, err := mail.NewClient(server, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func New(config *Config, opts ...MailerOption) *Mailer {
+	m := &Mailer{
+		config:        config,
+		newSMTPClient: defaultSMTPClient,
+	}
+
+	for _, opt := range opts {
+		opt(m)
+	}
+
+	return m
 }
 
 func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error {
@@ -45,7 +68,7 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 	message.SetBodyString(mail.TypeTextPlain, body)
 
 	// Deliver the mails via SMTP
-	client, err := newSMTPClient(m.config.SMTPServer,
+	client, err := m.newSMTPClient(m.config.SMTPServer,
 		mail.WithSMTPAuth(mail.SMTPAuthPlain),
 		mail.WithTLSPortPolicy(mail.TLSMandatory),
 		mail.WithUsername(m.config.SMTPUser),
