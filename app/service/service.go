@@ -1246,13 +1246,9 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequestObject) (openapi.CreateUserResponseObject, error) {
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, "users", request.Body)
 
-	if request.Body.Password != request.Body.PasswordConfirm {
-		return nil, errors.New("passwords do not match")
-	}
-
-	passwordHash, tokenKey, err := password.Hash(request.Body.Password)
+	tokenKey, err := password.GenerateTokenKey()
 	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
+		return nil, fmt.Errorf("failed to generate token key: %w", err)
 	}
 
 	user, err := s.queries.CreateUser(ctx, sqlc.CreateUserParams{
@@ -1261,7 +1257,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		Email:           request.Body.Email,
 		EmailVisibility: request.Body.EmailVisibility,
 		Username:        request.Body.Username,
-		PasswordHash:    passwordHash,
+		PasswordHash:    "",
 		TokenKey:        tokenKey,
 		Avatar:          request.Body.Avatar,
 		Verified:        request.Body.Verified,

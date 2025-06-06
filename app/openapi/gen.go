@@ -206,8 +206,6 @@ type NewUser struct {
 	Email           string `json:"email"`
 	EmailVisibility bool   `json:"emailVisibility"`
 	Name            string `json:"name"`
-	Password        string `json:"password"`
-	PasswordConfirm string `json:"passwordConfirm"`
 	Username        string `json:"username"`
 	Verified        bool   `json:"verified"`
 }

@@ -894,10 +894,8 @@ components:
         email: { "type": "string" }
         emailVisibility: { "type": "boolean" }
         name: { "type": "string" }
-        password: { "type": "string" }
-        passwordConfirm: { "type": "string" }
         verified: { "type": "boolean" }
-      required: [ "username", "avatar", "email", "emailVisibility", "name", "password", "passwordConfirm", "verified" ]
+      required: [ "username", "avatar", "email", "emailVisibility", "name", "verified" ]
     UserUpdate:
       type: object
       properties:

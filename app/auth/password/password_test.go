@@ -56,3 +56,12 @@ func TestHash(t *testing.T) {
 		})
 	}
 }
+
+func TestGenerateTokenKey(t *testing.T) {
+	t.Parallel()
+
+	tokenKey, err := GenerateTokenKey()
+	require.NoError(t, err)
+	assert.NotEmpty(t, tokenKey, "GenerateTokenKey() tokenKey should not be empty")
+	assert.GreaterOrEqual(t, len(tokenKey), 43, "GenerateTokenKey() tokenKey should be at least 43 characters long")
+}

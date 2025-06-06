@@ -14,12 +14,19 @@ func Hash(password string) (hashedPassword, tokenKey string, err error) {
 		return "", "", fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	b := make([]byte, 32)
-	if _, err := rand.Read(b); err != nil {
+	tokenKey, err = GenerateTokenKey()
+	if err != nil {
 		return "", "", err
 	}
 
-	tokenKey = base64.URLEncoding.EncodeToString(b)
-
 	return string(hashedPasswordB), tokenKey, nil
+}
+
+func GenerateTokenKey() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+
+	return base64.URLEncoding.EncodeToString(b), nil
 }
