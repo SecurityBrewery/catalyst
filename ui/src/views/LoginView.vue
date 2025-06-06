@@ -9,8 +9,11 @@ import { useQuery } from '@tanstack/vue-query'
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { useAPI } from '@/api'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -47,22 +50,14 @@ const login = () => {
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => {
-    return fetch('/config').then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-
-      throw new Error('Failed to fetch config')
-    })
-  }
+  queryFn: () => api.getConfig()
 })
 
 watch(
   () => config.value,
   () => {
     if (!config.value) return
-    if (config.value['flags'].includes('demo') || config.value['flags'].includes('dev')) {
+    if (config.value.flags.includes('demo') || config.value.flags.includes('dev')) {
       mail.value = 'user@catalyst-soar.com'
       password.value = '1234567890'
     }

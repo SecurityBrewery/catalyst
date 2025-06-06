@@ -69,5 +69,5 @@ func systemToken(ctx context.Context, auth *auth.Service, queries *sqlc.Queries)
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return auth.CreateAccessToken(&user, permission.AllPermissions(), time.Hour) // TODO: reduce permissions
+	return auth.CreateAccessToken(&user, permission.All(), time.Hour) // TODO: reduce permissions
 }

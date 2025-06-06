@@ -38,15 +38,12 @@ func Test_Routes(t *testing.T) {
 			baseTest: BaseTest{
 				Name:   "Config",
 				Method: http.MethodGet,
-				URL:    "/config",
+				URL:    "/api/config",
 			},
 			userTests: []UserTest{
 				{
 					Name:           "Unauthorized",
-					ExpectedStatus: http.StatusOK,
-					ExpectedContent: []string{
-						`"flags":`,
-					},
+					ExpectedStatus: http.StatusUnauthorized,
 				},
 				{
 					Name:           "Analyst",

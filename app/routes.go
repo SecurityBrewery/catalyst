@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"net/http/httputil"
@@ -37,7 +36,6 @@ func (a *App) SetupRoutes() error {
 	})
 	a.Router.Get("/ui/*", a.staticFiles)
 	a.Router.Get("/health", a.healthHandler)
-	a.Router.Get("/config", a.configHandler)
 
 	// auth routes
 	a.Router.Mount("/auth", a.Auth.Server())
@@ -86,26 +84,4 @@ func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write([]byte("OK"))
-}
-
-func (a *App) configHandler(w http.ResponseWriter, r *http.Request) {
-	features, err := a.Queries.ListFeatures(r.Context(), sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
-	if err != nil {
-		slog.ErrorContext(r.Context(), "Failed to get flags", "error", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-
-		return
-	}
-
-	flags := make([]string, 0, len(features))
-	for _, feature := range features {
-		flags = append(flags, feature.Name)
-	}
-
-	b, _ := json.Marshal(map[string]any{ //nolint:errchkjson
-		"flags": flags,
-	})
-
-	w.Header().Set("Content-Type", "application/json")
-	_, _ = w.Write(b)
 }

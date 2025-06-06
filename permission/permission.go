@@ -6,50 +6,92 @@ import (
 	"log/slog"
 )
 
-type Permission = string
+type Table struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
 
-const (
-	TicketRead    Permission = "ticket:read"
-	TicketWrite   Permission = "ticket:write"
-	FileRead      Permission = "file:read"
-	FileWrite     Permission = "file:write"
-	TypeRead      Permission = "type:read"
-	TypeWrite     Permission = "type:write"
-	UserRead      Permission = "user:read"
-	UserWrite     Permission = "user:write"
-	GroupRead     Permission = "group:read"
-	GroupWrite    Permission = "group:write"
-	ReactionRead  Permission = "reaction:read"
-	ReactionWrite Permission = "reaction:write"
-	WebhookRead   Permission = "webhook:read"
-	WebhookWrite  Permission = "webhook:write"
+var (
+	TicketReadPermission    = "ticket:read"
+	TicketWritePermission   = "ticket:write"
+	FileReadPermission      = "file:read"
+	FileWritePermission     = "file:write"
+	TypeReadPermission      = "type:read"
+	TypeWritePermission     = "type:write"
+	UserReadPermission      = "user:read"
+	UserWritePermission     = "user:write"
+	GroupReadPermission     = "group:read"
+	GroupWritePermission    = "group:write"
+	ReactionReadPermission  = "reaction:read"
+	ReactionWritePermission = "reaction:write"
+	WebhookReadPermission   = "webhook:read"
+	WebhookWritePermission  = "webhook:write"
+
+	TicketsTable   = Table{ID: "tickets", Name: "Tickets"}
+	CommentsTable  = Table{ID: "comments", Name: "Comments"}
+	LinksTable     = Table{ID: "links", Name: "Links"}
+	TasksTable     = Table{ID: "tasks", Name: "Tasks"}
+	TimelinesTable = Table{ID: "timeline", Name: "Timeline"}
+	FilesTable     = Table{ID: "files", Name: "Files"}
+	TypesTable     = Table{ID: "types", Name: "Types"}
+	UsersTable     = Table{ID: "users", Name: "Users"}
+	GroupsTable    = Table{ID: "groups", Name: "Groups"}
+	ReactionsTable = Table{ID: "reactions", Name: "Reactions"}
+	WebhooksTable  = Table{ID: "webhooks", Name: "Webhooks"}
+
+	DashboardCountsTable = Table{ID: "dashboard_counts", Name: "Dashboard Counts"}
+	SidebarTable         = Table{ID: "sidebar", Name: "Sidebar"}
+	UserPermissionTable  = Table{ID: "user_permissions", Name: "User Permissions"}
+	UserGroupTable       = Table{ID: "user_groups", Name: "User Groups"}
+	GroupUserTable       = Table{ID: "group_users", Name: "Group Users"}
+	GroupPermissionTable = Table{ID: "group_permissions", Name: "Group Permissions"}
+	GroupParentTable     = Table{ID: "group_parents", Name: "Group Parents"}
+	GroupChildTable      = Table{ID: "group_children", Name: "Group Children"}
+
+	CreateAction = "create"
+	UpdateAction = "update"
+	DeleteAction = "delete"
 )
 
-func Default() []Permission {
-	return []Permission{
-		TypeRead,
-		FileRead,
-		TicketRead,
-		TicketWrite,
+func Tables() []Table {
+	return []Table{
+		TicketsTable,
+		FilesTable,
+		TypesTable,
+		UsersTable,
+		GroupsTable,
+		ReactionsTable,
+		WebhooksTable,
 	}
 }
 
-func AllPermissions() []Permission {
-	return []Permission{
-		TicketRead,
-		TicketWrite,
-		TypeRead,
-		TypeWrite,
-		UserRead,
-		UserWrite,
-		GroupRead,
-		GroupWrite,
-		ReactionRead,
-		ReactionWrite,
-		FileRead,
-		FileWrite,
-		WebhookRead,
-		WebhookWrite,
+func Default() []string {
+	return []string{
+		TypeReadPermission,
+		FileReadPermission,
+		TicketReadPermission,
+		TicketWritePermission,
+		UserReadPermission,
+		GroupReadPermission,
+	}
+}
+
+func All() []string {
+	return []string{
+		TicketReadPermission,
+		TicketWritePermission,
+		FileReadPermission,
+		FileWritePermission,
+		TypeReadPermission,
+		TypeWritePermission,
+		UserReadPermission,
+		UserWritePermission,
+		GroupReadPermission,
+		GroupWritePermission,
+		ReactionReadPermission,
+		ReactionWritePermission,
+		WebhookReadPermission,
+		WebhookWritePermission,
 	}
 }
 

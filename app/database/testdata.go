@@ -43,7 +43,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 	_, err = queries.CreateGroup(t.Context(), sqlc.CreateGroupParams{
 		ID:          "g_admin",
 		Name:        "Admin",
-		Permissions: permission.ToJSONArray(t.Context(), permission.AllPermissions()),
+		Permissions: permission.ToJSONArray(t.Context(), permission.All()),
 	})
 	if err != nil {
 		t.Fatal(err)

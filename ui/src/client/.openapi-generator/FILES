@@ -4,6 +4,7 @@ apis/index.ts
 index.ts
 models/Comment.ts
 models/CommentUpdate.ts
+models/Config.ts
 models/DashboardCounts.ts
 models/ExtendedComment.ts
 models/ExtendedTask.ts
@@ -32,6 +33,7 @@ models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
 models/Sidebar.ts
+models/Table.ts
 models/Task.ts
 models/TaskUpdate.ts
 models/Ticket.ts

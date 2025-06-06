@@ -10,7 +10,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 
+import { useAPI } from '@/api'
 import type { NewType } from '@/client/models'
+
+const api = useAPI()
 
 const submitDisabledReason = ref<string>('')
 
@@ -24,22 +27,14 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => {
-    return fetch('/config').then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-
-      throw new Error('Failed to fetch config')
-    })
-  }
+  queryFn: () => api.getConfig()
 })
 
 watch(
   () => config.value,
   () => {
     if (!config.value) return
-    if (config.value['flags'].includes('demo')) {
+    if (config.value.flags.includes('demo')) {
       isDemo.value = true
     }
   },

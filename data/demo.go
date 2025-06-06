@@ -387,7 +387,7 @@ func generateGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
 		ID:          "g-admin",
 		Name:        "Administrator",
-		Permissions: permission.ToJSONArray(ctx, permission.AllPermissions()),
+		Permissions: permission.ToJSONArray(ctx, permission.All()),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create admin group: %w", err)

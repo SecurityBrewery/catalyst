@@ -151,7 +151,7 @@ const selectUser = (user: { user: string }) => {
     </CardHeader>
     <CardContent>
       <div class="flex flex-col gap-4">
-        <TicketPanel title="Groups" @add="dialogOpenChild = true">
+        <TicketPanel title="Child Groups" @add="dialogOpenChild = true">
           <GroupSelectDialog
             v-model="dialogOpenChild"
             @select="selectChild"
@@ -240,7 +240,7 @@ const selectUser = (user: { user: string }) => {
     </CardHeader>
     <CardContent>
       <div class="mt-4 flex flex-col gap-4">
-        <TicketPanel title="Groups" @add="dialogOpenParent = true">
+        <TicketPanel title="Parent Groups" @add="dialogOpenParent = true">
           <GroupSelectDialog
             v-model="dialogOpenParent"
             @select="selectParent"

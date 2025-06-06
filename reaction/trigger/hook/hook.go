@@ -12,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/permission"
 	"github.com/SecurityBrewery/catalyst/reaction/action"
 	"github.com/SecurityBrewery/catalyst/webhook"
 )
@@ -23,13 +24,13 @@ type Hook struct {
 
 func BindHooks(app *app.App, test bool) {
 	app.Hooks.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		hook(ctx, app, "create", table, record, test)
+		hook(ctx, app, permission.CreateAction, table, record, test)
 	})
 	app.Hooks.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		hook(ctx, app, "update", table, record, test)
+		hook(ctx, app, permission.UpdateAction, table, record, test)
 	})
 	app.Hooks.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		hook(ctx, app, "delete", table, record, test)
+		hook(ctx, app, permission.DeleteAction, table, record, test)
 	})
 }
 

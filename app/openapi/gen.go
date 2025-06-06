@@ -35,6 +35,13 @@ type CommentUpdate struct {
 	Message *string `json:"message,omitempty"`
 }
 
+// Config defines model for Config.
+type Config struct {
+	Flags       []string `json:"flags"`
+	Permissions []string `json:"permissions"`
+	Tables      []Table  `json:"tables"`
+}
+
 // DashboardCounts defines model for DashboardCounts.
 type DashboardCounts struct {
 	Count int    `json:"count"`
@@ -282,6 +289,12 @@ type Sidebar struct {
 	Id       string `json:"id"`
 	Plural   string `json:"plural"`
 	Singular string `json:"singular"`
+}
+
+// Table defines model for Table.
+type Table struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 // Task defines model for Task.
@@ -600,6 +613,9 @@ type ServerInterface interface {
 	// Update a comment by ID
 	// (PATCH /comments/{id})
 	UpdateComment(w http.ResponseWriter, r *http.Request, id string)
+	// Get the configuration
+	// (GET /config)
+	GetConfig(w http.ResponseWriter, r *http.Request)
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
 	GetDashboardCounts(w http.ResponseWriter, r *http.Request)
@@ -825,6 +841,12 @@ func (_ Unimplemented) GetComment(w http.ResponseWriter, r *http.Request, id str
 // Update a comment by ID
 // (PATCH /comments/{id})
 func (_ Unimplemented) UpdateComment(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the configuration
+// (GET /config)
+func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1374,6 +1396,20 @@ func (siw *ServerInterfaceWrapper) UpdateComment(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateComment(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetConfig operation middleware
+func (siw *ServerInterfaceWrapper) GetConfig(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetConfig(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3548,6 +3584,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Patch(options.BaseURL+"/comments/{id}", wrapper.UpdateComment)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/config", wrapper.GetConfig)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/dashboard_counts", wrapper.GetDashboardCounts)
 	})
 	r.Group(func(r chi.Router) {
@@ -3830,6 +3869,22 @@ type UpdateCommentResponseObject interface {
 type UpdateComment200JSONResponse Comment
 
 func (response UpdateComment200JSONResponse) VisitUpdateCommentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetConfigRequestObject struct {
+}
+
+type GetConfigResponseObject interface {
+	VisitGetConfigResponse(w http.ResponseWriter) error
+}
+
+type GetConfig200JSONResponse Config
+
+func (response GetConfig200JSONResponse) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -5045,6 +5100,9 @@ type StrictServerInterface interface {
 	// Update a comment by ID
 	// (PATCH /comments/{id})
 	UpdateComment(ctx context.Context, request UpdateCommentRequestObject) (UpdateCommentResponseObject, error)
+	// Get the configuration
+	// (GET /config)
+	GetConfig(ctx context.Context, request GetConfigRequestObject) (GetConfigResponseObject, error)
 	// Get dashboard summary counts
 	// (GET /dashboard_counts)
 	GetDashboardCounts(ctx context.Context, request GetDashboardCountsRequestObject) (GetDashboardCountsResponseObject, error)
@@ -5403,6 +5461,30 @@ func (sh *strictHandler) UpdateComment(w http.ResponseWriter, r *http.Request, i
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateCommentResponseObject); ok {
 		if err := validResponse.VisitUpdateCommentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetConfig operation middleware
+func (sh *strictHandler) GetConfig(w http.ResponseWriter, r *http.Request) {
+	var request GetConfigRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetConfig(ctx, request.(GetConfigRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetConfig")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetConfigResponseObject); ok {
+		if err := validResponse.VisitGetConfigResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

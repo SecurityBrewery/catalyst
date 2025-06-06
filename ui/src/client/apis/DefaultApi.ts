@@ -16,6 +16,7 @@
 import type {
   Comment,
   CommentUpdate,
+  Config,
   DashboardCounts,
   ExtendedComment,
   ExtendedTask,
@@ -61,6 +62,8 @@ import {
   CommentToJSON,
   CommentUpdateFromJSON,
   CommentUpdateToJSON,
+  ConfigFromJSON,
+  ConfigToJSON,
   DashboardCountsFromJSON,
   DashboardCountsToJSON,
   ExtendedCommentFromJSON,
@@ -1626,6 +1629,37 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<ExtendedComment> {
     const response = await this.getCommentRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * Get the configuration
+   */
+  async getConfigRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Config>> {
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/config`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => ConfigFromJSON(jsonValue))
+  }
+
+  /**
+   * Get the configuration
+   */
+  async getConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Config> {
+    const response = await this.getConfigRaw(initOverrides)
     return await response.value()
   }
 

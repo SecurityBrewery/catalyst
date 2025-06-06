@@ -622,6 +622,12 @@ paths:
       responses:
         "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
       security: [ OAuth2: [ "ticket:read" ] ]
+  /config:
+    get:
+      summary: Get the configuration
+      operationId: getConfig
+      responses:
+        "200": { "description": "The configuration", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Config" } } } }
 components:
   schemas:
     NewComment:
@@ -1025,3 +1031,16 @@ components:
         owner_name: { "type": "string" }
         created: { "type": "string" }
       required: [ "id", "name", "description", "open", "type", "state", "owner_name", "created" ]
+    Config:
+      type: object
+      properties:
+        flags: { "type": "array", "items": { "type": "string" } }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        tables: { "type": "array", "items": { "$ref": "#/components/schemas/Table" } }
+      required: [ "flags", "permissions", "tables" ]
+    Table:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+      required: [ "id", "name" ]

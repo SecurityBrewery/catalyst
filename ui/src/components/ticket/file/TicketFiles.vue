@@ -51,15 +51,7 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => {
-    return fetch('/config').then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-
-      throw new Error('Failed to fetch config')
-    })
-  }
+  queryFn: () => api.getConfig()
 })
 
 const deleteMutation = useMutation({
@@ -76,7 +68,7 @@ watch(
   () => config.value,
   (newConfig) => {
     if (!newConfig) return
-    if (newConfig['flags'].includes('demo')) {
+    if (newConfig.flags.includes('demo')) {
       isDemo.value = true
     }
   },

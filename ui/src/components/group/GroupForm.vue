@@ -8,9 +8,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import type { NewGroup } from '@/client/models'
+import { useAPI } from '@/api'
+import type { NewGroup } from '@/client'
+
+const api = useAPI()
 
 const submitDisabledReason = ref<string>('')
 
@@ -24,22 +27,14 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => {
-    return fetch('/config').then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-
-      throw new Error('Failed to fetch config')
-    })
-  }
+  queryFn: () => api.getConfig()
 })
 
 watch(
   () => config.value,
   () => {
     if (!config.value) return
-    if (config.value['flags'].includes('demo')) {
+    if (config.value.flags.includes('demo')) {
       isDemo.value = true
     }
   },
@@ -116,21 +111,7 @@ const onSubmit = handleSubmit((values) => {
   })
 })
 
-const permissionItems = [
-  // TODO: get from server
-  'ticket:read',
-  'ticket:write',
-  'file:read',
-  'file:write',
-  'type:read',
-  'type:write',
-  'user:read',
-  'user:write',
-  'group:read',
-  'group:write',
-  'reaction:read',
-  'reaction:write'
-]
+const permissionItems = computed(() => config.value?.permissions || [])
 </script>
 
 <template>

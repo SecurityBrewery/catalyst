@@ -106,15 +106,6 @@ func Test_handlers(t *testing.T) {
 	queries := database.NewTestDB(t)
 	a := &App{Queries: queries}
 
-	// configHandler
-	configRR := httptest.NewRecorder()
-
-	configReq := httptest.NewRequest(http.MethodGet, "/config", nil).WithContext(t.Context())
-	a.configHandler(configRR, configReq)
-	assert.Equal(t, http.StatusOK, configRR.Code)
-	assert.Equal(t, "application/json", configRR.Header().Get("Content-Type"))
-	assert.Contains(t, configRR.Body.String(), "\"dev\"")
-
 	// healthHandler
 	healthRR := httptest.NewRecorder()
 
