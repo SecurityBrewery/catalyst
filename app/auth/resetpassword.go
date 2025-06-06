@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"net/http"
 	"html"
+	"net/http"
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"

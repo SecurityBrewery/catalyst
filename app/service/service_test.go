@@ -2,7 +2,6 @@ package service
 
 import (
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,7 +36,9 @@ func Test_toNullString(t *testing.T) {
 
 	s := "value"
 	assert.True(t, toNullString(&s).Valid)
+	assert.Equal(t, "value", toNullString(&s).String)
 	assert.False(t, toNullString(nil).Valid)
+	assert.Empty(t, toNullString(nil).String)
 }
 
 func Test_toInt64(t *testing.T) {
@@ -53,7 +54,9 @@ func Test_toNullBool(t *testing.T) {
 
 	b := true
 	assert.True(t, toNullBool(&b).Valid)
+	assert.True(t, toNullBool(&b).Bool)
 	assert.False(t, toNullBool(nil).Valid)
+	assert.False(t, toNullBool(nil).Bool)
 }
 
 func Test_marshal_unmarshal(t *testing.T) {
@@ -81,9 +84,21 @@ func Test_marshalPointer(t *testing.T) {
 func Test_generateID(t *testing.T) {
 	t.Parallel()
 
-	id := generateID("test")
-	assert.Greater(t, len(id), len("test")+1)
-	assert.True(t, strings.HasPrefix(id, "test-"))
+	id1 := generateID("p")
+
+	id2 := generateID("p")
+
+	if id1 == id2 {
+		t.Errorf("expected unique ids, got %s and %s", id1, id2)
+	}
+
+	if len(id1) == 0 || len(id2) == 0 {
+		t.Error("expected non empty ids")
+	}
+
+	if id1[:2] != "p-" || id2[:2] != "p-" {
+		t.Errorf("expected ids to start with prefix")
+	}
 }
 
 func TestService_DownloadFile(t *testing.T) {
