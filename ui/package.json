@@ -10,7 +10,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-pattern \"src/components/ui/**\" --ignore-path ../.gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "generate": "openapi-generator generate -i ../app/openapi/openapi.yml -g typescript-fetch -o src/client"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.1.3",
@@ -44,6 +45,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.20.2",
     "@rushstack/eslint-patch": "^1.3.3",
     "@tailwindcss/typography": "^0.5.13",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",

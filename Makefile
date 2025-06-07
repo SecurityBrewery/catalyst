@@ -50,7 +50,7 @@ test-playwright:
 	cd playwright && bun test:e2e
 
 .PHONY: test
-test: test-go test-ui
+test: test-go test-ui test-playwright
 
 .PHONY: test-coverage
 test-coverage:
@@ -67,10 +67,10 @@ install-ui:
 .PHONY: install-playwright
 install-playwright:
 	@echo "Installing Playwright..."
-	cd playwright && bun x playwright install
+	cd playwright && bun install
 	
 .PHONY: build-ui
-build-ui: install-ui
+build-ui:
 	@echo "Building..."
 	cd ui && bun build-only
 
@@ -78,7 +78,6 @@ build-ui: install-ui
 build: build-ui
 	@echo "Building..."
 	go build -o catalyst .
-
 
 .PHONY: build-linux
 build-linux: build-ui
@@ -107,7 +106,7 @@ dev2:
 	UI_DEVSERVER=http://localhost:3000 go run .
 
 .PHONY: dev-playwright
-dev-playwright: # build-ui
+dev-playwright:
 	@echo "Running..."
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
@@ -147,8 +146,8 @@ sqlc:
 openapi:
 	@echo "OpenAPI..."
 	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
-	rm -r ui/src/client
-	openapi-generator generate -i app/openapi/openapi.yml -g typescript-fetch -o ui/src/client
+	rm -rf ui/src/client
+	cd ui && bun generate
 	@echo "Done."
 
 .PHONY: generate
