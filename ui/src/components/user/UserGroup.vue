@@ -5,6 +5,7 @@ import PanelListElement from '@/components/layout/PanelListElement.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
@@ -17,6 +18,7 @@ import { handleError } from '@/lib/utils'
 
 const api = useAPI()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   id: string
@@ -43,6 +45,10 @@ const addGroupMutation = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['user_groups'] })
     queryClient.invalidateQueries({ queryKey: ['user_permissions'] })
+    toast({
+      title: 'Group added',
+      description: 'The group has been added successfully'
+    })
   },
   onError: handleError
 })
@@ -56,6 +62,10 @@ const removeGroupMutation = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['user_groups'] })
     queryClient.invalidateQueries({ queryKey: ['user_permissions'] })
+    toast({
+      title: 'Group removed',
+      description: 'The group has been removed successfully'
+    })
   },
   onError: handleError
 })

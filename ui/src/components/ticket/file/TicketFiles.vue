@@ -3,6 +3,7 @@ import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Download, Trash2 } from 'lucide-vue-next'
 
@@ -17,6 +18,7 @@ import { useAuthStore } from '@/store/auth'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const authStore = useAuthStore()
 
@@ -60,6 +62,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
+    toast({
+      title: 'File deleted',
+      description: 'The file has been deleted successfully'
+    })
   },
   onError: handleError
 })

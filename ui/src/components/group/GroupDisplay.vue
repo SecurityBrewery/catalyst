@@ -8,6 +8,7 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -22,6 +23,7 @@ const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   id: string
@@ -39,7 +41,13 @@ const {
 
 const updateGroupMutation = useMutation({
   mutationFn: (update: GroupUpdate) => api.updateGroup({ id: props.id, groupUpdate: update }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['groups'] }),
+  onSuccess: () => {
+    toast({
+      title: 'Group updated',
+      description: 'The group has been updated successfully'
+    })
+    queryClient.invalidateQueries({ queryKey: ['groups'] })
+  },
   onError: handleError
 })
 
@@ -49,6 +57,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['groups'] })
+    toast({
+      title: 'Group deleted',
+      description: 'The group has been deleted successfully'
+    })
     router.push({ name: 'groups' })
   },
   onError: handleError

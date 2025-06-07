@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Edit, MoreVertical, Trash } from 'lucide-vue-next'
 
@@ -31,6 +32,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   comment: ExtendedComment
@@ -44,6 +46,10 @@ const deleteCommentMutation = useMutation({
   mutationFn: () => api.deleteComment({ id: props.comment.id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['comments', props.comment.ticket] })
+    toast({
+      title: 'Comment deleted',
+      description: 'The comment has been deleted successfully'
+    })
     isOpen.value = false
   },
   onError: handleError
@@ -59,6 +65,10 @@ const editCommentMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['comments', props.comment.ticket] })
+    toast({
+      title: 'Comment updated',
+      description: 'The comment has been updated successfully'
+    })
     editMode.value = false
   },
   onError: handleError

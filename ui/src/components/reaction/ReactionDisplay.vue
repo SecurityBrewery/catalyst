@@ -6,6 +6,7 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -20,6 +21,7 @@ const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   id: string
@@ -37,7 +39,13 @@ const {
 
 const updateReactionMutation = useMutation({
   mutationFn: (update: any) => api.updateReaction({ id: props.id, reactionUpdate: update }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reactions'] }),
+  onSuccess: () => {
+    toast({
+      title: 'Reaction updated',
+      description: 'The reaction has been updated successfully'
+    })
+    queryClient.invalidateQueries({ queryKey: ['reactions'] })
+  },
   onError: handleError
 })
 
@@ -47,6 +55,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
+    toast({
+      title: 'Reaction deleted',
+      description: 'The reaction has been deleted successfully'
+    })
     router.push({ name: 'reactions' })
   },
   onError: handleError

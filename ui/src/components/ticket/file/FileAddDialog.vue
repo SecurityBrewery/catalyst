@@ -10,6 +10,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
@@ -21,6 +22,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -44,6 +46,10 @@ const addFileMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
+    toast({
+      title: 'File uploaded',
+      description: 'The file has been uploaded successfully'
+    })
     isOpen.value = false
   },
   onError: handleError

@@ -3,6 +3,7 @@ import MDEditor from '@/components/input/MDEditor.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { Calendar } from '@/components/ui/v-calendar'
 
 import { Calendar as CalendarIcon, Plus } from 'lucide-vue-next'
@@ -22,6 +23,7 @@ const props = defineProps<{
 }>()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const message = ref('')
 const time = ref(new Date())
@@ -38,6 +40,10 @@ const addCommentMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['timeline', props.ticket.id] })
+    toast({
+      title: 'Timeline item added',
+      description: 'The item has been added successfully'
+    })
     message.value = ''
     newTimelineItem.value = false
   },

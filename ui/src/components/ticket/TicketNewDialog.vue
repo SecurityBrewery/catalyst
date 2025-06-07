@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
@@ -28,6 +29,7 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const authStore = useAuthStore()
 
@@ -56,6 +58,10 @@ const addTicketMutation = useMutation({
   },
   onSuccess: (data: Ticket) => {
     router.push(`/tickets/${props.selectedType.id}/${data.id}`)
+    toast({
+      title: 'Ticket created',
+      description: 'The ticket has been created successfully'
+    })
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     isOpen.value = false
   },

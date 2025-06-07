@@ -4,6 +4,7 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -18,11 +19,16 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const addReactionMutation = useMutation({
   mutationFn: (values: Reaction): Promise<Reaction> => api.createReaction({ newReaction: values }),
   onSuccess: (data: Reaction) => {
     router.push({ name: 'reactions', params: { id: data.id } })
+    toast({
+      title: 'Reaction created',
+      description: 'The reaction has been created successfully'
+    })
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
   },
   onError: handleError

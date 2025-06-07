@@ -7,6 +7,7 @@ import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/toast/use-toast'
 import UserForm from '@/components/user/UserForm.vue'
 import UserGroup from '@/components/user/UserGroup.vue'
 import UserPasswordForm from '@/components/user/UserPasswordForm.vue'
@@ -26,6 +27,7 @@ const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const passwordForm = ref<InstanceType<typeof UserPasswordForm> | null>(null)
 
@@ -45,7 +47,13 @@ const {
 
 const updateUserMutation = useMutation({
   mutationFn: (update: UserUpdate) => api.updateUser({ id: props.id, userUpdate: update }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  onSuccess: () => {
+    toast({
+      title: 'User updated',
+      description: 'The user has been updated successfully'
+    })
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  },
   onError: handleError
 })
 
@@ -63,6 +71,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['users'] })
+    toast({
+      title: 'User deleted',
+      description: 'The user has been deleted successfully'
+    })
     router.push({ name: 'users' })
   },
   onError: handleError

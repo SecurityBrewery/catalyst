@@ -7,6 +7,7 @@ import TaskAddDialog from '@/components/ticket/task/TaskAddDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
@@ -19,6 +20,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -33,7 +35,13 @@ const setTaskOwnerMutation = useMutation({
         owner: update.owner
       }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Owner updated',
+      description: 'The task owner has been updated'
+    })
+  },
   onError: handleError
 })
 
@@ -47,7 +55,13 @@ const checkMutation = useMutation({
         open: !task.open
       }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task updated',
+      description: 'The task status has been updated'
+    })
+  },
   onError: handleError
 })
 
@@ -61,7 +75,13 @@ const updateTaskNameMutation = useMutation({
         name: update.name
       }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    toast({
+      title: 'Task updated',
+      description: 'The task name has been updated'
+    })
+  },
   onError: handleError
 })
 
@@ -71,6 +91,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task deleted',
+      description: 'The task has been deleted successfully'
+    })
   },
   onError: handleError
 })

@@ -4,11 +4,11 @@ import PanelListElement from '@/components/layout/PanelListElement.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import LinkAddDialog from '@/components/ticket/link/LinkAddDialog.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
-import { useMutation } from '@tanstack/vue-query'
-import { useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 import { useAPI } from '@/api'
@@ -18,6 +18,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -30,6 +31,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
+    toast({
+      title: 'Link deleted',
+      description: 'The link has been deleted successfully'
+    })
   },
   onError: handleError
 })

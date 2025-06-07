@@ -6,6 +6,7 @@ import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useToast } from '@/components/ui/toast/use-toast'
 import UserSelectDialog from '@/components/user/UserSelectDialog.vue'
 
 import { Trash2 } from 'lucide-vue-next'
@@ -19,6 +20,7 @@ import { handleError } from '@/lib/utils'
 
 const api = useAPI()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   id: string
@@ -54,6 +56,10 @@ const addGroupUserMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['group_users'] })
+    toast({
+      title: 'User added',
+      description: 'The user has been added to the group'
+    })
   },
   onError: handleError
 })
@@ -69,6 +75,10 @@ const addGroupParentMutation = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['parent_groups'] })
     queryClient.invalidateQueries({ queryKey: ['parent_permissions'] })
+    toast({
+      title: 'Parent group added',
+      description: 'The parent group has been added successfully'
+    })
   },
   onError: handleError
 })
@@ -83,6 +93,10 @@ const addGroupChildMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['child_groups'] })
+    toast({
+      title: 'Child group added',
+      description: 'The child group has been added successfully'
+    })
   },
   onError: handleError
 })
@@ -95,6 +109,10 @@ const removeGroupUserMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['group_users'] })
+    toast({
+      title: 'User removed',
+      description: 'The user has been removed from the group'
+    })
   },
   onError: handleError
 })
@@ -108,6 +126,10 @@ const removeGroupParentMutation = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['parent_groups'] })
     queryClient.invalidateQueries({ queryKey: ['parent_permissions'] })
+    toast({
+      title: 'Parent group removed',
+      description: 'The parent group has been removed successfully'
+    })
   },
   onError: handleError
 })
@@ -120,6 +142,10 @@ const removeGroupChildMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['child_groups'] })
+    toast({
+      title: 'Child group removed',
+      description: 'The child group has been removed successfully'
+    })
   },
   onError: handleError
 })

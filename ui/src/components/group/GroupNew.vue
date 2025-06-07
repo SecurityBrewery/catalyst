@@ -4,6 +4,7 @@ import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -18,11 +19,16 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const addGroupMutation = useMutation({
   mutationFn: (values: NewGroup): Promise<Group> => api.createGroup({ newGroup: values }),
   onSuccess: (data: Group) => {
     router.push({ name: 'groups', params: { id: data.id } })
+    toast({
+      title: 'Group created',
+      description: 'The group has been created successfully'
+    })
     queryClient.invalidateQueries({ queryKey: ['groups'] })
   },
   onError: handleError

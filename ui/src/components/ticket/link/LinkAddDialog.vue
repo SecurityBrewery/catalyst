@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
@@ -23,6 +24,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -41,6 +43,10 @@ const addLinkMutation = useMutation({
     }),
   onSuccess: (data: Link) => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    toast({
+      title: 'Link added',
+      description: 'The link has been added successfully'
+    })
     isOpen.value = false
   },
   onError: handleError

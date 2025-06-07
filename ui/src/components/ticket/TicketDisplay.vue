@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Edit } from 'lucide-vue-next'
 
@@ -43,6 +44,7 @@ const api = useAPI()
 
 const route = useRoute()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 defineProps<{
   selectedType: Type
@@ -113,6 +115,10 @@ const editDescriptionMutation = useMutation({
     api.updateTicket({ id: id.value, ticketUpdate: { description: message.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
+    toast({
+      title: 'Ticket updated',
+      description: 'The ticket description has been updated'
+    })
     editMode.value = false
   },
   onError: handleError
@@ -123,7 +129,13 @@ const edit = () => (editMode.value = true)
 const editStateMutation = useMutation({
   mutationFn: (state: Record<string, any>): Promise<Ticket> =>
     api.updateTicket({ id: id.value, ticketUpdate: { state } }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', id.value] }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
+    toast({
+      title: 'Ticket updated',
+      description: 'The ticket state has been updated'
+    })
+  },
   onError: handleError
 })
 

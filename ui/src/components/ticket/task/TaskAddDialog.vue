@@ -4,6 +4,7 @@ import UserSelect from '@/components/common/UserSelect.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Plus, User2 } from 'lucide-vue-next'
 
@@ -19,6 +20,7 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const authStore = useAuthStore()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -43,6 +45,10 @@ const addTaskMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task created',
+      description: 'The task has been created successfully'
+    })
     name.value = ''
     isOpen.value = false
   },

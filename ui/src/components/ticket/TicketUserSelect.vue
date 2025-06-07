@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UserSelect from '@/components/common/UserSelect.vue'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
@@ -10,6 +11,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: ExtendedTicket
@@ -18,7 +20,13 @@ const props = defineProps<{
 const setTicketOwnerMutation = useMutation({
   mutationFn: (userID: string): Promise<Ticket> =>
     api.updateTicket({ id: props.ticket.id, ticketUpdate: { owner: userID } }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets'] }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: 'Owner changed',
+      description: 'The ticket owner has been updated'
+    })
+  },
   onError: handleError
 })
 

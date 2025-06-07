@@ -10,6 +10,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
@@ -23,6 +24,7 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const model = defineModel<boolean>()
 
@@ -43,6 +45,12 @@ const closeTicketMutation = useMutation({
     }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: data.open ? 'Ticket reopened' : 'Ticket closed',
+      description: data.open
+        ? 'The ticket has been reopened successfully'
+        : 'The ticket has been closed successfully'
+    })
     if (!data.open) {
       router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }

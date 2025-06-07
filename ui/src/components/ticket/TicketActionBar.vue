@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { Check, ChevronLeft, CircleDot, Repeat } from 'lucide-vue-next'
@@ -28,6 +29,7 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: ExtendedTicket
@@ -48,6 +50,10 @@ const changeTypeMutation = useMutation({
     api.updateTicket({ id: props.ticket.id, ticketUpdate: { type: typeID } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: 'Type changed',
+      description: 'The ticket type has been updated'
+    })
     // router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
   },
   onError: handleError
@@ -58,6 +64,12 @@ const closeTicketMutation = useMutation({
     api.updateTicket({ id: props.ticket.id, ticketUpdate: { open: !props.ticket.open } }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: data.open ? 'Ticket reopened' : 'Ticket closed',
+      description: data.open
+        ? 'The ticket has been reopened successfully'
+        : 'The ticket has been closed successfully'
+    })
     if (!data.open) {
       router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }
@@ -77,6 +89,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: 'Ticket deleted',
+      description: 'The ticket has been deleted successfully'
+    })
     router.push({ name: 'tickets' })
   },
   onError: handleError

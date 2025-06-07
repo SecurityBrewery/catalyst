@@ -2,6 +2,7 @@
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Check, Repeat } from 'lucide-vue-next'
 
@@ -17,6 +18,7 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: ExtendedTicket
@@ -32,6 +34,12 @@ const closeTicketMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: props.ticket.open ? 'Ticket closed' : 'Ticket reopened',
+      description: props.ticket.open
+        ? 'The ticket has been closed successfully'
+        : 'The ticket has been reopened successfully'
+    })
     router.push({ name: 'tickets', params: { type: props.ticket.type } })
   },
   onError: handleError

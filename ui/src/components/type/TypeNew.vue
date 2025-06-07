@@ -4,6 +4,7 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import TypeForm from '@/components/type/TypeForm.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -18,11 +19,16 @@ const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const addTypeMutation = useMutation({
   mutationFn: (values: NewType): Promise<Type> => api.createType({ newType: values }),
   onSuccess: (data: Type) => {
     router.push({ name: 'types', params: { id: data.id } })
+    toast({
+      title: 'Type created',
+      description: 'The type has been created successfully'
+    })
     queryClient.invalidateQueries({ queryKey: ['types'] })
   },
   onError: handleError

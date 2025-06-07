@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DynamicInput from '@/components/input/DynamicInput.vue'
 import { Separator } from '@/components/ui/separator'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
@@ -13,6 +14,7 @@ import { handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -28,7 +30,13 @@ const editNameMutation = useMutation({
         name: name.value
       }
     }),
-  onSuccess: (data: Ticket) => queryClient.invalidateQueries({ queryKey: ['tickets', data.id] }),
+  onSuccess: (data: Ticket) => {
+    toast({
+      title: 'Ticket updated',
+      description: 'The ticket name has been updated'
+    })
+    queryClient.invalidateQueries({ queryKey: ['tickets', data.id] })
+  },
   onError: handleError
 })
 

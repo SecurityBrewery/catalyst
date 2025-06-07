@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { Calendar } from '@/components/ui/v-calendar'
 
 import { Edit, MoreVertical, Trash } from 'lucide-vue-next'
@@ -34,6 +35,7 @@ import { cn, handleError } from '@/lib/utils'
 const api = useAPI()
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   timelineItem: TimelineEntry
@@ -55,6 +57,10 @@ const updateTimelineMutation = useMutation({
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    toast({
+      title: 'Timeline updated',
+      description: 'The item has been updated successfully'
+    })
     editMode.value = false
   },
   onError: handleError
@@ -73,6 +79,10 @@ const deleteTimelineItemMutation = useMutation({
   mutationFn: () => api.deleteTimeline({ id: props.timelineItem.id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    toast({
+      title: 'Timeline item deleted',
+      description: 'The item has been deleted successfully'
+    })
     isOpen.value = false
   },
   onError: handleError
