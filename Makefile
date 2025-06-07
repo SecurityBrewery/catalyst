@@ -98,7 +98,6 @@ dev:
 	go run . fake-data
 	go run . serve --app-url http://localhost:8090 --flags dev
 
-
 .PHONY: dev2
 dev2:
 	@echo "Running..."
@@ -106,6 +105,14 @@ dev2:
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
 	UI_DEVSERVER=http://localhost:3000 go run .
+
+.PHONY: dev-playwright
+dev-playwright: # build-ui
+	@echo "Running..."
+	rm -rf catalyst_data
+	mkdir -p catalyst_data
+	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
+	go run .
 
 .PHONY: dev-10000
 dev-10000:

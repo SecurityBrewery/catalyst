@@ -27,6 +27,7 @@ jobs:
       - run: make install-ui fmt-ui
 
   lint-go:
+    name: Lint Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

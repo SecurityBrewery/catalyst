@@ -58,19 +58,19 @@ func (a *App) staticFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fsys := http.FS(ui.UI())
+	VueStatic(w, r)
+}
 
-	path := strings.TrimPrefix(r.URL.Path, "/ui")
-	if path == "" || path == "/" {
-		path = "/index.html"
+func VueStatic(w http.ResponseWriter, r *http.Request) {
+	handler := http.FileServer(http.FS(ui.UI()))
+
+	if strings.HasPrefix(r.URL.Path, "/ui/assets/") {
+		handler = http.StripPrefix("/ui", handler)
+	} else {
+		r.URL.Path = "/"
 	}
 
-	if _, err := fsys.Open(strings.TrimPrefix(path, "/")); err != nil {
-		path = "/index.html"
-	}
-
-	r.URL.Path = path
-	http.FileServer(fsys).ServeHTTP(w, r)
+	handler.ServeHTTP(w, r)
 }
 
 func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {

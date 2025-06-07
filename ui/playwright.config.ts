@@ -4,9 +4,10 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   webServer: {
-    command: 'bash -c "rm -rf ../catalyst_data && mkdir ../catalyst_data && cp ../upgradetest/data/v0.14.1/data.db ../catalyst_data/data.db && cd .. && go run ."',
+    command: 'cd .. && make dev-playwright',
     port: 8090,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false, // !process.env.CI,
+    timeout: 120000, // 2 minutes timeout
   },
   use: {
     baseURL: 'http://localhost:8090/ui/',
