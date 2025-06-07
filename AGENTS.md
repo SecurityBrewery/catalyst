@@ -7,10 +7,11 @@
     - `sqlc` is used to generate Go code from SQL queries. Make sure to run `make sqlc` after modifying any SQL files.
     - Generated Go code is located in `app/database/sqlc` and should not be modified directly.
     - The OpenAPI spec is located at `app/openapi/openapi.yaml`. This file defines the API endpoints and their schemas.
-    - `oapi-codegen` and `openapi-generator` are used to generate Go code from OpenAPI specifications. Run `make openapi` after modifying any OpenAPI files.
+    - `oapi-codegen` and `openapi-generator` are used to generate Go code from OpenAPI specifications. Run `make openapi-go` after modifying any OpenAPI files.
     - The generated Go code from OpenAPI is located in `app/openapi/gen.go` and should not be modified directly.
 - Vue Frontend:
     - The frontend is located in the `/ui` folder.
+    - Use `make openapi-ui` to generate the OpenAPI client for the frontend.
     - Use `make install-ui` to install the necessary dependencies.
     - Use `make build-ui` to build the frontend.
     - Use `make dev-ui` to start the frontend in development mode.

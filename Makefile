@@ -120,11 +120,23 @@ tailwindcss:
 sqlc:
 	cd app/database && go tool sqlc generate
 
-.PHONY: openapi
-openapi:
+.PHONY: openapi-go
+openapi-go:
 	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
 	rm -rf ui/src/client
+
+.PHONY: openapi-ui
+openapi-ui:
 	cd ui && bun generate
 
+.PHONY: openapi
+openapi: openapi-go openapi-ui
+
+.PHONY: generate-go
+generate-go: openapi-go sqlc fmt-go
+
+.PHONY: generate-ui
+generate-ui: openapi-ui tailwindcss fmt-ui
+
 .PHONY: generate
-generate: sqlc tailwindcss openapi
+generate: generate-go generate-ui

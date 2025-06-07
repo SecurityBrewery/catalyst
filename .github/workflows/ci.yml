@@ -5,15 +5,23 @@ on:
   release: { types: [ published ] }
 
 jobs:
-  generate:
-    name: Generate
+  generate-go:
+    name: Generate Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
+      - run: make install-golangci-lint generate-go
+      - run: git diff --exit-code
+
+  generate-ui:
+    name: Generate UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
-      - run: make install-ui generate install-golangci-lint fmt
+      - run: make install-ui generate-ui
       - run: git diff --exit-code
 
   fmt-go:
