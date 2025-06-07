@@ -46,7 +46,12 @@ test-go:
 .PHONY: test-ui
 test-ui:
 	@echo "Testing..."
-	cd ui && bun test
+	cd ui && bun test src
+
+.PHONY: test-ui-playwright
+test-ui-playwright:
+	@echo "Testing..."
+	cd ui && bun test:e2e
 
 .PHONY: test
 test: test-go test-ui
@@ -60,10 +65,19 @@ test-coverage:
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
-.PHONY: build-ui
-build-ui:
-	@echo "Building..."
+.PHONY: install-ui
+install-ui:
+	@echo "Installing UI..."
 	cd ui && bun install
+
+.PHONY: install-ui-playwright
+install-ui-playwright:
+	@echo "Installing UI Playwright..."
+	cd ui && bun x playwright install
+
+.PHONY: build-ui
+build-ui: install-ui
+	@echo "Building..."
 	cd ui && bun build-only
 
 .PHONY: build

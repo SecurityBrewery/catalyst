@@ -41,3 +41,5 @@ upgradetest/**/*.db-shm
 upgradetest/**/*.db-wal
 
 coverage.out
+
+test-results

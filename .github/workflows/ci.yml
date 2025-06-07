@@ -5,24 +5,31 @@ on:
   release: { types: [ published ] }
 
 jobs:
-  fmt:
-    name: Fmt
+  fmt-go:
+    name: Fmt Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
-      - uses: oven-sh/setup-bun@v1
-
-      - run: bun install
-        working-directory: ui
-
-      - run: make install-golangci-lint fmt
+      
+      - run: |
+          mkdir -p ui/dist
+          touch ui/dist/index.html
+      - run: make install-golangci-lint fmt-go
 
       - run: git diff --exit-code
 
-  lint:
-    name: Lint
+  fmt-ui:
+    name: Fmt UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make install-ui fmt-ui
+
+  lint-go:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,8 +43,17 @@ jobs:
       - uses: golangci/golangci-lint-action@v8
         with: { version: 'v2.1.6' }
 
-  build:
-    name: Build
+  lint-ui:
+    name: Lint UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make install-ui lint-ui
+
+  build-ui:
+    name: Build UI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,14 +63,14 @@ jobs:
 
       - run: make build-ui
 
-  test:
-    name: Test
+
+  test-go:
+    name: Test Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
-      - uses: oven-sh/setup-bun@v1
 
       - run: make test-coverage
 
@@ -62,3 +78,25 @@ jobs:
         with:
           files: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-ui:
+    name: Test UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make install-ui test-ui
+
+  test-ui-playwright:
+    name: Test UI Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+
+      - run: make install-ui install-ui-playwright test-ui-playwright
