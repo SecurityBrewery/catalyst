@@ -123,10 +123,10 @@ sqlc:
 .PHONY: openapi-go
 openapi-go:
 	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
-	rm -rf ui/src/client
 
 .PHONY: openapi-ui
 openapi-ui:
+	rm -rf ui/src/client
 	cd ui && bun generate
 
 .PHONY: openapi
