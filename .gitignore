@@ -44,3 +44,4 @@ coverage.out
 
 test-results
 playwright/playwright-report
+openapitools.json
