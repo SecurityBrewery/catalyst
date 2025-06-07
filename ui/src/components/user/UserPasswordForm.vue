@@ -59,7 +59,7 @@ defineRule('passwordConfirm', (value: string) => {
   return true
 })
 
-const { handleSubmit, validate, values } = useForm({
+const { handleSubmit, validate, values, resetForm } = useForm({
   initialValues: {
     password: '',
     passwordConfirm: ''
@@ -69,6 +69,13 @@ const { handleSubmit, validate, values } = useForm({
     passwordConfirm: 'passwordConfirm'
   }
 })
+
+const reset = () =>
+  resetForm({
+    values: { password: '', passwordConfirm: '' }
+  })
+
+defineExpose({ reset })
 
 const updateSubmitDisabledReason = () => {
   if (isDemo.value) {

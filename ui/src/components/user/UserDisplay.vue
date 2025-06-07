@@ -15,6 +15,7 @@ import { ChevronLeft } from 'lucide-vue-next'
 
 import CardContent from '../ui/card/CardContent.vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
@@ -25,6 +26,8 @@ const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()
+
+const passwordForm = ref<InstanceType<typeof UserPasswordForm> | null>(null)
 
 const props = defineProps<{
   id: string
@@ -45,6 +48,14 @@ const updateUserMutation = useMutation({
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
   onError: handleError
 })
+
+const passwordSubmit = (values: UserUpdate) => {
+  updateUserMutation.mutate(values, {
+    onSuccess: () => {
+      passwordForm.value?.reset()
+    }
+  })
+}
 
 const deleteMutation = useMutation({
   mutationFn: () => {
@@ -93,7 +104,7 @@ const deleteMutation = useMutation({
                 <CardTitle>Set Password</CardTitle>
               </CardHeader>
               <CardContent>
-                <UserPasswordForm @submit="updateUserMutation.mutate" />
+                <UserPasswordForm ref="passwordForm" @submit="passwordSubmit" />
               </CardContent>
             </Card>
           </div>
@@ -131,7 +142,7 @@ const deleteMutation = useMutation({
                 <CardTitle>Set Password</CardTitle>
               </CardHeader>
               <CardContent>
-                <UserPasswordForm @submit="updateUserMutation.mutate" />
+                <UserPasswordForm ref="passwordForm" @submit="passwordSubmit" />
               </CardContent>
             </Card>
           </TabsContent>
