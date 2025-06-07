@@ -42,8 +42,11 @@ func Test_Routes(t *testing.T) {
 			},
 			userTests: []UserTest{
 				{
-					Name:           "Unauthorized",
-					ExpectedStatus: http.StatusUnauthorized,
+					Name:           "NoAuth",
+					ExpectedStatus: http.StatusOK,
+					ExpectedContent: []string{
+						`"flags":`,
+					},
 				},
 				{
 					Name:           "Analyst",

@@ -14,21 +14,22 @@ const props = defineProps({
   defaultClass: String
 })
 
-const icon = computed((): string => {
-  if (!icons[props.name]) {
-    return 'Flame'
+const IconComponent = computed(() => {
+  const component = icons[props.name]
+  if (!component) {
+    console.warn(`Icon "${props.name}" not found`)
+    return icons.HelpCircle
   }
-
-  return icons[props.name]
+  return component
 })
 </script>
 
 <template>
   <component
-    :is="icon"
+    :is="IconComponent"
     :size="size"
     :color="color"
     :stroke-width="strokeWidth"
-    :default-class="defaultClass"
+    :class="defaultClass"
   />
 </template>

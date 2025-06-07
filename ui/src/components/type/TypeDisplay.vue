@@ -6,6 +6,7 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import TypeForm from '@/components/type/TypeForm.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
@@ -18,6 +19,7 @@ import { handleError } from '@/lib/utils'
 
 const api = useAPI()
 
+const { toast } = useToast()
 const router = useRouter()
 const queryClient = useQueryClient()
 
@@ -37,7 +39,13 @@ const {
 
 const updateTypeMutation = useMutation({
   mutationFn: (update: TypeUpdate) => api.updateType({ id: props.id, typeUpdate: update }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['types'] }),
+  onSuccess: () => {
+    toast({
+      title: 'Type updated',
+      description: 'The type has been updated successfully'
+    })
+    queryClient.invalidateQueries({ queryKey: ['types'] })
+  },
   onError: handleError
 })
 
@@ -47,6 +55,10 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['types'] })
+    toast({
+      title: 'Type deleted',
+      description: 'The type has been deleted successfully'
+    })
     router.push({ name: 'types' })
   },
   onError: handleError

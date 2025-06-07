@@ -21,7 +21,7 @@
     "@unovis/vue": "^1.4.1",
     "@vee-validate/rules": "^4.12.8",
     "@vee-validate/zod": "^4.12.8",
-    "@vueuse/core": "^10.10.0",
+    "@vueuse/core": "^13.3.0",
     "add": "^2.0.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

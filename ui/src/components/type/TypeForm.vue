@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GrowTextarea from '@/components/form/GrowTextarea.vue'
+import IconPicker from '@/components/form/IconPicker.vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { useQuery } from '@tanstack/vue-query'
+import isEqual from 'lodash.isequal'
 import { defineRule, useForm } from 'vee-validate'
 import { ref, watch } from 'vue'
 
@@ -79,7 +81,7 @@ const equalType = (values: NewType, type?: NewType): boolean => {
     type.singular === values.singular &&
     type.plural === values.plural &&
     type.icon === values.icon &&
-    type.schema === values.schema
+    isEqual(type.schema, JSON.parse(values.schema))
   )
 }
 
@@ -154,13 +156,10 @@ const onSubmit = handleSubmit((values) => {
       <FormItem class="flex w-full flex-col">
         <FormLabel for="icon" class="text-start">Icon</FormLabel>
         <span class="text-xs text-muted-foreground">
-          See
-          <a class="text-blue-500" href="https://lucide.dev/icons/" target="_blank"
-            >https://lucide.dev/icons/</a
-          >
-          for available icons.
+          Select a suggested icon or browse
+          <a class="text-blue-500" href="https://lucide.dev/icons/" target="_blank">lucide.dev</a>.
         </span>
-        <Input id="icon" class="col-span-3" v-bind="componentField" />
+        <IconPicker id="icon" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
     </FormField>

@@ -20,7 +20,10 @@ func TestFeaturesConfig(t *testing.T) {
 			userTests: []UserTest{
 				{
 					Name:           "NoAuth",
-					ExpectedStatus: http.StatusUnauthorized,
+					ExpectedStatus: http.StatusOK,
+					ExpectedContent: []string{
+						`"flags":`,
+					},
 				},
 				{
 					Name:           "Analyst",
