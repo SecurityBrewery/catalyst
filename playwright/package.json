@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "install:e2e": "playwright install",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

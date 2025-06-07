@@ -67,7 +67,7 @@ install-ui:
 .PHONY: install-playwright
 install-playwright:
 	@echo "Installing Playwright..."
-	cd playwright && bun install
+	cd playwright && bun install && bun install:e2e
 	
 .PHONY: build-ui
 build-ui:
