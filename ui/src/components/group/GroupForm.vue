@@ -130,7 +130,7 @@ const permissionItems = computed(() => config.value?.permissions || [])
       v-slot="{ componentField }"
       validate-on-input
     >
-      <FormItem class="w-full">
+      <FormItem id="permissions" class="w-full">
         <div class="space-y-0.5">
           <FormLabel for="permissions" class="text-right">Permissions</FormLabel>
         </div>

@@ -30,8 +30,50 @@ func DB(filename string) (*sqlc.Queries, func(), error) {
 		return nil, nil, err
 	}
 
-	// Enabling Foreign Key Support
+	// see https://briandouglas.ie/sqlite-defaults/ for more details
+
+	// Enable WAL mode for better concurrency
+	if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
+		return nil, nil, err
+	}
+
+	// Enable synchronous mode for better data integrity
+	if _, err := db.Exec("PRAGMA synchronous = NORMAL"); err != nil {
+		return nil, nil, err
+	}
+
+	// Set busy timeout to 5 seconds
+	if _, err := db.Exec("PRAGMA busy_timeout = 5000"); err != nil {
+		return nil, nil, err
+	}
+
+	// Set cache size to 20MB
+	if _, err := db.Exec("PRAGMA cache_size = -20000"); err != nil {
+		return nil, nil, err
+	}
+
+	// Enable foreign key checks
 	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return nil, nil, err
+	}
+
+	// Enable incremental vacuuming
+	if _, err := db.Exec("PRAGMA auto_vacuum = INCREMENTAL"); err != nil {
+		return nil, nil, err
+	}
+
+	// Set temp store to memory
+	if _, err := db.Exec("PRAGMA temp_store = MEMORY"); err != nil {
+		return nil, nil, err
+	}
+
+	// Set mmap size to 2GB
+	if _, err := db.Exec("PRAGMA mmap_size = 2147483648"); err != nil {
+		return nil, nil, err
+	}
+
+	// Set page size to 8192
+	if _, err := db.Exec("PRAGMA page_size = 8192"); err != nil {
 		return nil, nil, err
 	}
 

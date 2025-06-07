@@ -306,8 +306,8 @@ const curlExample = computed(() => {
         <TriggerHookFormFields v-else-if="values.trigger === 'hook'" />
 
         <div v-if="values.trigger === 'webhook'">
-          <Label for="url">Usage</Label>
-          <Input id="url" readonly :modelValue="curlExample" class="bg-accent" />
+          <Label for="usage">Usage</Label>
+          <Input id="usage" readonly :modelValue="curlExample" class="bg-accent" />
         </div>
       </CardContent>
     </Card>

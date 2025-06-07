@@ -6,7 +6,7 @@ export default defineConfig({
   webServer: {
     command: 'make -C .. dev-playwright',
     port: 8090,
-    reuseExistingServer: false, // !process.env.CI,
+    reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes timeout
   },
   use: {

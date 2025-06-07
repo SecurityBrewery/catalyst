@@ -57,9 +57,9 @@ defineRule('required', (value: string) => {
 })
 
 defineRule('username', (value: string) => {
-  const usernamePattern = /^[a-z0-9_]{3,20}$/
+  const usernamePattern = /^[a-z0-9_-]{3,72}$/
   if (!usernamePattern.test(value)) {
-    return 'Username must be 3-20 characters long and can only contain lowercase letters, numbers, and underscores'
+    return 'Username must be 3-72 characters long and can only contain lowercase letters, numbers, underscores, and hyphens'
   }
 
   return true

@@ -139,7 +139,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
               :disabled="submitDisabledReason !== ''"
               :title="submitDisabledReason"
             >
-              Save
+              Set Password
             </Button>
           </TooltipTrigger>
           <TooltipContent>

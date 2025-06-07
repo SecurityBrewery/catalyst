@@ -35,7 +35,7 @@ const deleteRecord = () => {
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
       <slot>
-        <Button variant="outline">
+        <Button role="button" variant="outline">
           <Trash2 class="mr-2 h-4 w-4" />
           Delete {{ props.singular }}
         </Button>

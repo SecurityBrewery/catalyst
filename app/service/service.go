@@ -495,10 +495,12 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.ReactionsTable.ID, request.Body)
 
 	reaction, err := s.queries.CreateReaction(ctx, sqlc.CreateReactionParams{
-		ID:      generateID("r"),
-		Name:    request.Body.Name,
-		Action:  request.Body.Action,
-		Trigger: request.Body.Trigger,
+		ID:          generateID("r"),
+		Name:        request.Body.Name,
+		Action:      request.Body.Action,
+		Trigger:     request.Body.Trigger,
+		Actiondata:  marshal(request.Body.Actiondata),
+		Triggerdata: marshal(request.Body.Triggerdata),
 	})
 	if err != nil {
 		return nil, err
@@ -565,10 +567,12 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.ReactionsTable.ID, request.Body)
 
 	reaction, err := s.queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
-		ID:      request.Id,
-		Name:    toNullString(request.Body.Name),
-		Action:  toNullString(request.Body.Action),
-		Trigger: toNullString(request.Body.Trigger),
+		ID:          request.Id,
+		Name:        toNullString(request.Body.Name),
+		Action:      toNullString(request.Body.Action),
+		Trigger:     toNullString(request.Body.Trigger),
+		Actiondata:  marshalPointer(request.Body.Actiondata),
+		Triggerdata: marshalPointer(request.Body.Triggerdata),
 	})
 	if err != nil {
 		return nil, err
