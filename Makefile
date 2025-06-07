@@ -23,8 +23,6 @@ fix:
 
 .PHONY: lint-go
 lint-go:
-	mkdir -p ui/dist
-	touch ui/dist/index.html
 	golangci-lint version
 	golangci-lint run ./...
 
@@ -39,8 +37,6 @@ lint: lint-go lint-ui
 .PHONY: test-go
 test-go:
 	@echo "Testing..."
-	mkdir -p ui/dist
-	touch ui/dist/index.html
 	go test -v ./...
 
 .PHONY: test-ui
@@ -59,8 +55,6 @@ test: test-go test-ui
 .PHONY: test-coverage
 test-coverage:
 	@echo "Testing with coverage..."
-	mkdir -p ui/dist
-	touch ui/dist/index.html
 	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
