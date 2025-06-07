@@ -84,8 +84,8 @@ jobs:
 
       - run: make install-ui test-ui
 
-  test-ui-playwright:
-    name: Test UI Playwright
+  test-playwright:
+    name: Test Playwright
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,4 +93,4 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: make install-ui build-ui install-ui-playwright test-ui-playwright
+      - run: make install-ui build-ui install-playwright test-playwright

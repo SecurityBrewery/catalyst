@@ -44,10 +44,10 @@ test-ui:
 	@echo "Testing..."
 	cd ui && bun test src
 
-.PHONY: test-ui-playwright
-test-ui-playwright:
+.PHONY: test-playwright
+test-playwright:
 	@echo "Testing..."
-	cd ui && bun test:e2e
+	cd playwright && bun test:e2e
 
 .PHONY: test
 test: test-go test-ui
@@ -64,11 +64,11 @@ install-ui:
 	@echo "Installing UI..."
 	cd ui && bun install
 
-.PHONY: install-ui-playwright
-install-ui-playwright:
-	@echo "Installing UI Playwright..."
-	cd ui && bun x playwright install
-
+.PHONY: install-playwright
+install-playwright:
+	@echo "Installing Playwright..."
+	cd playwright && bun x playwright install
+	
 .PHONY: build-ui
 build-ui: install-ui
 	@echo "Building..."

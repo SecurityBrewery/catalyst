@@ -43,3 +43,4 @@ upgradetest/**/*.db-wal
 coverage.out
 
 test-results
+playwright/playwright-report
