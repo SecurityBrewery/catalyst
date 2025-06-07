@@ -93,4 +93,4 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
 
-      - run: make install-ui install-ui-playwright test-ui-playwright
+      - run: make install-ui build-ui install-ui-playwright test-ui-playwright
