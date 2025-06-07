@@ -19,12 +19,7 @@ import { useAuthStore } from '@/store/auth'
 const api = useAPI()
 const authStore = useAuthStore()
 
-const {
-  isPending,
-  isError,
-  data: dashboardCounts,
-  error
-} = useQuery({
+const { data: dashboardCounts } = useQuery({
   queryKey: ['dashboard_counts'],
   queryFn: (): Promise<Array<any>> => {
     if (authStore.permissions.includes('ticket:read')) {

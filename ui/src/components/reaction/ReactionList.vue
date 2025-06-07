@@ -4,7 +4,7 @@ import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ResourceListElement from '@/components/layout/ResourceListElement.vue'
 import { Button } from '@/components/ui/button'
 
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
@@ -14,7 +14,6 @@ const api = useAPI()
 
 const route = useRoute()
 const router = useRouter()
-const queryClient = useQueryClient()
 
 const {
   isPending,

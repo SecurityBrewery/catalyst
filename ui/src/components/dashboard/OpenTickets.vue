@@ -18,12 +18,7 @@ const api = useAPI()
 
 const authStore = useAuthStore()
 
-const {
-  isPending,
-  isError,
-  data: tickets,
-  error
-} = useQuery({
+const { data: tickets } = useQuery({
   queryKey: ['tickets', 'dashboard'],
   queryFn: (): Promise<Array<ExtendedTicket>> => {
     return api

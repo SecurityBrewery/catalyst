@@ -89,7 +89,7 @@ defineRule('triggerdata.expression', (value: string) => {
   return 'Invalid cron expression'
 })
 
-defineRule('triggerdata.token', (value: string) => {
+defineRule('triggerdata.token', () => {
   return true
 })
 

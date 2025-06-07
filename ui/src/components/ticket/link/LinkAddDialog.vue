@@ -41,7 +41,7 @@ const addLinkMutation = useMutation({
         url: values.url
       }
     }),
-  onSuccess: (data: Link) => {
+  onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
     toast({
       title: 'Link added',

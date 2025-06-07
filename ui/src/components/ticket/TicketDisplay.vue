@@ -65,47 +65,27 @@ const {
   queryFn: (): Promise<ExtendedTicket> => api.getTicket({ id: id.value })
 })
 
-const {
-  data: timeline,
-  isPending: timelinePending,
-  isError: timelineError
-} = useQuery({
+const { data: timeline } = useQuery({
   queryKey: ['timeline', id.value],
   queryFn: (): Promise<Array<TimelineEntry>> => api.listTimeline({ ticket: id.value })
 })
 
-const {
-  data: tasks,
-  isPending: tasksPending,
-  isError: tasksError
-} = useQuery({
+const { data: tasks } = useQuery({
   queryKey: ['tasks', id.value],
   queryFn: (): Promise<Array<ExtendedTask>> => api.listTasks({ ticket: id.value })
 })
 
-const {
-  data: comments,
-  isPending: commentsPending,
-  isError: commentsError
-} = useQuery({
+const { data: comments } = useQuery({
   queryKey: ['comments', id.value],
   queryFn: (): Promise<Array<ExtendedComment>> => api.listComments({ ticket: id.value })
 })
 
-const {
-  data: files,
-  isPending: filesPending,
-  isError: filesError
-} = useQuery({
+const { data: files } = useQuery({
   queryKey: ['files', id.value],
   queryFn: (): Promise<Array<ModelFile>> => api.listFiles({ ticket: id.value })
 })
 
-const {
-  data: links,
-  isPending: linksPending,
-  isError: linksError
-} = useQuery({
+const { data: links } = useQuery({
   queryKey: ['links', id.value],
   queryFn: (): Promise<Array<Link>> => api.listLinks({ ticket: id.value })
 })

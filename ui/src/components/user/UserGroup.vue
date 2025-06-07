@@ -10,10 +10,10 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import { Trash2 } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 import { useAPI } from '@/api'
-import type { Group, UserGroup } from '@/client'
+import type { UserGroup } from '@/client'
 import { handleError } from '@/lib/utils'
 
 const api = useAPI()

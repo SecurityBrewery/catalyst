@@ -23,6 +23,10 @@ import { useAPI } from '@/api'
 import type { User, UserUpdate } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
+// Prevent unused var warnings for components used in the template
+const _tabsComponents = { Tabs, TabsContent, TabsList, TabsTrigger }
+void _tabsComponents
+
 const api = useAPI()
 
 const router = useRouter()

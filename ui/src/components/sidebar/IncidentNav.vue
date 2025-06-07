@@ -7,7 +7,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { LoaderCircle } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
-import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useAPI } from '@/api'

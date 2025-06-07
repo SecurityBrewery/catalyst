@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast/use-toast'
 
-import { Plus, User2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'

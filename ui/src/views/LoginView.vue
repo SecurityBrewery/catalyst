@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 import { useQuery } from '@tanstack/vue-query'
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'

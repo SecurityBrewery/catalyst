@@ -7,7 +7,6 @@ import ColumnBody from '@/components/layout/ColumnBody.vue'
 import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'

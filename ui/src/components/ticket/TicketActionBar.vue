@@ -35,12 +35,7 @@ const props = defineProps<{
   ticket: ExtendedTicket
 }>()
 
-const {
-  isPending,
-  isError,
-  data: types,
-  error
-} = useQuery({
+const { data: types } = useQuery({
   queryKey: ['types'],
   queryFn: (): Promise<Array<Type>> => api.listTypes()
 })
@@ -48,7 +43,7 @@ const {
 const changeTypeMutation = useMutation({
   mutationFn: (typeID: string): Promise<Ticket> =>
     api.updateTicket({ id: props.ticket.id, ticketUpdate: { type: typeID } }),
-  onSuccess: (data: Ticket) => {
+  onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     toast({
       title: 'Type changed',

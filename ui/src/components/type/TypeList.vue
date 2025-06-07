@@ -25,16 +25,6 @@ const {
   queryFn: (): Promise<Array<Type>> => api.listTypes()
 })
 
-const description = (type: Type): string => {
-  var desc = type.email
-
-  if (!type.verified) {
-    desc += ' (unverified)'
-  }
-
-  return desc
-}
-
 const openNew = () => {
   router.push({ name: 'types', params: { id: 'new' } })
 }
