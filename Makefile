@@ -4,13 +4,11 @@ install-golangci-lint:
 
 .PHONY: fmt-go
 fmt-go:
-	@echo "Formatting..."
 	go mod tidy
 	golangci-lint fmt ./...
 
 .PHONY: fmt-ui
 fmt-ui:
-	@echo "Formatting..."
 	cd ui && bun format
 
 .PHONY: fmt
@@ -18,7 +16,6 @@ fmt: fmt-go fmt-ui
 
 .PHONY: fix
 fix:
-	@echo "Fixing..."
 	golangci-lint run --fix ./...
 
 .PHONY: lint-go
@@ -28,7 +25,6 @@ lint-go:
 
 .PHONY: lint-ui
 lint-ui:
-	@echo "Linting..."
 	cd ui && bun lint
 
 .PHONY: lint
@@ -36,17 +32,14 @@ lint: lint-go lint-ui
 
 .PHONY: test-go
 test-go:
-	@echo "Testing..."
 	go test -v ./...
 
 .PHONY: test-ui
 test-ui:
-	@echo "Testing..."
 	cd ui && bun test src
 
 .PHONY: test-playwright
 test-playwright:
-	@echo "Testing..."
 	cd playwright && bun test:e2e
 
 .PHONY: test
@@ -54,44 +47,36 @@ test: test-go test-ui test-playwright
 
 .PHONY: test-coverage
 test-coverage:
-	@echo "Testing with coverage..."
 	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
 .PHONY: install-ui
 install-ui:
-	@echo "Installing UI..."
 	cd ui && bun install
 
 .PHONY: install-playwright
 install-playwright:
-	@echo "Installing Playwright..."
 	cd playwright && bun install && bun install:e2e
 	
 .PHONY: build-ui
 build-ui:
-	@echo "Building..."
 	cd ui && bun build-only
 
 .PHONY: build
 build: build-ui
-	@echo "Building..."
 	go build -o catalyst .
 
 .PHONY: build-linux
 build-linux: build-ui
-	@echo "Building..."
 	GOOS=linux GOARCH=amd64 go build -o catalyst .
 
 .PHONY: docker
 docker: build-linux
-	@echo "Building Docker image..."
 	docker build -f docker/Dockerfile -t catalyst .
 
 .PHONY: dev
 dev:
-	@echo "Running..."
 	rm -rf catalyst_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data
@@ -99,7 +84,6 @@ dev:
 
 .PHONY: dev2
 dev2:
-	@echo "Running..."
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
@@ -107,7 +91,6 @@ dev2:
 
 .PHONY: dev-playwright
 dev-playwright:
-	@echo "Running..."
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
@@ -115,7 +98,6 @@ dev-playwright:
 
 .PHONY: dev-10000
 dev-10000:
-	@echo "Running..."
 	rm -rf catalyst_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data --users 100 --tickets 10000
@@ -132,23 +114,17 @@ serve-ui:
 
 .PHONY: tailwindcss
 tailwindcss:
-	@echo "TailwindCSS..."
 	# tailwindcss -i ./css/in.css -o ./static/output.css --cwd api/ui
-	@echo "Done."
 
 .PHONY: sqlc
 sqlc:
-	@echo "SQLC..."
 	cd app/database && go tool sqlc generate
-	@echo "Done."
 
 .PHONY: openapi
 openapi:
-	@echo "OpenAPI..."
 	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
 	rm -rf ui/src/client
 	cd ui && bun generate
-	@echo "Done."
 
 .PHONY: generate
 generate: sqlc tailwindcss openapi

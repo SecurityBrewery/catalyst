@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
-      - run: make install-ui generate fmt
+      - run: make install-ui generate install-golangci-lint fmt
       - run: git diff --exit-code
 
   fmt-go:
