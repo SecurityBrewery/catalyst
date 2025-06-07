@@ -27,58 +27,40 @@ func DB(filename string) (*sqlc.Queries, func(), error) {
 
 	db, err := sql.Open("sqlite", filename)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
 	// see https://briandouglas.ie/sqlite-defaults/ for more details
 
-	// Enable WAL mode for better concurrency
-	if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
-		return nil, nil, err
+	pragmas := []string{
+		// Enable WAL mode for better concurrency
+		"journal_mode=WAL",
+		// Enable synchronous mode for better data integrity
+		"synchronous=NORMAL",
+		// Set busy timeout to 5 seconds
+		"busy_timeout=5000",
+		// Set cache size to 20MB
+		"cache_size=-20000",
+		// Enable foreign key checks
+		"foreign_keys=ON",
+		// Enable incremental vacuuming
+		"auto_vacuum=INCREMENTAL",
+		// Set temp store to memory
+		"temp_store=MEMORY",
+		// Set mmap size to 2GB
+		"mmap_size=2147483648",
+		// Set page size to 8192
+		"page_size=8192",
 	}
 
-	// Enable synchronous mode for better data integrity
-	if _, err := db.Exec("PRAGMA synchronous = NORMAL"); err != nil {
-		return nil, nil, err
-	}
-
-	// Set busy timeout to 5 seconds
-	if _, err := db.Exec("PRAGMA busy_timeout = 5000"); err != nil {
-		return nil, nil, err
-	}
-
-	// Set cache size to 20MB
-	if _, err := db.Exec("PRAGMA cache_size = -20000"); err != nil {
-		return nil, nil, err
-	}
-
-	// Enable foreign key checks
-	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
-		return nil, nil, err
-	}
-
-	// Enable incremental vacuuming
-	if _, err := db.Exec("PRAGMA auto_vacuum = INCREMENTAL"); err != nil {
-		return nil, nil, err
-	}
-
-	// Set temp store to memory
-	if _, err := db.Exec("PRAGMA temp_store = MEMORY"); err != nil {
-		return nil, nil, err
-	}
-
-	// Set mmap size to 2GB
-	if _, err := db.Exec("PRAGMA mmap_size = 2147483648"); err != nil {
-		return nil, nil, err
-	}
-
-	// Set page size to 8192
-	if _, err := db.Exec("PRAGMA page_size = 8192"); err != nil {
-		return nil, nil, err
+	for _, pragma := range pragmas {
+		if _, err := db.Exec(fmt.Sprintf("PRAGMA %s", pragma)); err != nil {
+			return nil, nil, fmt.Errorf("failed to set pragma %s: %w", pragma, err)
+		}
 	}
 
 	if err := migrateDB(db); err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
 	return sqlc.New(db), func() {
