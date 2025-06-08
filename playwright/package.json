@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "install:e2e": "playwright install",
+    "install:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --retries=3 --timeout=5000"
   },
   "devDependencies": {
