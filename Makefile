@@ -62,6 +62,7 @@ install-playwright:
 .PHONY: build-ui
 build-ui:
 	cd ui && bun build-only
+	touch ui/dist/.keep
 
 .PHONY: build
 build: build-ui
