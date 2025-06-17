@@ -41,7 +41,8 @@ func (a *App) SetupRoutes() error {
 	a.Router.Mount("/auth", a.Auth.Server())
 
 	// API routes
-	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, []openapi.StrictMiddlewareFunc{auth.ValidateScopes}))
+	middlewareFuncs := []openapi.StrictMiddlewareFunc{auth.ValidateScopes, auth.LogError}
+	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, middlewareFuncs))
 	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
 
 	return nil

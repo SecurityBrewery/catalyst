@@ -38,7 +38,9 @@ type catalystTest struct {
 func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
 	t.Helper()
 
-	baseApp, counter := App(t)
+	baseApp, cleanup, counter := App(t)
+
+	t.Cleanup(cleanup)
 
 	recorder := httptest.NewRecorder()
 	body := bytes.NewBufferString(baseTest.Body)

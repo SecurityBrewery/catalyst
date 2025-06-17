@@ -12,7 +12,9 @@ import (
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
-	app, _ := catalystTesting.App(t)
+	app, cleanup, _ := catalystTesting.App(t)
+
+	t.Cleanup(cleanup)
 
 	_ = app.Queries.DeleteUser(t.Context(), "u_admin")
 	_ = app.Queries.DeleteUser(t.Context(), "u_bob_analyst")

@@ -85,11 +85,26 @@ func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictne
 	}
 }
 
+func LogError(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
+		re, err := next(ctx, w, r, request)
+		if err != nil {
+			if err.Error() == "context canceled" {
+				// This is a common error when the request is canceled, e.g., by the client.
+				// We can ignore this error as it does not indicate a problem with the handler.
+				return re, nil
+			}
+
+			slog.ErrorContext(ctx, "handler error", "error", err, "method", r.Method, "path", r.URL.Path)
+		}
+
+		return re, err
+	}
+}
+
 func requiredScopes(r *http.Request) ([]string, error) {
 	requiredScopesValue := r.Context().Value(openapi.OAuth2Scopes)
 	if requiredScopesValue == nil {
-		slog.InfoContext(r.Context(), "no required scopes", "request", r.URL.Path)
-
 		return nil, nil
 	}
 

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "install:e2e": "playwright install --with-deps",
-    "test:e2e": "playwright test --retries=3 --timeout=5000"
+    "test:e2e": "playwright test --timeout=5000"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0"

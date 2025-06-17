@@ -11,7 +11,9 @@ import (
 func TestUpgradeTestData(t *testing.T) {
 	t.Parallel()
 
-	app, _ := catalystTesting.App(t)
+	app, cleanup, _ := catalystTesting.App(t)
+
+	t.Cleanup(cleanup)
 
 	require.NoError(t, generateUpgradeTestData(t.Context(), app.Queries))
 

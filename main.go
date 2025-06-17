@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
-
-	"golang.org/x/net/context"
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/data"
@@ -14,37 +15,51 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-
-	catalyst, err := app.New(ctx, "./catalyst_data")
-	if err != nil {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func run() error {
+	ctx := context.Background()
+
+	catalyst, cleanup, err := app.New(ctx, "./catalyst_data")
+	if err != nil {
+		return err
+	}
+
+	defer cleanup()
 
 	if _, err := catalyst.Queries.CreateFeature(ctx, "dev"); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	testUser, err := catalyst.Queries.UserByUserName(ctx, "u_test")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if err := catalyst.Queries.DeleteUser(ctx, testUser.ID); err != nil {
-		log.Fatal(err)
+		return err
+	}
+
+	slog.InfoContext(ctx, "deleting test user", "id", testUser.ID)
+
+	if _, err := catalyst.Queries.GetUser(ctx, testUser.ID); err == nil {
+		return errors.New("test user still exists after deletion")
 	}
 
 	if err := data.GenerateDemoData(ctx, catalyst.Queries, 10, 100); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = catalyst.SetupRoutes()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if err := reaction.BindHooks(catalyst, false); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	webhook.BindHooks(catalyst)
@@ -55,7 +70,5 @@ func main() {
 		ReadTimeout: 10 * time.Minute,
 	}
 
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	return server.ListenAndServe()
 }

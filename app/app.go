@@ -27,10 +27,10 @@ type App struct {
 	Scheduler *schedule.Scheduler
 }
 
-func New(ctx context.Context, filename string) (*App, error) {
-	queries, _, err := database.DB(filepath.Join(filename, "data.db"))
+func New(ctx context.Context, filename string) (*App, func(), error) {
+	queries, cleanup, err := database.DB(ctx, filepath.Join(filename, "data.db"))
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	mailer := mail.New(&mail.Config{
@@ -62,12 +62,12 @@ func New(ctx context.Context, filename string) (*App, error) {
 
 	authService, err := auth.New(ctx, queries, mailer, config)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create auth service: %w", err)
+		return nil, nil, fmt.Errorf("failed to create auth service: %w", err)
 	}
 
 	scheduler, err := schedule.New(ctx, config, authService, queries)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create scheduler: %w", err)
+		return nil, nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
 	hooks := hook.NewHooks()
@@ -80,5 +80,5 @@ func New(ctx context.Context, filename string) (*App, error) {
 		Config:    config,
 		Auth:      authService,
 		Scheduler: scheduler,
-	}, nil
+	}, cleanup, nil
 }

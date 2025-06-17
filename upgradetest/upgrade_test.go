@@ -30,10 +30,12 @@ func TestUpgrades(t *testing.T) {
 				log.Fatal(err)
 			}
 
-			pb, err := app.New(t.Context(), db)
+			pb, cleanup, err := app.New(t.Context(), db)
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			t.Cleanup(cleanup)
 
 			validateUpgradeTestData(t, pb)
 		})

@@ -1,13 +1,6 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-
-const login = async (page) => {
-  await page.goto('login')
-  await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
-  await page.getByPlaceholder('Password').fill('1234567890')
-  await page.getByRole('button', { name: 'Login' }).click()
-  await page.waitForURL('**/dashboard')
-}
+import { login, test } from './util'
 
 const createType = async (page, name: string) => {
   await page.goto('types')
@@ -17,15 +10,17 @@ const createType = async (page, name: string) => {
   await page.locator('#plural').fill(`${name}s`)
   await page.locator('#icon input').fill('Bug')
   await page.locator('#schema').fill('{}')
-  await page.getByRole('button', { name: 'Save' }).last().click()
-  await page.waitForURL('**/types/*')
+  const saveBtn = page.getByRole('button', { name: 'Save' }).last()
+  await expect(saveBtn).toBeEnabled()
+  await saveBtn.click()
+  await page.waitForURL('**/types/y*')
 }
 
 test('types list shows incident', async ({ page }) => {
   await login(page)
   await page.goto('types')
   await expect(page.getByRole('heading', { name: 'Types' })).toBeVisible()
-  await expect(page.getByText('Incident')).toBeVisible()
+  await expect(page.getByText('Incident', { exact: true })).toBeVisible()
 })
 
 test('can create a type', async ({ page }) => {
@@ -65,7 +60,6 @@ test('can delete a type', async ({ page }) => {
   await login(page)
   const name = `Playwright-${randomUUID()}`
   await createType(page, name)
-  await page.waitForURL('**/types/*')
   await page.getByRole('button', { name: 'Delete Type' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()
   await page.waitForURL('**/types')

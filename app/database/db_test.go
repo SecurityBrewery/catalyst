@@ -14,7 +14,7 @@ import (
 func TestDBInitialization(t *testing.T) {
 	t.Parallel()
 
-	queries, cleanup, err := database.DB(filepath.Join(t.TempDir(), "data.db"))
+	queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 
@@ -30,7 +30,7 @@ func TestDBInitialization(t *testing.T) {
 func TestDBForeignKeyConstraints(t *testing.T) {
 	t.Parallel()
 
-	queries, cleanup, err := database.DB(filepath.Join(t.TempDir(), "data.db"))
+	queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 
@@ -61,4 +61,41 @@ func TestNewTestDBDefaultData(t *testing.T) {
 	timeline, err := queries.GetTimeline(t.Context(), "h_test_timeline")
 	require.NoError(t, err)
 	assert.Equal(t, "h_test_timeline", timeline.ID)
+}
+
+func TestReadWrite(t *testing.T) {
+	t.Parallel()
+
+	queries := database.NewTestDB(t)
+
+	for range 3 {
+		y, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
+			ID:       "foo-type",
+			Singular: "Foo",
+			Plural:   "Foos",
+			Icon:     "Bug",
+			Schema:   "{}",
+		})
+		require.NoError(t, err)
+
+		_, err = queries.GetType(t.Context(), y.ID)
+		require.NoError(t, err)
+
+		err = queries.DeleteType(t.Context(), y.ID)
+		require.NoError(t, err)
+	}
+}
+
+func TestRead(t *testing.T) {
+	t.Parallel()
+
+	queries := database.NewTestDB(t)
+
+	// read from a table
+	_, err := queries.GetUser(t.Context(), "u_bob_analyst")
+	require.NoError(t, err)
+
+	// read from a view
+	_, err = queries.GetSidebar(t.Context())
+	require.NoError(t, err)
 }

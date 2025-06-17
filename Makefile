@@ -119,7 +119,11 @@ tailwindcss:
 
 .PHONY: sqlc
 sqlc:
+	rm -rf app/database/sqlc
 	cd app/database && go tool sqlc generate
+	sed -i '' 's/Queries/ReadQueries/g' app/database/sqlc/read.sql.go
+	sed -i '' 's/Queries/WriteQueries/g' app/database/sqlc/write.sql.go
+	cp app/database/sqlc.db.go.tmpl app/database/sqlc/db.go
 
 .PHONY: openapi-go
 openapi-go:

@@ -1,13 +1,6 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-
-const login = async (page) => {
-  await page.goto('login')
-  await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
-  await page.getByPlaceholder('Password').fill('1234567890')
-  await page.getByRole('button', { name: 'Login' }).click()
-  await page.waitForURL('**/dashboard')
-}
+import { login, test } from './util'
 
 const createGroup = async (page, name: string) => {
   await page.goto('groups')
@@ -16,8 +9,10 @@ const createGroup = async (page, name: string) => {
   await page.locator('#name').fill(name)
   await page.getByRole('combobox', { name: 'Permissions' }).click()
   await page.getByRole('option', { name: 'ticket:read' }).click()
-  await page.getByRole('button', { name: 'Save' }).last().click()
-  await page.waitForURL('**/groups/*')
+  const saveBtn = page.getByRole('button', { name: 'Save' }).last()
+  await expect(saveBtn).toBeEnabled()
+  await saveBtn.click()
+  await page.waitForURL('**/groups/g*')
 }
 
 test('groups list shows existing groups', async ({ page }) => {
@@ -58,10 +53,11 @@ test('can add a permission', async ({ page }) => {
   await login(page)
   const name = `playwright-${randomUUID()}`
   await createGroup(page, name)
-  await page.waitForURL('**/groups/*')
   await page.getByRole('combobox', { name: 'Permissions' }).click()
   await page.getByRole('option', { name: 'reaction:write' }).click()
-  await page.getByRole('button', { name: 'Save' }).last().click()
+  const saveBtn = page.getByRole('button', { name: 'Save' }).last()
+  await expect(saveBtn).toBeEnabled()
+  await saveBtn.click()
   await page.waitForURL('**/groups/*')
   await expect(page.locator('#permissions')).toHaveText('Permissionsticket:readreaction:write')
 })
@@ -70,7 +66,6 @@ test('can delete a group', async ({ page }) => {
   await login(page)
   const name = `playwright-${randomUUID()}`
   await createGroup(page, name)
-  await page.waitForURL('**/groups/*')
   await page.getByRole('button', { name: 'Delete Group' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()
   await page.waitForURL('**/groups')

@@ -1,13 +1,6 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-
-const login = async (page) => {
-  await page.goto('login')
-  await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
-  await page.getByPlaceholder('Password').fill('1234567890')
-  await page.getByRole('button', { name: 'Login' }).click()
-  await page.waitForURL('**/dashboard')
-}
+import { login, test } from './util'
 
 const createUser = async (page, username: string) => {
   await page.goto('users')
@@ -16,8 +9,10 @@ const createUser = async (page, username: string) => {
   await page.locator('#username').fill(username)
   await page.locator('#email').fill(`${username}@example.com`)
   await page.locator('#name').fill(username)
-  await page.getByRole('button', { name: 'Save' }).last().click()
-  await page.waitForURL('**/users/*')
+  const saveBtn = page.getByRole('button', { name: 'Save' }).last()
+  await expect(saveBtn).toBeEnabled()
+  await saveBtn.click()
+  await page.waitForURL('**/users/u*')
 }
 
 test('users list shows existing users', async ({ page }) => {
@@ -45,7 +40,7 @@ test.describe('update a user', () => {
       field: 'name',
       selector: '#name',
       value: 'Updated Name'
-    },
+    }
   ]
 
   for (const { field, selector, value } of updates) {
@@ -80,7 +75,6 @@ test('can delete a user', async ({ page }) => {
   await login(page)
   const username = `playwright-${randomUUID()}`
   await createUser(page, username)
-  await page.waitForURL('**/users/*')
   await page.getByRole('button', { name: 'Delete User' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()
   await page.waitForURL('**/users')

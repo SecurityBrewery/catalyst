@@ -55,6 +55,7 @@ const deleteMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['types'] })
+    queryClient.invalidateQueries({ queryKey: ['sidebar'] })
     toast({
       title: 'Type deleted',
       description: 'The type has been deleted successfully'

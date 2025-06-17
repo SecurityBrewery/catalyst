@@ -12,10 +12,8 @@ import { useRoute } from 'vue-router'
 import { useAPI } from '@/api'
 import type { Sidebar } from '@/client/models'
 import { cn } from '@/lib/utils'
-import { useAuthStore } from '@/store/auth'
 
 const api = useAPI()
-const authStore = useAuthStore()
 
 const route = useRoute()
 
@@ -29,14 +27,8 @@ const {
   data: sidebar,
   error
 } = useQuery({
-  queryKey: ['types', 'sidebar'],
-  queryFn: (): Promise<Array<Sidebar>> => {
-    if (authStore.permissions.includes('ticket:read')) {
-      return api.getSidebar()
-    }
-
-    return Promise.resolve([])
-  }
+  queryKey: ['sidebar'],
+  queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 
 const variant = (t: Sidebar): 'default' | 'ghost' =>

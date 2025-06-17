@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -10,8 +11,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-
-	"github.com/google/uuid"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
@@ -1149,9 +1148,8 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 func (s *Service) DeleteType(ctx context.Context, request openapi.DeleteTypeRequestObject) (openapi.DeleteTypeResponseObject, error) {
 	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, permission.TypesTable.ID, request.Id)
 
-	err := s.queries.DeleteType(ctx, request.Id)
-	if err != nil {
-		return nil, err
+	if err := s.queries.DeleteType(ctx, request.Id); err != nil {
+		return nil, fmt.Errorf("failed to delete type: %w", err)
 	}
 
 	s.hooks.OnRecordAfterDeleteRequest.Publish(ctx, permission.TypesTable.ID, request.Id)
@@ -1910,5 +1908,20 @@ func unmarshal(data string) map[string]interface{} {
 }
 
 func generateID(prefix string) string {
-	return prefix + "-" + uuid.New().String()
+	return prefix + randomstring(12)
+}
+
+const base32alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+func randomstring(l int) string {
+	rand.Text()
+
+	src := make([]byte, l)
+	_, _ = rand.Read(src)
+
+	for i := range src {
+		src[i] = base32alphabet[int(src[i])%len(base32alphabet)]
+	}
+
+	return string(src)
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"errors"
@@ -8,30 +9,25 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "modernc.org/sqlite" // import sqlite driver
+	_ "github.com/mattn/go-sqlite3" // import sqlite driver
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
+const sqliteDriver = "sqlite3"
+
 //go:embed migrations/*.sql
 var schema embed.FS
 
-func DB(filename string) (*sqlc.Queries, func(), error) {
+func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	slog.Info("Connecting to database", "path", filename)
 
-	_ = os.MkdirAll(filepath.Dir(filename), 0o755)
-
-	db, err := sql.Open("sqlite", filename)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open database: %w", err)
-	}
-
 	// see https://briandouglas.ie/sqlite-defaults/ for more details
-
 	pragmas := []string{
 		// Enable WAL mode for better concurrency
 		"journal_mode=WAL",
@@ -53,18 +49,42 @@ func DB(filename string) (*sqlc.Queries, func(), error) {
 		"page_size=8192",
 	}
 
+	_ = os.MkdirAll(filepath.Dir(filename), 0o755)
+
+	write, err := sql.Open(sqliteDriver, fmt.Sprintf("file:%s", filename))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open database: %w", err)
+	}
+
+	write.SetMaxOpenConns(1)
+	write.SetConnMaxIdleTime(time.Minute)
+
 	for _, pragma := range pragmas {
-		if _, err := db.Exec(fmt.Sprintf("PRAGMA %s", pragma)); err != nil {
+		if _, err := write.ExecContext(ctx, fmt.Sprintf("PRAGMA %s", pragma)); err != nil {
 			return nil, nil, fmt.Errorf("failed to set pragma %s: %w", pragma, err)
 		}
 	}
 
-	if err := migrateDB(db); err != nil {
+	read, err := sql.Open(sqliteDriver, fmt.Sprintf("file:%s?mode=ro", filename))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open database: %w", err)
+	}
+
+	read.SetMaxOpenConns(100)
+	read.SetConnMaxIdleTime(time.Minute)
+
+	if err := migrateDB(write); err != nil {
 		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
-	return sqlc.New(db), func() {
-		db.Close()
+	return sqlc.New(read, write), func() {
+		if err := read.Close(); err != nil {
+			slog.Error("failed to close read connection", "error", err)
+		}
+
+		if err := write.Close(); err != nil {
+			slog.Error("failed to close write connection", "error", err)
+		}
 	}, nil
 }
 
@@ -74,7 +94,7 @@ func migrateDB(db *sql.DB) error {
 		return fmt.Errorf("failed to create iofs source: %w", err)
 	}
 
-	sqliteDriver, err := sqlite.WithInstance(db, &sqlite.Config{})
+	sqliteDriver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to create sqlite driver: %w", err)
 	}

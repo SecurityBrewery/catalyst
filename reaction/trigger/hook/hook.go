@@ -43,7 +43,7 @@ func hook(ctx context.Context, app *app.App, event, collection string, record an
 	}
 
 	if !test {
-		go mustRunHook(ctx, app, collection, event, record, user)
+		go mustRunHook(context.Background(), app, collection, event, record, user) //nolint:contextcheck
 	} else {
 		mustRunHook(ctx, app, collection, event, record, user)
 	}

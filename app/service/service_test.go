@@ -96,7 +96,7 @@ func Test_generateID(t *testing.T) {
 		t.Error("expected non empty ids")
 	}
 
-	if id1[:2] != "p-" || id2[:2] != "p-" {
+	if id1[:1] != "p" || id2[:1] != "p" {
 		t.Errorf("expected ids to start with prefix")
 	}
 }

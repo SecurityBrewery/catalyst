@@ -12,8 +12,11 @@ import (
 func NewTestDB(t *testing.T) *sqlc.Queries {
 	t.Helper()
 
-	queries, _, err := DB(filepath.Join(t.TempDir(), "data.db"))
+	tmpDBPath := filepath.Join(t.TempDir(), "data.db")
+	queries, cleanup, err := DB(t.Context(), tmpDBPath)
 	require.NoError(t, err, "failed to create test database")
+
+	t.Cleanup(cleanup)
 
 	DefaultTestData(t, queries)
 

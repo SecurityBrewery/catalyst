@@ -11,12 +11,10 @@ import (
 	"github.com/SecurityBrewery/catalyst/reaction"
 )
 
-func App(t *testing.T) (*app.App, *Counter) {
+func App(t *testing.T) (*app.App, func(), *Counter) {
 	t.Helper()
 
-	temp := t.TempDir()
-
-	baseApp, err := app.New(t.Context(), temp)
+	baseApp, cleanup, err := app.New(t.Context(), t.TempDir())
 	require.NoError(t, err)
 
 	err = baseApp.SetupRoutes()
@@ -29,7 +27,7 @@ func App(t *testing.T) (*app.App, *Counter) {
 
 	counter := countEvents(baseApp)
 
-	return baseApp, counter
+	return baseApp, cleanup, counter
 }
 
 func countEvents(app *app.App) *Counter {

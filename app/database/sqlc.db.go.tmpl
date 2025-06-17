@@ -31,7 +31,7 @@ func New(readDB, writeDB *sql.DB) *Queries {
 	return &Queries{
 		ReadQueries:  &ReadQueries{db: readDB},
 		WriteQueries: &WriteQueries{db: writeDB},
-		ReadDB:       readDB,
-		WriteDB:      writeDB,
+		ReadDB:      readDB,
+		WriteDB:     writeDB,
 	}
 }

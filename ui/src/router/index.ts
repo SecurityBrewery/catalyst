@@ -21,37 +21,37 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView,
+      component: () => import('@/views/DashboardView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/tickets/:type/:id?',
       name: 'tickets',
-      component: TicketView,
+      component: () => import('@/views/TicketView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/reactions/:id?',
       name: 'reactions',
-      component: ReactionView,
+      component: () => import('@/views/ReactionView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/users/:id?',
       name: 'users',
-      component: UserView,
+      component: () => import('@/views/UserView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/groups/:id?',
       name: 'groups',
-      component: GroupView,
+      component: () => import('@/views/GroupView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/types/:id?',
       name: 'types',
-      component: TypeView,
+      component: () => import('@/views/TypeView.vue'),
       meta: { requiresAuth: true }
     },
     {
