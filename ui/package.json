@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-pattern \"src/components/ui/**\" --ignore-path ../.gitignore",
     "format": "prettier --write src/",
-    "generate": "openapi-generator-cli generate -i ../app/openapi/openapi.yml -g typescript-fetch -o src/client",
+    "generate": "openapi-generator-cli generate -i ../openapi.yml -g typescript-fetch -o src/client",
     "install:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --timeout=5000"
   },

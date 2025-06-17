@@ -1,16 +1,6 @@
 import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-import { login, test } from './util'
-
-const createTicket = async (page, name: string) => {
-  await page.goto('tickets/incident')
-  await page.getByRole('button', { name: 'New Ticket' }).click()
-  await page.locator('#name').fill(name)
-  await page.locator('#description').fill('Test description')
-  await page.locator('#severity').selectOption('Low')
-  await page.getByRole('button', { name: 'Save' }).click()
-  await page.waitForURL('**/tickets/incident/incident*')
-}
+import { login, test, createTicket } from './util'
 
 test('can create a ticket', async ({ page }) => {
   await login(page)

@@ -77,6 +77,7 @@ const dialogOpen = ref(false)
       >
         <Button variant="ghost" size="icon" class="h-8 w-8">
           <Trash2 class="size-4" />
+          <span class="sr-only">Delete Link</span>
         </Button>
       </DeleteDialog>
     </PanelListElement>

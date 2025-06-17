@@ -17,7 +17,6 @@ const props = defineProps({
 const IconComponent = computed(() => {
   const component = icons[props.name]
   if (!component) {
-    console.warn(`Icon "${props.name}" not found`)
     return icons.HelpCircle
   }
   return component

@@ -42,7 +42,7 @@ const addLinkMutation = useMutation({
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
     toast({
       title: 'Link added',
       description: 'The link has been added successfully'
