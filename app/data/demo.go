@@ -239,21 +239,20 @@ import json
 import random
 import os
 
-from pocketbase import PocketBase
+import requests
 
-# Connect to the PocketBase server
-client = PocketBase(os.environ["CATALYST_APP_URL"])
-client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
+url = os.environ["CATALYST_APP_URL"]
+header = {"Authorization": "Bearer " + os.environ["CATALYST_TOKEN"]}
 
-newtickets = client.collection("tickets").get_list(1, 200, {"filter": 'name = "New Ticket"'})
+newtickets = requests.get(url + "/api/tickets", headers=header).json()
 for ticket in newtickets.items:
-	client.collection("tickets").delete(ticket.id)
+    requests.delete(url + "/api/tickets/" + ticket.id, headers=header)
 
 # Create a new ticket
-client.collection("tickets").create({
-	"name": "New Ticket",
-	"type": "alert",
-	"open": True,
+requests.post(url + "/api/tickets", headers=header, json={
+    "name": "New Ticket",
+    "type": "alert",
+    "open": True,
 })`
 
 const alertIngestPy = `import sys
@@ -261,18 +260,17 @@ import json
 import random
 import os
 
-from pocketbase import PocketBase
+import requests
 
 # Parse the event from the webhook payload
 event = json.loads(sys.argv[1])
 body = json.loads(event["body"])
 
-# Connect to the PocketBase server
-client = PocketBase(os.environ["CATALYST_APP_URL"])
-client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
+url = os.environ["CATALYST_APP_URL"]
+header = {"Authorization": "Bearer " + os.environ["CATALYST_TOKEN"]}
 
 # Create a new ticket
-client.collection("tickets").create({
+requests.post(url + "/api/tickets", headers=header, json={
 	"name": body["name"],
 	"type": "alert",
 	"open": True,
@@ -283,21 +281,20 @@ import json
 import random
 import os
 
-from pocketbase import PocketBase
+import requests
 
 # Parse the ticket from the input
 ticket = json.loads(sys.argv[1])
 
-# Connect to the PocketBase server
-client = PocketBase(os.environ["CATALYST_APP_URL"])
-client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
+url = os.environ["CATALYST_APP_URL"]
+header = {"Authorization": "Bearer " + os.environ["CATALYST_TOKEN"]}
 
 # Get a random user
-users = client.collection("users").get_list(1, 200)
+users = requests.get(url + "/api/users", headers=header).json()
 random_user = random.choice(users.items)
 
 # Assign the ticket to the random user
-client.collection("tickets").update(ticket["record"]["id"], {
+requests.patch(url + "/api/tickets/" + ticket["record"]["id"], {
 	"owner": random_user.id,
 })`
 
@@ -315,7 +312,7 @@ func generateReactions(ctx context.Context, queries *sqlc.Queries) error {
 		Triggerdata: marshal(triggerSchedule),
 		Action:      "python",
 		Actiondata: marshal(map[string]interface{}{
-			"requirements": "pocketbase",
+			"requirements": "requests",
 			"script":       createTicketPy,
 		}),
 	})
@@ -330,7 +327,7 @@ func generateReactions(ctx context.Context, queries *sqlc.Queries) error {
 		Triggerdata: marshal(triggerWebhook),
 		Action:      "python",
 		Actiondata: marshal(map[string]interface{}{
-			"requirements": "pocketbase",
+			"requirements": "requests",
 			"script":       alertIngestPy,
 		}),
 	})
@@ -345,7 +342,7 @@ func generateReactions(ctx context.Context, queries *sqlc.Queries) error {
 		Triggerdata: marshal(triggerHook),
 		Action:      "python",
 		Actiondata: marshal(map[string]interface{}{
-			"requirements": "pocketbase",
+			"requirements": "requests",
 			"script":       assignTicketsPy,
 		}),
 	})

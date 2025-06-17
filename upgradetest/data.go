@@ -2,6 +2,7 @@ package upgradetest
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -186,8 +187,31 @@ func validateUpgradeTestData(t *testing.T, app *app.App) {
 		assert.Equal(t, "schedule", reaction.Trigger)
 		assert.JSONEq(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
 		assert.Equal(t, "python", reaction.Action)
+		assert.JSONEq(t, marshal(map[string]interface{}{"requirements": "pocketbase", "script": script}), reaction.Actiondata)
 	}
 }
+
+const script = `import sys
+import json
+import random
+import os
+
+from pocketbase import PocketBase
+
+# Connect to the PocketBase server
+client = PocketBase(os.environ["CATALYST_APP_URL"])
+client.auth_store.save(token=os.environ["CATALYST_TOKEN"])
+
+newtickets = client.collection("tickets").get_list(1, 200, {"filter": 'name = "New Ticket"'})
+for ticket in newtickets.items:
+	client.collection("tickets").delete(ticket.id)
+
+# Create a new ticket
+client.collection("tickets").create({
+	"name": "New Ticket",
+	"type": "alert",
+	"open": True,
+})`
 
 func defaultData() ([]sqlc.Ticket, []sqlc.Comment, []sqlc.Timeline, []sqlc.Task, []sqlc.Link, []sqlc.Reaction) {
 	var (
@@ -205,7 +229,10 @@ func defaultData() ([]sqlc.Ticket, []sqlc.Comment, []sqlc.Timeline, []sqlc.Task,
 		reactionUpdated = reactionCreated.Add(time.Minute * 5)
 	)
 
-	createTicketActionData := `{"requirements":"pocketbase","script":"import sys\nimport json\nimport random\nimport os\n\nfrom pocketbase import PocketBase\n\n# Connect to the PocketBase server\nclient = PocketBase(os.environ[\"CATALYST_APP_URL\"])\nclient.auth_store.save(token=os.environ[\"CATALYST_TOKEN\"])\n\nnewtickets = client.collection(\"tickets\").get_list(1, 200, {\"filter\": 'name = \"New Ticket\"'})\nfor ticket in newtickets.items:\n\tclient.collection(\"tickets\").delete(ticket.id)\n\n# Create a new ticket\nclient.collection(\"tickets\").create({\n\t\"name\": \"New Ticket\",\n\t\"type\": \"alert\",\n\t\"open\": True,\n})"}`
+	createTicketActionData := marshal(map[string]any{
+		"requirements": "pocketbase",
+		"script":       script,
+	})
 
 	return []sqlc.Ticket{
 			{
@@ -273,4 +300,10 @@ func defaultData() ([]sqlc.Ticket, []sqlc.Comment, []sqlc.Timeline, []sqlc.Task,
 
 func dateTime(updated time.Time) string {
 	return updated.Format(time.RFC3339)
+}
+
+func marshal(m map[string]interface{}) string {
+	b, _ := json.Marshal(m) //nolint:errchkjson
+
+	return string(b)
 }
