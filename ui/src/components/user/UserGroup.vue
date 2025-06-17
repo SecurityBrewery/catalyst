@@ -103,7 +103,7 @@ const select = (group: { group: string }) => {
         <DeleteDialog
           v-if="userGroup.type === 'direct'"
           :name="userGroup.name"
-          singular="Group"
+          singular="Group Membership"
           @delete="removeGroupMutation.mutate(userGroup.id)"
         >
           <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -113,7 +113,7 @@ const select = (group: { group: string }) => {
       </PanelListElement>
       <div
         v-if="!userGroups || userGroups.length === 0"
-        class="flex h-10 items-center p-4 text-sm text-muted-foreground"
+        class="flex h-10 items-center p-4 text-muted-foreground"
       >
         No groups assigned yet.
       </div>

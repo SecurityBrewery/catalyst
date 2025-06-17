@@ -200,7 +200,7 @@ const selectUser = (user: { user: string }) => {
             <DeleteDialog
               v-if="groupGroup.type === 'direct'"
               :name="groupGroup.name"
-              singular="Group"
+              singular="Membership"
               @delete="removeGroupChildMutation.mutate(groupGroup.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -210,7 +210,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!childGroups || childGroups.length === 0"
-            class="flex h-10 items-center p-4 text-sm text-muted-foreground"
+            class="flex h-10 items-center p-4 text-muted-foreground"
           >
             No groups assigned yet.
           </div>
@@ -241,7 +241,7 @@ const selectUser = (user: { user: string }) => {
             <DeleteDialog
               v-if="groupUser.type === 'direct'"
               :name="groupUser.name"
-              singular="User"
+              singular="Membership"
               @delete="removeGroupUserMutation.mutate(groupUser.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -251,7 +251,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!groupUsers || groupUsers.length === 0"
-            class="flex h-10 items-center p-4 text-sm text-muted-foreground"
+            class="flex h-10 items-center p-4 text-muted-foreground"
           >
             No users assigned yet.
           </div>
@@ -289,7 +289,7 @@ const selectUser = (user: { user: string }) => {
             <DeleteDialog
               v-if="groupGroup.type === 'direct'"
               :name="groupGroup.name"
-              singular="Group"
+              singular="Inheritance"
               @delete="removeGroupParentMutation.mutate(groupGroup.id)"
             >
               <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -299,7 +299,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!parentGroups || parentGroups.length === 0"
-            class="flex h-10 items-center p-4 text-sm text-muted-foreground"
+            class="flex h-10 items-center p-4 text-muted-foreground"
           >
             No groups assigned yet.
           </div>

@@ -43,13 +43,14 @@ const { data: types } = useQuery({
 const changeTypeMutation = useMutation({
   mutationFn: (typeID: string): Promise<Ticket> =>
     api.updateTicket({ id: props.ticket.id, ticketUpdate: { type: typeID } }),
-  onSuccess: () => {
+  onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    queryClient.invalidateQueries({ queryKey: ['sidebar'] })
     toast({
       title: 'Type changed',
       description: 'The ticket type has been updated'
     })
-    // router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
+    router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
   },
   onError: handleError
 })

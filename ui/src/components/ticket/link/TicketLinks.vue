@@ -47,7 +47,7 @@ const dialogOpen = ref(false)
     <LinkAddDialog v-model="dialogOpen" :ticket="ticket" />
     <div
       v-if="!links || links.length === 0"
-      class="flex h-10 items-center p-4 text-sm text-muted-foreground"
+      class="flex h-10 items-center p-4 text-muted-foreground"
     >
       No links added yet.
     </div>
