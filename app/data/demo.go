@@ -11,7 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/permission"
+	"github.com/SecurityBrewery/catalyst/app/permission"
 )
 
 const (

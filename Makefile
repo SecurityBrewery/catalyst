@@ -40,7 +40,7 @@ test-ui:
 
 .PHONY: test-playwright
 test-playwright:
-	cd playwright && bun test:e2e
+	cd ui && bun test:e2e
 
 .PHONY: test
 test: test-go test-ui test-playwright
@@ -57,7 +57,7 @@ install-ui:
 
 .PHONY: install-playwright
 install-playwright:
-	cd playwright && bun install && bun install:e2e
+	cd ui && bun install && bun install:e2e
 	
 .PHONY: build-ui
 build-ui:
@@ -129,7 +129,7 @@ sqlc:
 
 .PHONY: openapi-go
 openapi-go:
-	cd app && go tool oapi-codegen --config=openapi/config.yml openapi/openapi.yml
+	go tool oapi-codegen --config=app/openapi/config.yml openapi.yml
 
 .PHONY: openapi-ui
 openapi-ui:

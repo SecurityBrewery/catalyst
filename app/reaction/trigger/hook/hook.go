@@ -12,9 +12,9 @@ import (
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/permission"
-	"github.com/SecurityBrewery/catalyst/reaction/action"
-	"github.com/SecurityBrewery/catalyst/webhook"
+	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action"
+	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
 type Hook struct {

@@ -8,9 +8,9 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/permission"
-	"github.com/SecurityBrewery/catalyst/reaction/action/python"
-	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
+	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/python"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
 func Run(ctx context.Context, config *auth.Config, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {

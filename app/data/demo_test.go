@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/data"
-	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
+	"github.com/SecurityBrewery/catalyst/app/data"
+	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
 )
 
 func TestGenerate(t *testing.T) {

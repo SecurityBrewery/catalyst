@@ -2,8 +2,8 @@ package reaction
 
 import (
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/reaction/trigger/hook"
-	"github.com/SecurityBrewery/catalyst/reaction/trigger/webhook"
+	"github.com/SecurityBrewery/catalyst/app/reaction/trigger/hook"
+	"github.com/SecurityBrewery/catalyst/app/reaction/trigger/webhook"
 )
 
 func BindHooks(app *app.App, test bool) error {

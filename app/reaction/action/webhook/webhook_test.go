@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/sjson"
 
-	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
-	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
+	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
 )
 
 func TestWebhook_Run(t *testing.T) {

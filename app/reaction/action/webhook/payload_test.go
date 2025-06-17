@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
 func TestEncodeBody(t *testing.T) {

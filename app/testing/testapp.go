@@ -8,7 +8,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/database"
-	"github.com/SecurityBrewery/catalyst/reaction"
+	"github.com/SecurityBrewery/catalyst/app/reaction"
 )
 
 func App(t *testing.T) (*app.App, func(), *Counter) {

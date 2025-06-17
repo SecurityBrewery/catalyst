@@ -11,7 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/reaction/action"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action"
 )
 
 type Scheduler struct {

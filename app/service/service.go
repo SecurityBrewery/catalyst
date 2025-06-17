@@ -16,8 +16,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
-	"github.com/SecurityBrewery/catalyst/permission"
-	"github.com/SecurityBrewery/catalyst/reaction/schedule"
+	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 )
 
 const (

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
 
-	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
+	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
 )
 
 type request struct {

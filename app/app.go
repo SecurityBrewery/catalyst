@@ -13,8 +13,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/mail"
+	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 	"github.com/SecurityBrewery/catalyst/app/service"
-	"github.com/SecurityBrewery/catalyst/reaction/schedule"
 )
 
 type App struct {

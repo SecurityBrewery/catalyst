@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	catalystTesting "github.com/SecurityBrewery/catalyst/testing"
+	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
 )
 
 func TestUpgradeTestData(t *testing.T) {

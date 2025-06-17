@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/SecurityBrewery/catalyst/reaction/action/python"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/python"
 )
 
 func TestPython_Run(t *testing.T) {

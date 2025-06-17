@@ -11,8 +11,8 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/reaction/action"
-	"github.com/SecurityBrewery/catalyst/reaction/action/webhook"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
 type Webhook struct {

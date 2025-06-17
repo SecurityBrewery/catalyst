@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/data"
-	"github.com/SecurityBrewery/catalyst/reaction"
-	"github.com/SecurityBrewery/catalyst/webhook"
+	"github.com/SecurityBrewery/catalyst/app/data"
+	"github.com/SecurityBrewery/catalyst/app/reaction"
+	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
 func main() {
