@@ -76,7 +76,7 @@ const updateTaskNameMutation = useMutation({
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
     toast({
       title: 'Task updated',
       description: 'The task name has been updated'
@@ -134,6 +134,7 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
           >
             <Button variant="ghost" size="icon" class="size-10">
               <Trash2 class="size-4" />
+              <span class="sr-only">Delete Task</span>
             </Button>
           </DeleteDialog>
         </div>

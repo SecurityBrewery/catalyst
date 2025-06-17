@@ -48,7 +48,12 @@ const updateName = (value: string) => {
 
 <template>
   <span class="text-4xl font-bold">
-    <DynamicInput :modelValue="ticket.name" @update:modelValue="updateName" class="-mx-1" />
+    <DynamicInput
+      id="name"
+      :modelValue="ticket.name"
+      @update:modelValue="updateName"
+      class="-mx-1"
+    />
   </span>
 
   <div class="flex flex-col items-stretch gap-1 text-xs text-muted-foreground md:h-4 md:flex-row">

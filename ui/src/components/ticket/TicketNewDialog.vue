@@ -57,13 +57,13 @@ const addTicketMutation = useMutation({
     })
   },
   onSuccess: (data: Ticket) => {
+    isOpen.value = false
     router.push(`/tickets/${props.selectedType.id}/${data.id}`)
     toast({
       title: 'Ticket created',
       description: 'The ticket has been created successfully'
     })
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
-    isOpen.value = false
   },
   onError: handleError
 })

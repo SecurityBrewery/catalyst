@@ -56,7 +56,7 @@ const updateTimelineMutation = useMutation({
       }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    queryClient.invalidateQueries({ queryKey: ['timeline', props.timelineItem.ticket] })
     toast({
       title: 'Timeline updated',
       description: 'The item has been updated successfully'
@@ -78,7 +78,7 @@ watch(
 const deleteTimelineItemMutation = useMutation({
   mutationFn: () => api.deleteTimeline({ id: props.timelineItem.id }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    queryClient.invalidateQueries({ queryKey: ['timeline', props.timelineItem.ticket] })
     toast({
       title: 'Timeline item deleted',
       description: 'The item has been deleted successfully'

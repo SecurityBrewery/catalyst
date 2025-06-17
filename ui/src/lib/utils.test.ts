@@ -1,4 +1,4 @@
-import { cn, human, handleError } from '@/lib/utils'
+import { cn, human } from '@/lib/utils'
 
 describe('cn utility function', () => {
   it('returns merged class names', () => {
