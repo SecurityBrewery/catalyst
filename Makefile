@@ -73,6 +73,9 @@ test-go:
 test-ui:
 	cd ui && bun test src
 
+.PHONY: test-short
+test-short: test-go test-ui
+
 .PHONY: test-playwright
 test-playwright:
 	cd ui && bun test:e2e
@@ -86,7 +89,7 @@ test-upgrade-playwright:
 	./upgradetest/test_all.sh
 
 .PHONY: test
-test: test-go test-ui test-playwright test-upgrade-playwright
+test: test-short test-playwright test-upgrade-playwright
 
 .PHONY: test-coverage
 test-coverage:

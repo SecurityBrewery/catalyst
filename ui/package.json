@@ -17,16 +17,10 @@
     "test:e2e:ui": "playwright test --ui --timeout=5000"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "^1.1.3",
-    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3",
-    "@formkit/auto-animate": "^0.8.2",
     "@tanstack/vue-query": "^5.32.0",
     "@unovis/ts": "^1.4.1",
-    "@unovis/vue": "^1.4.1",
-    "@vee-validate/rules": "^4.12.8",
-    "@vee-validate/zod": "^4.12.8",
     "@vueuse/core": "^13.3.0",
-    "add": "^2.0.6",
+    "caniuse-lite": "^1.0.30001723",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",
@@ -34,9 +28,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lucide-vue-next": "^0.365.0",
-    "marked": "^12.0.2",
     "pinia": "^2.1.7",
-    "pocketbase": "^0.21.2",
     "radix-vue": "^1.6.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
@@ -44,8 +36,7 @@
     "vee-validate": "^4.12.8",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
-    "vue3-easymde": "^1.0.1",
-    "zod": "^3.23.8"
+    "vue3-easymde": "^1.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
