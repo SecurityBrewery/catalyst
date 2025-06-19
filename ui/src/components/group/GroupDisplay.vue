@@ -51,10 +51,9 @@ const updateGroupMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteGroup({ id: props.id })
-  },
+  mutationFn: () => api.deleteGroup({ id: props.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['groups', props.id] })
     queryClient.invalidateQueries({ queryKey: ['groups'] })
     toast({
       title: 'Group deleted',

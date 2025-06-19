@@ -56,7 +56,7 @@ const updateName = (value: string) => {
     />
   </span>
 
-  <div class="text-muted-foreground flex flex-col items-stretch gap-1 text-xs md:h-4 md:flex-row">
+  <div class="flex flex-col items-stretch gap-1 text-xs text-muted-foreground md:h-4 md:flex-row">
     <div>
       Created:
       {{ format(new Date(ticket.created), 'PPpp') }}

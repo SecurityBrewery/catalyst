@@ -78,6 +78,7 @@ watch(
 const deleteTimelineItemMutation = useMutation({
   mutationFn: () => api.deleteTimeline({ id: props.timelineItem.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['timeline', props.timelineItem.id] })
     queryClient.invalidateQueries({ queryKey: ['timeline', props.timelineItem.ticket] })
     toast({
       title: 'Timeline item deleted',
@@ -117,7 +118,7 @@ const save = () =>
     <Dialog v-model:open="isOpen">
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button size="icon" variant="outline" class="mt-1 mr-1 ml-auto h-8 w-8">
+          <Button size="icon" variant="outline" class="ml-auto mr-1 mt-1 h-8 w-8">
             <MoreVertical class="h-3.5 w-3.5" />
             <span class="sr-only">More</span>
           </Button>

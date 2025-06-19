@@ -86,10 +86,9 @@ const updateTaskNameMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-  mutationFn: (id: string) => {
-    return api.deleteTask({ id })
-  },
-  onSuccess: () => {
+  mutationFn: (id: string) => api.deleteTask({ id }),
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['tasks', id] })
     queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
     toast({
       title: 'Task deleted',
@@ -106,7 +105,7 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
   <div class="mt-2 flex flex-col gap-2">
     <Card
       v-if="!tasks || tasks.length === 0"
-      class="text-muted-foreground flex h-10 items-center p-4"
+      class="flex h-10 items-center p-4 text-muted-foreground"
     >
       No tasks added yet.
     </Card>

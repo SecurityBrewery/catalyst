@@ -70,7 +70,7 @@ const logout = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             @click="logout"
-            class="text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+            class="cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
           >
             Logout
           </DropdownMenuItem>

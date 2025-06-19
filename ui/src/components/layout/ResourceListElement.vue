@@ -22,7 +22,7 @@ defineProps<{
   <RouterLink
     :class="
       cn(
-        'bg-card hover:bg-accent flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all',
+        'flex flex-col items-start gap-2 rounded-lg border bg-card p-3 text-left text-sm transition-all hover:bg-accent',
         active && 'bg-accent'
       )
     "
@@ -46,7 +46,7 @@ defineProps<{
         {{ subtitle }}
       </div>
     </div>
-    <div v-if="description" class="text-muted-foreground line-clamp-2 text-xs">
+    <div v-if="description" class="line-clamp-2 text-xs text-muted-foreground">
       {{ description }}
     </div>
   </RouterLink>

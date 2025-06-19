@@ -101,7 +101,7 @@ watch(
         <RouterLink
           :to="{ name: 'password-reset' }"
           :class="
-            cn(buttonVariants({ variant: 'link', size: 'default' }), 'text-foreground w-full')
+            cn(buttonVariants({ variant: 'link', size: 'default' }), 'w-full text-foreground')
           "
           >Reset Password
         </RouterLink>

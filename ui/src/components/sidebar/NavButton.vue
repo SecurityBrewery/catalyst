@@ -34,7 +34,7 @@ defineProps<{
     </TooltipTrigger>
     <TooltipContent side="right" class="flex items-center gap-4">
       {{ title }}
-      <span v-if="label" class="text-muted-foreground ml-auto">
+      <span v-if="label" class="ml-auto text-muted-foreground">
         {{ label }}
       </span>
     </TooltipContent>
@@ -46,7 +46,7 @@ defineProps<{
       cn(
         buttonVariants({ variant: variant, size: 'sm' }),
         variant === 'default' &&
-          'dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white',
+          'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
         'justify-start'
       )
     "

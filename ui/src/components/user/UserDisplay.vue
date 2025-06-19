@@ -70,10 +70,9 @@ const passwordSubmit = (values: UserUpdate) => {
 }
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteUser({ id: props.id })
-  },
+  mutationFn: () => api.deleteUser({ id: props.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['users', props.id] })
     queryClient.invalidateQueries({ queryKey: ['users'] })
     toast({
       title: 'User deleted',

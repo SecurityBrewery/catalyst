@@ -53,7 +53,7 @@ const count = (id: string) => {
             <a
               href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook"
               target="_blank"
-              class="hover:bg-accent flex items-center rounded border p-2 text-blue-500"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
             >
               Open Catalyst Handbook
               <ExternalLink class="ml-2 h-4 w-4" />
@@ -61,7 +61,7 @@ const count = (id: string) => {
             <a
               href="/_/"
               target="_blank"
-              class="hover:bg-accent flex items-center rounded border p-2 text-blue-500"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
             >
               Open Admin Interface
               <ExternalLink class="ml-2 h-4 w-4" />
@@ -113,7 +113,7 @@ const count = (id: string) => {
             <a
               href="https://catalyst.security-brewery.com/docs/category/catalyst-handbook"
               target="_blank"
-              class="hover:bg-accent flex items-center rounded border p-2 text-blue-500"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
             >
               Open Catalyst Handbook
               <ExternalLink class="ml-2 h-4 w-4" />
@@ -121,7 +121,7 @@ const count = (id: string) => {
             <a
               href="/_/"
               target="_blank"
-              class="hover:bg-accent flex items-center rounded border p-2 text-blue-500"
+              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
             >
               Open Admin Interface
               <ExternalLink class="ml-2 h-4 w-4" />

@@ -43,7 +43,7 @@ const variant = computed((): 'default' | 'ghost' =>
             link.variant === 'default' &&
               'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white',
             link.disabled &&
-              'text-muted-foreground hover:text-muted-foreground hover:bg-transparent'
+              'text-muted-foreground hover:bg-transparent hover:text-muted-foreground'
           )
         "
       >
@@ -53,7 +53,7 @@ const variant = computed((): 'default' | 'ghost' =>
     </TooltipTrigger>
     <TooltipContent side="right" class="flex items-center gap-4">
       {{ link.title }}
-      <span v-if="link.label" class="text-muted-foreground ml-auto">
+      <span v-if="link.label" class="ml-auto text-muted-foreground">
         {{ link.label }}
       </span>
     </TooltipContent>
@@ -68,9 +68,9 @@ const variant = computed((): 'default' | 'ghost' =>
       cn(
         buttonVariants({ variant: variant, size: 'sm' }),
         link.variant === 'default' &&
-          'dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white',
+          'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
         'justify-start',
-        link.disabled && 'text-muted-foreground hover:text-muted-foreground hover:bg-transparent'
+        link.disabled && 'text-muted-foreground hover:bg-transparent hover:text-muted-foreground'
       )
     "
   >

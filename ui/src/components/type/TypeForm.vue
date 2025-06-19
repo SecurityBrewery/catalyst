@@ -155,7 +155,7 @@ const onSubmit = handleSubmit((values) => {
     <FormField name="icon" v-slot="{ componentField }" validate-on-input>
       <FormItem class="flex w-full flex-col">
         <FormLabel for="icon" class="text-start">Icon</FormLabel>
-        <span class="text-muted-foreground text-xs">
+        <span class="text-xs text-muted-foreground">
           Select a suggested icon or browse
           <a class="text-blue-500" href="https://lucide.dev/icons/" target="_blank">lucide.dev</a>.
         </span>

@@ -79,13 +79,13 @@ const save = () => editCommentMutation.mutate()
 </script>
 
 <template>
-  <div class="bg-card text-card-foreground rounded-lg border p-4">
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">
     <div class="flex items-start justify-between">
       <div class="flex flex-col gap-1 text-sm">
         <div class="font-semibold">
           {{ comment.authorName }}
         </div>
-        <div class="text-muted-foreground text-xs">
+        <div class="text-xs text-muted-foreground">
           {{ format(new Date(comment.created), 'PPpp') }}
         </div>
       </div>

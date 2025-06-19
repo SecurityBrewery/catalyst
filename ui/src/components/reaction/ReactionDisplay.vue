@@ -50,10 +50,9 @@ const updateReactionMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteReaction({ id: props.id })
-  },
+  mutationFn: () => api.deleteReaction({ id: props.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['reactions', props.id] })
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
     toast({
       title: 'Reaction deleted',

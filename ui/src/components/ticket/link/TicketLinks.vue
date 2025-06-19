@@ -26,10 +26,9 @@ const props = defineProps<{
 }>()
 
 const deleteMutation = useMutation({
-  mutationFn: (id: string) => {
-    return api.deleteLink({ id })
-  },
-  onSuccess: () => {
+  mutationFn: (id: string) => api.deleteLink({ id }),
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['links', id] })
     queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
     toast({
       title: 'Link deleted',
@@ -47,7 +46,7 @@ const dialogOpen = ref(false)
     <LinkAddDialog v-model="dialogOpen" :ticket="ticket" />
     <div
       v-if="!links || links.length === 0"
-      class="text-muted-foreground flex h-10 items-center p-4"
+      class="flex h-10 items-center p-4 text-muted-foreground"
     >
       No links added yet.
     </div>
@@ -63,7 +62,7 @@ const dialogOpen = ref(false)
         </span>
 
         <div
-          class="text-muted-foreground flex-1 overflow-hidden text-sm text-nowrap overflow-ellipsis"
+          class="flex-1 overflow-hidden overflow-ellipsis text-nowrap text-sm text-muted-foreground"
         >
           {{ link.url }}
         </div>

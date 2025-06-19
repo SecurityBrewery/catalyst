@@ -50,10 +50,9 @@ const updateTypeMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteType({ id: props.id })
-  },
+  mutationFn: () => api.deleteType({ id: props.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['types', props.id] })
     queryClient.invalidateQueries({ queryKey: ['types'] })
     queryClient.invalidateQueries({ queryKey: ['sidebar'] })
     toast({

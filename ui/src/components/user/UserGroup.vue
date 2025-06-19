@@ -98,7 +98,7 @@ const select = (group: { group: string }) => {
           >
             {{ userGroup.name }}
           </RouterLink>
-          <span class="text-muted-foreground ml-1 text-sm">({{ userGroup.type }})</span>
+          <span class="ml-1 text-sm text-muted-foreground">({{ userGroup.type }})</span>
         </div>
         <DeleteDialog
           v-if="userGroup.type === 'direct'"
@@ -113,7 +113,7 @@ const select = (group: { group: string }) => {
       </PanelListElement>
       <div
         v-if="!userGroups || userGroups.length === 0"
-        class="text-muted-foreground flex h-10 items-center p-4"
+        class="flex h-10 items-center p-4 text-muted-foreground"
       >
         No groups assigned yet.
       </div>
@@ -122,7 +122,7 @@ const select = (group: { group: string }) => {
 
   <div class="mt-4 flex flex-col gap-4">
     <h2 class="text-sm font-medium">Permissions</h2>
-    <p class="text-muted-foreground text-sm">
+    <p class="text-sm text-muted-foreground">
       The following permissions are granted to the user by their groups.
     </p>
     <div class="flex flex-wrap gap-2">

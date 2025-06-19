@@ -80,10 +80,9 @@ const otherTypes = computed(() => types.value?.filter((t) => t.id !== props.tick
 const closeTicketDialogOpen = ref(false)
 
 const deleteMutation = useMutation({
-  mutationFn: () => {
-    return api.deleteTicket({ id: props.ticket.id })
-  },
+  mutationFn: () => api.deleteTicket({ id: props.ticket.id }),
   onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['tickets', props.ticket.id] })
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
     toast({
       title: 'Ticket deleted',
