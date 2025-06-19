@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"embed"
 	"errors"
@@ -109,4 +110,23 @@ func migrateDB(db *sql.DB) error {
 	}
 
 	return nil
+}
+
+func GenerateID(prefix string) string {
+	return prefix + randomstring(12)
+}
+
+const base32alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+func randomstring(l int) string {
+	rand.Text()
+
+	src := make([]byte, l)
+	_, _ = rand.Read(src)
+
+	for i := range src {
+		src[i] = base32alphabet[int(src[i])%len(base32alphabet)]
+	}
+
+	return string(src)
 }

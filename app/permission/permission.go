@@ -26,6 +26,8 @@ var (
 	ReactionWritePermission = "reaction:write"
 	WebhookReadPermission   = "webhook:read"
 	WebhookWritePermission  = "webhook:write"
+	SettingsReadPermission  = "settings:read"
+	SettingsWritePermission = "settings:write"
 
 	TicketsTable   = Table{ID: "tickets", Name: "Tickets"}
 	CommentsTable  = Table{ID: "comments", Name: "Comments"}
@@ -81,6 +83,8 @@ func All() []string {
 		ReactionWritePermission,
 		WebhookReadPermission,
 		WebhookWritePermission,
+		SettingsReadPermission,
+		SettingsWritePermission,
 	}
 }
 

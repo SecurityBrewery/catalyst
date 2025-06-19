@@ -3,7 +3,6 @@ package service
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -84,7 +83,7 @@ func (s *Service) CreateComment(ctx context.Context, request openapi.CreateComme
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.CommentsTable.ID, request.Body)
 
 	comment, err := s.queries.CreateComment(ctx, sqlc.CreateCommentParams{
-		ID:      GenerateID("c"),
+		ID:      database.GenerateID("c"),
 		Author:  request.Body.Author,
 		Message: request.Body.Message,
 		Ticket:  request.Body.Ticket,
@@ -226,7 +225,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.FilesTable.ID, request.Body)
 
 	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
-		ID:     GenerateID("b"),
+		ID:     database.GenerateID("b"),
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
 		Size:   request.Body.Size,
@@ -373,7 +372,7 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.LinksTable.ID, request.Body)
 
 	link, err := s.queries.CreateLink(ctx, sqlc.CreateLinkParams{
-		ID:     GenerateID("l"),
+		ID:     database.GenerateID("l"),
 		Name:   request.Body.Name,
 		Url:    request.Body.Url,
 		Ticket: request.Body.Ticket,
@@ -497,7 +496,7 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.ReactionsTable.ID, request.Body)
 
 	reaction, err := s.queries.CreateReaction(ctx, sqlc.CreateReactionParams{
-		ID:          GenerateID("r"),
+		ID:          database.GenerateID("r"),
 		Name:        request.Body.Name,
 		Action:      request.Body.Action,
 		Trigger:     request.Body.Trigger,
@@ -669,7 +668,7 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TasksTable.ID, request.Body)
 
 	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
-		ID:     GenerateID("k"),
+		ID:     database.GenerateID("k"),
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -849,7 +848,7 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TicketsTable.ID, request.Body)
 
 	ticket, err := s.queries.CreateTicket(ctx, sqlc.CreateTicketParams{
-		ID:          GenerateID(request.Body.Type),
+		ID:          database.GenerateID(request.Body.Type),
 		Name:        request.Body.Name,
 		Description: request.Body.Description,
 		Owner:       request.Body.Owner,
@@ -1000,7 +999,7 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TimelinesTable.ID, request.Body)
 
 	timeline, err := s.queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
-		ID:      GenerateID("h"),
+		ID:      database.GenerateID("h"),
 		Message: request.Body.Message,
 		Time:    request.Body.Time,
 		Ticket:  request.Body.Ticket,
@@ -1123,7 +1122,7 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TypesTable.ID, request.Body)
 
 	t, err := s.queries.CreateType(ctx, sqlc.CreateTypeParams{
-		ID:       GenerateID("y"),
+		ID:       database.GenerateID("y"),
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
@@ -1259,7 +1258,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 	}
 
 	user, err := s.queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:           GenerateID("u"),
+		ID:           database.GenerateID("u"),
 		Name:         request.Body.Name,
 		Email:        request.Body.Email,
 		Username:     request.Body.Username,
@@ -1422,7 +1421,7 @@ func (s *Service) CreateGroup(ctx context.Context, request openapi.CreateGroupRe
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.GroupsTable.ID, request.Body)
 
 	group, err := s.queries.CreateGroup(ctx, sqlc.CreateGroupParams{
-		ID:          GenerateID("g"),
+		ID:          database.GenerateID("g"),
 		Name:        request.Body.Name,
 		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
 	})
@@ -1733,7 +1732,7 @@ func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebho
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.WebhooksTable.ID, request.Body)
 
 	webhook, err := s.queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
-		ID:          GenerateID("w"),
+		ID:          database.GenerateID("w"),
 		Name:        request.Body.Name,
 		Destination: request.Body.Destination,
 		Collection:  request.Body.Collection,
@@ -1854,110 +1853,7 @@ func (s *Service) GetSettings(ctx context.Context, _ openapi.GetSettingsRequestO
 		return nil, err
 	}
 
-	response := openapi.Settings{
-		Meta: openapi.SettingsMeta{
-			AppName:       settings.Meta.AppName,
-			AppUrl:        settings.Meta.AppURL,
-			HideControls:  settings.Meta.HideControls,
-			SenderAddress: settings.Meta.SenderAddress,
-			SenderName:    settings.Meta.SenderName,
-			ConfirmEmailChangeTemplate: openapi.EmailTemplate{
-				ActionUrl: settings.Meta.ConfirmEmailChangeTemplate.ActionURL,
-				Body:      settings.Meta.ConfirmEmailChangeTemplate.Body,
-				Hidden:    settings.Meta.ConfirmEmailChangeTemplate.Hidden,
-				Subject:   settings.Meta.ConfirmEmailChangeTemplate.Subject,
-			},
-			ResetPasswordTemplate: openapi.EmailTemplate{
-				ActionUrl: settings.Meta.ResetPasswordTemplate.ActionURL,
-				Body:      settings.Meta.ResetPasswordTemplate.Body,
-				Hidden:    settings.Meta.ResetPasswordTemplate.Hidden,
-				Subject:   settings.Meta.ResetPasswordTemplate.Subject,
-			},
-			VerificationTemplate: openapi.EmailTemplate{
-				ActionUrl: settings.Meta.VerificationTemplate.ActionURL,
-				Body:      settings.Meta.VerificationTemplate.Body,
-				Hidden:    settings.Meta.VerificationTemplate.Hidden,
-				Subject:   settings.Meta.VerificationTemplate.Subject,
-			},
-		},
-		AdminAuthToken: openapi.TokenConfig{
-			Duration: settings.AdminAuthToken.Duration,
-			Secret:   settings.AdminAuthToken.Secret,
-		},
-		AdminFileToken: openapi.TokenConfig{
-			Duration: settings.AdminFileToken.Duration,
-			Secret:   settings.AdminFileToken.Secret,
-		},
-		AdminPasswordResetToken: openapi.TokenConfig{
-			Duration: settings.AdminPasswordResetToken.Duration,
-			Secret:   settings.AdminPasswordResetToken.Secret,
-		},
-		Backups: openapi.SettingsBackups{
-			Cron:        settings.Backups.Cron,
-			CronMaxKeep: settings.Backups.CronMaxKeep,
-			S3: openapi.S3Config{
-				AccessKey:      settings.Backups.S3.AccessKey,
-				Bucket:         settings.Backups.S3.Bucket,
-				Enabled:        settings.Backups.S3.Enabled,
-				Endpoint:       settings.Backups.S3.Endpoint,
-				ForcePathStyle: settings.Backups.S3.ForcePathStyle,
-				Region:         settings.Backups.S3.Region,
-				Secret:         settings.Backups.S3.Secret,
-			},
-		},
-		EmailAuth: openapi.AuthConfig{
-			Enabled: settings.EmailAuth.Enabled,
-			// ExceptDomains:     settings.EmailAuth.ExceptDomains,
-			MinPasswordLength: settings.EmailAuth.MinPasswordLength,
-			// OnlyDomains:       settings.EmailAuth.OnlyDomains,
-		},
-		Logs: openapi.SettingsLogs{
-			LogIp:    settings.Logs.LogIP,
-			MaxDays:  settings.Logs.MaxDays,
-			MinLevel: settings.Logs.MinLevel,
-		},
-		RecordAuthToken: openapi.TokenConfig{
-			Duration: settings.RecordAuthToken.Duration,
-			Secret:   settings.RecordAuthToken.Secret,
-		},
-		RecordEmailChangeToken: openapi.TokenConfig{
-			Duration: settings.RecordEmailChangeToken.Duration,
-			Secret:   settings.RecordEmailChangeToken.Secret,
-		},
-		RecordFileToken: openapi.TokenConfig{
-			Duration: settings.RecordFileToken.Duration,
-			Secret:   settings.RecordFileToken.Secret,
-		},
-		RecordPasswordResetToken: openapi.TokenConfig{
-			Duration: settings.RecordPasswordResetToken.Duration,
-			Secret:   settings.RecordPasswordResetToken.Secret,
-		},
-		RecordVerificationToken: openapi.TokenConfig{
-			Duration: settings.RecordVerificationToken.Duration,
-			Secret:   settings.RecordVerificationToken.Secret,
-		},
-		S3: openapi.S3Config{
-			AccessKey:      settings.S3.AccessKey,
-			Bucket:         settings.S3.Bucket,
-			Enabled:        settings.S3.Enabled,
-			Endpoint:       settings.S3.Endpoint,
-			ForcePathStyle: settings.S3.ForcePathStyle,
-			Region:         settings.S3.Region,
-			Secret:         settings.S3.Secret,
-		},
-		Smtp: openapi.SettingsSmtp{
-			AuthMethod: settings.SMTP.AuthMethod,
-			Enabled:    settings.SMTP.Enabled,
-			Host:       settings.SMTP.Host,
-			LocalName:  settings.SMTP.LocalName,
-			Password:   settings.SMTP.Password,
-			Port:       settings.SMTP.Port,
-			Tls:        settings.SMTP.TLS,
-			Username:   settings.SMTP.Username,
-		},
-	}
-
-	return openapi.GetSettings200JSONResponse(response), nil
+	return openapi.GetSettings200JSONResponse(mapSettings(settings)), nil
 }
 
 func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSettingsRequestObject) (openapi.UpdateSettingsResponseObject, error) {
@@ -2071,7 +1967,7 @@ func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSett
 		return nil, fmt.Errorf("failed to save settings: %w", err)
 	}
 
-	return nil, err
+	return openapi.UpdateSettings200JSONResponse(mapSettings(settings)), err
 }
 
 func toString(value *string, defaultValue string) string {
@@ -2132,21 +2028,107 @@ func unmarshal(data string) map[string]interface{} {
 	return m
 }
 
-func GenerateID(prefix string) string {
-	return prefix + randomstring(12)
-}
-
-const base32alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-func randomstring(l int) string {
-	rand.Text()
-
-	src := make([]byte, l)
-	_, _ = rand.Read(src)
-
-	for i := range src {
-		src[i] = base32alphabet[int(src[i])%len(base32alphabet)]
+func mapSettings(settings *database.Settings) openapi.Settings {
+	return openapi.Settings{
+		Meta: openapi.SettingsMeta{
+			AppName:       settings.Meta.AppName,
+			AppUrl:        settings.Meta.AppURL,
+			HideControls:  settings.Meta.HideControls,
+			SenderAddress: settings.Meta.SenderAddress,
+			SenderName:    settings.Meta.SenderName,
+			ConfirmEmailChangeTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.ConfirmEmailChangeTemplate.ActionURL,
+				Body:      settings.Meta.ConfirmEmailChangeTemplate.Body,
+				Hidden:    settings.Meta.ConfirmEmailChangeTemplate.Hidden,
+				Subject:   settings.Meta.ConfirmEmailChangeTemplate.Subject,
+			},
+			ResetPasswordTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.ResetPasswordTemplate.ActionURL,
+				Body:      settings.Meta.ResetPasswordTemplate.Body,
+				Hidden:    settings.Meta.ResetPasswordTemplate.Hidden,
+				Subject:   settings.Meta.ResetPasswordTemplate.Subject,
+			},
+			VerificationTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.VerificationTemplate.ActionURL,
+				Body:      settings.Meta.VerificationTemplate.Body,
+				Hidden:    settings.Meta.VerificationTemplate.Hidden,
+				Subject:   settings.Meta.VerificationTemplate.Subject,
+			},
+		},
+		AdminAuthToken: openapi.TokenConfig{
+			Duration: settings.AdminAuthToken.Duration,
+			Secret:   settings.AdminAuthToken.Secret,
+		},
+		AdminFileToken: openapi.TokenConfig{
+			Duration: settings.AdminFileToken.Duration,
+			Secret:   settings.AdminFileToken.Secret,
+		},
+		AdminPasswordResetToken: openapi.TokenConfig{
+			Duration: settings.AdminPasswordResetToken.Duration,
+			Secret:   settings.AdminPasswordResetToken.Secret,
+		},
+		Backups: openapi.SettingsBackups{
+			Cron:        settings.Backups.Cron,
+			CronMaxKeep: settings.Backups.CronMaxKeep,
+			S3: openapi.S3Config{
+				AccessKey:      settings.Backups.S3.AccessKey,
+				Bucket:         settings.Backups.S3.Bucket,
+				Enabled:        settings.Backups.S3.Enabled,
+				Endpoint:       settings.Backups.S3.Endpoint,
+				ForcePathStyle: settings.Backups.S3.ForcePathStyle,
+				Region:         settings.Backups.S3.Region,
+				Secret:         settings.Backups.S3.Secret,
+			},
+		},
+		EmailAuth: openapi.AuthConfig{
+			Enabled: settings.EmailAuth.Enabled,
+			// ExceptDomains:     settings.EmailAuth.ExceptDomains,
+			MinPasswordLength: settings.EmailAuth.MinPasswordLength,
+			// OnlyDomains:       settings.EmailAuth.OnlyDomains,
+		},
+		Logs: openapi.SettingsLogs{
+			LogIp:    settings.Logs.LogIP,
+			MaxDays:  settings.Logs.MaxDays,
+			MinLevel: settings.Logs.MinLevel,
+		},
+		RecordAuthToken: openapi.TokenConfig{
+			Duration: settings.RecordAuthToken.Duration,
+			Secret:   settings.RecordAuthToken.Secret,
+		},
+		RecordEmailChangeToken: openapi.TokenConfig{
+			Duration: settings.RecordEmailChangeToken.Duration,
+			Secret:   settings.RecordEmailChangeToken.Secret,
+		},
+		RecordFileToken: openapi.TokenConfig{
+			Duration: settings.RecordFileToken.Duration,
+			Secret:   settings.RecordFileToken.Secret,
+		},
+		RecordPasswordResetToken: openapi.TokenConfig{
+			Duration: settings.RecordPasswordResetToken.Duration,
+			Secret:   settings.RecordPasswordResetToken.Secret,
+		},
+		RecordVerificationToken: openapi.TokenConfig{
+			Duration: settings.RecordVerificationToken.Duration,
+			Secret:   settings.RecordVerificationToken.Secret,
+		},
+		S3: openapi.S3Config{
+			AccessKey:      settings.S3.AccessKey,
+			Bucket:         settings.S3.Bucket,
+			Enabled:        settings.S3.Enabled,
+			Endpoint:       settings.S3.Endpoint,
+			ForcePathStyle: settings.S3.ForcePathStyle,
+			Region:         settings.S3.Region,
+			Secret:         settings.S3.Secret,
+		},
+		Smtp: openapi.SettingsSmtp{
+			AuthMethod: settings.SMTP.AuthMethod,
+			Enabled:    settings.SMTP.Enabled,
+			Host:       settings.SMTP.Host,
+			LocalName:  settings.SMTP.LocalName,
+			Password:   settings.SMTP.Password,
+			Port:       settings.SMTP.Port,
+			Tls:        settings.SMTP.TLS,
+			Username:   settings.SMTP.Username,
+		},
 	}
-
-	return string(src)
 }

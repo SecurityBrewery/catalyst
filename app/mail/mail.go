@@ -1,38 +1,35 @@
 package mail
 
 import (
+	"cmp"
 	"context"
 	"fmt"
+	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"log/slog"
 
 	"github.com/wneessen/go-mail"
 )
-
-type Config struct {
-	SMTPServer   string `json:"smtp_server" yaml:"smtp_server"`
-	SMTPUser     string `json:"smtp_user" yaml:"smtp_user"`
-	SMTPPassword string `json:"smtp_password" yaml:"smtp_password"`
-}
 
 type smtpClient interface {
 	DialAndSend(msgs ...*mail.Msg) error
 }
 
 type Mailer struct {
-	config        *Config
+	queries       *sqlc.Queries
 	newSMTPClient func(server string, opts ...mail.Option) (smtpClient, error)
 }
 
 type MailerOption func(*Mailer)
 
-func WithSMTPClient(fn func(server string, opts ...mail.Option) (smtpClient, error)) MailerOption {
+func WithSMTPClient(fn func(host string, opts ...mail.Option) (smtpClient, error)) MailerOption {
 	return func(m *Mailer) {
 		m.newSMTPClient = fn
 	}
 }
 
-func defaultSMTPClient(server string, opts ...mail.Option) (smtpClient, error) {
-	client, err := mail.NewClient(server, opts...)
+func defaultSMTPClient(host string, opts ...mail.Option) (smtpClient, error) {
+	client, err := mail.NewClient(host, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +37,9 @@ func defaultSMTPClient(server string, opts ...mail.Option) (smtpClient, error) {
 	return client, nil
 }
 
-func New(config *Config, opts ...MailerOption) *Mailer {
+func New(queries *sqlc.Queries, opts ...MailerOption) *Mailer {
 	m := &Mailer{
-		config:        config,
+		queries:       queries,
 		newSMTPClient: defaultSMTPClient,
 	}
 
@@ -54,9 +51,22 @@ func New(config *Config, opts ...MailerOption) *Mailer {
 }
 
 func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error {
+	settings, err := database.LoadSettings(ctx, m.queries)
+	if err != nil {
+		return fmt.Errorf("failed to load settings: %w", err)
+	}
+
+	if !settings.SMTP.Enabled {
+		return fmt.Errorf("SMTP is not enabled in settings")
+	}
+
+	if settings.SMTP.Host == "" || settings.SMTP.Username == "" || settings.SMTP.Password == "" {
+		return fmt.Errorf("SMTP settings are not configured properly: host, username, and password must be set")
+	}
+
 	message := mail.NewMsg()
 
-	if err := message.From(from); err != nil {
+	if err := message.FromFormat(settings.Meta.SenderName, settings.Meta.SenderAddress); err != nil {
 		return fmt.Errorf("failed to set FROM address: %w", err)
 	}
 
@@ -67,13 +77,31 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 	message.Subject(subject)
 	message.SetBodyString(mail.TypeTextPlain, body)
 
+	var authType mail.SMTPAuthType
+	if err := authType.UnmarshalString(cmp.Or(settings.SMTP.AuthMethod, "plain")); err != nil {
+		return fmt.Errorf("failed to parse SMTP auth method: %w", err)
+	}
+
+	opts := []mail.Option{
+		mail.WithSMTPAuth(authType),
+		mail.WithUsername(settings.SMTP.Username),
+		mail.WithPassword(settings.SMTP.Password),
+	}
+
+	if settings.SMTP.Port != 0 {
+		opts = append(opts, mail.WithPort(settings.SMTP.Port))
+	}
+
+	if settings.SMTP.TLS {
+		opts = append(opts, mail.WithSSL())
+	}
+
+	if settings.SMTP.LocalName != "" {
+		opts = append(opts, mail.WithHELO(settings.SMTP.LocalName))
+	}
+
 	// Deliver the mails via SMTP
-	client, err := m.newSMTPClient(m.config.SMTPServer,
-		mail.WithSMTPAuth(mail.SMTPAuthPlain),
-		mail.WithTLSPortPolicy(mail.TLSMandatory),
-		mail.WithUsername(m.config.SMTPUser),
-		mail.WithPassword(m.config.SMTPPassword),
-	)
+	client, err := m.newSMTPClient(settings.SMTP.Host, opts...)
 	if err != nil {
 		return fmt.Errorf("failed to create new mail delivery client: %w", err)
 	}

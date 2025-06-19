@@ -94,6 +94,13 @@ const authStore = useAuthStore()
           variant: 'ghost',
           to: '/types',
           permission: 'type:write'
+        },
+        {
+          title: 'Settings',
+          icon: 'Settings',
+          variant: 'ghost',
+          to: '/settings',
+          permission: 'settings:write'
         }
       ]"
     />

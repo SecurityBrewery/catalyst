@@ -84,9 +84,9 @@ func Test_marshalPointer(t *testing.T) {
 func Test_generateID(t *testing.T) {
 	t.Parallel()
 
-	id1 := GenerateID("p")
+	id1 := database.GenerateID("p")
 
-	id2 := GenerateID("p")
+	id2 := database.GenerateID("p")
 
 	if id1 == id2 {
 		t.Errorf("expected unique ids, got %s and %s", id1, id2)

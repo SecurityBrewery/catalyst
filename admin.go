@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"log/slog"
 
 	"github.com/urfave/cli/v3"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/service"
 )
 
 func adminCreate(ctx context.Context, command *cli.Command) error {
@@ -32,7 +32,7 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 	}
 
 	admin, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:           service.GenerateID("u"),
+		ID:           database.GenerateID("u"),
 		Name:         command.Args().Get(0),
 		Email:        command.Args().Get(0),
 		Username:     "admin",

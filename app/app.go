@@ -32,16 +32,12 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
+	mailer := mail.New(queries)
+
 	settings, err := database.LoadSettings(ctx, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get settings: %w", err)
 	}
-
-	mailer := mail.New(&mail.Config{
-		SMTPServer:   settings.SMTP.Host,
-		SMTPUser:     settings.SMTP.Username,
-		SMTPPassword: settings.SMTP.Password,
-	})
 
 	authConfig := &auth.Config{
 		AppSecret: settings.RecordAuthToken.Secret, // TODO: support more secrets

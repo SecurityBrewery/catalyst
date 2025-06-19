@@ -97,7 +97,6 @@ const equalUser = (values: UserUpdate, user?: UserUpdate): boolean => {
     user.username === values.username &&
     user.avatar === values.avatar &&
     user.email === values.email &&
-    user.emailVisibility === values.emailVisibility &&
     user.name === values.name &&
     user.verified === values.verified
   )
