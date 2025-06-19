@@ -382,24 +382,6 @@ func generateGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 	}
 
 	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
-		ID:          "g-admin",
-		Name:        "Administrator",
-		Permissions: permission.ToJSONArray(ctx, permission.All()),
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create admin group: %w", err)
-	}
-
-	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
-		ID:          "g-analyst",
-		Name:        "Analyst",
-		Permissions: permission.ToJSONArray(ctx, permission.Default()),
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create analyst group: %w", err)
-	}
-
-	_, err = queries.CreateGroup(ctx, sqlc.CreateGroupParams{
 		ID:          "g-engineer",
 		Name:        "Engineer",
 		Permissions: permission.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
@@ -411,7 +393,7 @@ func generateGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 	for _, user := range users {
 		group := gofakeit.RandomString([]string{"team-seceng", "team-ir"})
 		if user.ID == "u_test" {
-			group = "g-admin"
+			group = "admin"
 		}
 
 		if err := queries.AssignGroupToUser(ctx, sqlc.AssignGroupToUserParams{
@@ -424,7 +406,7 @@ func generateGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.Use
 
 	err = queries.AssignParentGroup(ctx, sqlc.AssignParentGroupParams{
 		ParentGroupID: "team-ir",
-		ChildGroupID:  "g-analyst",
+		ChildGroupID:  "analyst",
 	})
 	if err != nil {
 		return fmt.Errorf("failed to assign parent group: %w", err)

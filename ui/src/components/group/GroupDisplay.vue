@@ -75,7 +75,7 @@ const deleteMutation = useMutation({
       </Button>
       <div class="ml-auto">
         <DeleteDialog
-          v-if="group"
+          v-if="group && group.id !== 'admin'"
           :name="group.name"
           singular="Group"
           @delete="deleteMutation.mutate"

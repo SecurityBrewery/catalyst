@@ -31,7 +31,7 @@ const authStore = useAuthStore()
       <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
     </div>
     <div
-      v-if="!catalystStore.sidebarCollapsed && !authStore.permissions.includes('ticket:read')"
+      v-if="!catalystStore.sidebarCollapsed && !authStore.hasPermission('ticket:read')"
       class="mt-4 w-full px-2"
     >
       <Alert class="w-full">
@@ -51,17 +51,17 @@ const authStore = useAuthStore()
         }
       ]"
     />
-    <Separator v-if="authStore.permissions.includes('ticket:read')" />
+    <Separator v-if="authStore.hasPermission('ticket:read')" />
     <IncidentNav :is-collapsed="catalystStore.sidebarCollapsed" />
 
     <div class="flex-1" />
 
     <Separator
       v-if="
-        authStore.permissions.includes('reaction:write') ||
-        authStore.permissions.includes('group:write') ||
-        authStore.permissions.includes('group:write') ||
-        authStore.permissions.includes('type:write')
+        authStore.hasPermission('reaction:write') ||
+        authStore.hasPermission('group:write') ||
+        authStore.hasPermission('group:write') ||
+        authStore.hasPermission('type:write')
       "
     />
     <NavList

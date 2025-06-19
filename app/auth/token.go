@@ -25,6 +25,10 @@ func (s *Service) CreateResetToken(user *sqlc.User, duration time.Duration) (str
 }
 
 func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string) (string, error) {
+	if scopes == nil {
+		scopes = []string{}
+	}
+
 	claims := jwt.MapClaims{
 		"sub":     user.ID,
 		"exp":     time.Now().Add(duration).Unix(),

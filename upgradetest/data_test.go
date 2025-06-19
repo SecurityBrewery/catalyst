@@ -15,7 +15,7 @@ func TestUpgradeTestData(t *testing.T) {
 
 	t.Cleanup(cleanup)
 
-	require.NoError(t, generateUpgradeTestData(t.Context(), app.Queries))
+	require.NoError(t, GenerateUpgradeTestData(t.Context(), app.Queries))
 
 	validateUpgradeTestData(t, app)
 }

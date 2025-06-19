@@ -12,22 +12,10 @@ func (s *Service) Server() http.Handler {
 	router := chi.NewRouter()
 
 	router.Get("/user", s.handleUser)
-	router.Get("/config", func(writer http.ResponseWriter, _ *http.Request) {
-		b, _ := json.Marshal(map[string]any{
-			"oidc": s.config.OIDC.OIDCAuth,
-		})
-
-		_, _ = writer.Write(b)
-	})
-
 	router.Post("/local/login", s.handleLogin)
 	router.Post("/local/reset-password-request", s.handlePasswordResetRequest)
 	router.Get("/local/reset-password", s.handlePasswordReset)
 	router.Post("/local/reset-password", s.handlePasswordResetPost)
-
-	if s.config.OIDC.OIDCAuth {
-		router.Mount("/oidc", s.oidc)
-	}
 
 	return router
 }

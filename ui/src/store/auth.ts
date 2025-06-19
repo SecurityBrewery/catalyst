@@ -11,7 +11,10 @@ export const useAuthStore = defineStore('auth', {
     permissions: ref<string[]>([])
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token
+    isAuthenticated: (state) => !!state.token,
+    hasPermission: (state) => (permission: string) => {
+      return state.permissions.includes(permission) || state.permissions.includes('admin')
+    }
   },
   actions: {
     setToken(token: string) {

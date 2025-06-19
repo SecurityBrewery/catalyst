@@ -117,6 +117,11 @@ func requiredScopes(r *http.Request) ([]string, error) {
 }
 
 func hasScope(scopes []string, requiredScopes []string) bool {
+	if slices.Contains(scopes, "admin") {
+		// If the user has admin scope, they can access everything
+		return true
+	}
+
 	for _, s := range requiredScopes {
 		if !slices.Contains(scopes, s) {
 			return false

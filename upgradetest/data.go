@@ -16,7 +16,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-func generateUpgradeTestData(ctx context.Context, queries *sqlc.Queries) error { //nolint:cyclop
+func GenerateUpgradeTestData(ctx context.Context, queries *sqlc.Queries) error { //nolint:cyclop
 	passwordHash, tokenKey, err := password.Hash("1234567890")
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)

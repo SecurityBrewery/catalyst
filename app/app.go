@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
-	"github.com/SecurityBrewery/catalyst/app/auth/oidc"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
@@ -27,45 +26,22 @@ type App struct {
 	Scheduler *schedule.Scheduler
 }
 
-func New(ctx context.Context, filename string) (*App, func(), error) {
+type Config struct {
+	Auth *auth.Config `json:"auth" yaml:"auth"`
+	Mail *mail.Config `json:"mail" yaml:"mail"`
+}
+
+func New(ctx context.Context, filename string, config *Config) (*App, func(), error) {
 	queries, cleanup, err := database.DB(ctx, filepath.Join(filename, "data.db"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	mailer := mail.New(&mail.Config{
-		SMTPServer:   "localhost",
-		SMTPUser:     "",
-		SMTPPassword: "",
-	})
+	mailer := mail.New(config.Mail)
 
-	config := &auth.Config{
-		URL:    "http://localhost:8080",
-		Email:  "info@cataly-soar.com",
-		Domain: "localhost",
+	authService := auth.New(queries, mailer, config.Auth)
 
-		UserCreateConfig: &auth.UserCreateConfig{
-			Active: false,
-		},
-		OIDC: &oidc.Config{
-			OIDCAuth:          false,
-			OIDCIssuer:        "",
-			ClientID:          "",
-			ClientSecret:      "",
-			RedirectURL:       "",
-			AuthURL:           "",
-			OIDCClaimUsername: "",
-			OIDCClaimEmail:    "",
-			OIDCClaimName:     "",
-		},
-	}
-
-	authService, err := auth.New(ctx, queries, mailer, config)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create auth service: %w", err)
-	}
-
-	scheduler, err := schedule.New(ctx, config, authService, queries)
+	scheduler, err := schedule.New(ctx, config.Auth, authService, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
@@ -77,7 +53,7 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 		Queries:   queries,
 		Router:    chi.NewRouter(),
 		Service:   service.New(queries, hooks, scheduler),
-		Config:    config,
+		Config:    config.Auth,
 		Auth:      authService,
 		Scheduler: scheduler,
 	}, cleanup, nil

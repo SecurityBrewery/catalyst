@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/auth"
 )
 
 func TestUpgrades(t *testing.T) {
@@ -30,7 +31,7 @@ func TestUpgrades(t *testing.T) {
 				log.Fatal(err)
 			}
 
-			pb, cleanup, err := app.New(t.Context(), db)
+			pb, cleanup, err := app.New(t.Context(), db, &app.Config{Auth: &auth.Config{}})
 			if err != nil {
 				log.Fatal(err)
 			}

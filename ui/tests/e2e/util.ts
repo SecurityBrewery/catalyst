@@ -30,7 +30,7 @@ export const test = baseTest.extend({
 
 export const login = async (page) => {
   await page.goto('login')
-  await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
+  await page.getByPlaceholder('Username').fill('admin@catalyst-soar.com')
   await page.getByPlaceholder('Password').fill('1234567890')
   await page.getByRole('button', { name: 'Login' }).click()
   await page.waitForURL('**/dashboard')

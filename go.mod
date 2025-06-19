@@ -9,7 +9,6 @@ tool (
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1
-	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-co-op/gocron/v2 v2.16.2
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -20,10 +19,10 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
+	github.com/urfave/cli/v3 v3.3.8
 	github.com/wneessen/go-mail v0.6.2
 	go.uber.org/multierr v1.11.0
 	golang.org/x/crypto v0.39.0
-	golang.org/x/oauth2 v0.30.0
 )
 
 require (
@@ -37,7 +36,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/getkin/kin-openapi v0.132.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect

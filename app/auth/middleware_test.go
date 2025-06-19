@@ -87,8 +87,7 @@ func TestService_Middleware(t *testing.T) {
 
 			queries := database.NewTestDB(t)
 
-			auth, err := New(t.Context(), queries, nil, &Config{})
-			require.NoError(t, err, "failed to create auth service")
+			auth := New(queries, nil, &Config{})
 
 			handler := auth.Middleware(tt.args.next)
 

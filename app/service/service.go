@@ -81,7 +81,7 @@ func (s *Service) CreateComment(ctx context.Context, request openapi.CreateComme
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.CommentsTable.ID, request.Body)
 
 	comment, err := s.queries.CreateComment(ctx, sqlc.CreateCommentParams{
-		ID:      generateID("c"),
+		ID:      GenerateID("c"),
 		Author:  request.Body.Author,
 		Message: request.Body.Message,
 		Ticket:  request.Body.Ticket,
@@ -223,7 +223,7 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.FilesTable.ID, request.Body)
 
 	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
-		ID:     generateID("b"),
+		ID:     GenerateID("b"),
 		Name:   request.Body.Name,
 		Blob:   request.Body.Blob,
 		Size:   request.Body.Size,
@@ -370,7 +370,7 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.LinksTable.ID, request.Body)
 
 	link, err := s.queries.CreateLink(ctx, sqlc.CreateLinkParams{
-		ID:     generateID("l"),
+		ID:     GenerateID("l"),
 		Name:   request.Body.Name,
 		Url:    request.Body.Url,
 		Ticket: request.Body.Ticket,
@@ -494,7 +494,7 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.ReactionsTable.ID, request.Body)
 
 	reaction, err := s.queries.CreateReaction(ctx, sqlc.CreateReactionParams{
-		ID:          generateID("r"),
+		ID:          GenerateID("r"),
 		Name:        request.Body.Name,
 		Action:      request.Body.Action,
 		Trigger:     request.Body.Trigger,
@@ -666,7 +666,7 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TasksTable.ID, request.Body)
 
 	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
-		ID:     generateID("k"),
+		ID:     GenerateID("k"),
 		Name:   request.Body.Name,
 		Open:   request.Body.Open,
 		Owner:  request.Body.Owner,
@@ -846,7 +846,7 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TicketsTable.ID, request.Body)
 
 	ticket, err := s.queries.CreateTicket(ctx, sqlc.CreateTicketParams{
-		ID:          generateID(request.Body.Type),
+		ID:          GenerateID(request.Body.Type),
 		Name:        request.Body.Name,
 		Description: request.Body.Description,
 		Owner:       request.Body.Owner,
@@ -997,7 +997,7 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TimelinesTable.ID, request.Body)
 
 	timeline, err := s.queries.CreateTimeline(ctx, sqlc.CreateTimelineParams{
-		ID:      generateID("h"),
+		ID:      GenerateID("h"),
 		Message: request.Body.Message,
 		Time:    request.Body.Time,
 		Ticket:  request.Body.Ticket,
@@ -1120,7 +1120,7 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TypesTable.ID, request.Body)
 
 	t, err := s.queries.CreateType(ctx, sqlc.CreateTypeParams{
-		ID:       generateID("y"),
+		ID:       GenerateID("y"),
 		Icon:     request.Body.Icon,
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
@@ -1258,7 +1258,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 	}
 
 	user, err := s.queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:              generateID("u"),
+		ID:              GenerateID("u"),
 		Name:            request.Body.Name,
 		Email:           request.Body.Email,
 		EmailVisibility: request.Body.EmailVisibility,
@@ -1429,7 +1429,7 @@ func (s *Service) CreateGroup(ctx context.Context, request openapi.CreateGroupRe
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.GroupsTable.ID, request.Body)
 
 	group, err := s.queries.CreateGroup(ctx, sqlc.CreateGroupParams{
-		ID:          generateID("g"),
+		ID:          GenerateID("g"),
 		Name:        request.Body.Name,
 		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
 	})
@@ -1452,6 +1452,10 @@ func (s *Service) CreateGroup(ctx context.Context, request openapi.CreateGroupRe
 
 func (s *Service) DeleteGroup(ctx context.Context, request openapi.DeleteGroupRequestObject) (openapi.DeleteGroupResponseObject, error) {
 	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, permission.GroupsTable.ID, request.Id)
+
+	if request.Id == "admin" {
+		return nil, errors.New("cannot delete the admin group")
+	}
 
 	err := s.queries.DeleteGroup(ctx, request.Id)
 	if err != nil {
@@ -1484,6 +1488,10 @@ func (s *Service) GetGroup(ctx context.Context, request openapi.GetGroupRequestO
 
 func (s *Service) UpdateGroup(ctx context.Context, request openapi.UpdateGroupRequestObject) (openapi.UpdateGroupResponseObject, error) {
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.GroupsTable.ID, request.Body)
+
+	if request.Id == "admin" {
+		return nil, errors.New("cannot update the admin group")
+	}
 
 	var permissions sql.NullString
 
@@ -1734,7 +1742,7 @@ func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebho
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.WebhooksTable.ID, request.Body)
 
 	webhook, err := s.queries.CreateWebhook(ctx, sqlc.CreateWebhookParams{
-		ID:          generateID("w"),
+		ID:          GenerateID("w"),
 		Name:        request.Body.Name,
 		Destination: request.Body.Destination,
 		Collection:  request.Body.Collection,
@@ -1907,7 +1915,7 @@ func unmarshal(data string) map[string]interface{} {
 	return m
 }
 
-func generateID(prefix string) string {
+func GenerateID(prefix string) string {
 	return prefix + randomstring(12)
 }
 

@@ -22,7 +22,7 @@ const authStore = useAuthStore()
 const { data: dashboardCounts } = useQuery({
   queryKey: ['dashboard_counts'],
   queryFn: (): Promise<Array<any>> => {
-    if (authStore.permissions.includes('ticket:read')) {
+    if (authStore.hasPermission('ticket:read')) {
       return api.getDashboardCounts()
     }
 
@@ -44,10 +44,7 @@ const count = (id: string) => {
   <TwoColumn>
     <ColumnHeader title="Dashboard" />
     <ColumnBody>
-      <ColumnBodyContainer
-        v-if="!authStore.permissions.includes('ticket:read')"
-        class="grid grid-cols-2"
-      >
+      <ColumnBodyContainer v-if="!authStore.hasPermission('ticket:read')" class="grid grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle> Catalyst</CardTitle>

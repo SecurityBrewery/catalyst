@@ -66,6 +66,12 @@ const equalGroup = (values: NewGroup, group?: NewGroup): boolean => {
 }
 
 const updateSubmitDisabledReason = () => {
+  if (props.group && props.group.name === 'Admin') {
+    submitDisabledReason.value = 'The admin group cannot be edited'
+
+    return
+  }
+
   if (isDemo.value) {
     submitDisabledReason.value = 'Groups cannot be created or edited in demo mode'
 

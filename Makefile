@@ -81,21 +81,23 @@ dev:
 	rm -rf catalyst_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data
-	go run . serve --app-url http://localhost:8090 --flags dev
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
 
-.PHONY: dev2
-dev2:
+.PHONY: dev_upgrade
+dev_upgrade:
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
-	UI_DEVSERVER=http://localhost:3000 go run .
+	go run . admin create admin@catalyst-soar.com 1234567890
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: dev-playwright
 dev-playwright:
 	rm -rf catalyst_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
-	go run .
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: dev-10000
 dev-10000:
@@ -112,10 +114,6 @@ default-data:
 .PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
-
-.PHONY: tailwindcss
-tailwindcss:
-	# tailwindcss -i ./css/in.css -o ./static/output.css --cwd api/ui
 
 .PHONY: sqlc
 sqlc:
@@ -143,7 +141,7 @@ openapi: openapi-go openapi-ui
 generate-go: openapi-go sqlc fmt-go
 
 .PHONY: generate-ui
-generate-ui: openapi-ui tailwindcss fmt-ui
+generate-ui: openapi-ui fmt-ui
 
 .PHONY: generate
 generate: generate-go generate-ui

@@ -65,17 +65,6 @@ func Tables() []Table {
 	}
 }
 
-func Default() []string {
-	return []string{
-		TypeReadPermission,
-		FileReadPermission,
-		TicketReadPermission,
-		TicketWritePermission,
-		UserReadPermission,
-		GroupReadPermission,
-	}
-}
-
 func All() []string {
 	return []string{
 		TicketReadPermission,

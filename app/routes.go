@@ -59,10 +59,10 @@ func (a *App) staticFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	VueStatic(w, r)
+	vueStatic(w, r)
 }
 
-func VueStatic(w http.ResponseWriter, r *http.Request) {
+func vueStatic(w http.ResponseWriter, r *http.Request) {
 	handler := http.FileServer(http.FS(ui.UI()))
 
 	if strings.HasPrefix(r.URL.Path, "/ui/assets/") {

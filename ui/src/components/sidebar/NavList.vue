@@ -25,7 +25,7 @@ const props = defineProps<{
 const filteredLinks = computed(() => {
   return props.links.filter((link) => {
     if (link.permission) {
-      return authStore.permissions.includes(link.permission)
+      return authStore.hasPermission(link.permission)
     }
     return true
   })

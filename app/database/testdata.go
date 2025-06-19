@@ -5,7 +5,6 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/permission"
 )
 
 const (
@@ -31,24 +30,6 @@ func DefaultTestData(t *testing.T, queries *sqlc.Queries) {
 func userTestData(t *testing.T, queries *sqlc.Queries) {
 	t.Helper()
 
-	_, err := queries.CreateGroup(t.Context(), sqlc.CreateGroupParams{
-		ID:          "g_analyst",
-		Name:        "Analyst",
-		Permissions: permission.ToJSONArray(t.Context(), permission.Default()),
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = queries.CreateGroup(t.Context(), sqlc.CreateGroupParams{
-		ID:          "g_admin",
-		Name:        "Admin",
-		Permissions: permission.ToJSONArray(t.Context(), permission.All()),
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	passwordHash, tokenKey, err := password.Hash("password")
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +50,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 
 	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
 		UserID:  "u_bob_analyst",
-		GroupID: "g_analyst",
+		GroupID: "analyst",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +76,7 @@ func userTestData(t *testing.T, queries *sqlc.Queries) {
 
 	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
 		UserID:  "u_admin",
-		GroupID: "g_admin",
+		GroupID: "admin",
 	})
 	if err != nil {
 		t.Fatal(err)
