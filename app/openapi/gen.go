@@ -246,12 +246,11 @@ type NewType struct {
 
 // NewUser defines model for NewUser.
 type NewUser struct {
-	Avatar          string `json:"avatar"`
-	Email           string `json:"email"`
-	EmailVisibility bool   `json:"emailVisibility"`
-	Name            string `json:"name"`
-	Username        string `json:"username"`
-	Verified        bool   `json:"verified"`
+	Avatar   string `json:"avatar"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Verified bool   `json:"verified"`
 }
 
 // NewWebhook defines model for NewWebhook.
@@ -394,7 +393,6 @@ type User struct {
 	Avatar                 string `json:"avatar"`
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
-	EmailVisibility        bool   `json:"emailVisibility"`
 	Id                     string `json:"id"`
 	LastLoginAlertSentAt   string `json:"lastLoginAlertSentAt"`
 	LastResetSentAt        string `json:"lastResetSentAt"`
@@ -419,7 +417,6 @@ type UserGroup struct {
 type UserUpdate struct {
 	Avatar          *string `json:"avatar,omitempty"`
 	Email           *string `json:"email,omitempty"`
-	EmailVisibility *bool   `json:"emailVisibility,omitempty"`
 	Name            *string `json:"name,omitempty"`
 	Password        *string `json:"password,omitempty"`
 	PasswordConfirm *string `json:"passwordConfirm,omitempty"`

@@ -41,12 +41,6 @@ export interface NewUser {
   email: string
   /**
    *
-   * @type {boolean}
-   * @memberof NewUser
-   */
-  emailVisibility: boolean
-  /**
-   *
    * @type {string}
    * @memberof NewUser
    */
@@ -66,7 +60,6 @@ export function instanceOfNewUser(value: object): value is NewUser {
   if (!('username' in value) || value['username'] === undefined) return false
   if (!('avatar' in value) || value['avatar'] === undefined) return false
   if (!('email' in value) || value['email'] === undefined) return false
-  if (!('emailVisibility' in value) || value['emailVisibility'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('verified' in value) || value['verified'] === undefined) return false
   return true
@@ -84,7 +77,6 @@ export function NewUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
     username: json['username'],
     avatar: json['avatar'],
     email: json['email'],
-    emailVisibility: json['emailVisibility'],
     name: json['name'],
     verified: json['verified']
   }
@@ -106,7 +98,6 @@ export function NewUserToJSONTyped(
     username: value['username'],
     avatar: value['avatar'],
     email: value['email'],
-    emailVisibility: value['emailVisibility'],
     name: value['name'],
     verified: value['verified']
   }

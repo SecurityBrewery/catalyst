@@ -47,12 +47,6 @@ export interface User {
   email: string
   /**
    *
-   * @type {boolean}
-   * @memberof User
-   */
-  emailVisibility: boolean
-  /**
-   *
    * @type {string}
    * @memberof User
    */
@@ -103,7 +97,6 @@ export function instanceOfUser(value: object): value is User {
   if (!('username' in value) || value['username'] === undefined) return false
   if (!('avatar' in value) || value['avatar'] === undefined) return false
   if (!('email' in value) || value['email'] === undefined) return false
-  if (!('emailVisibility' in value) || value['emailVisibility'] === undefined) return false
   if (!('lastLoginAlertSentAt' in value) || value['lastLoginAlertSentAt'] === undefined)
     return false
   if (!('lastResetSentAt' in value) || value['lastResetSentAt'] === undefined) return false
@@ -129,7 +122,6 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     username: json['username'],
     avatar: json['avatar'],
     email: json['email'],
-    emailVisibility: json['emailVisibility'],
     lastLoginAlertSentAt: json['lastLoginAlertSentAt'],
     lastResetSentAt: json['lastResetSentAt'],
     lastVerificationSentAt: json['lastVerificationSentAt'],
@@ -154,7 +146,6 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
     username: value['username'],
     avatar: value['avatar'],
     email: value['email'],
-    emailVisibility: value['emailVisibility'],
     lastLoginAlertSentAt: value['lastLoginAlertSentAt'],
     lastResetSentAt: value['lastResetSentAt'],
     lastVerificationSentAt: value['lastVerificationSentAt'],

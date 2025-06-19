@@ -41,12 +41,6 @@ export interface UserUpdate {
   email?: string
   /**
    *
-   * @type {boolean}
-   * @memberof UserUpdate
-   */
-  emailVisibility?: boolean
-  /**
-   *
    * @type {string}
    * @memberof UserUpdate
    */
@@ -90,7 +84,6 @@ export function UserUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     username: json['username'] == null ? undefined : json['username'],
     avatar: json['avatar'] == null ? undefined : json['avatar'],
     email: json['email'] == null ? undefined : json['email'],
-    emailVisibility: json['emailVisibility'] == null ? undefined : json['emailVisibility'],
     name: json['name'] == null ? undefined : json['name'],
     password: json['password'] == null ? undefined : json['password'],
     passwordConfirm: json['passwordConfirm'] == null ? undefined : json['passwordConfirm'],
@@ -114,7 +107,6 @@ export function UserUpdateToJSONTyped(
     username: value['username'],
     avatar: value['avatar'],
     email: value['email'],
-    emailVisibility: value['emailVisibility'],
     name: value['name'],
     password: value['password'],
     passwordConfirm: value['passwordConfirm'],

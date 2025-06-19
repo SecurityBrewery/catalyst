@@ -25,7 +25,7 @@ const sqliteDriver = "sqlite3"
 var schema embed.FS
 
 func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
-	slog.Info("Connecting to database", "path", filename)
+	slog.InfoContext(ctx, "Connecting to database", "path", filename)
 
 	// see https://briandouglas.ie/sqlite-defaults/ for more details
 	pragmas := []string{

@@ -898,17 +898,15 @@ components:
         username: { "type": "string" }
         avatar: { "type": "string" }
         email: { "type": "string" }
-        emailVisibility: { "type": "boolean" }
         name: { "type": "string" }
         verified: { "type": "boolean" }
-      required: [ "username", "avatar", "email", "emailVisibility", "name", "verified" ]
+      required: [ "username", "avatar", "email", "name", "verified" ]
     UserUpdate:
       type: object
       properties:
         username: { "type": "string" }
         avatar: { "type": "string" }
         email: { "type": "string" }
-        emailVisibility: { "type": "boolean" }
         name: { "type": "string" }
         password: { "type": "string" }
         passwordConfirm: { "type": "string" }
@@ -920,7 +918,6 @@ components:
         username: { "type": "string" }
         avatar: { "type": "string" }
         email: { "type": "string" }
-        emailVisibility: { "type": "boolean" }
         lastLoginAlertSentAt: { "type": "string" }
         lastResetSentAt: { "type": "string" }
         lastVerificationSentAt: { "type": "string" }
@@ -928,7 +925,7 @@ components:
         verified: { "type": "boolean" }
         created: { "type": "string" }
         updated: { "type": "string" }
-      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
+      required: [ "id", "username", "avatar", "email", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
     NewGroup:
       type: object
       properties:

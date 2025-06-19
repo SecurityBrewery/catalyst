@@ -105,8 +105,6 @@ func TestAPI(t *testing.T) { //nolint:cyclop
 					url = strings.ReplaceAll(url, "ID", id)
 				}
 
-				t.Logf("%s %s", req.Method, url)
-
 				ctx, cancel := context.WithTimeout(t.Context(), time.Second*10)
 				defer cancel()
 

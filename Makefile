@@ -67,7 +67,7 @@ lint: lint-go lint-ui
 
 .PHONY: test-go
 test-go:
-	go test -v ./...
+	go test ./...
 
 .PHONY: test-ui
 test-ui:

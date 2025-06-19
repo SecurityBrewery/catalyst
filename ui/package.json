@@ -10,8 +10,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-pattern \"src/components/ui/**\" --ignore-path ../.gitignore",
-    "format": "prettier --write src/",
-    "generate": "openapi-generator-cli generate -i ../openapi.yml -g typescript-fetch -o src/client",
+    "format": "prettier --log-level warn --write src/",
+    "generate": "JAVA_OPTS=\"-Dlog.level=warn\" openapi-generator-cli generate -i ../openapi.yml -g typescript-fetch -o src/client",
     "install:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --timeout=5000",
     "test:e2e:ui": "playwright test --ui --timeout=5000"
