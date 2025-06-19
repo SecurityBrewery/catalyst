@@ -86,7 +86,7 @@ const vCalendarSlots = computed(() => {
       <button
         :class="
           cn(
-            buttonVariants({ variant: 'outline-solid' }),
+            buttonVariants({ variant: 'outline' }),
             'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
           )
         "
@@ -97,7 +97,7 @@ const vCalendarSlots = computed(() => {
       <button
         :class="
           cn(
-            buttonVariants({ variant: 'outline-solid' }),
+            buttonVariants({ variant: 'outline' }),
             'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
           )
         "
@@ -133,6 +133,8 @@ const vCalendarSlots = computed(() => {
 </template>
 
 <style lang="css">
+@reference "../../../assets/main.css";
+
 .calendar {
   @apply p-3 text-center;
 }

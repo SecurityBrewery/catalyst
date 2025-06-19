@@ -58,7 +58,7 @@ const age = (ticket: ExtendedTicket) => {
           }"
           :class="
             cn(
-              buttonVariants({ variant: 'outline-solid', size: 'sm' }),
+              buttonVariants({ variant: 'outline', size: 'sm' }),
               'h-8 w-full sm:ml-auto sm:w-auto'
             )
           "
