@@ -14,6 +14,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/data"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction"
 	"github.com/SecurityBrewery/catalyst/app/webhook"
@@ -83,7 +84,7 @@ func setup(ctx context.Context, command *cli.Command) (*app.App, func(), error) 
 	}
 
 	if appURL := command.String("app-url"); appURL != "" {
-		err := app.UpdateSettings(ctx, catalyst.Queries, func(settings *app.Settings) {
+		err := database.UpdateSettings(ctx, catalyst.Queries, func(settings *database.Settings) {
 			settings.Meta.AppURL = appURL
 		})
 		if err != nil {

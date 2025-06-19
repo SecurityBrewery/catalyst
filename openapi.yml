@@ -622,6 +622,20 @@ paths:
       responses:
         "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
       security: [ OAuth2: [ "ticket:read" ] ]
+  /settings:
+    get:
+      summary: Get system settings
+      operationId: getSettings
+      responses:
+        "200": { "description": "System settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      security: [ OAuth2: [ "settings:read" ] ]
+    post:
+      summary: Update system settings
+      operationId: updateSettings
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      responses:
+        "200": { "description": "Settings updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      security: [ OAuth2: [ "settings:write" ] ]
   /config:
     get:
       summary: Get the configuration
@@ -1041,3 +1055,145 @@ components:
         id: { "type": "string" }
         name: { "type": "string" }
       required: [ "id", "name" ]
+    Settings:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/SettingsMeta'
+        logs:
+          $ref: '#/components/schemas/SettingsLogs'
+        smtp:
+          $ref: '#/components/schemas/SettingsSmtp'
+        s3:
+          $ref: '#/components/schemas/S3Config'
+        backups:
+          $ref: '#/components/schemas/SettingsBackups'
+        admin_auth_token:
+          $ref: '#/components/schemas/TokenConfig'
+        admin_password_reset_token:
+          $ref: '#/components/schemas/TokenConfig'
+        admin_file_token:
+          $ref: '#/components/schemas/TokenConfig'
+        record_auth_token:
+          $ref: '#/components/schemas/TokenConfig'
+        record_password_reset_token:
+          $ref: '#/components/schemas/TokenConfig'
+        record_email_change_token:
+          $ref: '#/components/schemas/TokenConfig'
+        record_verification_token:
+          $ref: '#/components/schemas/TokenConfig'
+        record_file_token:
+          $ref: '#/components/schemas/TokenConfig'
+        email_auth:
+          $ref: '#/components/schemas/AuthConfig'
+      required: [ "meta", "logs", "smtp", "s3", "backups", "admin_auth_token", "admin_password_reset_token", "admin_file_token", "record_auth_token", "record_password_reset_token", "record_email_change_token", "record_verification_token", "record_file_token", "email_auth" ]
+    SettingsMeta:
+      type: object
+      properties:
+        app_name:
+          type: string
+        app_url:
+          type: string
+        hide_controls:
+          type: boolean
+        sender_name:
+          type: string
+        sender_address:
+          type: string
+        verification_template:
+          $ref: '#/components/schemas/EmailTemplate'
+        reset_password_template:
+          $ref: '#/components/schemas/EmailTemplate'
+        confirm_email_change_template:
+          $ref: '#/components/schemas/EmailTemplate'
+      required: [ "app_name", "app_url", "hide_controls", "sender_name", "sender_address", "verification_template", "reset_password_template", "confirm_email_change_template" ]
+    SettingsLogs:
+      type: object
+      properties:
+        max_days:
+          type: integer
+        min_level:
+          type: integer
+        log_ip:
+          type: boolean
+      required: [ "max_days", "min_level", "log_ip" ]
+    SettingsSmtp:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        host:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        auth_method:
+          type: string
+        tls:
+          type: boolean
+        local_name:
+          type: string
+      required: [ "enabled", "host", "port", "username", "password", "auth_method", "tls", "local_name" ]
+    SettingsBackups:
+      type: object
+      properties:
+        cron:
+          type: string
+        cron_max_keep:
+          type: integer
+        s3:
+          $ref: '#/components/schemas/S3Config'
+      required: [ "cron", "cron_max_keep", "s3" ]
+    EmailTemplate:
+      type: object
+      properties:
+        body:
+          type: string
+        subject:
+          type: string
+        action_url:
+          type: string
+        hidden:
+          type: boolean
+      required: [ "body", "subject", "action_url", "hidden" ]
+    S3Config:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        bucket:
+          type: string
+        region:
+          type: string
+        endpoint:
+          type: string
+        access_key:
+          type: string
+        secret:
+          type: string
+        force_path_style:
+          type: boolean
+      required: [ "enabled", "bucket", "region", "endpoint", "access_key", "secret", "force_path_style" ]
+    TokenConfig:
+      type: object
+      properties:
+        secret:
+          type: string
+        duration:
+          type: integer
+      required: [ "secret", "duration" ]
+    AuthConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        except_domains:
+          type: string
+        only_domains:
+          type: string
+        min_password_length:
+          type: integer
+      required: [ "enabled", "except_domains", "only_domains", "min_password_length" ]

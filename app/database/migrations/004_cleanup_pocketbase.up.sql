@@ -29,3 +29,6 @@ DROP TABLE _admins;
 
 ALTER TABLE users
     DROP COLUMN emailvisibility;
+
+ALTER TABLE users
+    DROP COLUMN lastloginalertsentat;

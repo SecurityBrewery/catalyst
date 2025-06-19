@@ -32,7 +32,7 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	settings, err := LoadSettings(ctx, queries)
+	settings, err := database.LoadSettings(ctx, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get settings: %w", err)
 	}

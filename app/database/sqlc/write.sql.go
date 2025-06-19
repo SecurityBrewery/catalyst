@@ -410,7 +410,7 @@ const createUser = `-- name: CreateUser :one
 
 INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified)
 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
-RETURNING avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+RETURNING avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type CreateUserParams struct {
@@ -442,7 +442,6 @@ func (q *WriteQueries) CreateUser(ctx context.Context, arg CreateUserParams) (Us
 		&i.Created,
 		&i.Email,
 		&i.ID,
-		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
 		&i.Lastverificationsentat,
 		&i.Name,
@@ -1024,12 +1023,11 @@ SET name                   = coalesce(?1, name),
     tokenKey               = coalesce(?5, tokenKey),
     avatar                 = coalesce(?6, avatar),
     verified               = coalesce(?7, verified),
-    lastLoginAlertSentAt   = coalesce(?8, lastLoginAlertSentAt),
-    lastResetSentAt        = coalesce(?9, lastResetSentAt),
-    lastVerificationSentAt = coalesce(?10, lastVerificationSentAt)
-WHERE id = ?11
+    lastResetSentAt        = coalesce(?8, lastResetSentAt),
+    lastVerificationSentAt = coalesce(?9, lastVerificationSentAt)
+WHERE id = ?10
   AND id != 'system'
-RETURNING avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+RETURNING avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type UpdateUserParams struct {
@@ -1040,7 +1038,6 @@ type UpdateUserParams struct {
 	TokenKey               sql.NullString `json:"tokenKey"`
 	Avatar                 sql.NullString `json:"avatar"`
 	Verified               sql.NullBool   `json:"verified"`
-	LastLoginAlertSentAt   sql.NullString `json:"lastLoginAlertSentAt"`
 	LastResetSentAt        sql.NullString `json:"lastResetSentAt"`
 	LastVerificationSentAt sql.NullString `json:"lastVerificationSentAt"`
 	ID                     string         `json:"id"`
@@ -1055,7 +1052,6 @@ func (q *WriteQueries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Us
 		arg.TokenKey,
 		arg.Avatar,
 		arg.Verified,
-		arg.LastLoginAlertSentAt,
 		arg.LastResetSentAt,
 		arg.LastVerificationSentAt,
 		arg.ID,
@@ -1066,7 +1062,6 @@ func (q *WriteQueries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Us
 		&i.Created,
 		&i.Email,
 		&i.ID,
-		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
 		&i.Lastverificationsentat,
 		&i.Name,

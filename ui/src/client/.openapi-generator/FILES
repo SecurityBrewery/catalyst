@@ -2,10 +2,12 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/AuthConfig.ts
 models/Comment.ts
 models/CommentUpdate.ts
 models/Config.ts
 models/DashboardCounts.ts
+models/EmailTemplate.ts
 models/ExtendedComment.ts
 models/ExtendedTask.ts
 models/ExtendedTicket.ts
@@ -32,6 +34,12 @@ models/NewUser.ts
 models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
+models/S3Config.ts
+models/Settings.ts
+models/SettingsBackups.ts
+models/SettingsLogs.ts
+models/SettingsMeta.ts
+models/SettingsSmtp.ts
 models/Sidebar.ts
 models/Table.ts
 models/Task.ts
@@ -41,6 +49,7 @@ models/TicketSearch.ts
 models/TicketUpdate.ts
 models/TimelineEntry.ts
 models/TimelineEntryUpdate.ts
+models/TokenConfig.ts
 models/Type.ts
 models/TypeUpdate.ts
 models/User.ts

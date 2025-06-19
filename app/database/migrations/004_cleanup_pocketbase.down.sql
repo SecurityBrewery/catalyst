@@ -45,3 +45,9 @@ CREATE TABLE IF NOT EXISTS _admins
     created         TEXT    DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL,
     updated         TEXT    DEFAULT (strftime('%Y-%m-%d %H:%M:%fZ')) NOT NULL
 );
+
+ALTER TABLE users
+    ADD COLUMN emailVisibility BOOLEAN DEFAULT false NOT NULL;
+
+ALTER TABLE users
+    ADD COLUMN lastLoginAlertSentAt TEXT DEFAULT "" NOT NULL;

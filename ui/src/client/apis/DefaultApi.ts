@@ -39,6 +39,7 @@ import type {
   NewWebhook,
   Reaction,
   ReactionUpdate,
+  Settings,
   Sidebar,
   Task,
   TaskUpdate,
@@ -110,6 +111,8 @@ import {
   ReactionToJSON,
   ReactionUpdateFromJSON,
   ReactionUpdateToJSON,
+  SettingsFromJSON,
+  SettingsToJSON,
   SidebarFromJSON,
   SidebarToJSON,
   TaskFromJSON,
@@ -414,6 +417,10 @@ export interface UpdateLinkRequest {
 export interface UpdateReactionRequest {
   id: string
   reactionUpdate: ReactionUpdate
+}
+
+export interface UpdateSettingsRequest {
+  settings: Settings
 }
 
 export interface UpdateTaskRequest {
@@ -1877,6 +1884,37 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Reaction> {
     const response = await this.getReactionRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * Get system settings
+   */
+  async getSettingsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Settings>> {
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    const response = await this.request(
+      {
+        path: `/settings`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => SettingsFromJSON(jsonValue))
+  }
+
+  /**
+   * Get system settings
+   */
+  async getSettings(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Settings> {
+    const response = await this.getSettingsRaw(initOverrides)
     return await response.value()
   }
 
@@ -3386,6 +3424,51 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Reaction> {
     const response = await this.updateReactionRaw(requestParameters, initOverrides)
+    return await response.value()
+  }
+
+  /**
+   * Update system settings
+   */
+  async updateSettingsRaw(
+    requestParameters: UpdateSettingsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<Settings>> {
+    if (requestParameters['settings'] == null) {
+      throw new runtime.RequiredError(
+        'settings',
+        'Required parameter "settings" was null or undefined when calling updateSettings().'
+      )
+    }
+
+    const queryParameters: any = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    const response = await this.request(
+      {
+        path: `/settings`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: SettingsToJSON(requestParameters['settings'])
+      },
+      initOverrides
+    )
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => SettingsFromJSON(jsonValue))
+  }
+
+  /**
+   * Update system settings
+   */
+  async updateSettings(
+    requestParameters: UpdateSettingsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<Settings> {
+    const response = await this.updateSettingsRaw(requestParameters, initOverrides)
     return await response.value()
   }
 

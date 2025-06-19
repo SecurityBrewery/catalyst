@@ -19,6 +19,14 @@ const (
 	OAuth2Scopes = "OAuth2.Scopes"
 )
 
+// AuthConfig defines model for AuthConfig.
+type AuthConfig struct {
+	Enabled           bool   `json:"enabled"`
+	ExceptDomains     string `json:"except_domains"`
+	MinPasswordLength int    `json:"min_password_length"`
+	OnlyDomains       string `json:"only_domains"`
+}
+
 // Comment defines model for Comment.
 type Comment struct {
 	Author  string `json:"author"`
@@ -46,6 +54,14 @@ type Config struct {
 type DashboardCounts struct {
 	Count int    `json:"count"`
 	Id    string `json:"id"`
+}
+
+// EmailTemplate defines model for EmailTemplate.
+type EmailTemplate struct {
+	ActionUrl string `json:"action_url"`
+	Body      string `json:"body"`
+	Hidden    bool   `json:"hidden"`
+	Subject   string `json:"subject"`
 }
 
 // ExtendedComment defines model for ExtendedComment.
@@ -281,6 +297,73 @@ type ReactionUpdate struct {
 	Triggerdata *map[string]interface{} `json:"triggerdata,omitempty"`
 }
 
+// S3Config defines model for S3Config.
+type S3Config struct {
+	AccessKey      string `json:"access_key"`
+	Bucket         string `json:"bucket"`
+	Enabled        bool   `json:"enabled"`
+	Endpoint       string `json:"endpoint"`
+	ForcePathStyle bool   `json:"force_path_style"`
+	Region         string `json:"region"`
+	Secret         string `json:"secret"`
+}
+
+// Settings defines model for Settings.
+type Settings struct {
+	AdminAuthToken           TokenConfig     `json:"admin_auth_token"`
+	AdminFileToken           TokenConfig     `json:"admin_file_token"`
+	AdminPasswordResetToken  TokenConfig     `json:"admin_password_reset_token"`
+	Backups                  SettingsBackups `json:"backups"`
+	EmailAuth                AuthConfig      `json:"email_auth"`
+	Logs                     SettingsLogs    `json:"logs"`
+	Meta                     SettingsMeta    `json:"meta"`
+	RecordAuthToken          TokenConfig     `json:"record_auth_token"`
+	RecordEmailChangeToken   TokenConfig     `json:"record_email_change_token"`
+	RecordFileToken          TokenConfig     `json:"record_file_token"`
+	RecordPasswordResetToken TokenConfig     `json:"record_password_reset_token"`
+	RecordVerificationToken  TokenConfig     `json:"record_verification_token"`
+	S3                       S3Config        `json:"s3"`
+	Smtp                     SettingsSmtp    `json:"smtp"`
+}
+
+// SettingsBackups defines model for SettingsBackups.
+type SettingsBackups struct {
+	Cron        string   `json:"cron"`
+	CronMaxKeep int      `json:"cron_max_keep"`
+	S3          S3Config `json:"s3"`
+}
+
+// SettingsLogs defines model for SettingsLogs.
+type SettingsLogs struct {
+	LogIp    bool `json:"log_ip"`
+	MaxDays  int  `json:"max_days"`
+	MinLevel int  `json:"min_level"`
+}
+
+// SettingsMeta defines model for SettingsMeta.
+type SettingsMeta struct {
+	AppName                    string        `json:"app_name"`
+	AppUrl                     string        `json:"app_url"`
+	ConfirmEmailChangeTemplate EmailTemplate `json:"confirm_email_change_template"`
+	HideControls               bool          `json:"hide_controls"`
+	ResetPasswordTemplate      EmailTemplate `json:"reset_password_template"`
+	SenderAddress              string        `json:"sender_address"`
+	SenderName                 string        `json:"sender_name"`
+	VerificationTemplate       EmailTemplate `json:"verification_template"`
+}
+
+// SettingsSmtp defines model for SettingsSmtp.
+type SettingsSmtp struct {
+	AuthMethod string `json:"auth_method"`
+	Enabled    bool   `json:"enabled"`
+	Host       string `json:"host"`
+	LocalName  string `json:"local_name"`
+	Password   string `json:"password"`
+	Port       int    `json:"port"`
+	Tls        bool   `json:"tls"`
+	Username   string `json:"username"`
+}
+
 // Sidebar defines model for Sidebar.
 type Sidebar struct {
 	Count    int    `json:"count"`
@@ -367,6 +450,12 @@ type TimelineEntry struct {
 type TimelineEntryUpdate struct {
 	Message *string `json:"message,omitempty"`
 	Time    *string `json:"time,omitempty"`
+}
+
+// TokenConfig defines model for TokenConfig.
+type TokenConfig struct {
+	Duration int    `json:"duration"`
+	Secret   string `json:"secret"`
 }
 
 // Type defines model for Type.
@@ -554,6 +643,9 @@ type CreateReactionJSONRequestBody = NewReaction
 // UpdateReactionJSONRequestBody defines body for UpdateReaction for application/json ContentType.
 type UpdateReactionJSONRequestBody = ReactionUpdate
 
+// UpdateSettingsJSONRequestBody defines body for UpdateSettings for application/json ContentType.
+type UpdateSettingsJSONRequestBody = Settings
+
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
 type CreateTaskJSONRequestBody = NewTask
 
@@ -697,6 +789,12 @@ type ServerInterface interface {
 	// Update a reaction by ID
 	// (PATCH /reactions/{id})
 	UpdateReaction(w http.ResponseWriter, r *http.Request, id string)
+	// Get system settings
+	// (GET /settings)
+	GetSettings(w http.ResponseWriter, r *http.Request)
+	// Update system settings
+	// (POST /settings)
+	UpdateSettings(w http.ResponseWriter, r *http.Request)
 	// Get sidebar data
 	// (GET /sidebar)
 	GetSidebar(w http.ResponseWriter, r *http.Request)
@@ -1012,6 +1110,18 @@ func (_ Unimplemented) GetReaction(w http.ResponseWriter, r *http.Request, id st
 // Update a reaction by ID
 // (PATCH /reactions/{id})
 func (_ Unimplemented) UpdateReaction(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get system settings
+// (GET /settings)
+func (_ Unimplemented) GetSettings(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update system settings
+// (POST /settings)
+func (_ Unimplemented) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2285,6 +2395,46 @@ func (siw *ServerInterfaceWrapper) UpdateReaction(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateReaction(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetSettings operation middleware
+func (siw *ServerInterfaceWrapper) GetSettings(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"settings:read"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSettings(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateSettings operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSettings(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"settings:write"})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateSettings(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3668,6 +3818,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Patch(options.BaseURL+"/reactions/{id}", wrapper.UpdateReaction)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/settings", wrapper.GetSettings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/settings", wrapper.UpdateSettings)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/sidebar", wrapper.GetSidebar)
 	})
 	r.Group(func(r chi.Router) {
@@ -4407,6 +4563,39 @@ type UpdateReactionResponseObject interface {
 type UpdateReaction200JSONResponse Reaction
 
 func (response UpdateReaction200JSONResponse) VisitUpdateReactionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSettingsRequestObject struct {
+}
+
+type GetSettingsResponseObject interface {
+	VisitGetSettingsResponse(w http.ResponseWriter) error
+}
+
+type GetSettings200JSONResponse Settings
+
+func (response GetSettings200JSONResponse) VisitGetSettingsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSettingsRequestObject struct {
+	Body *UpdateSettingsJSONRequestBody
+}
+
+type UpdateSettingsResponseObject interface {
+	VisitUpdateSettingsResponse(w http.ResponseWriter) error
+}
+
+type UpdateSettings200JSONResponse Settings
+
+func (response UpdateSettings200JSONResponse) VisitUpdateSettingsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -5184,6 +5373,12 @@ type StrictServerInterface interface {
 	// Update a reaction by ID
 	// (PATCH /reactions/{id})
 	UpdateReaction(ctx context.Context, request UpdateReactionRequestObject) (UpdateReactionResponseObject, error)
+	// Get system settings
+	// (GET /settings)
+	GetSettings(ctx context.Context, request GetSettingsRequestObject) (GetSettingsResponseObject, error)
+	// Update system settings
+	// (POST /settings)
+	UpdateSettings(ctx context.Context, request UpdateSettingsRequestObject) (UpdateSettingsResponseObject, error)
 	// Get sidebar data
 	// (GET /sidebar)
 	GetSidebar(ctx context.Context, request GetSidebarRequestObject) (GetSidebarResponseObject, error)
@@ -6264,6 +6459,61 @@ func (sh *strictHandler) UpdateReaction(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateReactionResponseObject); ok {
 		if err := validResponse.VisitUpdateReactionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetSettings operation middleware
+func (sh *strictHandler) GetSettings(w http.ResponseWriter, r *http.Request) {
+	var request GetSettingsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSettings(ctx, request.(GetSettingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSettings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetSettingsResponseObject); ok {
+		if err := validResponse.VisitGetSettingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateSettings operation middleware
+func (sh *strictHandler) UpdateSettings(w http.ResponseWriter, r *http.Request) {
+	var request UpdateSettingsRequestObject
+
+	var body UpdateSettingsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateSettings(ctx, request.(UpdateSettingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateSettings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateSettingsResponseObject); ok {
+		if err := validResponse.VisitUpdateSettingsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

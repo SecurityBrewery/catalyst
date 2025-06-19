@@ -164,7 +164,6 @@ type User struct {
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
 	ID                     string `json:"id"`
-	Lastloginalertsentat   string `json:"lastloginalertsentat"`
 	Lastresetsentat        string `json:"lastresetsentat"`
 	Lastverificationsentat string `json:"lastverificationsentat"`
 	Name                   string `json:"name"`

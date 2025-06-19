@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
@@ -24,6 +25,8 @@ const (
 	defaultLimit  = 100
 	defaultOffset = 0
 )
+
+var _ openapi.StrictServerInterface = (*Service)(nil)
 
 type Service struct {
 	queries   *sqlc.Queries
@@ -1223,7 +1226,6 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 			Created:                user.Created,
 			Email:                  user.Email,
 			Id:                     user.ID,
-			LastLoginAlertSentAt:   user.Lastloginalertsentat,
 			LastResetSentAt:        user.Lastresetsentat,
 			LastVerificationSentAt: user.Lastverificationsentat,
 			Name:                   user.Name,
@@ -1275,7 +1277,6 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		Created:                user.Created,
 		Email:                  user.Email,
 		Id:                     user.ID,
-		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
@@ -1313,7 +1314,6 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 		Created:                user.Created,
 		Email:                  user.Email,
 		Id:                     user.ID,
-		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
@@ -1369,7 +1369,6 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		Created:                user.Created,
 		Email:                  user.Email,
 		Id:                     user.ID,
-		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
 		LastVerificationSentAt: user.Lastverificationsentat,
 		Name:                   user.Name,
@@ -1626,7 +1625,6 @@ func (s *Service) ListGroupUsers(ctx context.Context, request openapi.ListGroupU
 			Created:                user.Created,
 			Email:                  user.Email,
 			Id:                     user.ID,
-			LastLoginAlertSentAt:   user.Lastloginalertsentat,
 			LastResetSentAt:        user.Lastresetsentat,
 			LastVerificationSentAt: user.Lastverificationsentat,
 			Name:                   user.Name,
@@ -1848,6 +1846,232 @@ func (s *Service) GetConfig(ctx context.Context, _ openapi.GetConfigRequestObjec
 	}
 
 	return openapi.GetConfig200JSONResponse(response), nil
+}
+
+func (s *Service) GetSettings(ctx context.Context, _ openapi.GetSettingsRequestObject) (openapi.GetSettingsResponseObject, error) {
+	settings, err := database.LoadSettings(ctx, s.queries)
+	if err != nil {
+		return nil, err
+	}
+
+	response := openapi.Settings{
+		Meta: openapi.SettingsMeta{
+			AppName:       settings.Meta.AppName,
+			AppUrl:        settings.Meta.AppURL,
+			HideControls:  settings.Meta.HideControls,
+			SenderAddress: settings.Meta.SenderAddress,
+			SenderName:    settings.Meta.SenderName,
+			ConfirmEmailChangeTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.ConfirmEmailChangeTemplate.ActionURL,
+				Body:      settings.Meta.ConfirmEmailChangeTemplate.Body,
+				Hidden:    settings.Meta.ConfirmEmailChangeTemplate.Hidden,
+				Subject:   settings.Meta.ConfirmEmailChangeTemplate.Subject,
+			},
+			ResetPasswordTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.ResetPasswordTemplate.ActionURL,
+				Body:      settings.Meta.ResetPasswordTemplate.Body,
+				Hidden:    settings.Meta.ResetPasswordTemplate.Hidden,
+				Subject:   settings.Meta.ResetPasswordTemplate.Subject,
+			},
+			VerificationTemplate: openapi.EmailTemplate{
+				ActionUrl: settings.Meta.VerificationTemplate.ActionURL,
+				Body:      settings.Meta.VerificationTemplate.Body,
+				Hidden:    settings.Meta.VerificationTemplate.Hidden,
+				Subject:   settings.Meta.VerificationTemplate.Subject,
+			},
+		},
+		AdminAuthToken: openapi.TokenConfig{
+			Duration: settings.AdminAuthToken.Duration,
+			Secret:   settings.AdminAuthToken.Secret,
+		},
+		AdminFileToken: openapi.TokenConfig{
+			Duration: settings.AdminFileToken.Duration,
+			Secret:   settings.AdminFileToken.Secret,
+		},
+		AdminPasswordResetToken: openapi.TokenConfig{
+			Duration: settings.AdminPasswordResetToken.Duration,
+			Secret:   settings.AdminPasswordResetToken.Secret,
+		},
+		Backups: openapi.SettingsBackups{
+			Cron:        settings.Backups.Cron,
+			CronMaxKeep: settings.Backups.CronMaxKeep,
+			S3: openapi.S3Config{
+				AccessKey:      settings.Backups.S3.AccessKey,
+				Bucket:         settings.Backups.S3.Bucket,
+				Enabled:        settings.Backups.S3.Enabled,
+				Endpoint:       settings.Backups.S3.Endpoint,
+				ForcePathStyle: settings.Backups.S3.ForcePathStyle,
+				Region:         settings.Backups.S3.Region,
+				Secret:         settings.Backups.S3.Secret,
+			},
+		},
+		EmailAuth: openapi.AuthConfig{
+			Enabled: settings.EmailAuth.Enabled,
+			// ExceptDomains:     settings.EmailAuth.ExceptDomains,
+			MinPasswordLength: settings.EmailAuth.MinPasswordLength,
+			// OnlyDomains:       settings.EmailAuth.OnlyDomains,
+		},
+		Logs: openapi.SettingsLogs{
+			LogIp:    settings.Logs.LogIP,
+			MaxDays:  settings.Logs.MaxDays,
+			MinLevel: settings.Logs.MinLevel,
+		},
+		RecordAuthToken: openapi.TokenConfig{
+			Duration: settings.RecordAuthToken.Duration,
+			Secret:   settings.RecordAuthToken.Secret,
+		},
+		RecordEmailChangeToken: openapi.TokenConfig{
+			Duration: settings.RecordEmailChangeToken.Duration,
+			Secret:   settings.RecordEmailChangeToken.Secret,
+		},
+		RecordFileToken: openapi.TokenConfig{
+			Duration: settings.RecordFileToken.Duration,
+			Secret:   settings.RecordFileToken.Secret,
+		},
+		RecordPasswordResetToken: openapi.TokenConfig{
+			Duration: settings.RecordPasswordResetToken.Duration,
+			Secret:   settings.RecordPasswordResetToken.Secret,
+		},
+		RecordVerificationToken: openapi.TokenConfig{
+			Duration: settings.RecordVerificationToken.Duration,
+			Secret:   settings.RecordVerificationToken.Secret,
+		},
+		S3: openapi.S3Config{
+			AccessKey:      settings.S3.AccessKey,
+			Bucket:         settings.S3.Bucket,
+			Enabled:        settings.S3.Enabled,
+			Endpoint:       settings.S3.Endpoint,
+			ForcePathStyle: settings.S3.ForcePathStyle,
+			Region:         settings.S3.Region,
+			Secret:         settings.S3.Secret,
+		},
+		Smtp: openapi.SettingsSmtp{
+			AuthMethod: settings.SMTP.AuthMethod,
+			Enabled:    settings.SMTP.Enabled,
+			Host:       settings.SMTP.Host,
+			LocalName:  settings.SMTP.LocalName,
+			Password:   settings.SMTP.Password,
+			Port:       settings.SMTP.Port,
+			Tls:        settings.SMTP.TLS,
+			Username:   settings.SMTP.Username,
+		},
+	}
+
+	return openapi.GetSettings200JSONResponse(response), nil
+}
+
+func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSettingsRequestObject) (openapi.UpdateSettingsResponseObject, error) {
+	settings := &database.Settings{
+		Meta: database.Meta{
+			AppName:       request.Body.Meta.AppName,
+			AppURL:        request.Body.Meta.AppUrl,
+			HideControls:  request.Body.Meta.HideControls,
+			SenderAddress: request.Body.Meta.SenderAddress,
+			SenderName:    request.Body.Meta.SenderName,
+			ConfirmEmailChangeTemplate: database.EmailTemplate{
+				ActionURL: request.Body.Meta.ConfirmEmailChangeTemplate.ActionUrl,
+				Body:      request.Body.Meta.ConfirmEmailChangeTemplate.Body,
+				Hidden:    request.Body.Meta.ConfirmEmailChangeTemplate.Hidden,
+				Subject:   request.Body.Meta.ConfirmEmailChangeTemplate.Subject,
+			},
+			ResetPasswordTemplate: database.EmailTemplate{
+				ActionURL: request.Body.Meta.ResetPasswordTemplate.ActionUrl,
+				Body:      request.Body.Meta.ResetPasswordTemplate.Body,
+				Hidden:    request.Body.Meta.ResetPasswordTemplate.Hidden,
+				Subject:   request.Body.Meta.ResetPasswordTemplate.Subject,
+			},
+			VerificationTemplate: database.EmailTemplate{
+				ActionURL: request.Body.Meta.VerificationTemplate.ActionUrl,
+				Body:      request.Body.Meta.VerificationTemplate.Body,
+				Hidden:    request.Body.Meta.VerificationTemplate.Hidden,
+				Subject:   request.Body.Meta.VerificationTemplate.Subject,
+			},
+		},
+		Logs: database.Logs{
+			LogIP:    request.Body.Logs.LogIp,
+			MaxDays:  request.Body.Logs.MaxDays,
+			MinLevel: request.Body.Logs.MinLevel,
+		},
+		SMTP: database.SMTP{
+			Enabled:    request.Body.Smtp.Enabled,
+			Host:       request.Body.Smtp.Host,
+			Port:       request.Body.Smtp.Port,
+			Username:   request.Body.Smtp.Username,
+			Password:   request.Body.Smtp.Password,
+			AuthMethod: request.Body.Smtp.AuthMethod,
+			TLS:        request.Body.Smtp.Tls,
+			LocalName:  request.Body.Smtp.LocalName,
+		},
+		S3: database.S3Config{
+			Enabled:        request.Body.S3.Enabled,
+			Bucket:         request.Body.S3.Bucket,
+			Endpoint:       request.Body.S3.Endpoint,
+			ForcePathStyle: request.Body.S3.ForcePathStyle,
+			Region:         request.Body.S3.Region,
+			Secret:         request.Body.S3.Secret,
+			AccessKey:      request.Body.S3.AccessKey,
+		},
+		Backups: database.Backups{
+			CronMaxKeep: request.Body.Backups.CronMaxKeep,
+			Cron:        request.Body.Backups.Cron,
+			S3: database.S3Config{
+				Enabled:        request.Body.Backups.S3.Enabled,
+				Bucket:         request.Body.Backups.S3.Bucket,
+				Endpoint:       request.Body.Backups.S3.Endpoint,
+				ForcePathStyle: request.Body.Backups.S3.ForcePathStyle,
+				Region:         request.Body.Backups.S3.Region,
+				AccessKey:      request.Body.Backups.S3.AccessKey,
+				Secret:         request.Body.Backups.S3.Secret,
+			},
+		},
+
+		AdminAuthToken: database.TokenConfig{
+			Duration: request.Body.AdminAuthToken.Duration,
+			Secret:   request.Body.AdminAuthToken.Secret,
+		},
+		AdminPasswordResetToken: database.TokenConfig{
+			Duration: request.Body.AdminPasswordResetToken.Duration,
+			Secret:   request.Body.AdminPasswordResetToken.Secret,
+		},
+		AdminFileToken: database.TokenConfig{
+			Duration: request.Body.AdminFileToken.Duration,
+			Secret:   request.Body.AdminFileToken.Secret,
+		},
+		RecordAuthToken: database.TokenConfig{
+			Duration: request.Body.RecordAuthToken.Duration,
+			Secret:   request.Body.RecordAuthToken.Secret,
+		},
+		RecordPasswordResetToken: database.TokenConfig{
+			Duration: request.Body.RecordPasswordResetToken.Duration,
+			Secret:   request.Body.RecordPasswordResetToken.Secret,
+		},
+		RecordEmailChangeToken: database.TokenConfig{
+			Duration: request.Body.RecordEmailChangeToken.Duration,
+			Secret:   request.Body.RecordEmailChangeToken.Secret,
+		},
+		RecordVerificationToken: database.TokenConfig{
+			Duration: request.Body.RecordVerificationToken.Duration,
+			Secret:   request.Body.RecordVerificationToken.Secret,
+		},
+		RecordFileToken: database.TokenConfig{
+			Duration: request.Body.RecordFileToken.Duration,
+			Secret:   request.Body.RecordFileToken.Secret,
+		},
+
+		EmailAuth: database.EmailAuth{
+			Enabled: request.Body.EmailAuth.Enabled,
+			// ExceptDomains:     request.Body.EmailAuth.ExceptDomains,
+			MinPasswordLength: request.Body.EmailAuth.MinPasswordLength,
+			// OnlyDomains:       request.Body.EmailAuth.OnlyDomains,
+		},
+	}
+
+	err := database.SaveSettings(ctx, s.queries, settings)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save settings: %w", err)
+	}
+
+	return nil, err
 }
 
 func toString(value *string, defaultValue string) string {

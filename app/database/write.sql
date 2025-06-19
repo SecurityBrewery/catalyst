@@ -207,7 +207,6 @@ SET name                   = coalesce(sqlc.narg('name'), name),
     tokenKey               = coalesce(sqlc.narg('tokenKey'), tokenKey),
     avatar                 = coalesce(sqlc.narg('avatar'), avatar),
     verified               = coalesce(sqlc.narg('verified'), verified),
-    lastLoginAlertSentAt   = coalesce(sqlc.narg('lastLoginAlertSentAt'), lastLoginAlertSentAt),
     lastResetSentAt        = coalesce(sqlc.narg('lastResetSentAt'), lastResetSentAt),
     lastVerificationSentAt = coalesce(sqlc.narg('lastVerificationSentAt'), lastVerificationSentAt)
 WHERE id = @id
