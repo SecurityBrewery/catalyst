@@ -46,7 +46,7 @@ const dialogOpen = ref(false)
     <LinkAddDialog v-model="dialogOpen" :ticket="ticket" />
     <div
       v-if="!links || links.length === 0"
-      class="flex h-10 items-center p-4 text-muted-foreground"
+      class="text-muted-foreground flex h-10 items-center p-4"
     >
       No links added yet.
     </div>
@@ -61,9 +61,7 @@ const dialogOpen = ref(false)
           {{ link.name }}
         </span>
 
-        <div
-          class="flex-1 overflow-hidden overflow-ellipsis text-nowrap text-sm text-muted-foreground"
-        >
+        <div class="text-muted-foreground flex-1 overflow-hidden text-sm text-nowrap text-ellipsis">
           {{ link.url }}
         </div>
       </a>

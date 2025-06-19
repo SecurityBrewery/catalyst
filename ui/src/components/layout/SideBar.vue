@@ -21,12 +21,12 @@ const authStore = useAuthStore()
   <div
     :class="
       cn(
-        'flex min-w-48 shrink-0 flex-col border-r bg-popover', // transition-all duration-300 ease-in-out',
+        'bg-popover flex min-w-48 shrink-0 flex-col border-r', // transition-all duration-300 ease-in-out',
         catalystStore.sidebarCollapsed && 'min-w-[50px]'
       )
     "
   >
-    <div class="flex h-[57px] items-center border-b bg-background">
+    <div class="bg-background flex h-[57px] items-center border-b">
       <CatalystLogo :size="8" />
       <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
     </div>

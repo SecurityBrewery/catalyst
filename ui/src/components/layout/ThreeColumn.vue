@@ -11,7 +11,7 @@ defineProps<{
 
 <template>
   <TooltipProvider :delay-duration="0">
-    <div class="flex h-full flex-row items-stretch bg-muted/40">
+    <div class="bg-muted/40 flex h-full flex-row items-stretch">
       <SideBar />
       <div
         :class="

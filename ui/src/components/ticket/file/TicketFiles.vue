@@ -86,7 +86,7 @@ watch(
     <FileAddDialog v-if="!isDemo" v-model="dialogOpen" :ticket="ticket" />
     <div
       v-if="!files || files.length === 0"
-      class="flex h-10 items-center p-4 text-muted-foreground"
+      class="text-muted-foreground flex h-10 items-center p-4"
     >
       {{ isDemo ? 'Cannot upload files in demo mode' : 'No files added yet.' }}
     </div>
@@ -94,12 +94,12 @@ watch(
       v-for="file in files"
       :key="file.id"
       :title="file.name"
-      class="flex w-full items-center border-t py-1 pl-2 pr-1 first:rounded-t first:border-none last:rounded-b"
+      class="flex w-full items-center border-t py-1 pr-1 pl-2 first:rounded-t first:border-none last:rounded-b"
     >
       <div class="flex flex-1 items-center overflow-hidden pr-2">
         {{ file.name }}
 
-        <div class="ml-1 flex-1 text-nowrap text-sm text-muted-foreground">
+        <div class="text-muted-foreground ml-1 flex-1 text-sm text-nowrap">
           {{ human(file.size) }}
         </div>
       </div>
@@ -107,7 +107,7 @@ watch(
       <Button
         variant="ghost"
         size="icon"
-        class="mr-1 size-8 text-muted-foreground"
+        class="text-muted-foreground mr-1 size-8"
         @click="downloadFile(file)"
       >
         <Download class="size-4" />

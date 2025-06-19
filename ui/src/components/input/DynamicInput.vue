@@ -52,13 +52,13 @@ const resize = () => {
     <div
       v-if="!active"
       @click="activate"
-      class="flex w-full cursor-pointer bg-transparent p-1 focus-visible:outline-none"
+      class="flex w-full cursor-pointer bg-transparent p-1 focus-visible:outline-hidden"
     >
       {{ model || placeholder }}
     </div>
     <div
       v-else
-      class="flex w-full flex-row items-center border bg-transparent focus-visible:outline-none"
+      class="flex w-full flex-row items-center border bg-transparent focus-visible:outline-hidden"
     >
       <div v-if="type === 'input'" class="flex w-full items-center">
         <input
@@ -68,7 +68,7 @@ const resize = () => {
           :placeholder="placeholder"
           @keydown.enter="save"
           @blur="save"
-          class="w-full border-none bg-transparent p-1 focus-visible:outline-none"
+          class="w-full border-none bg-transparent p-1 focus-visible:outline-hidden"
         />
       </div>
       <div v-else-if="type === 'textarea'" class="w-full">
@@ -78,7 +78,7 @@ const resize = () => {
           :placeholder="placeholder"
           @keydown.enter="save"
           @blur="save"
-          class="w-full border-none bg-transparent p-1 focus-visible:outline-none"
+          class="w-full border-none bg-transparent p-1 focus-visible:outline-hidden"
         />
       </div>
       <ShortCut class="mr-2 text-nowrap" keys="Press ↵ to save" />
