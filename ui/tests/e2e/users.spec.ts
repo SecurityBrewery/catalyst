@@ -19,7 +19,7 @@ test('users list shows existing users', async ({ page }) => {
   await login(page)
   await page.goto('users')
   await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible()
-  await expect(page.getByText('user@catalyst-soar.com')).toBeVisible()
+  await expect(page.getByText('admin', { exact: true })).toBeVisible()
 })
 
 test('can create a user', async ({ page }) => {

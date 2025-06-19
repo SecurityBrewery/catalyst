@@ -192,6 +192,23 @@ func (q *WriteQueries) CreateLink(ctx context.Context, arg CreateLinkParams) (Li
 	return i, err
 }
 
+const createParam = `-- name: CreateParam :exec
+INSERT INTO _params (id, key, value)
+VALUES (?1, ?2, ?3)
+RETURNING id, "key", value, created, updated
+`
+
+type CreateParamParams struct {
+	ID    string `json:"id"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func (q *WriteQueries) CreateParam(ctx context.Context, arg CreateParamParams) error {
+	_, err := q.db.ExecContext(ctx, createParam, arg.ID, arg.Key, arg.Value)
+	return err
+}
+
 const createReaction = `-- name: CreateReaction :one
 
 INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata)
@@ -391,21 +408,20 @@ func (q *WriteQueries) CreateType(ctx context.Context, arg CreateTypeParams) (Ty
 
 const createUser = `-- name: CreateUser :one
 
-INSERT INTO users (id, name, email, emailVisibility, username, passwordHash, tokenKey, avatar, verified)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
-RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+RETURNING avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type CreateUserParams struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	EmailVisibility bool   `json:"emailVisibility"`
-	Username        string `json:"username"`
-	PasswordHash    string `json:"passwordHash"`
-	TokenKey        string `json:"tokenKey"`
-	Avatar          string `json:"avatar"`
-	Verified        bool   `json:"verified"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Username     string `json:"username"`
+	PasswordHash string `json:"passwordHash"`
+	TokenKey     string `json:"tokenKey"`
+	Avatar       string `json:"avatar"`
+	Verified     bool   `json:"verified"`
 }
 
 // ----------------------------------------------------------------
@@ -414,7 +430,6 @@ func (q *WriteQueries) CreateUser(ctx context.Context, arg CreateUserParams) (Us
 		arg.ID,
 		arg.Name,
 		arg.Email,
-		arg.EmailVisibility,
 		arg.Username,
 		arg.PasswordHash,
 		arg.TokenKey,
@@ -426,7 +441,6 @@ func (q *WriteQueries) CreateUser(ctx context.Context, arg CreateUserParams) (Us
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
@@ -642,23 +656,6 @@ func (q *WriteQueries) RemoveParentGroup(ctx context.Context, arg RemoveParentGr
 	return err
 }
 
-const setParam = `-- name: SetParam :exec
-INSERT INTO _params (key, value)
-VALUES (?1, ?2)
-ON CONFLICT (key) DO UPDATE
-SET value = @value
-`
-
-type SetParamParams struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-func (q *WriteQueries) SetParam(ctx context.Context, arg SetParamParams) error {
-	_, err := q.db.ExecContext(ctx, setParam, arg.Key, arg.Value)
-	return err
-}
-
 const updateComment = `-- name: UpdateComment :one
 UPDATE comments
 SET message = coalesce(?1, message)
@@ -798,6 +795,23 @@ func (q *WriteQueries) UpdateLink(ctx context.Context, arg UpdateLinkParams) (Li
 		&i.Url,
 	)
 	return i, err
+}
+
+const updateParam = `-- name: UpdateParam :exec
+UPDATE _params
+SET value = ?1
+WHERE key = ?2
+RETURNING id, "key", value, created, updated
+`
+
+type UpdateParamParams struct {
+	Value string `json:"value"`
+	Key   string `json:"key"`
+}
+
+func (q *WriteQueries) UpdateParam(ctx context.Context, arg UpdateParamParams) error {
+	_, err := q.db.ExecContext(ctx, updateParam, arg.Value, arg.Key)
+	return err
 }
 
 const updateReaction = `-- name: UpdateReaction :one
@@ -1005,24 +1019,22 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET name                   = coalesce(?1, name),
     email                  = coalesce(?2, email),
-    emailVisibility        = coalesce(?3, emailVisibility),
-    username               = coalesce(?4, username),
-    passwordHash           = coalesce(?5, passwordHash),
-    tokenKey               = coalesce(?6, tokenKey),
-    avatar                 = coalesce(?7, avatar),
-    verified               = coalesce(?8, verified),
-    lastLoginAlertSentAt   = coalesce(?9, lastLoginAlertSentAt),
-    lastResetSentAt        = coalesce(?10, lastResetSentAt),
-    lastVerificationSentAt = coalesce(?11, lastVerificationSentAt)
-WHERE id = ?12
+    username               = coalesce(?3, username),
+    passwordHash           = coalesce(?4, passwordHash),
+    tokenKey               = coalesce(?5, tokenKey),
+    avatar                 = coalesce(?6, avatar),
+    verified               = coalesce(?7, verified),
+    lastLoginAlertSentAt   = coalesce(?8, lastLoginAlertSentAt),
+    lastResetSentAt        = coalesce(?9, lastResetSentAt),
+    lastVerificationSentAt = coalesce(?10, lastVerificationSentAt)
+WHERE id = ?11
   AND id != 'system'
-RETURNING avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+RETURNING avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
 type UpdateUserParams struct {
 	Name                   sql.NullString `json:"name"`
 	Email                  sql.NullString `json:"email"`
-	EmailVisibility        sql.NullBool   `json:"emailVisibility"`
 	Username               sql.NullString `json:"username"`
 	PasswordHash           sql.NullString `json:"passwordHash"`
 	TokenKey               sql.NullString `json:"tokenKey"`
@@ -1038,7 +1050,6 @@ func (q *WriteQueries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Us
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.Name,
 		arg.Email,
-		arg.EmailVisibility,
 		arg.Username,
 		arg.PasswordHash,
 		arg.TokenKey,
@@ -1054,7 +1065,6 @@ func (q *WriteQueries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Us
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,

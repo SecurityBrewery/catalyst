@@ -8,17 +8,6 @@ import (
 	"database/sql"
 )
 
-type Admin struct {
-	ID              string      `json:"id"`
-	Avatar          int64       `json:"avatar"`
-	Email           string      `json:"email"`
-	Tokenkey        string      `json:"tokenkey"`
-	Passwordhash    string      `json:"passwordhash"`
-	Lastresetsentat interface{} `json:"lastresetsentat"`
-	Created         string      `json:"created"`
-	Updated         string      `json:"updated"`
-}
-
 type Comment struct {
 	Author  string `json:"author"`
 	Created string `json:"created"`
@@ -31,16 +20,6 @@ type Comment struct {
 type DashboardCount struct {
 	ID    string `json:"id"`
 	Count int64  `json:"count"`
-}
-
-type Externalauth struct {
-	ID           string `json:"id"`
-	Collectionid string `json:"collectionid"`
-	Recordid     string `json:"recordid"`
-	Provider     string `json:"provider"`
-	Providerid   string `json:"providerid"`
-	Created      string `json:"created"`
-	Updated      string `json:"updated"`
 }
 
 type Feature struct {
@@ -184,7 +163,6 @@ type User struct {
 	Avatar                 string `json:"avatar"`
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
-	Emailvisibility        bool   `json:"emailvisibility"`
 	ID                     string `json:"id"`
 	Lastloginalertsentat   string `json:"lastloginalertsentat"`
 	Lastresetsentat        string `json:"lastresetsentat"`

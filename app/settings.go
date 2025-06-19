@@ -161,7 +161,7 @@ func SaveSettings(ctx context.Context, queries *sqlc.Queries, settings *Settings
 		return fmt.Errorf("failed to marshal settings: %w", err)
 	}
 
-	if err := queries.SetParam(ctx, sqlc.SetParamParams{
+	if err := queries.UpdateParam(ctx, sqlc.UpdateParamParams{
 		Key:   "settings",
 		Value: string(data),
 	}); err != nil {

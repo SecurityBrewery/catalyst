@@ -27,9 +27,7 @@ test.describe('update a task', () => {
 
         await page.getByRole('tab', { name: 'Tasks' }).click()
         await page.getByText(taskName).click()
-        await page.keyboard.press('Meta+A')
-        await page.keyboard.press('Delete')
-        await page.keyboard.insertText("Updated Task")
+        await page.getByRole('tabpanel', { name: 'Tasks' }).getByRole('textbox').fill('Updated Task')
         await page.keyboard.press('Enter')
       },
       assert: async (page) => {

@@ -30,6 +30,19 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
+				Name: "migrate",
+				Action: func(ctx context.Context, command *cli.Command) error {
+					_, cleanup, err := setup(ctx, command)
+					if err != nil {
+						return fmt.Errorf("failed to setup catalyst: %w", err)
+					}
+
+					defer cleanup()
+
+					return nil
+				},
+			},
+			{
 				Name:   "serve",
 				Usage:  "Start the Catalyst server",
 				Action: serve,
@@ -43,24 +56,9 @@ func main() {
 				Action: fakeData,
 			},
 			{
-				Name:  "default-data",
-				Usage: "Generate default data for Catalyst",
-				Action: func(ctx context.Context, command *cli.Command) error {
-					catalyst, cleanup, err := setup(ctx, command)
-					if err != nil {
-						return fmt.Errorf("failed to setup catalyst: %w", err)
-					}
-
-					defer cleanup()
-
-					if err := upgradetest.GenerateUpgradeTestData(ctx, catalyst.Queries); err != nil {
-						return fmt.Errorf("failed to generate default data: %w", err)
-					}
-
-					slog.InfoContext(ctx, "default data generated successfully")
-
-					return nil
-				},
+				Name:   "default-data",
+				Usage:  "Generate default data for Catalyst",
+				Action: defaultData,
 			},
 			{
 				Name: "admin",
@@ -144,6 +142,23 @@ func fakeData(ctx context.Context, command *cli.Command) error {
 	}
 
 	slog.InfoContext(ctx, "fake data generated", "users", command.Int("users"), "tickets", command.Int("tickets"))
+
+	return nil
+}
+
+func defaultData(ctx context.Context, command *cli.Command) error {
+	catalyst, cleanup, err := setup(ctx, command)
+	if err != nil {
+		return fmt.Errorf("failed to setup catalyst: %w", err)
+	}
+
+	defer cleanup()
+
+	if err := upgradetest.GenerateUpgradeTestData(ctx, catalyst.Queries); err != nil {
+		return fmt.Errorf("failed to generate default data: %w", err)
+	}
+
+	slog.InfoContext(ctx, "default data generated successfully")
 
 	return nil
 }

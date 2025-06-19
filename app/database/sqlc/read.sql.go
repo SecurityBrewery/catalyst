@@ -306,7 +306,7 @@ func (q *ReadQueries) GetType(ctx context.Context, id string) (Type, error) {
 
 const getUser = `-- name: GetUser :one
 
-SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE id = ?1
   AND id != 'system'
@@ -320,7 +320,6 @@ func (q *ReadQueries) GetUser(ctx context.Context, id string) (User, error) {
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
@@ -571,7 +570,7 @@ func (q *ReadQueries) ListFiles(ctx context.Context, arg ListFilesParams) ([]Lis
 }
 
 const listGroupUsers = `-- name: ListGroupUsers :many
-SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.group_type
+SELECT users.avatar, users.created, users.email, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.group_type
 FROM user_effective_groups uer
          JOIN users ON users.id = uer.user_id
 WHERE uer.group_id = ?1
@@ -582,7 +581,6 @@ type ListGroupUsersRow struct {
 	Avatar                 string `json:"avatar"`
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
-	Emailvisibility        bool   `json:"emailvisibility"`
 	ID                     string `json:"id"`
 	Lastloginalertsentat   string `json:"lastloginalertsentat"`
 	Lastresetsentat        string `json:"lastresetsentat"`
@@ -609,7 +607,6 @@ func (q *ReadQueries) ListGroupUsers(ctx context.Context, groupID string) ([]Lis
 			&i.Avatar,
 			&i.Created,
 			&i.Email,
-			&i.Emailvisibility,
 			&i.ID,
 			&i.Lastloginalertsentat,
 			&i.Lastresetsentat,
@@ -1212,7 +1209,7 @@ func (q *ReadQueries) ListUserPermissions(ctx context.Context, userID string) ([
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT users.avatar, users.created, users.email, users.emailvisibility, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, COUNT(*) OVER () as total_count
+SELECT users.avatar, users.created, users.email, users.id, users.lastloginalertsentat, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, COUNT(*) OVER () as total_count
 FROM users
 WHERE id != 'system'
 ORDER BY users.created DESC
@@ -1228,7 +1225,6 @@ type ListUsersRow struct {
 	Avatar                 string `json:"avatar"`
 	Created                string `json:"created"`
 	Email                  string `json:"email"`
-	Emailvisibility        bool   `json:"emailvisibility"`
 	ID                     string `json:"id"`
 	Lastloginalertsentat   string `json:"lastloginalertsentat"`
 	Lastresetsentat        string `json:"lastresetsentat"`
@@ -1255,7 +1251,6 @@ func (q *ReadQueries) ListUsers(ctx context.Context, arg ListUsersParams) ([]Lis
 			&i.Avatar,
 			&i.Created,
 			&i.Email,
-			&i.Emailvisibility,
 			&i.ID,
 			&i.Lastloginalertsentat,
 			&i.Lastresetsentat,
@@ -1437,7 +1432,7 @@ func (q *ReadQueries) SearchTickets(ctx context.Context, arg SearchTicketsParams
 }
 
 const systemUser = `-- name: SystemUser :one
-SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE id = 'system'
 `
@@ -1449,7 +1444,6 @@ func (q *ReadQueries) SystemUser(ctx context.Context) (User, error) {
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
@@ -1514,7 +1508,7 @@ func (q *ReadQueries) Ticket(ctx context.Context, id string) (TicketRow, error) 
 }
 
 const userByEmail = `-- name: UserByEmail :one
-SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE email = ?1
   AND id != 'system'
@@ -1527,7 +1521,6 @@ func (q *ReadQueries) UserByEmail(ctx context.Context, email string) (User, erro
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,
@@ -1543,7 +1536,7 @@ func (q *ReadQueries) UserByEmail(ctx context.Context, email string) (User, erro
 }
 
 const userByUserName = `-- name: UserByUserName :one
-SELECT avatar, created, email, emailvisibility, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT avatar, created, email, id, lastloginalertsentat, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE username = ?1
   AND id != 'system'
@@ -1556,7 +1549,6 @@ func (q *ReadQueries) UserByUserName(ctx context.Context, username string) (User
 		&i.Avatar,
 		&i.Created,
 		&i.Email,
-		&i.Emailvisibility,
 		&i.ID,
 		&i.Lastloginalertsentat,
 		&i.Lastresetsentat,

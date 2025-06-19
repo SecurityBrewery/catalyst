@@ -1222,7 +1222,6 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 			Avatar:                 user.Avatar,
 			Created:                user.Created,
 			Email:                  user.Email,
-			EmailVisibility:        user.Emailvisibility,
 			Id:                     user.ID,
 			LastLoginAlertSentAt:   user.Lastloginalertsentat,
 			LastResetSentAt:        user.Lastresetsentat,
@@ -1258,15 +1257,14 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 	}
 
 	user, err := s.queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:              GenerateID("u"),
-		Name:            request.Body.Name,
-		Email:           request.Body.Email,
-		EmailVisibility: request.Body.EmailVisibility,
-		Username:        request.Body.Username,
-		PasswordHash:    "",
-		TokenKey:        tokenKey,
-		Avatar:          request.Body.Avatar,
-		Verified:        request.Body.Verified,
+		ID:           GenerateID("u"),
+		Name:         request.Body.Name,
+		Email:        request.Body.Email,
+		Username:     request.Body.Username,
+		PasswordHash: "",
+		TokenKey:     tokenKey,
+		Avatar:       request.Body.Avatar,
+		Verified:     request.Body.Verified,
 	})
 	if err != nil {
 		return nil, err
@@ -1276,7 +1274,6 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		Avatar:                 user.Avatar,
 		Created:                user.Created,
 		Email:                  user.Email,
-		EmailVisibility:        user.Emailvisibility,
 		Id:                     user.ID,
 		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
@@ -1315,7 +1312,6 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 		Avatar:                 user.Avatar,
 		Created:                user.Created,
 		Email:                  user.Email,
-		EmailVisibility:        user.Emailvisibility,
 		Id:                     user.ID,
 		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
@@ -1355,15 +1351,14 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 	}
 
 	user, err := s.queries.UpdateUser(ctx, sqlc.UpdateUserParams{
-		Name:            toNullString(request.Body.Name),
-		Email:           toNullString(request.Body.Email),
-		EmailVisibility: toNullBool(request.Body.EmailVisibility),
-		Username:        toNullString(request.Body.Username),
-		PasswordHash:    passwordHash,
-		TokenKey:        tokenHash,
-		Avatar:          toNullString(request.Body.Avatar),
-		Verified:        toNullBool(request.Body.Verified),
-		ID:              request.Id,
+		Name:         toNullString(request.Body.Name),
+		Email:        toNullString(request.Body.Email),
+		Username:     toNullString(request.Body.Username),
+		PasswordHash: passwordHash,
+		TokenKey:     tokenHash,
+		Avatar:       toNullString(request.Body.Avatar),
+		Verified:     toNullBool(request.Body.Verified),
+		ID:           request.Id,
 	})
 	if err != nil {
 		return nil, err
@@ -1373,7 +1368,6 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		Avatar:                 user.Avatar,
 		Created:                user.Created,
 		Email:                  user.Email,
-		EmailVisibility:        user.Emailvisibility,
 		Id:                     user.ID,
 		LastLoginAlertSentAt:   user.Lastloginalertsentat,
 		LastResetSentAt:        user.Lastresetsentat,
@@ -1631,7 +1625,6 @@ func (s *Service) ListGroupUsers(ctx context.Context, request openapi.ListGroupU
 			Avatar:                 user.Avatar,
 			Created:                user.Created,
 			Email:                  user.Email,
-			EmailVisibility:        user.Emailvisibility,
 			Id:                     user.ID,
 			LastLoginAlertSentAt:   user.Lastloginalertsentat,
 			LastResetSentAt:        user.Lastresetsentat,

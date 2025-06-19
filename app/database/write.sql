@@ -1,8 +1,13 @@
--- name: SetParam :exec
-INSERT INTO _params (key, value)
-VALUES (@key, @value)
-ON CONFLICT (key) DO UPDATE
-SET value = @value;
+-- name: CreateParam :exec
+INSERT INTO _params (id, key, value)
+VALUES (@id, @key, @value)
+RETURNING *;
+
+-- name: UpdateParam :exec
+UPDATE _params
+SET value = @value
+WHERE key = @key
+RETURNING *;
 
 ------------------------------------------------------------------
 
@@ -189,15 +194,14 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateUser :one
-INSERT INTO users (id, name, email, emailVisibility, username, passwordHash, tokenKey, avatar, verified)
-VALUES (@id, @name, @email, @emailVisibility, @username, @passwordHash, @tokenKey, @avatar, @verified)
+INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified)
+VALUES (@id, @name, @email, @username, @passwordHash, @tokenKey, @avatar, @verified)
 RETURNING *;
 
 -- name: UpdateUser :one
 UPDATE users
 SET name                   = coalesce(sqlc.narg('name'), name),
     email                  = coalesce(sqlc.narg('email'), email),
-    emailVisibility        = coalesce(sqlc.narg('emailVisibility'), emailVisibility),
     username               = coalesce(sqlc.narg('username'), username),
     passwordHash           = coalesce(sqlc.narg('passwordHash'), passwordHash),
     tokenKey               = coalesce(sqlc.narg('tokenKey'), tokenKey),

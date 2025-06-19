@@ -49,8 +49,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
-      - uses: golangci/golangci-lint-action@v8
-        with: { version: 'v2.1.6' }
+      - run: make install-golangci-lint lint-go
 
   lint-ui:
     name: Lint UI
@@ -99,4 +98,32 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
+      - run: make install-ui build-ui install-playwright test-playwright
+
+  list-upgrade-test-folders:
+    name: List Upgrade Test Folders
+    runs-on: ubuntu-latest
+    outputs:
+      folders: ${{ steps.set-dirs.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-dirs
+        run: |
+          FOLDERS=$(ls -d ./upgradetest/data/*/ | xargs -n 1 basename | jq -R . | jq -c -s .)
+          echo "matrix=$FOLDERS" >> $GITHUB_OUTPUT
+
+  test-upgrade-playwright:
+    name: Test Playwright Upgrade
+    needs: list-upgrade-test-folders
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.list-upgrade-test-folders.outputs.folders) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+      - run: mkdir -p catalyst_data
+      - run: cp upgradetest/data/${{ matrix.folder }}/data.db catalyst_data/data.db
       - run: make install-ui build-ui install-playwright test-playwright

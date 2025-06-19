@@ -22,7 +22,7 @@ test.describe('update a comment', () => {
   const updates = [
     {
       field: 'message',
-      update: async (page, message: string) => {
+      update: async (page) => {
         await page.getByRole('tab', { name: 'Comments' }).click()
         await page.getByRole('button', { name: 'More' }).click()
         await page.getByRole('menuitem', { name: 'Edit' }).click()

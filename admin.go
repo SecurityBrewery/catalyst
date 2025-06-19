@@ -32,15 +32,14 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 	}
 
 	admin, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:              service.GenerateID("u"),
-		Name:            command.Args().Get(0),
-		Email:           command.Args().Get(0),
-		EmailVisibility: false,
-		Username:        "admin",
-		PasswordHash:    passwordHash,
-		TokenKey:        tokenKey,
-		Avatar:          "",
-		Verified:        true,
+		ID:           service.GenerateID("u"),
+		Name:         command.Args().Get(0),
+		Email:        command.Args().Get(0),
+		Username:     "admin",
+		PasswordHash: passwordHash,
+		TokenKey:     tokenKey,
+		Avatar:       "",
+		Verified:     true,
 	})
 	if err != nil {
 		return err
