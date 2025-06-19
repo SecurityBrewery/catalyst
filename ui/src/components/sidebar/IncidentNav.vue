@@ -41,7 +41,7 @@ const variant = (t: Sidebar): 'default' | 'ghost' =>
     class="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
   >
     <div v-if="isPending" class="flex items-center justify-center">
-      <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
+      <LoaderCircle class="text-primary h-16 w-16 animate-spin" />
     </div>
     <Alert v-else-if="isError" variant="destructive" class="mb-4">
       <AlertTitle>Error</AlertTitle>
@@ -71,7 +71,7 @@ const variant = (t: Sidebar): 'default' | 'ghost' =>
           </TooltipTrigger>
           <TooltipContent side="right" class="flex items-center gap-4">
             {{ typ.plural }}
-            <span v-if="typ.count" class="ml-auto text-muted-foreground">
+            <span v-if="typ.count" class="text-muted-foreground ml-auto">
               {{ typ.count }}
             </span>
           </TooltipContent>
@@ -85,7 +85,7 @@ const variant = (t: Sidebar): 'default' | 'ghost' =>
             cn(
               buttonVariants({ variant: variant(typ), size: 'sm' }),
               variant(typ) === 'default' &&
-                'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
+                'dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white',
               'justify-start'
             )
           "

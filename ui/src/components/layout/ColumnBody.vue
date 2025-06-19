@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-1 items-start justify-start overflow-y-auto overflow-x-hidden">
+  <div class="flex flex-1 items-start justify-start overflow-x-hidden overflow-y-auto">
     <slot />
   </div>
 </template>

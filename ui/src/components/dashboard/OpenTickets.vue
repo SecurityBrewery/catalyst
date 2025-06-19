@@ -48,9 +48,9 @@ const age = (ticket: ExtendedTicket) => {
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">{{ ticket.typeSingular }}</span>
+        <span class="text-muted-foreground text-sm">{{ ticket.typeSingular }}</span>
         <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
+        <span class="text-muted-foreground text-sm">Open since {{ age(ticket) }}</span>
         <RouterLink
           :to="{
             name: 'tickets',

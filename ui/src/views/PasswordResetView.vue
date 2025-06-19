@@ -79,7 +79,7 @@ const resetPassword = () => {
         <RouterLink
           :to="{ name: 'login' }"
           :class="
-            cn(buttonVariants({ variant: 'link', size: 'default' }), 'w-full text-foreground')
+            cn(buttonVariants({ variant: 'link', size: 'default' }), 'text-foreground w-full')
           "
           >Back to Login
         </RouterLink>

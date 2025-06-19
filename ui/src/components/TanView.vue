@@ -12,7 +12,7 @@ defineProps<{
 
 <template>
   <div v-if="isPending" class="flex h-full w-full">
-    <LoaderCircle class="m-auto h-16 w-16 animate-spin text-primary" />
+    <LoaderCircle class="text-primary m-auto h-16 w-16 animate-spin" />
   </div>
   <Alert v-else-if="isError" variant="destructive" class="mb-4">
     <AlertTitle>Error</AlertTitle>

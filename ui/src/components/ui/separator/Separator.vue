@@ -18,7 +18,7 @@ const delegatedProps = computed(() => {
     v-bind="delegatedProps"
     :class="
       cn(
-        'shrink-0 bg-border',
+        'bg-border shrink-0',
         props.orientation === 'vertical' ? 'h-full w-px' : 'h-px w-full',
         props.class
       )

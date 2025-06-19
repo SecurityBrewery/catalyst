@@ -195,7 +195,7 @@ const selectUser = (user: { user: string }) => {
               >
                 {{ groupGroup.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ groupGroup.type }})</span>
+              <span class="text-muted-foreground ml-1 text-sm">({{ groupGroup.type }})</span>
             </div>
             <DeleteDialog
               v-if="groupGroup.type === 'direct'"
@@ -210,7 +210,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!childGroups || childGroups.length === 0"
-            class="flex h-10 items-center p-4 text-muted-foreground"
+            class="text-muted-foreground flex h-10 items-center p-4"
           >
             No groups assigned yet.
           </div>
@@ -236,7 +236,7 @@ const selectUser = (user: { user: string }) => {
               >
                 {{ groupUser.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ groupUser.type }})</span>
+              <span class="text-muted-foreground ml-1 text-sm">({{ groupUser.type }})</span>
             </div>
             <DeleteDialog
               v-if="groupUser.type === 'direct'"
@@ -251,7 +251,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!groupUsers || groupUsers.length === 0"
-            class="flex h-10 items-center p-4 text-muted-foreground"
+            class="text-muted-foreground flex h-10 items-center p-4"
           >
             No users assigned yet.
           </div>
@@ -284,7 +284,7 @@ const selectUser = (user: { user: string }) => {
               >
                 {{ groupGroup.name }}
               </RouterLink>
-              <span class="ml-1 text-sm text-muted-foreground">({{ groupGroup.type }})</span>
+              <span class="text-muted-foreground ml-1 text-sm">({{ groupGroup.type }})</span>
             </div>
             <DeleteDialog
               v-if="groupGroup.type === 'direct'"
@@ -299,7 +299,7 @@ const selectUser = (user: { user: string }) => {
           </PanelListElement>
           <div
             v-if="!parentGroups || parentGroups.length === 0"
-            class="flex h-10 items-center p-4 text-muted-foreground"
+            class="text-muted-foreground flex h-10 items-center p-4"
           >
             No groups assigned yet.
           </div>
@@ -308,7 +308,7 @@ const selectUser = (user: { user: string }) => {
 
       <div class="mt-4 flex flex-col gap-4">
         <h2 class="text-sm font-medium">Permissions</h2>
-        <p class="text-sm text-muted-foreground">
+        <p class="text-muted-foreground text-sm">
           The following permissions are granted in addition to the permissions selected to the left
           by the parent groups.
         </p>

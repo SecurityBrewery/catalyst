@@ -42,7 +42,7 @@ const commentsByDate: ComputedRef<Record<string, Array<TimelineEntry>>> = comput
   <div class="mt-2 flex flex-col gap-2">
     <Card
       v-if="!timeline || timeline.length === 0"
-      class="flex h-10 items-center p-4 text-muted-foreground"
+      class="text-muted-foreground flex h-10 items-center p-4"
     >
       No timeline entries added yet.
     </Card>

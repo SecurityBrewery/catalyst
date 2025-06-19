@@ -13,7 +13,7 @@ defineProps<{
 <template>
   <div
     :class="
-      cn('flex min-h-14 flex-wrap items-center gap-2 bg-background p-2', nowrap && 'flex-nowrap')
+      cn('bg-background flex min-h-14 flex-wrap items-center gap-2 p-2', nowrap && 'flex-nowrap')
     "
   >
     <h1 v-if="title" class="text-xl font-bold">

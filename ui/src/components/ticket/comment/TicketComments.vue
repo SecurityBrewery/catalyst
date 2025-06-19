@@ -15,7 +15,7 @@ defineProps<{
   <div class="mt-2 flex flex-col gap-2">
     <Card
       v-if="!comments || comments.length === 0"
-      class="flex h-10 items-center p-4 text-muted-foreground"
+      class="text-muted-foreground flex h-10 items-center p-4"
     >
       No comments added yet.
     </Card>
@@ -24,7 +24,7 @@ defineProps<{
         v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
-        class="rounded-lg border bg-card p-4 text-card-foreground"
+        class="bg-card text-card-foreground rounded-lg border p-4"
       />
     </div>
     <TicketCommentInput :ticket="ticket" class="w-full" />

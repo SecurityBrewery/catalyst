@@ -134,25 +134,25 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
         <div class="relative flex flex-row items-center">
           <Input v-model="searchValue" placeholder="Search" @keydown.enter.prevent class="pl-8" />
           <span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
-            <Search class="size-4 text-muted-foreground" />
+            <Search class="text-muted-foreground size-4" />
           </span>
         </div>
       </form>
     </div>
     <Separator />
     <div v-if="isPending" class="flex h-full w-full items-center justify-center">
-      <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
+      <LoaderCircle class="text-primary h-16 w-16 animate-spin" />
     </div>
     <Alert v-else-if="isError" variant="destructive" class="mb-2 h-screen w-screen">
       <AlertTitle>Error</AlertTitle>
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>
-    <div v-else-if="ticketItems" class="flex-1 overflow-y-auto overflow-x-hidden">
+    <div v-else-if="ticketItems" class="flex-1 overflow-x-hidden overflow-y-auto">
       <TicketListList :tickets="ticketItems" />
     </div>
     <Separator />
     <div class="my-2 flex items-center justify-center">
-      <span class="text-xs text-muted-foreground">
+      <span class="text-muted-foreground text-xs">
         {{ paginationHuman }}
       </span>
     </div>
