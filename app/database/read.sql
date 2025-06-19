@@ -1,3 +1,10 @@
+-- name: Param :one
+SELECT *
+FROM _params
+WHERE _params.key = @key;
+
+-------------------------------------------------------------------
+
 -- name: Ticket :one
 SELECT tickets.*, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
@@ -16,13 +23,6 @@ FROM tickets
          LEFT JOIN types ON types.id = tickets.type
 ORDER BY tickets.created DESC
 LIMIT @limit OFFSET @offset;
-
-------------------------------------------------------------------
-
--- name: FindSession :one
-SELECT *
-FROM sessions
-WHERE token = @token;
 
 ------------------------------------------------------------------
 

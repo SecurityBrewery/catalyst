@@ -10,21 +10,6 @@ import (
 	"database/sql"
 )
 
-const findSession = `-- name: FindSession :one
-
-SELECT token, data, expiry
-FROM sessions
-WHERE token = ?1
-`
-
-// ----------------------------------------------------------------
-func (q *ReadQueries) FindSession(ctx context.Context, token string) (Session, error) {
-	row := q.db.QueryRowContext(ctx, findSession, token)
-	var i Session
-	err := row.Scan(&i.Token, &i.Data, &i.Expiry)
-	return i, err
-}
-
 const getComment = `-- name: GetComment :one
 
 SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
@@ -1349,6 +1334,25 @@ func (q *ReadQueries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) 
 	return items, nil
 }
 
+const param = `-- name: Param :one
+SELECT id, "key", value, created, updated
+FROM _params
+WHERE _params.key = ?1
+`
+
+func (q *ReadQueries) Param(ctx context.Context, key string) (Param, error) {
+	row := q.db.QueryRowContext(ctx, param, key)
+	var i Param
+	err := row.Scan(
+		&i.ID,
+		&i.Key,
+		&i.Value,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
 const searchTickets = `-- name: SearchTickets :many
 SELECT id,
        name,
@@ -1461,6 +1465,7 @@ func (q *ReadQueries) SystemUser(ctx context.Context) (User, error) {
 }
 
 const ticket = `-- name: Ticket :one
+
 SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
@@ -1485,6 +1490,7 @@ type TicketRow struct {
 	TypePlural   sql.NullString `json:"type_plural"`
 }
 
+// -----------------------------------------------------------------
 func (q *ReadQueries) Ticket(ctx context.Context, id string) (TicketRow, error) {
 	row := q.db.QueryRowContext(ctx, ticket, id)
 	var i TicketRow

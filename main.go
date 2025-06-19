@@ -13,10 +13,8 @@ import (
 	"github.com/urfave/cli/v3"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/mail"
 	"github.com/SecurityBrewery/catalyst/app/reaction"
 	"github.com/SecurityBrewery/catalyst/app/webhook"
 	"github.com/SecurityBrewery/catalyst/upgradetest"
@@ -28,11 +26,7 @@ func main() {
 		Usage: "Catalyst CLI",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "app-url"},
-			&cli.StringFlag{Name: "email"},
 			&cli.StringSliceFlag{Name: "flags"},
-			&cli.StringFlag{Name: "smtp-server"},
-			&cli.StringFlag{Name: "smtp-user"},
-			&cli.StringFlag{Name: "smtp-password"},
 		},
 		Commands: []*cli.Command{
 			{
@@ -85,20 +79,18 @@ func main() {
 }
 
 func setup(ctx context.Context, command *cli.Command) (*app.App, func(), error) {
-	catalyst, cleanup, err := app.New(ctx, "./catalyst_data", &app.Config{
-		Auth: &auth.Config{
-			AppSecret: "", // TODO: set a secure secret
-			URL:       command.String("app-url"),
-			Email:     command.String("email"),
-		},
-		Mail: &mail.Config{
-			SMTPServer:   command.String("smtp-server"),
-			SMTPUser:     command.String("smtp-user"),
-			SMTPPassword: command.String("smtp-password"),
-		},
-	})
+	catalyst, cleanup, err := app.New(ctx, "./catalyst_data")
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to initialize catalyst: %w", err)
+	}
+
+	if appURL := command.String("app-url"); appURL != "" {
+		err := app.UpdateSettings(ctx, catalyst.Queries, func(settings *app.Settings) {
+			settings.Meta.AppURL = appURL
+		})
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to update app URL: %w", err)
+		}
 	}
 
 	if err := setFlags(ctx, command.StringSlice("flags"), catalyst); err != nil {

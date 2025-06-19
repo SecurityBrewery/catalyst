@@ -40,26 +40,6 @@ func (q *WriteQueries) AssignParentGroup(ctx context.Context, arg AssignParentGr
 	return err
 }
 
-const commitSession = `-- name: CommitSession :exec
-
-INSERT OR
-REPLACE
-INTO sessions (token, data, expiry)
-VALUES (?1, ?2, ?3)
-`
-
-type CommitSessionParams struct {
-	Token  string `json:"token"`
-	Data   []byte `json:"data"`
-	Expiry int64  `json:"expiry"`
-}
-
-// ----------------------------------------------------------------
-func (q *WriteQueries) CommitSession(ctx context.Context, arg CommitSessionParams) error {
-	_, err := q.db.ExecContext(ctx, commitSession, arg.Token, arg.Data, arg.Expiry)
-	return err
-}
-
 const createComment = `-- name: CreateComment :one
 
 INSERT INTO comments (id, author, message, ticket)
@@ -290,6 +270,7 @@ func (q *WriteQueries) CreateTask(ctx context.Context, arg CreateTaskParams) (Ta
 }
 
 const createTicket = `-- name: CreateTicket :one
+
 INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type)
 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
 RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
@@ -307,6 +288,7 @@ type CreateTicketParams struct {
 	Type        string `json:"type"`
 }
 
+// ----------------------------------------------------------------
 func (q *WriteQueries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
 	row := q.db.QueryRowContext(ctx, createTicket,
 		arg.ID,
@@ -559,17 +541,6 @@ func (q *WriteQueries) DeleteReaction(ctx context.Context, id string) error {
 	return err
 }
 
-const deleteSession = `-- name: DeleteSession :exec
-DELETE
-FROM sessions
-WHERE token = ?1
-`
-
-func (q *WriteQueries) DeleteSession(ctx context.Context, token string) error {
-	_, err := q.db.ExecContext(ctx, deleteSession, token)
-	return err
-}
-
 const deleteTask = `-- name: DeleteTask :exec
 DELETE
 FROM tasks
@@ -668,6 +639,23 @@ type RemoveParentGroupParams struct {
 
 func (q *WriteQueries) RemoveParentGroup(ctx context.Context, arg RemoveParentGroupParams) error {
 	_, err := q.db.ExecContext(ctx, removeParentGroup, arg.ParentGroupID, arg.ChildGroupID)
+	return err
+}
+
+const setParam = `-- name: SetParam :exec
+INSERT INTO _params (key, value)
+VALUES (?1, ?2)
+ON CONFLICT (key) DO UPDATE
+SET value = @value
+`
+
+type SetParamParams struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func (q *WriteQueries) SetParam(ctx context.Context, arg SetParamParams) error {
+	_, err := q.db.ExecContext(ctx, setParam, arg.Key, arg.Value)
 	return err
 }
 

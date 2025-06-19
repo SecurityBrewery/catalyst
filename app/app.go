@@ -26,22 +26,32 @@ type App struct {
 	Scheduler *schedule.Scheduler
 }
 
-type Config struct {
-	Auth *auth.Config `json:"auth" yaml:"auth"`
-	Mail *mail.Config `json:"mail" yaml:"mail"`
-}
-
-func New(ctx context.Context, filename string, config *Config) (*App, func(), error) {
+func New(ctx context.Context, filename string) (*App, func(), error) {
 	queries, cleanup, err := database.DB(ctx, filepath.Join(filename, "data.db"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	mailer := mail.New(config.Mail)
+	settings, err := LoadSettings(ctx, queries)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get settings: %w", err)
+	}
 
-	authService := auth.New(queries, mailer, config.Auth)
+	mailer := mail.New(&mail.Config{
+		SMTPServer:   settings.SMTP.Host,
+		SMTPUser:     settings.SMTP.Username,
+		SMTPPassword: settings.SMTP.Password,
+	})
 
-	scheduler, err := schedule.New(ctx, config.Auth, authService, queries)
+	authConfig := &auth.Config{
+		AppSecret: settings.RecordAuthToken.Secret, // TODO: support more secrets
+		URL:       settings.Meta.AppURL,
+		Email:     settings.Meta.SenderAddress,
+	}
+
+	authService := auth.New(queries, mailer, authConfig)
+
+	scheduler, err := schedule.New(ctx, authConfig, authService, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
@@ -53,7 +63,7 @@ func New(ctx context.Context, filename string, config *Config) (*App, func(), er
 		Queries:   queries,
 		Router:    chi.NewRouter(),
 		Service:   service.New(queries, hooks, scheduler),
-		Config:    config.Auth,
+		Config:    authConfig,
 		Auth:      authService,
 		Scheduler: scheduler,
 	}, cleanup, nil

@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/reaction"
 )
@@ -15,7 +14,7 @@ import (
 func App(t *testing.T) (*app.App, func(), *Counter) {
 	t.Helper()
 
-	baseApp, cleanup, err := app.New(t.Context(), t.TempDir(), &app.Config{Auth: &auth.Config{}})
+	baseApp, cleanup, err := app.New(t.Context(), t.TempDir())
 	require.NoError(t, err)
 
 	err = baseApp.SetupRoutes()

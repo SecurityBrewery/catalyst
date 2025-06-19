@@ -19,23 +19,6 @@ type Admin struct {
 	Updated         string      `json:"updated"`
 }
 
-type Collection struct {
-	ID         string         `json:"id"`
-	System     bool           `json:"system"`
-	Type       interface{}    `json:"type"`
-	Name       string         `json:"name"`
-	Schema     interface{}    `json:"schema"`
-	Indexes    interface{}    `json:"indexes"`
-	Listrule   sql.NullString `json:"listrule"`
-	Viewrule   sql.NullString `json:"viewrule"`
-	Createrule sql.NullString `json:"createrule"`
-	Updaterule sql.NullString `json:"updaterule"`
-	Deleterule sql.NullString `json:"deleterule"`
-	Options    interface{}    `json:"options"`
-	Created    string         `json:"created"`
-	Updated    string         `json:"updated"`
-}
-
 type Comment struct {
 	Author  string `json:"author"`
 	Created string `json:"created"`
@@ -110,15 +93,10 @@ type Link struct {
 	Url     string `json:"url"`
 }
 
-type Migration struct {
-	File    string `json:"file"`
-	Applied int64  `json:"applied"`
-}
-
 type Param struct {
 	ID      string      `json:"id"`
 	Key     string      `json:"key"`
-	Value   interface{} `json:"value"`
+	Value   string      `json:"value"`
 	Created interface{} `json:"created"`
 	Updated interface{} `json:"updated"`
 }
@@ -132,12 +110,6 @@ type Reaction struct {
 	Trigger     string `json:"trigger"`
 	Triggerdata string `json:"triggerdata"`
 	Updated     string `json:"updated"`
-}
-
-type Session struct {
-	Token  string `json:"token"`
-	Data   []byte `json:"data"`
-	Expiry int64  `json:"expiry"`
 }
 
 type Sidebar struct {

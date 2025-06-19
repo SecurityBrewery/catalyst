@@ -1,3 +1,11 @@
+-- name: SetParam :exec
+INSERT INTO _params (key, value)
+VALUES (@key, @value)
+ON CONFLICT (key) DO UPDATE
+SET value = @value;
+
+------------------------------------------------------------------
+
 -- name: CreateTicket :one
 INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type)
 VALUES (@id, @name, @description, @open, @owner, @resolution, @schema, @state, @type)
@@ -20,19 +28,6 @@ RETURNING *;
 DELETE
 FROM tickets
 WHERE id = @id;
-
-------------------------------------------------------------------
-
--- name: CommitSession :exec
-INSERT OR
-REPLACE
-INTO sessions (token, data, expiry)
-VALUES (@token, @data, @expiry);
-
--- name: DeleteSession :exec
-DELETE
-FROM sessions
-WHERE token = @token;
 
 ------------------------------------------------------------------
 

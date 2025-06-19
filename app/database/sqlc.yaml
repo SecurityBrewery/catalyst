@@ -30,6 +30,9 @@ sql:
           - column: "reactions.triggerdata"
             go_type:
               type: "string"
+          - column: "_params.value"
+            go_type:
+              type: "string"
   - engine: "sqlite"
     queries: "write.sql"
     schema: "migrations"
@@ -58,5 +61,8 @@ sql:
             go_type:
               type: "string"
           - column: "reactions.triggerdata"
+            go_type:
+              type: "string"
+          - column: "_params.value"
             go_type:
               type: "string"
