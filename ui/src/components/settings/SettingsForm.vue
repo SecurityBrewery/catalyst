@@ -11,6 +11,14 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { toast } from '@/components/ui/toast'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -22,7 +30,6 @@ import { ref, watch } from 'vue'
 import { useAPI } from '@/api'
 import type { Settings } from '@/client/models'
 import { handleError } from '@/lib/utils'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const api = useAPI()
 const queryClient = useQueryClient()
@@ -89,10 +96,10 @@ const { handleSubmit, validate, values, setValues } = useForm({
       values.smtp && values.smtp.enabled ? (!val ? 'This field is required' : true) : true,
     'smtp.username': (val: string, values: any) =>
       values.smtp && values.smtp.enabled ? (!val ? 'This field is required' : true) : true,
-    'smtp.password': (val: string, values: any) => true,
+    // 'smtp.password': (val: string, values: any) => true,
     'smtp.authMethod': (val: string, values: any) =>
-      values.smtp && values.smtp.enabled ? (!val ? 'This field is required' : true) : true,
-    'smtp.localName': (val: string, values: any) => true
+      values.smtp && values.smtp.enabled ? (!val ? 'This field is required' : true) : true
+    // 'smtp.localName': (val: string, values: any) => true
   }
 })
 
@@ -354,9 +361,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.authMethod" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="smtp.authMethod" class="text-right">
-              Authentication Method
-            </FormLabel>
+            <FormLabel for="smtp.authMethod" class="text-right"> Authentication Method </FormLabel>
             <Select id="smtp.authMethod" class="col-span-3" v-bind="componentField">
               <SelectTrigger class="font-medium">
                 <SelectValue placeholder="Select authentication method" />

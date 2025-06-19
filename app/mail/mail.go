@@ -4,50 +4,22 @@ import (
 	"cmp"
 	"context"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/app/database"
-	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"log/slog"
 
 	"github.com/wneessen/go-mail"
+
+	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-type smtpClient interface {
-	DialAndSend(msgs ...*mail.Msg) error
-}
-
 type Mailer struct {
-	queries       *sqlc.Queries
-	newSMTPClient func(server string, opts ...mail.Option) (smtpClient, error)
+	queries *sqlc.Queries
 }
 
-type MailerOption func(*Mailer)
-
-func WithSMTPClient(fn func(host string, opts ...mail.Option) (smtpClient, error)) MailerOption {
-	return func(m *Mailer) {
-		m.newSMTPClient = fn
+func New(queries *sqlc.Queries) *Mailer {
+	return &Mailer{
+		queries: queries,
 	}
-}
-
-func defaultSMTPClient(host string, opts ...mail.Option) (smtpClient, error) {
-	client, err := mail.NewClient(host, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
-}
-
-func New(queries *sqlc.Queries, opts ...MailerOption) *Mailer {
-	m := &Mailer{
-		queries:       queries,
-		newSMTPClient: defaultSMTPClient,
-	}
-
-	for _, opt := range opts {
-		opt(m)
-	}
-
-	return m
 }
 
 func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error {
@@ -64,22 +36,46 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 		return fmt.Errorf("SMTP settings are not configured properly: host, username, and password must be set")
 	}
 
+	client, err := mailClient(settings)
+	if err != nil {
+		return fmt.Errorf("failed to create mail client: %w", err)
+	}
+
+	message, err := createMessage(settings, to, subject, body)
+	if err != nil {
+		return fmt.Errorf("failed to create mail message: %w", err)
+	}
+
+	if err := client.DialAndSend(message); err != nil {
+		return fmt.Errorf("failed to deliver mail: %w", err)
+	}
+
+	slog.InfoContext(ctx, "mail sent successfully", "from", from, "to", to, "subject", subject)
+
+	return nil
+}
+
+func createMessage(settings *database.Settings, to string, subject string, body string) (*mail.Msg, error) {
 	message := mail.NewMsg()
 
 	if err := message.FromFormat(settings.Meta.SenderName, settings.Meta.SenderAddress); err != nil {
-		return fmt.Errorf("failed to set FROM address: %w", err)
+		return nil, fmt.Errorf("failed to set FROM address: %w", err)
 	}
 
 	if err := message.To(to); err != nil {
-		return fmt.Errorf("failed to set TO address: %w", err)
+		return nil, fmt.Errorf("failed to set TO address: %w", err)
 	}
 
 	message.Subject(subject)
 	message.SetBodyString(mail.TypeTextPlain, body)
 
+	return message, nil
+}
+
+func mailClient(settings *database.Settings) (*mail.Client, error) {
 	var authType mail.SMTPAuthType
 	if err := authType.UnmarshalString(cmp.Or(settings.SMTP.AuthMethod, "plain")); err != nil {
-		return fmt.Errorf("failed to parse SMTP auth method: %w", err)
+		return nil, fmt.Errorf("failed to parse SMTP auth method: %w", err)
 	}
 
 	opts := []mail.Option{
@@ -100,17 +96,10 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 		opts = append(opts, mail.WithHELO(settings.SMTP.LocalName))
 	}
 
-	// Deliver the mails via SMTP
-	client, err := m.newSMTPClient(settings.SMTP.Host, opts...)
+	client, err := mail.NewClient(settings.SMTP.Host, opts...)
 	if err != nil {
-		return fmt.Errorf("failed to create new mail delivery client: %w", err)
+		return nil, fmt.Errorf("failed to create new mail delivery client: %w", err)
 	}
 
-	if err := client.DialAndSend(message); err != nil {
-		return fmt.Errorf("failed to deliver mail: %w", err)
-	}
-
-	slog.InfoContext(ctx, "mail sent successfully", "from", from, "to", to, "subject", subject)
-
-	return nil
+	return client, nil
 }

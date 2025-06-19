@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"log/slog"
 
 	"github.com/urfave/cli/v3"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -129,29 +130,7 @@ func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	param, err := queries.Param(ctx, "settings")
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s := &Settings{
-				Meta: Meta{
-					AppName:       "Catalyst",
-					AppURL:        "https://localhost.com",
-					SenderName:    "Catalyst",
-					SenderAddress: "no-reply@example.com",
-				},
-			}
-
-			b, err := json.Marshal(s)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal default settings: %w", err)
-			}
-
-			if err := queries.CreateParam(ctx, sqlc.CreateParamParams{
-				ID:    GenerateID("settings"),
-				Key:   "settings",
-				Value: string(b),
-			}); err != nil {
-				return nil, err
-			}
-
-			return s, nil
+			return initSettings(ctx, queries)
 		}
 
 		return nil, fmt.Errorf("failed to get settings: %w", err)
@@ -163,6 +142,42 @@ func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	}
 
 	return &settings, nil
+}
+
+func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error) {
+	s := &Settings{
+		Meta: Meta{
+			AppName:       "Catalyst",
+			AppURL:        "https://localhost.com",
+			SenderName:    "Catalyst",
+			SenderAddress: "no-reply@example.com",
+		},
+		SMTP: SMTP{
+			Enabled:    false,
+			Host:       "smtp.example.com",
+			Port:       587,
+			Username:   "username",
+			Password:   "password",
+			AuthMethod: "plain",
+			TLS:        true,
+			LocalName:  "",
+		},
+	}
+
+	b, err := json.Marshal(s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal default settings: %w", err)
+	}
+
+	if err := queries.CreateParam(ctx, sqlc.CreateParamParams{
+		ID:    GenerateID("settings"),
+		Key:   "settings",
+		Value: string(b),
+	}); err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }
 
 func UpdateSettings(ctx context.Context, queries *sqlc.Queries, update func(settings *Settings)) error {
