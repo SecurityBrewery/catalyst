@@ -6,9 +6,9 @@ import (
 )
 
 type Config struct {
-	AppSecret string `json:"appSecret" yaml:"appSecret"`
-	URL       string `json:"url" yaml:"url"`
-	Email     string `json:"email" yaml:"email"`
+	AuthToken  string
+	ResetToken string
+	URL        string
 }
 
 type Service struct {

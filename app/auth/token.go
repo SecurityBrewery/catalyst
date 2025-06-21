@@ -17,14 +17,14 @@ const (
 )
 
 func (s *Service) CreateAccessToken(user *sqlc.User, permissions []string, duration time.Duration) (string, error) {
-	return s.createToken(user, duration, PurposeAccess, permissions)
+	return s.createToken(user, duration, PurposeAccess, permissions, s.config.AuthToken)
 }
 
 func (s *Service) CreateResetToken(user *sqlc.User, duration time.Duration) (string, error) {
-	return s.createToken(user, duration, PurposeReset, []string{ScopeReset})
+	return s.createToken(user, duration, PurposeReset, []string{ScopeReset}, s.config.ResetToken)
 }
 
-func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string) (string, error) {
+func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string, appToken string) (string, error) {
 	if scopes == nil {
 		scopes = []string{}
 	}
@@ -40,13 +40,13 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signingKey := user.Tokenkey + s.config.AppSecret
+	signingKey := user.Tokenkey + appToken
 
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *Service) verifyToken(tokenStr string, user *sqlc.User) (jwt.MapClaims, error) { //nolint:cyclop
-	signingKey := user.Tokenkey + s.config.AppSecret
+func (s *Service) verifyToken(tokenStr string, user *sqlc.User, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
+	signingKey := user.Tokenkey + appToken
 
 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -119,7 +119,7 @@ func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*s
 		return nil, nil, fmt.Errorf("failed to retrieve user for subject %s: %w", sub, err)
 	}
 
-	claims, err = s.verifyToken(bearerToken, &user)
+	claims, err = s.verifyToken(bearerToken, &user, s.config.AuthToken)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to verify token: %w", err)
 	}
@@ -132,7 +132,7 @@ func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*s
 }
 
 func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
-	claims, err := s.verifyToken(tokenStr, user)
+	claims, err := s.verifyToken(tokenStr, user, s.config.ResetToken)
 	if err != nil {
 		return err
 	}

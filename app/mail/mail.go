@@ -22,7 +22,7 @@ func New(queries *sqlc.Queries) *Mailer {
 	}
 }
 
-func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error {
+func (m *Mailer) Send(ctx context.Context, to, subject, body string) error {
 	settings, err := database.LoadSettings(ctx, m.queries)
 	if err != nil {
 		return fmt.Errorf("failed to load settings: %w", err)
@@ -50,7 +50,7 @@ func (m *Mailer) Send(ctx context.Context, from, to, subject, body string) error
 		return fmt.Errorf("failed to deliver mail: %w", err)
 	}
 
-	slog.InfoContext(ctx, "mail sent successfully", "from", from, "to", to, "subject", subject)
+	slog.InfoContext(ctx, "mail sent successfully", "to", to, "subject", subject)
 
 	return nil
 }

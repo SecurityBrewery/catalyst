@@ -40,9 +40,9 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 	}
 
 	authConfig := &auth.Config{
-		AppSecret: settings.RecordAuthToken.Secret, // TODO: support more secrets
-		URL:       settings.Meta.AppURL,
-		Email:     settings.Meta.SenderAddress,
+		AuthToken:  settings.RecordAuthToken.Secret,
+		ResetToken: settings.RecordPasswordResetToken.Secret,
+		URL:        settings.Meta.AppURL,
 	}
 
 	authService := auth.New(queries, mailer, authConfig)

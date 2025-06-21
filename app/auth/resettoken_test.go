@@ -33,7 +33,7 @@ func TestService_createResetToken(t *testing.T) {
 		{
 			name: "valid token",
 			fields: fields{
-				config: &Config{AppSecret: "testsecret"},
+				config: &Config{ResetToken: "testsecret"},
 			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},
@@ -50,7 +50,7 @@ func TestService_createResetToken(t *testing.T) {
 		{
 			name: "expired token",
 			fields: fields{
-				config: &Config{AppSecret: "testsecret"},
+				config: &Config{ResetToken: "testsecret"},
 			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},
@@ -67,7 +67,7 @@ func TestService_createResetToken(t *testing.T) {
 		{
 			name: "invalid token",
 			fields: fields{
-				config: &Config{AppSecret: "testsecret"},
+				config: &Config{ResetToken: "testsecret"},
 			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},

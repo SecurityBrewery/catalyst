@@ -50,7 +50,6 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 
 	if err := s.mailer.Send(
 		r.Context(),
-		s.config.Email,
 		data.Email,
 		"Password Reset Request",
 		"Please follow the instructions to reset your password. "+
