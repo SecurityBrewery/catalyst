@@ -58,7 +58,7 @@ const updateUserMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['users'] })
   },
-  onError: handleError
+  onError: handleError('Failed to update user')
 })
 
 const passwordSubmit = (values: UserUpdate) => {
@@ -80,7 +80,7 @@ const deleteMutation = useMutation({
     })
     router.push({ name: 'users' })
   },
-  onError: handleError
+  onError: handleError('Failed to delete user')
 })
 </script>
 

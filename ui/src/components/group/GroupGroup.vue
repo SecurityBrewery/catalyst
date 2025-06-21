@@ -16,7 +16,7 @@ import { ref } from 'vue'
 
 import { useAPI } from '@/api'
 import type { GroupUser, UserGroup } from '@/client'
-import { handleError, handleErrorMsg } from '@/lib/utils'
+import { handleError } from '@/lib/utils'
 
 const api = useAPI()
 const queryClient = useQueryClient()
@@ -61,7 +61,7 @@ const addGroupUserMutation = useMutation({
       description: 'The user has been added to the group'
     })
   },
-  onError: handleErrorMsg('Failed to add user to group')
+  onError: handleError('Failed to add user to group')
 })
 
 const addGroupParentMutation = useMutation({
@@ -80,7 +80,7 @@ const addGroupParentMutation = useMutation({
       description: 'The parent group has been added successfully'
     })
   },
-  onError: handleErrorMsg('Failed to add parent group')
+  onError: handleError('Failed to add parent group')
 })
 
 const addGroupChildMutation = useMutation({
@@ -98,7 +98,7 @@ const addGroupChildMutation = useMutation({
       description: 'The child group has been added successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to add child group')
 })
 
 const removeGroupUserMutation = useMutation({
@@ -114,7 +114,7 @@ const removeGroupUserMutation = useMutation({
       description: 'The user has been removed from the group'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to remove user from group')
 })
 
 const removeGroupParentMutation = useMutation({
@@ -131,7 +131,7 @@ const removeGroupParentMutation = useMutation({
       description: 'The parent group has been removed successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to remove parent group')
 })
 
 const removeGroupChildMutation = useMutation({
@@ -147,7 +147,7 @@ const removeGroupChildMutation = useMutation({
       description: 'The child group has been removed successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to remove child group')
 })
 
 const dialogOpenParent = ref(false)

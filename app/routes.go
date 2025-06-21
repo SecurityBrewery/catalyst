@@ -67,7 +67,7 @@ func jsonError(w http.ResponseWriter, r *http.Request, err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
-	_, err = w.Write(b)
+	_, _ = w.Write(b)
 }
 
 func (a *App) staticFiles(w http.ResponseWriter, r *http.Request) {

@@ -42,7 +42,7 @@ func TestService_Middleware(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token", "status": 401}`),
 			},
 		},
 		{
@@ -55,7 +55,7 @@ func TestService_Middleware(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token", "status": 401}`),
 			},
 		},
 		{
@@ -127,7 +127,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes", "status": 401}`),
 			},
 		},
 		{
@@ -139,7 +139,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes", "status": 401}`),
 			},
 		},
 		{

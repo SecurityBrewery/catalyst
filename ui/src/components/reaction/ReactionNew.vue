@@ -31,7 +31,7 @@ const addReactionMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
   },
-  onError: handleError
+  onError: handleError('Failed to create reaction')
 })
 </script>
 

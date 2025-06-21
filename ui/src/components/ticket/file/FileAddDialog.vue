@@ -52,7 +52,7 @@ const addFileMutation = useMutation({
     })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to upload file')
 })
 
 const toBase64 = (file: File) =>

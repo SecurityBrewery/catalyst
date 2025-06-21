@@ -101,7 +101,7 @@ const editDescriptionMutation = useMutation({
     })
     editMode.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to update description')
 })
 
 const edit = () => (editMode.value = true)
@@ -116,7 +116,7 @@ const editStateMutation = useMutation({
       description: 'The ticket state has been updated'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update state')
 })
 
 const taskStatus = computed(() => {

@@ -37,7 +37,7 @@ const editNameMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['tickets', data.id] })
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket name')
 })
 
 const updateName = (value: string) => {

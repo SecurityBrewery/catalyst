@@ -47,7 +47,7 @@ const addCommentMutation = useMutation({
     message.value = ''
     newTimelineItem.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to add timeline item')
 })
 
 const addComment = () => addCommentMutation.mutate()

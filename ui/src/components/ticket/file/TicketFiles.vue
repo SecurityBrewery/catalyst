@@ -66,7 +66,7 @@ const deleteMutation = useMutation({
       description: 'The file has been deleted successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to delete file')
 })
 
 watch(

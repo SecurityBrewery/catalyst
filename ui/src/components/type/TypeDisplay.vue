@@ -46,7 +46,7 @@ const updateTypeMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['types'] })
   },
-  onError: handleError
+  onError: handleError('Failed to update type')
 })
 
 const deleteMutation = useMutation({
@@ -61,7 +61,7 @@ const deleteMutation = useMutation({
     })
     router.push({ name: 'types' })
   },
-  onError: handleError
+  onError: handleError('Failed to delete type')
 })
 </script>
 

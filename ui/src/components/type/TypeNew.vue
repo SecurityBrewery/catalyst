@@ -31,7 +31,7 @@ const addTypeMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['types'] })
   },
-  onError: handleError
+  onError: handleError('Failed to create type')
 })
 </script>
 

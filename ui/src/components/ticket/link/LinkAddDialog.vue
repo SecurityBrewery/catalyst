@@ -49,7 +49,7 @@ const addLinkMutation = useMutation({
     })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to add link')
 })
 
 defineRule('required', (value: string) => {

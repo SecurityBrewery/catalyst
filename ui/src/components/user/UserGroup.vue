@@ -50,7 +50,7 @@ const addGroupMutation = useMutation({
       description: 'The group has been added successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to add group')
 })
 
 const removeGroupMutation = useMutation({
@@ -67,7 +67,7 @@ const removeGroupMutation = useMutation({
       description: 'The group has been removed successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to remove group')
 })
 
 const dialogOpen = ref(false)

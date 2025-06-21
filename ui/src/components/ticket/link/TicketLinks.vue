@@ -35,7 +35,7 @@ const deleteMutation = useMutation({
       description: 'The link has been deleted successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to delete link')
 })
 
 const dialogOpen = ref(false)

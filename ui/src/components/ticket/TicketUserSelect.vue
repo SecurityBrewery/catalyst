@@ -27,7 +27,7 @@ const setTicketOwnerMutation = useMutation({
       description: 'The ticket owner has been updated'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket owner')
 })
 
 const update = (user: User) => setTicketOwnerMutation.mutate(user.id)

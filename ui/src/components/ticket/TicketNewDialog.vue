@@ -65,7 +65,7 @@ const addTicketMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
   },
-  onError: handleError
+  onError: handleError('Failed to create ticket')
 })
 
 defineRule('required', (value: string) => {

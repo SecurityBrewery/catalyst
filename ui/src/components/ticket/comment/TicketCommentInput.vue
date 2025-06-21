@@ -48,7 +48,7 @@ const addCommentMutation = useMutation({
     message.value = ''
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to add comment')
 })
 </script>
 

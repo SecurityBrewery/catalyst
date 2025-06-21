@@ -140,7 +140,7 @@ const updateSettingsMutation = useMutation({
       description: 'The settings have been updated successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update settings')
 })
 
 function equalSettings(values: any, value?: Settings) {

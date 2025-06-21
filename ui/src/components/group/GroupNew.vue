@@ -31,7 +31,7 @@ const addGroupMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['groups'] })
   },
-  onError: handleError
+  onError: handleError('Failed to create group')
 })
 </script>
 

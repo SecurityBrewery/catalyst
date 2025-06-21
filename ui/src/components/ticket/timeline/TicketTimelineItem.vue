@@ -63,7 +63,7 @@ const updateTimelineMutation = useMutation({
     })
     editMode.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to update timeline item')
 })
 
 watch(
@@ -86,7 +86,7 @@ const deleteTimelineItemMutation = useMutation({
     })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to delete timeline item')
 })
 
 const edit = () => (editMode.value = true)

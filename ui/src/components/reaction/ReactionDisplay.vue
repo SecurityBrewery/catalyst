@@ -46,7 +46,7 @@ const updateReactionMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['reactions'] })
   },
-  onError: handleError
+  onError: handleError('Failed to update reaction')
 })
 
 const deleteMutation = useMutation({
@@ -60,7 +60,7 @@ const deleteMutation = useMutation({
     })
     router.push({ name: 'reactions' })
   },
-  onError: handleError
+  onError: handleError('Failed to delete reaction')
 })
 </script>
 

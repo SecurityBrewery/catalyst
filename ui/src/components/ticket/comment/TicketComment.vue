@@ -52,7 +52,7 @@ const deleteCommentMutation = useMutation({
     })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to delete comment')
 })
 
 const editCommentMutation = useMutation({
@@ -71,7 +71,7 @@ const editCommentMutation = useMutation({
     })
     editMode.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to update comment')
 })
 
 const edit = () => (editMode.value = true)

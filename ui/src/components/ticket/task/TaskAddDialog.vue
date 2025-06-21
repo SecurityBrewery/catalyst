@@ -52,7 +52,7 @@ const addTaskMutation = useMutation({
     name.value = ''
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to create task')
 })
 
 const submitDisabled = computed(() => !name.value || !ownerID.value)

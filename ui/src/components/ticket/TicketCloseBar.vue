@@ -42,7 +42,7 @@ const closeTicketMutation = useMutation({
     })
     router.push({ name: 'tickets', params: { type: props.ticket.type } })
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket status')
 })
 
 const closeButtonDisabled = false // computed(() => !props.ticket.open || message.value == '')

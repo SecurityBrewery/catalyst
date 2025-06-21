@@ -42,7 +42,7 @@ const setTaskOwnerMutation = useMutation({
       description: 'The task owner has been updated'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update task owner')
 })
 
 const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, owner: user.id })
@@ -62,7 +62,7 @@ const checkMutation = useMutation({
       description: 'The task status has been updated'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update task status')
 })
 
 const check = (task: Task) => checkMutation.mutate(task)
@@ -82,7 +82,7 @@ const updateTaskNameMutation = useMutation({
       description: 'The task name has been updated'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to update task name')
 })
 
 const deleteMutation = useMutation({
@@ -95,7 +95,7 @@ const deleteMutation = useMutation({
       description: 'The task has been deleted successfully'
     })
   },
-  onError: handleError
+  onError: handleError('Failed to delete task')
 })
 
 const updateTaskName = (id: string, name: string) => updateTaskNameMutation.mutate({ id, name })

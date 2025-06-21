@@ -52,7 +52,7 @@ const changeTypeMutation = useMutation({
     })
     router.push({ name: 'tickets', params: { type: data.type, id: props.ticket.id } })
   },
-  onError: handleError
+  onError: handleError('Failed to change ticket type')
 })
 
 const closeTicketMutation = useMutation({
@@ -70,7 +70,7 @@ const closeTicketMutation = useMutation({
       router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket status')
 })
 
 const ticketType = computed(() => types.value?.find((t) => t.id === props.ticket.type))
@@ -90,7 +90,7 @@ const deleteMutation = useMutation({
     })
     router.push({ name: 'tickets' })
   },
-  onError: handleError
+  onError: handleError('Failed to delete ticket')
 })
 </script>
 
