@@ -1159,3 +1159,10 @@ components:
         force_path_style:
           type: boolean
       required: [ "enabled", "bucket", "region", "endpoint", "access_key", "secret", "force_path_style" ]
+    Error:
+      type: object
+      properties:
+        status: { "type": "integer" }
+        error: { "type": "string" }
+        message: { "type": "string" }
+      required: [ "status", "error", "message" ]

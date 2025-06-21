@@ -16,7 +16,7 @@ import { ref } from 'vue'
 
 import { useAPI } from '@/api'
 import type { GroupUser, UserGroup } from '@/client'
-import { handleError } from '@/lib/utils'
+import { handleError, handleErrorMsg } from '@/lib/utils'
 
 const api = useAPI()
 const queryClient = useQueryClient()
@@ -61,7 +61,7 @@ const addGroupUserMutation = useMutation({
       description: 'The user has been added to the group'
     })
   },
-  onError: handleError
+  onError: handleErrorMsg('Failed to add user to group')
 })
 
 const addGroupParentMutation = useMutation({
@@ -80,7 +80,7 @@ const addGroupParentMutation = useMutation({
       description: 'The parent group has been added successfully'
     })
   },
-  onError: handleError
+  onError: handleErrorMsg('Failed to add parent group')
 })
 
 const addGroupChildMutation = useMutation({

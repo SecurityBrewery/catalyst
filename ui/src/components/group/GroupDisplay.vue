@@ -16,7 +16,7 @@ import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
 import type { Group, GroupUpdate } from '@/client/models'
-import { handleError } from '@/lib/utils'
+import { handleError, handleErrorMsg } from '@/lib/utils'
 
 const api = useAPI()
 
@@ -47,7 +47,7 @@ const updateGroupMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['groups'] })
   },
-  onError: handleError
+  onError: handleErrorMsg('Failed to update group')
 })
 
 const deleteMutation = useMutation({
@@ -61,7 +61,7 @@ const deleteMutation = useMutation({
     })
     router.push({ name: 'groups' })
   },
-  onError: handleError
+  onError: handleErrorMsg('Failed to delete group')
 })
 </script>
 

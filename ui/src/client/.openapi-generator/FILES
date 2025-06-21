@@ -18,6 +18,7 @@ models/GroupUpdate.ts
 models/GroupUser.ts
 models/Link.ts
 models/LinkUpdate.ts
+models/ModelError.ts
 models/ModelFile.ts
 models/NewComment.ts
 models/NewFeature.ts

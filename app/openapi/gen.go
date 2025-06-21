@@ -56,6 +56,13 @@ type EmailTemplate struct {
 	Subject   string `json:"subject"`
 }
 
+// Error defines model for Error.
+type Error struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+	Status  int    `json:"status"`
+}
+
 // ExtendedComment defines model for ExtendedComment.
 type ExtendedComment struct {
 	Author     string `json:"author"`

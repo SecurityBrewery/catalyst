@@ -2,6 +2,7 @@ import { toast } from '@/components/ui/toast'
 
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { ModelError } from '@/client'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -15,10 +16,42 @@ export function human(bytes: number) {
       : (bytes / 1048576).toFixed(1) + ' MB'
 }
 
-export function handleError(error: Error) {
-  toast({
-    title: error.name,
-    description: error.message,
-    variant: 'destructive'
+interface FetchError {
+  name: string
+  message: string
+  response?: Response
+}
+
+export function handleError(error: FetchError) {
+  error.response?.json().then((data: ModelError) => {
+    toast({
+      title: data.error,
+      description: data.message,
+      variant: 'destructive'
+    })
+  }).catch(() => {
+    toast({
+      title: error.name,
+      description: error.message,
+      variant: 'destructive'
+    })
   })
+}
+
+export function handleErrorMsg(title: string) {
+  return function(error: FetchError) {
+    error.response?.json().then((data: ModelError) => {
+      toast({
+        title: title,
+        description: data.message,
+        variant: 'destructive'
+      })
+    }).catch(() => {
+      toast({
+        title: title,
+        description: error.message,
+        variant: 'destructive'
+      })
+    })
+  }
 }

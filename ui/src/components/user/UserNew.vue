@@ -13,7 +13,7 @@ import { useRouter } from 'vue-router'
 
 import { useAPI } from '@/api'
 import type { NewUser, User } from '@/client'
-import { handleError } from '@/lib/utils'
+import { handleErrorMsg } from '@/lib/utils'
 
 const api = useAPI()
 
@@ -31,7 +31,7 @@ const addUserMutation = useMutation({
     })
     queryClient.invalidateQueries({ queryKey: ['users'] })
   },
-  onError: handleError
+  onError: handleErrorMsg('Failed to create user')
 })
 </script>
 

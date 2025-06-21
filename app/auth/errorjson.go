@@ -12,5 +12,5 @@ func unauthorizedJSON(w http.ResponseWriter, msg string) {
 func errorJSON(w http.ResponseWriter, status int, msg string) {
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	_, _ = fmt.Fprintf(w, `{"error": %q, "message": %q}`, http.StatusText(status), msg)
+	_, _ = fmt.Fprintf(w, `{"status": %d, "error": %q, "message": %q}`, status, http.StatusText(status), msg)
 }

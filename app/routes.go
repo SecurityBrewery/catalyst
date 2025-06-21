@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"net/http/httputil"
@@ -42,10 +43,31 @@ func (a *App) SetupRoutes() error {
 
 	// API routes
 	middlewareFuncs := []openapi.StrictMiddlewareFunc{auth.ValidateScopes, auth.LogError}
-	apiHandler := openapi.Handler(openapi.NewStrictHandler(a.Service, middlewareFuncs))
+	apiHandler := openapi.Handler(openapi.NewStrictHandlerWithOptions(a.Service, middlewareFuncs, openapi.StrictHTTPServerOptions{
+		RequestErrorHandlerFunc:  jsonError,
+		ResponseErrorHandlerFunc: jsonError,
+	}))
 	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
 
 	return nil
+}
+
+func jsonError(w http.ResponseWriter, r *http.Request, err error) {
+	b, err := json.Marshal(openapi.Error{
+		Status:  http.StatusInternalServerError,
+		Error:   "An internal error occurred",
+		Message: err.Error(),
+	})
+	if err != nil {
+		slog.ErrorContext(r.Context(), "Failed to marshal error response", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusInternalServerError)
+	_, err = w.Write(b)
 }
 
 func (a *App) staticFiles(w http.ResponseWriter, r *http.Request) {
