@@ -1,21 +1,13 @@
 import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-import { login, test, createTicket } from './util'
-
-const createTask = async (page, name: string) => {
-  await page.getByRole('tab', { name: 'Tasks' }).click()
-  await page.getByRole('button', { name: 'Add Task' }).click()
-  await page.getByPlaceholder('Add a task...').fill(name)
-  await page.getByRole('button', { name: 'Save' }).click()
-  await expect(page.getByText(name)).toBeVisible()
-}
+import { login, test, createTicket, createTask } from './util'
 
 test('can create a task', async ({ page }) => {
   await login(page)
   const ticketName = `playwright-${randomUUID()}`
   await createTicket(page, ticketName)
   const taskName = `task-${randomUUID()}`
-  await createTask(page, taskName)
+  await createTask(page, taskName, false)
 })
 
 test.describe('update a task', () => {
@@ -54,7 +46,7 @@ test.describe('update a task', () => {
       const ticketName = `playwright-${randomUUID()}`
       await createTicket(page, ticketName)
       const taskName = `task-${randomUUID()}`
-      await createTask(page, taskName)
+      await createTask(page, taskName, false)
       await update(page, taskName)
       await assert(page)
     })
@@ -66,7 +58,7 @@ test('can delete a task', async ({ page }) => {
   const ticketName = `playwright-${randomUUID()}`
   await createTicket(page, ticketName)
   const taskName = `task-${randomUUID()}`
-  await createTask(page, taskName)
+  await createTask(page, taskName, false)
   await page.getByRole('tab', { name: 'Tasks' }).click()
   await page.locator('button', { hasText: 'Delete Task' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()

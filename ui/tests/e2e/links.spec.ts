@@ -1,14 +1,6 @@
 import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-import { login, test, createTicket } from './util'
-
-const createLink = async (page, name: string, url: string) => {
-  await page.getByRole('button', { name: 'Add item' }).first().click()
-  await page.locator('input[name="name"]').fill(name)
-  await page.locator('#url').fill(url)
-  await page.getByRole('button', { name: 'Save' }).click()
-  await expect(page.getByText(name)).toBeVisible()
-}
+import { login, test, createTicket, createLink } from './util'
 
 test('can create a link', async ({ page }) => {
   await login(page)

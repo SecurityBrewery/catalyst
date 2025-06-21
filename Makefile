@@ -149,7 +149,7 @@ dev-playwright: reset_data
 .PHONY: dev-10000
 dev-10000: reset_data
 	go run . admin create admin@catalyst-soar.com 1234567890
-	go run . fake-data --users 100 --tickets 10000
+	go run . fake-data --users 87 --tickets 12425
 	go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: default-data
@@ -195,3 +195,11 @@ generate-ui: openapi-ui fmt-ui
 
 .PHONY: generate
 generate: generate-go generate-ui
+
+#########
+## screenshots
+#########
+
+.PHONY: screenshots
+screenshots:
+	bash ui/screenshot.sh

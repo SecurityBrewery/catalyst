@@ -14,7 +14,8 @@
     "generate": "JAVA_OPTS=\"-Dlog.level=warn\" openapi-generator-cli generate -i ../openapi.yml -g typescript-fetch -o src/client",
     "install:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --timeout=5000",
-    "test:e2e:ui": "playwright test --ui --timeout=5000"
+    "test:e2e:ui": "playwright test --ui --timeout=5000",
+    "screenshots": "playwright test --config=screenshots.playwright.config.ts --timeout=15000"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.80.10",

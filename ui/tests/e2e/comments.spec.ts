@@ -1,14 +1,6 @@
 import { expect } from '@playwright/test'
 import { randomUUID } from 'crypto'
-import { login, test, createTicket } from './util'
-
-const createComment = async (page, message: string) => {
-  await page.getByRole('tab', { name: 'Comments' }).click()
-  await page.getByRole('button', { name: 'Add Comment' }).click()
-  await page.getByRole('tabpanel', { name: 'Comments' }).getByRole('textbox').fill(message)
-  await page.getByRole('button', { name: 'Save' }).click()
-  await expect(page.getByText(message)).toBeVisible()
-}
+import { login, test, createTicket, createComment } from './util'
 
 test('can create a comment', async ({ page }) => {
   await login(page)
