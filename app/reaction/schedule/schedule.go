@@ -10,6 +10,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
 )
@@ -17,7 +18,6 @@ import (
 type Scheduler struct {
 	scheduler gocron.Scheduler
 	queries   *sqlc.Queries
-	config    *auth.Config
 	auth      *auth.Service
 }
 
@@ -25,14 +25,13 @@ type Schedule struct {
 	Expression string `json:"expression"`
 }
 
-func New(ctx context.Context, config *auth.Config, service *auth.Service, queries *sqlc.Queries) (*Scheduler, error) {
+func New(ctx context.Context, service *auth.Service, queries *sqlc.Queries) (*Scheduler, error) {
 	innerScheduler, err := gocron.NewScheduler()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
 	scheduler := &Scheduler{
-		config:    config,
 		auth:      service,
 		scheduler: innerScheduler,
 		queries:   queries,
@@ -55,7 +54,14 @@ func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
 		gocron.CronJob(schedule.Expression, false),
 		gocron.NewTask(
 			func(ctx context.Context) {
-				_, err := action.Run(ctx, s.config, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
+				settings, err := database.LoadSettings(ctx, s.queries)
+				if err != nil {
+					slog.ErrorContext(ctx, "Failed to load settings", "error", err)
+
+					return
+				}
+
+				_, err = action.Run(ctx, settings.Meta.AppURL, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
 				if err != nil {
 					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
 				}

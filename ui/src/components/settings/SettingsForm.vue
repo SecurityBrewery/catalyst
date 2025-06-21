@@ -202,7 +202,9 @@ const onSubmit = handleSubmit((vals) => {
     meta: {
       ...settings.value.meta,
       appName: vals.meta.appName,
-      appUrl: vals.meta.appUrl
+      appUrl: vals.meta.appUrl,
+      senderName: vals.meta.senderName,
+      senderAddress: vals.meta.senderAddress
     },
     smtp: {
       ...settings.value.smtp,

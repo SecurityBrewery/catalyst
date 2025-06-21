@@ -13,9 +13,8 @@ func (s *Service) Server() http.Handler {
 
 	router.Get("/user", s.handleUser)
 	router.Post("/local/login", s.handleLogin)
-	router.Post("/local/reset-password-request", s.handlePasswordResetRequest)
-	router.Get("/local/reset-password", s.handlePasswordReset)
-	router.Post("/local/reset-password", s.handlePasswordResetPost)
+	router.Post("/local/reset-password-mail", s.handleResetPasswordMail)
+	router.Post("/local/reset-password", s.handlePassword)
 
 	return router
 }

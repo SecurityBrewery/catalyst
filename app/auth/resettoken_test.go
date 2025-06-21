@@ -1,21 +1,19 @@
 package auth
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
 func TestService_createResetToken(t *testing.T) {
 	t.Parallel()
-
-	type fields struct {
-		config *Config
-	}
 
 	type args struct {
 		createUser    *sqlc.User
@@ -26,15 +24,11 @@ func TestService_createResetToken(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "valid token",
-			fields: fields{
-				config: &Config{ResetToken: "testsecret"},
-			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},
 				tokenDuration: time.Hour,
@@ -49,9 +43,6 @@ func TestService_createResetToken(t *testing.T) {
 		},
 		{
 			name: "expired token",
-			fields: fields{
-				config: &Config{ResetToken: "testsecret"},
-			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},
 				tokenDuration: 0,
@@ -66,9 +57,6 @@ func TestService_createResetToken(t *testing.T) {
 		},
 		{
 			name: "invalid token",
-			fields: fields{
-				config: &Config{ResetToken: "testsecret"},
-			},
 			args: args{
 				createUser:    &sqlc.User{ID: "testuser", Tokenkey: "testtoken"},
 				tokenDuration: time.Hour,
@@ -87,15 +75,19 @@ func TestService_createResetToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
+			queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
+			require.NoError(t, err)
+			t.Cleanup(cleanup)
+
 			s := &Service{
-				config: tt.fields.config,
+				queries: queries,
 			}
-			got, err := s.CreateResetToken(tt.args.createUser, tt.args.tokenDuration)
+			got, err := s.createResetToken(tt.args.createUser, "", "", tt.args.tokenDuration)
 			require.NoError(t, err, "createResetToken()")
 
 			time.Sleep(tt.args.waitDuration)
 
-			err = s.verifyResetToken(got, tt.args.verifyUser)
+			err = s.verifyResetToken(got, tt.args.verifyUser, "", "")
 			tt.wantErr(t, err, "verifyResetToken()")
 		})
 	}

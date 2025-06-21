@@ -67,7 +67,7 @@ func TestService_Middleware(t *testing.T) {
 					user, err := s.queries.GetUser(r.Context(), "u_bob_analyst")
 					require.NoError(t, err, "failed to get user for token creation")
 
-					token, err := s.CreateAccessToken(&user, []string{"user:read"}, time.Hour)
+					token, err := s.CreateAccessToken(r.Context(), &user, []string{"user:read"}, time.Hour)
 					require.NoError(t, err, "failed to create access token")
 
 					r.Header.Set("Authorization", "Bearer "+token)
@@ -87,7 +87,7 @@ func TestService_Middleware(t *testing.T) {
 
 			queries := database.NewTestDB(t)
 
-			auth := New(queries, nil, &Config{})
+			auth := New(queries, nil)
 
 			handler := auth.Middleware(tt.args.next)
 

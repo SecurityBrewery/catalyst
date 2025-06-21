@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
@@ -35,7 +36,14 @@ func handle(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		output, err := action.Run(r.Context(), app.Config, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, string(payload))
+		settings, err := database.LoadSettings(r.Context(), app.Queries)
+		if err != nil {
+			http.Error(w, "failed to load settings: "+err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+
+		output, err := action.Run(r.Context(), settings.Meta.AppURL, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, string(payload))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 

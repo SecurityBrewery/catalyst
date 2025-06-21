@@ -13,7 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, config *auth.Config, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, url string, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func Run(ctx context.Context, config *auth.Config, auth *auth.Service, queries *
 		}
 
 		a.SetEnv([]string{
-			"CATALYST_APP_URL=" + config.URL,
+			"CATALYST_APP_URL=" + url,
 			"CATALYST_TOKEN=" + token,
 		})
 	}
@@ -69,5 +69,5 @@ func systemToken(ctx context.Context, auth *auth.Service, queries *sqlc.Queries)
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return auth.CreateAccessToken(&user, permission.All(), time.Hour) // TODO: reduce permissions
+	return auth.CreateAccessToken(ctx, &user, permission.All(), time.Hour)
 }

@@ -4,19 +4,27 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"html"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-const resetTokenExpiration = time.Hour * 24
-
-func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Request) {
+func (s *Service) handleResetPasswordMail(w http.ResponseWriter, r *http.Request) {
 	type passwordResetData struct {
 		Email string `json:"email"`
+	}
+
+	b, err := json.Marshal(map[string]any{
+		"message": "Password reset email sent when the user exists",
+	})
+	if err != nil {
+		errorJSON(w, http.StatusInternalServerError, "Failed to create response: "+err.Error())
+
+		return
 	}
 
 	var data passwordResetData
@@ -31,7 +39,7 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 		if errors.Is(err, sql.ErrNoRows) {
 			// Do not reveal whether the user exists or not
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("Password reset email sent when the user exists"))
+			_, _ = w.Write(b)
 
 			return
 		}
@@ -41,48 +49,71 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	resetToken, err := s.CreateResetToken(&user, resetTokenExpiration)
+	settings, err := database.LoadSettings(r.Context(), s.queries)
+	if err != nil {
+		errorJSON(w, http.StatusInternalServerError, "Failed to load settings: "+err.Error())
+
+		return
+	}
+
+	resetToken, err := s.CreateResetToken(&user, settings)
 	if err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to create reset token: "+err.Error())
 
 		return
 	}
 
-	if err := s.mailer.Send(
-		r.Context(),
-		data.Email,
-		"Password Reset Request",
-		"Please follow the instructions to reset your password. "+
-			"Click here to reset your password: "+
-			s.config.URL+"/auth/local/reset-password"+
-			"?email="+data.Email+
-			"&token="+resetToken,
-	); err != nil {
+	link := settings.Meta.AppURL + "/ui/password-reset?mail=" + user.Email + "&token=" + resetToken
+
+	subject := settings.Meta.ResetPasswordTemplate.Subject
+	subject = strings.ReplaceAll(subject, "{APP_NAME}", settings.Meta.AppName)
+
+	plainTextBody := `Hello,
+Thank you for joining us at {APP_NAME}.
+Click on the link below to verify your email address or copy the token into the app:
+
+{ACTION_URL}
+
+Thanks, {APP_NAME} team`
+	plainTextBody = strings.ReplaceAll(plainTextBody, "{ACTION_URL}", link)
+	plainTextBody = strings.ReplaceAll(plainTextBody, "{APP_NAME}", settings.Meta.AppName)
+
+	htmlBody := settings.Meta.ResetPasswordTemplate.Body
+	htmlBody = strings.ReplaceAll(htmlBody, "{ACTION_URL}", link)
+	htmlBody = strings.ReplaceAll(htmlBody, "{APP_NAME}", settings.Meta.AppName)
+
+	if err := s.mailer.Send(r.Context(), user.Email, subject, plainTextBody, htmlBody); err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to send password reset email: "+err.Error())
 
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("Password reset email sent when the user exists"))
+	_, _ = w.Write(b)
 }
 
-func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
-	email := r.URL.Query().Get("email")
-	if email == "" {
-		errorJSON(w, http.StatusBadRequest, "Missing email parameter")
+func (s *Service) handlePassword(w http.ResponseWriter, r *http.Request) {
+	type passwordResetData struct {
+		Token           string `json:"token"`
+		Email           string `json:"email"`
+		Password        string `json:"password"`
+		PasswordConfirm string `json:"password_confirm"`
+	}
+
+	var data passwordResetData
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		errorJSON(w, http.StatusBadRequest, "Invalid request, missing email or password fields")
 
 		return
 	}
 
-	token := r.URL.Query().Get("token")
-	if token == "" {
-		errorJSON(w, http.StatusBadRequest, "Missing reset token")
+	if data.Password != data.PasswordConfirm {
+		errorJSON(w, http.StatusBadRequest, "Passwords do not match")
 
 		return
 	}
 
-	user, err := s.queries.UserByEmail(r.Context(), email)
+	user, err := s.queries.UserByEmail(r.Context(), data.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token")
@@ -95,72 +126,20 @@ func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.verifyResetToken(token, &user); err != nil {
-		errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
-
-		return
-	}
-
-	escapedEmail := html.EscapeString(email)
-	escapedToken := html.EscapeString(token)
-
-	html := `<!DOCTYPE html><html><body>`
-	html += `<h1>Password Reset</h1>`
-	html += `<p>Please enter your new password:</p>`
-	html += `<form method="POST" action="/auth/local/reset-password">`
-	html += `<input type="hidden" name="email" value="` + escapedEmail + `">`
-	html += `<input type="hidden" name="token" value="` + escapedToken + `">`
-	html += `<input type="password" name="newPassword" placeholder="New Password" required>`
-	html += `<button type="submit">Reset Password</button>`
-	html += `</form>`
-	html += `</body></html>`
-
-	w.Header().Set("Content-Type", "text/html")
-	_, _ = w.Write([]byte(html))
-}
-
-func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request) {
-	email := r.Form.Get("email")
-	if email == "" {
-		errorJSON(w, http.StatusBadRequest, "Missing email parameter")
-
-		return
-	}
-
-	token := r.Form.Get("token")
-	if token == "" {
-		errorJSON(w, http.StatusBadRequest, "Missing reset token")
-
-		return
-	}
-
-	pw := r.Form.Get("newPassword")
-	if pw == "" {
-		errorJSON(w, http.StatusBadRequest, "Missing new password")
-
-		return
-	}
-
-	user, err := s.queries.UserByEmail(r.Context(), email)
+	settings, err := database.LoadSettings(r.Context(), s.queries)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token")
-
-			return
-		}
-
-		errorJSON(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to load settings: "+err.Error())
 
 		return
 	}
 
-	if err := s.verifyResetToken(token, &user); err != nil {
+	if err := s.verifyResetToken(data.Token, &user, settings.Meta.AppURL, settings.RecordPasswordResetToken.Secret); err != nil {
 		errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
 
 		return
 	}
 
-	passwordHash, tokenKey, err := password.Hash(pw)
+	passwordHash, tokenKey, err := password.Hash(data.Password)
 	if err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
 
@@ -168,6 +147,7 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 	}
 
 	if _, err := s.queries.UpdateUser(r.Context(), sqlc.UpdateUserParams{
+		ID:              user.ID,
 		PasswordHash:    sql.NullString{String: passwordHash, Valid: true},
 		TokenKey:        sql.NullString{String: tokenKey, Valid: true},
 		LastResetSentAt: sql.NullString{String: time.Now().UTC().Format(time.RFC3339), Valid: true},
@@ -177,6 +157,15 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	b, err := json.Marshal(map[string]any{
+		"message": "Password reset successfully",
+	})
+	if err != nil {
+		errorJSON(w, http.StatusInternalServerError, "Failed to create response: "+err.Error())
+
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("Password reset successfully"))
+	_, _ = w.Write(b)
 }

@@ -22,7 +22,7 @@ func New(queries *sqlc.Queries) *Mailer {
 	}
 }
 
-func (m *Mailer) Send(ctx context.Context, to, subject, body string) error {
+func (m *Mailer) Send(ctx context.Context, to, subject, plainTextBody, htmlBody string) error {
 	settings, err := database.LoadSettings(ctx, m.queries)
 	if err != nil {
 		return fmt.Errorf("failed to load settings: %w", err)
@@ -41,7 +41,7 @@ func (m *Mailer) Send(ctx context.Context, to, subject, body string) error {
 		return fmt.Errorf("failed to create mail client: %w", err)
 	}
 
-	message, err := createMessage(settings, to, subject, body)
+	message, err := createMessage(settings, to, subject, plainTextBody, htmlBody)
 	if err != nil {
 		return fmt.Errorf("failed to create mail message: %w", err)
 	}
@@ -55,7 +55,7 @@ func (m *Mailer) Send(ctx context.Context, to, subject, body string) error {
 	return nil
 }
 
-func createMessage(settings *database.Settings, to string, subject string, body string) (*mail.Msg, error) {
+func createMessage(settings *database.Settings, to string, subject string, plainTextBody, htmlBody string) (*mail.Msg, error) {
 	message := mail.NewMsg()
 
 	if err := message.FromFormat(settings.Meta.SenderName, settings.Meta.SenderAddress); err != nil {
@@ -67,7 +67,11 @@ func createMessage(settings *database.Settings, to string, subject string, body 
 	}
 
 	message.Subject(subject)
-	message.SetBodyString(mail.TypeTextPlain, body)
+	message.SetBodyString(mail.TypeTextPlain, plainTextBody)
+
+	if htmlBody != "" {
+		message.SetBodyString(mail.TypeTextHTML, htmlBody)
+	}
 
 	return message, nil
 }

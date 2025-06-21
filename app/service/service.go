@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"cmp"
 	"context"
 	"database/sql"
 	"encoding/base64"
@@ -1863,50 +1862,50 @@ func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSett
 		return nil, err
 	}
 
-	settings.Meta.AppName = cmp.Or(request.Body.Meta.AppName, settings.Meta.AppName)
-	settings.Meta.AppURL = cmp.Or(request.Body.Meta.AppUrl, settings.Meta.AppURL)
-	settings.Meta.HideControls = cmp.Or(request.Body.Meta.HideControls, settings.Meta.HideControls)
-	settings.Meta.SenderAddress = cmp.Or(request.Body.Meta.SenderAddress, settings.Meta.SenderAddress)
-	settings.Meta.SenderName = cmp.Or(request.Body.Meta.SenderName, settings.Meta.SenderName)
-	settings.Meta.ConfirmEmailChangeTemplate.ActionURL = cmp.Or(request.Body.Meta.ConfirmEmailChangeTemplate.ActionUrl, settings.Meta.ConfirmEmailChangeTemplate.ActionURL)
-	settings.Meta.ConfirmEmailChangeTemplate.Body = cmp.Or(request.Body.Meta.ConfirmEmailChangeTemplate.Body, settings.Meta.ConfirmEmailChangeTemplate.Body)
-	settings.Meta.ConfirmEmailChangeTemplate.Hidden = cmp.Or(request.Body.Meta.ConfirmEmailChangeTemplate.Hidden, settings.Meta.ConfirmEmailChangeTemplate.Hidden)
-	settings.Meta.ConfirmEmailChangeTemplate.Subject = cmp.Or(request.Body.Meta.ConfirmEmailChangeTemplate.Subject, settings.Meta.ConfirmEmailChangeTemplate.Subject)
-	settings.Meta.ResetPasswordTemplate.ActionURL = cmp.Or(request.Body.Meta.ResetPasswordTemplate.ActionUrl, settings.Meta.ResetPasswordTemplate.ActionURL)
-	settings.Meta.ResetPasswordTemplate.Body = cmp.Or(request.Body.Meta.ResetPasswordTemplate.Body, settings.Meta.ResetPasswordTemplate.Body)
-	settings.Meta.ResetPasswordTemplate.Hidden = cmp.Or(request.Body.Meta.ResetPasswordTemplate.Hidden, settings.Meta.ResetPasswordTemplate.Hidden)
-	settings.Meta.ResetPasswordTemplate.Subject = cmp.Or(request.Body.Meta.ResetPasswordTemplate.Subject, settings.Meta.ResetPasswordTemplate.Subject)
-	settings.Meta.VerificationTemplate.ActionURL = cmp.Or(request.Body.Meta.VerificationTemplate.ActionUrl, settings.Meta.VerificationTemplate.ActionURL)
-	settings.Meta.VerificationTemplate.Body = cmp.Or(request.Body.Meta.VerificationTemplate.Body, settings.Meta.VerificationTemplate.Body)
-	settings.Meta.VerificationTemplate.Hidden = cmp.Or(request.Body.Meta.VerificationTemplate.Hidden, settings.Meta.VerificationTemplate.Hidden)
-	settings.Meta.VerificationTemplate.Subject = cmp.Or(request.Body.Meta.VerificationTemplate.Subject, settings.Meta.VerificationTemplate.Subject)
-	settings.Logs.LogIP = cmp.Or(request.Body.Logs.LogIp, settings.Logs.LogIP)
-	settings.Logs.MaxDays = cmp.Or(request.Body.Logs.MaxDays, settings.Logs.MaxDays)
-	settings.Logs.MinLevel = cmp.Or(request.Body.Logs.MinLevel, settings.Logs.MinLevel)
-	settings.SMTP.Enabled = cmp.Or(request.Body.Smtp.Enabled, settings.SMTP.Enabled)
-	settings.SMTP.Host = cmp.Or(request.Body.Smtp.Host, settings.SMTP.Host)
-	settings.SMTP.Port = cmp.Or(request.Body.Smtp.Port, settings.SMTP.Port)
-	settings.SMTP.Username = cmp.Or(request.Body.Smtp.Username, settings.SMTP.Username)
-	settings.SMTP.Password = cmp.Or(request.Body.Smtp.Password, settings.SMTP.Password)
-	settings.SMTP.AuthMethod = cmp.Or(request.Body.Smtp.AuthMethod, settings.SMTP.AuthMethod)
-	settings.SMTP.TLS = cmp.Or(request.Body.Smtp.Tls, settings.SMTP.TLS)
-	settings.SMTP.LocalName = cmp.Or(request.Body.Smtp.LocalName, settings.SMTP.LocalName)
-	settings.S3.Enabled = cmp.Or(request.Body.S3.Enabled, settings.S3.Enabled)
-	settings.S3.Bucket = cmp.Or(request.Body.S3.Bucket, settings.S3.Bucket)
-	settings.S3.Endpoint = cmp.Or(request.Body.S3.Endpoint, settings.S3.Endpoint)
-	settings.S3.ForcePathStyle = cmp.Or(request.Body.S3.ForcePathStyle, settings.S3.ForcePathStyle)
-	settings.S3.Region = cmp.Or(request.Body.S3.Region, settings.S3.Region)
-	settings.S3.Secret = cmp.Or(request.Body.S3.Secret, settings.S3.Secret)
-	settings.S3.AccessKey = cmp.Or(request.Body.S3.AccessKey, settings.S3.AccessKey)
-	settings.Backups.CronMaxKeep = cmp.Or(request.Body.Backups.CronMaxKeep, settings.Backups.CronMaxKeep)
-	settings.Backups.Cron = cmp.Or(request.Body.Backups.Cron, settings.Backups.Cron)
-	settings.Backups.S3.Enabled = cmp.Or(request.Body.Backups.S3.Enabled, settings.Backups.S3.Enabled)
-	settings.Backups.S3.Bucket = cmp.Or(request.Body.Backups.S3.Bucket, settings.Backups.S3.Bucket)
-	settings.Backups.S3.Endpoint = cmp.Or(request.Body.Backups.S3.Endpoint, settings.Backups.S3.Endpoint)
-	settings.Backups.S3.ForcePathStyle = cmp.Or(request.Body.Backups.S3.ForcePathStyle, settings.Backups.S3.ForcePathStyle)
-	settings.Backups.S3.Region = cmp.Or(request.Body.Backups.S3.Region, settings.Backups.S3.Region)
-	settings.Backups.S3.AccessKey = cmp.Or(request.Body.Backups.S3.AccessKey, settings.Backups.S3.AccessKey)
-	settings.Backups.S3.Secret = cmp.Or(request.Body.Backups.S3.Secret, settings.Backups.S3.Secret)
+	settings.Meta.AppName = request.Body.Meta.AppName
+	settings.Meta.AppURL = request.Body.Meta.AppUrl
+	// settings.Meta.HideControls = request.Body.Meta.HideControls
+	settings.Meta.SenderAddress = request.Body.Meta.SenderAddress
+	settings.Meta.SenderName = request.Body.Meta.SenderName
+	// settings.Meta.ConfirmEmailChangeTemplate.ActionURL = request.Body.Meta.ConfirmEmailChangeTemplate.ActionUrl
+	// settings.Meta.ConfirmEmailChangeTemplate.Body = request.Body.Meta.ConfirmEmailChangeTemplate.Body
+	// settings.Meta.ConfirmEmailChangeTemplate.Hidden = request.Body.Meta.ConfirmEmailChangeTemplate.Hidden
+	// settings.Meta.ConfirmEmailChangeTemplate.Subject = request.Body.Meta.ConfirmEmailChangeTemplate.Subject
+	// settings.Meta.ResetPasswordTemplate.ActionURL = request.Body.Meta.ResetPasswordTemplate.ActionUrl
+	// settings.Meta.ResetPasswordTemplate.Body = request.Body.Meta.ResetPasswordTemplate.Body
+	// settings.Meta.ResetPasswordTemplate.Hidden = request.Body.Meta.ResetPasswordTemplate.Hidden
+	// settings.Meta.ResetPasswordTemplate.Subject = request.Body.Meta.ResetPasswordTemplate.Subject
+	// settings.Meta.VerificationTemplate.ActionURL = request.Body.Meta.VerificationTemplate.ActionUrl
+	// settings.Meta.VerificationTemplate.Body = request.Body.Meta.VerificationTemplate.Body
+	// settings.Meta.VerificationTemplate.Hidden = request.Body.Meta.VerificationTemplate.Hidden
+	// settings.Meta.VerificationTemplate.Subject = request.Body.Meta.VerificationTemplate.Subject
+	// settings.Logs.LogIP = request.Body.Logs.LogIp
+	// settings.Logs.MaxDays = request.Body.Logs.MaxDays
+	// settings.Logs.MinLevel = request.Body.Logs.MinLevel
+	settings.SMTP.Enabled = request.Body.Smtp.Enabled
+	settings.SMTP.Host = request.Body.Smtp.Host
+	settings.SMTP.Port = request.Body.Smtp.Port
+	settings.SMTP.Username = request.Body.Smtp.Username
+	settings.SMTP.Password = request.Body.Smtp.Password
+	settings.SMTP.AuthMethod = request.Body.Smtp.AuthMethod
+	settings.SMTP.TLS = request.Body.Smtp.Tls
+	settings.SMTP.LocalName = request.Body.Smtp.LocalName
+	// settings.S3.Enabled = request.Body.S3.Enabled
+	// settings.S3.Bucket = request.Body.S3.Bucket
+	// settings.S3.Endpoint = request.Body.S3.Endpoint
+	// settings.S3.ForcePathStyle = request.Body.S3.ForcePathStyle
+	// settings.S3.Region = request.Body.S3.Region
+	// settings.S3.Secret = request.Body.S3.Secret
+	// settings.S3.AccessKey = request.Body.S3.AccessKey
+	// settings.Backups.CronMaxKeep = request.Body.Backups.CronMaxKeep
+	// settings.Backups.Cron = request.Body.Backups.Cron
+	// settings.Backups.S3.Enabled = request.Body.Backups.S3.Enabled
+	// settings.Backups.S3.Bucket = request.Body.Backups.S3.Bucket
+	// settings.Backups.S3.Endpoint = request.Body.Backups.S3.Endpoint
+	// settings.Backups.S3.ForcePathStyle = request.Body.Backups.S3.ForcePathStyle
+	// settings.Backups.S3.Region = request.Body.Backups.S3.Region
+	// settings.Backups.S3.AccessKey = request.Body.Backups.S3.AccessKey
+	// settings.Backups.S3.Secret = request.Body.Backups.S3.Secret
 
 	if err := database.SaveSettings(ctx, s.queries, settings); err != nil {
 		return nil, fmt.Errorf("failed to save settings: %w", err)

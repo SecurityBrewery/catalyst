@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -16,15 +17,26 @@ const (
 	ScopeReset    = "reset"
 )
 
-func (s *Service) CreateAccessToken(user *sqlc.User, permissions []string, duration time.Duration) (string, error) {
-	return s.createToken(user, duration, PurposeAccess, permissions, s.config.AuthToken)
+func (s *Service) CreateAccessToken(ctx context.Context, user *sqlc.User, permissions []string, duration time.Duration) (string, error) {
+	settings, err := database.LoadSettings(ctx, s.queries)
+	if err != nil {
+		return "", fmt.Errorf("failed to load settings: %w", err)
+	}
+
+	return s.createToken(user, duration, PurposeAccess, permissions, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
 }
 
-func (s *Service) CreateResetToken(user *sqlc.User, duration time.Duration) (string, error) {
-	return s.createToken(user, duration, PurposeReset, []string{ScopeReset}, s.config.ResetToken)
+func (s *Service) CreateResetToken(user *sqlc.User, settings *database.Settings) (string, error) {
+	duration := time.Duration(settings.RecordPasswordResetToken.Duration) * time.Second
+
+	return s.createResetToken(user, settings.Meta.AppURL, settings.RecordPasswordResetToken.Secret, duration)
 }
 
-func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string, appToken string) (string, error) {
+func (s *Service) createResetToken(user *sqlc.User, url, appToken string, duration time.Duration) (string, error) {
+	return s.createToken(user, duration, PurposeReset, []string{ScopeReset}, url, appToken)
+}
+
+func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string, url, appToken string) (string, error) {
 	if scopes == nil {
 		scopes = []string{}
 	}
@@ -33,7 +45,7 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 		"sub":     user.ID,
 		"exp":     time.Now().Add(duration).Unix(),
 		"iat":     time.Now().Unix(),
-		"iss":     s.config.URL,
+		"iss":     url,
 		"purpose": purpose,
 		"scopes":  scopes,
 	}
@@ -45,7 +57,7 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *Service) verifyToken(tokenStr string, user *sqlc.User, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
+func (s *Service) verifyToken(tokenStr string, user *sqlc.User, url, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
 	signingKey := user.Tokenkey + appToken
 
 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
@@ -73,7 +85,7 @@ func (s *Service) verifyToken(tokenStr string, user *sqlc.User, appToken string)
 		return nil, fmt.Errorf("failed to get issuer: %w", err)
 	}
 
-	if iss != s.config.URL {
+	if iss != url {
 		return nil, fmt.Errorf("token issued by a different server")
 	}
 
@@ -119,7 +131,12 @@ func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*s
 		return nil, nil, fmt.Errorf("failed to retrieve user for subject %s: %w", sub, err)
 	}
 
-	claims, err = s.verifyToken(bearerToken, &user, s.config.AuthToken)
+	settings, err := database.LoadSettings(ctx, s.queries)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to load settings: %w", err)
+	}
+
+	claims, err = s.verifyToken(bearerToken, &user, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to verify token: %w", err)
 	}
@@ -131,8 +148,8 @@ func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*s
 	return &user, claims, nil
 }
 
-func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User) error {
-	claims, err := s.verifyToken(tokenStr, user, s.config.ResetToken)
+func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User, url, appToken string) error {
+	claims, err := s.verifyToken(tokenStr, user, url, appToken)
 	if err != nil {
 		return err
 	}

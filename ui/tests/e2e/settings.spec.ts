@@ -1,5 +1,5 @@
-import { expect } from '@playwright/test'
 import { login, test } from './util'
+import { expect } from '@playwright/test'
 
 const goToSettings = async (page) => {
   await page.goto('settings')
@@ -13,10 +13,18 @@ test('settings page shows existing settings', async ({ page }) => {
 })
 
 const updates = [
-  { field: 'app name', selector: '#meta\\.appName', value: 'Catalyst Playwright' },
-  { field: 'app url', selector: '#meta\\.appUrl', value: 'https://playwright.example.com' },
-  { field: 'sender name', selector: '#meta\\.senderName', value: 'Playwright' },
-  { field: 'sender address', selector: '#meta\\.senderAddress', value: 'playwright@example.com' }
+  { field: 'app name', selector: '#meta\\.appName', value: () => `Catalyst-${Date.now()}` },
+  // {
+  //   field: 'app url',
+  //   selector: '#meta\\.appUrl',
+  //   value: () => `https://catalyst-${Date.now()}.example.com`
+  // },
+  { field: 'sender name', selector: '#meta\\.senderName', value: () => `Catalyst-${Date.now()}` },
+  {
+    field: 'sender address',
+    selector: '#meta\\.senderAddress',
+    value: () => `catalyst-${Date.now()}@example.com`
+  }
 ]
 
 test.describe('update settings', () => {
@@ -24,11 +32,12 @@ test.describe('update settings', () => {
     test(`can update ${field}`, async ({ page }) => {
       await login(page)
       await goToSettings(page)
-      await page.locator(selector).fill(value)
+      const v = value()
+      await page.locator(selector).fill(v)
       const saveBtn = page.getByRole('button', { name: 'Save' }).last()
       await expect(saveBtn).toBeEnabled()
       await saveBtn.click()
-      await expect(page.locator(selector)).toHaveValue(value)
+      await expect(page.locator(selector)).toHaveValue(v)
     })
   }
 

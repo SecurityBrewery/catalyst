@@ -145,6 +145,30 @@ func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	return &settings, nil
 }
 
+const (
+	//nolint: gosec
+	resetPasswordTemplateBody = `<p>Hello,</p>
+<p>Click on the button below to reset your password.</p>
+<p>
+  <a class="btn" href="{ACTION_URL}" target="_blank" rel="noopener">Reset password</a>
+</p>
+<p><i>If you didn't ask to reset your password, you can ignore this email.</i></p>
+<p>
+  Thanks,<br/>
+  {APP_NAME} team
+</p>`
+	verificationTemplateBody = `<p>Hello,</p>
+<p>Thank you for joining us at {APP_NAME}.</p>
+<p>Click on the button below to verify your email address.</p>
+<p>
+  <a class="btn" href="{ACTION_URL}" target="_blank" rel="noopener">Verify</a>
+</p>
+<p>
+  Thanks,<br/>
+  {APP_NAME} team
+</p>`
+)
+
 func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error) {
 	s := &Settings{
 		Meta: Meta{
@@ -152,6 +176,10 @@ func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 			AppURL:        "https://localhost.com",
 			SenderName:    "Catalyst",
 			SenderAddress: "no-reply@example.com",
+			ResetPasswordTemplate: EmailTemplate{
+				Subject: "Reset your {APP_NAME} password",
+				Body:    resetPasswordTemplateBody,
+			},
 		},
 		SMTP: SMTP{
 			Host: "smtp.example.com",

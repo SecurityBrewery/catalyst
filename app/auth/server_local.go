@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"net/http"
 	"time"
 
@@ -48,7 +49,16 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := s.CreateAccessToken(user, permissions, time.Hour*24)
+	settings, err := database.LoadSettings(r.Context(), s.queries)
+	if err != nil {
+		errorJSON(w, http.StatusInternalServerError, "Failed to load settings")
+
+		return
+	}
+
+	duration := time.Duration(settings.RecordAuthToken.Duration) * time.Second
+
+	token, err := s.CreateAccessToken(r.Context(), user, permissions, duration)
 	if err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to create login token")
 

@@ -20,7 +20,6 @@ type App struct {
 	Queries   *sqlc.Queries
 	Router    *chi.Mux
 	Service   *service.Service
-	Config    *auth.Config
 	Auth      *auth.Service
 	Hooks     *hook.Hooks
 	Scheduler *schedule.Scheduler
@@ -34,20 +33,9 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 
 	mailer := mail.New(queries)
 
-	settings, err := database.LoadSettings(ctx, queries)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get settings: %w", err)
-	}
+	authService := auth.New(queries, mailer)
 
-	authConfig := &auth.Config{
-		AuthToken:  settings.RecordAuthToken.Secret,
-		ResetToken: settings.RecordPasswordResetToken.Secret,
-		URL:        settings.Meta.AppURL,
-	}
-
-	authService := auth.New(queries, mailer, authConfig)
-
-	scheduler, err := schedule.New(ctx, authConfig, authService, queries)
+	scheduler, err := schedule.New(ctx, authService, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create scheduler: %w", err)
 	}
@@ -59,7 +47,6 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 		Queries:   queries,
 		Router:    chi.NewRouter(),
 		Service:   service.New(queries, hooks, scheduler),
-		Config:    authConfig,
 		Auth:      authService,
 		Scheduler: scheduler,
 	}, cleanup, nil

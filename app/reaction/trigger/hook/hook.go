@@ -11,6 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/permission"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
@@ -78,8 +79,13 @@ func runHook(ctx context.Context, app *app.App, collection, event string, record
 
 	var errs error
 
+	settings, err := database.LoadSettings(ctx, app.Queries)
+	if err != nil {
+		return fmt.Errorf("failed to load settings: %w", err)
+	}
+
 	for _, hook := range hooks {
-		_, err = action.Run(ctx, app.Config, app.Auth, app.Queries, hook.Action, hook.Actiondata, string(payload))
+		_, err = action.Run(ctx, settings.Meta.AppURL, app.Auth, app.Queries, hook.Action, hook.Actiondata, string(payload))
 		if err != nil {
 			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
 		}
