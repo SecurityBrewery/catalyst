@@ -33,7 +33,7 @@ func (s *Service) handleUser(w http.ResponseWriter, r *http.Request) {
 
 	permissions, err := s.queries.ListUserPermissions(r.Context(), user.ID)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, err.Error())
+		errorJSON(w, http.StatusInternalServerError, err.Error())
 
 		return
 	}
@@ -43,7 +43,7 @@ func (s *Service) handleUser(w http.ResponseWriter, r *http.Request) {
 		"permissions": permissions,
 	})
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, err.Error())
+		errorJSON(w, http.StatusInternalServerError, err.Error())
 
 		return
 	}

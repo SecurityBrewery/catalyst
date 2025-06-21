@@ -131,18 +131,18 @@ copy_existing_data: reset_data
 	mkdir -p catalyst_data
 	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
 
-.PHONY: dev
-dev: reset_data
+.PHONY: dev-proxy-ui
+dev-proxy-ui: reset_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data
 	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
 
-.PHONY: dev_upgrade
-dev_upgrade: copy_existing_data
+.PHONY: dev-upgrade-proxy-ui
+dev-upgrade-proxy-ui: copy_existing_data
 	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
 
-.PHONY: dev-playwright
-dev-playwright: reset_data
+.PHONY: dev-upgrade
+dev-upgrade: copy_existing_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . serve --app-url http://localhost:8090 --flags dev
 

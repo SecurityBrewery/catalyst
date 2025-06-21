@@ -31,7 +31,7 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 		if err != nil {
 			slog.ErrorContext(r.Context(), "invalid bearer token", "error", err)
 
-			scimUnauthorized(w, "invalid bearer token")
+			unauthorizedJSON(w, "invalid bearer token")
 
 			return
 		}
@@ -40,7 +40,7 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 		if err != nil {
 			slog.ErrorContext(r.Context(), "failed to get scopes from token", "error", err)
 
-			scimUnauthorized(w, "failed to get scopes")
+			unauthorizedJSON(w, "failed to get scopes")
 
 			return
 		}
@@ -59,7 +59,7 @@ func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictne
 		if err != nil {
 			slog.ErrorContext(ctx, "failed to get required scopes", "error", err)
 
-			scimUnauthorized(w, "failed to get required scopes")
+			unauthorizedJSON(w, "failed to get required scopes")
 
 			return
 		}
@@ -68,14 +68,14 @@ func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictne
 			permissions, ok := usercontext.PermissionFromContext(ctx)
 			if !ok {
 				slog.ErrorContext(ctx, "missing permissions")
-				scimUnauthorized(w, "missing permissions")
+				unauthorizedJSON(w, "missing permissions")
 
 				return
 			}
 
 			if !hasScope(permissions, requiredScopes) {
 				slog.ErrorContext(ctx, "missing required scopes", "required", requiredScopes, "permissions", permissions)
-				scimUnauthorized(w, "missing required scopes")
+				unauthorizedJSON(w, "missing required scopes")
 
 				return
 			}

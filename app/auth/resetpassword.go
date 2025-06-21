@@ -21,7 +21,7 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 
 	var data passwordResetData
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		scimError(w, http.StatusBadRequest, "Invalid request, missing email field")
+		errorJSON(w, http.StatusBadRequest, "Invalid request, missing email field")
 
 		return
 	}
@@ -36,14 +36,14 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		scimError(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
 
 		return
 	}
 
 	resetToken, err := s.CreateResetToken(&user, resetTokenExpiration)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to create reset token: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to create reset token: "+err.Error())
 
 		return
 	}
@@ -59,7 +59,7 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 			"?email="+data.Email+
 			"&token="+resetToken,
 	); err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to send password reset email: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to send password reset email: "+err.Error())
 
 		return
 	}
@@ -71,14 +71,14 @@ func (s *Service) handlePasswordResetRequest(w http.ResponseWriter, r *http.Requ
 func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 	email := r.URL.Query().Get("email")
 	if email == "" {
-		scimError(w, http.StatusBadRequest, "Missing email parameter")
+		errorJSON(w, http.StatusBadRequest, "Missing email parameter")
 
 		return
 	}
 
 	token := r.URL.Query().Get("token")
 	if token == "" {
-		scimError(w, http.StatusBadRequest, "Missing reset token")
+		errorJSON(w, http.StatusBadRequest, "Missing reset token")
 
 		return
 	}
@@ -86,18 +86,18 @@ func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 	user, err := s.queries.UserByEmail(r.Context(), email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			scimError(w, http.StatusBadRequest, "Invalid or expired reset token")
+			errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token")
 
 			return
 		}
 
-		scimError(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
 
 		return
 	}
 
 	if err := s.verifyResetToken(token, &user); err != nil {
-		scimError(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
+		errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
 
 		return
 	}
@@ -123,21 +123,21 @@ func (s *Service) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
 func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request) {
 	email := r.Form.Get("email")
 	if email == "" {
-		scimError(w, http.StatusBadRequest, "Missing email parameter")
+		errorJSON(w, http.StatusBadRequest, "Missing email parameter")
 
 		return
 	}
 
 	token := r.Form.Get("token")
 	if token == "" {
-		scimError(w, http.StatusBadRequest, "Missing reset token")
+		errorJSON(w, http.StatusBadRequest, "Missing reset token")
 
 		return
 	}
 
 	pw := r.Form.Get("newPassword")
 	if pw == "" {
-		scimError(w, http.StatusBadRequest, "Missing new password")
+		errorJSON(w, http.StatusBadRequest, "Missing new password")
 
 		return
 	}
@@ -145,25 +145,25 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 	user, err := s.queries.UserByEmail(r.Context(), email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			scimError(w, http.StatusBadRequest, "Invalid or expired reset token")
+			errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token")
 
 			return
 		}
 
-		scimError(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to get user: "+err.Error())
 
 		return
 	}
 
 	if err := s.verifyResetToken(token, &user); err != nil {
-		scimError(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
+		errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token: "+err.Error())
 
 		return
 	}
 
 	passwordHash, tokenKey, err := password.Hash(pw)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
 
 		return
 	}
@@ -173,7 +173,7 @@ func (s *Service) handlePasswordResetPost(w http.ResponseWriter, r *http.Request
 		TokenKey:        sql.NullString{String: tokenKey, Valid: true},
 		LastResetSentAt: sql.NullString{String: time.Now().UTC().Format(time.RFC3339), Valid: true},
 	}); err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to update password: "+err.Error())
+		errorJSON(w, http.StatusInternalServerError, "Failed to update password: "+err.Error())
 
 		return
 	}

@@ -42,7 +42,7 @@ func TestService_Middleware(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"schemas":["urn:ietf:params:scim:api:messages:2.0:Error"],"detail":"invalid bearer token","status":"401"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token"}`),
 			},
 		},
 		{
@@ -55,7 +55,7 @@ func TestService_Middleware(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"schemas":["urn:ietf:params:scim:api:messages:2.0:Error"],"detail":"invalid bearer token","status":"401"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token"}`),
 			},
 		},
 		{
@@ -127,7 +127,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"schemas":["urn:ietf:params:scim:api:messages:2.0:Error"],"detail":"missing required scopes","status":"401"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes"}`),
 			},
 		},
 		{
@@ -139,7 +139,7 @@ func TestService_ValidateScopes(t *testing.T) {
 			},
 			want: httptest.ResponseRecorder{
 				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"schemas":["urn:ietf:params:scim:api:messages:2.0:Error"],"detail":"missing required scopes","status":"401"}`),
+				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "missing required scopes"}`),
 			},
 		},
 		{

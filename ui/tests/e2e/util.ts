@@ -1,10 +1,10 @@
-import { test as baseTest } from 'playwright/test'
 import { expect } from '@playwright/test'
+import { test as baseTest } from 'playwright/test'
 
 export const test = baseTest.extend({
   page: async ({ page }, use) => {
-    page.on('console', msg => console.log(msg.text()));
-    page.on('response', async response => {
+    page.on('console', (msg) => console.log(msg.text()))
+    page.on('response', async (response) => {
       if (response.status() >= 400) {
         console.error('Error response:', response.status(), response.url())
       }
@@ -15,9 +15,13 @@ export const test = baseTest.extend({
   }
 })
 
-export const login = async (page) => {
+export const login = async (page, admin: boolean = true) => {
   await page.goto('login')
-  await page.getByPlaceholder('Username').fill('admin@catalyst-soar.com')
+  if (admin) {
+    await page.getByPlaceholder('Username').fill('admin@catalyst-soar.com')
+  } else {
+    await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
+  }
   await page.getByPlaceholder('Password').fill('1234567890')
   await page.getByRole('button', { name: 'Login' }).click()
   await page.waitForURL('**/dashboard')

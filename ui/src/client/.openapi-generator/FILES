@@ -2,7 +2,6 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
-models/AuthConfig.ts
 models/Comment.ts
 models/CommentUpdate.ts
 models/Config.ts
@@ -49,7 +48,6 @@ models/TicketSearch.ts
 models/TicketUpdate.ts
 models/TimelineEntry.ts
 models/TimelineEntryUpdate.ts
-models/TokenConfig.ts
 models/Type.ts
 models/TypeUpdate.ts
 models/User.ts

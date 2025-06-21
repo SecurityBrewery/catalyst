@@ -19,14 +19,6 @@ const (
 	OAuth2Scopes = "OAuth2.Scopes"
 )
 
-// AuthConfig defines model for AuthConfig.
-type AuthConfig struct {
-	Enabled           bool   `json:"enabled"`
-	ExceptDomains     string `json:"except_domains"`
-	MinPasswordLength int    `json:"min_password_length"`
-	OnlyDomains       string `json:"only_domains"`
-}
-
 // Comment defines model for Comment.
 type Comment struct {
 	Author  string `json:"author"`
@@ -310,20 +302,11 @@ type S3Config struct {
 
 // Settings defines model for Settings.
 type Settings struct {
-	AdminAuthToken           TokenConfig     `json:"admin_auth_token"`
-	AdminFileToken           TokenConfig     `json:"admin_file_token"`
-	AdminPasswordResetToken  TokenConfig     `json:"admin_password_reset_token"`
-	Backups                  SettingsBackups `json:"backups"`
-	EmailAuth                AuthConfig      `json:"email_auth"`
-	Logs                     SettingsLogs    `json:"logs"`
-	Meta                     SettingsMeta    `json:"meta"`
-	RecordAuthToken          TokenConfig     `json:"record_auth_token"`
-	RecordEmailChangeToken   TokenConfig     `json:"record_email_change_token"`
-	RecordFileToken          TokenConfig     `json:"record_file_token"`
-	RecordPasswordResetToken TokenConfig     `json:"record_password_reset_token"`
-	RecordVerificationToken  TokenConfig     `json:"record_verification_token"`
-	S3                       S3Config        `json:"s3"`
-	Smtp                     SettingsSmtp    `json:"smtp"`
+	Backups SettingsBackups `json:"backups"`
+	Logs    SettingsLogs    `json:"logs"`
+	Meta    SettingsMeta    `json:"meta"`
+	S3      S3Config        `json:"s3"`
+	Smtp    SettingsSmtp    `json:"smtp"`
 }
 
 // SettingsBackups defines model for SettingsBackups.
@@ -450,12 +433,6 @@ type TimelineEntry struct {
 type TimelineEntryUpdate struct {
 	Message *string `json:"message,omitempty"`
 	Time    *string `json:"time,omitempty"`
-}
-
-// TokenConfig defines model for TokenConfig.
-type TokenConfig struct {
-	Duration int    `json:"duration"`
-	Secret   string `json:"secret"`
 }
 
 // Type defines model for Type.

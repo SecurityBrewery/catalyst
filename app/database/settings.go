@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -153,14 +154,43 @@ func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 			SenderAddress: "no-reply@example.com",
 		},
 		SMTP: SMTP{
-			Enabled:    false,
-			Host:       "smtp.example.com",
-			Port:       587,
-			Username:   "username",
-			Password:   "password",
-			AuthMethod: "plain",
-			TLS:        true,
-			LocalName:  "",
+			Host: "smtp.example.com",
+			Port: 587,
+		},
+		Backups: Backups{
+			CronMaxKeep: 3,
+		},
+		AdminAuthToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 1209600, // 14 days
+		},
+		AdminPasswordResetToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 1800, // 30 minutes
+		},
+		AdminFileToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 120, // 2 minutes
+		},
+		RecordAuthToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 1209600, // 14 days
+		},
+		RecordPasswordResetToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 1800, // 30 minutes
+		},
+		RecordEmailChangeToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 1800, // 30 minutes
+		},
+		RecordVerificationToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 604800, // 7 days
+		},
+		RecordFileToken: TokenConfig{
+			Secret:   rand.Text(),
+			Duration: 120, // 2 minutes
 		},
 	}
 

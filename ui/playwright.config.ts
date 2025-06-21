@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   webServer: {
-    command: 'make -C .. dev-playwright',
+    command: 'make -C .. dev-upgrade',
     port: 8090,
     reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes timeout

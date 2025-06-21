@@ -16,13 +16,13 @@ const createFullTicket = async (page, name: string) => {
 }
 
 test('dashboard screenshot', async ({ page }) => {
-  await login(page)
+  await login(page, false)
   await page.waitForTimeout(7000)
   await page.screenshot({ path: screenshot('dashboard') })
 })
 
 test('ticket screenshot', async ({ page }) => {
-  await login(page)
+  await login(page, false)
   const name = 'INCIDENT-1234'
   await createFullTicket(page, name)
   await page.getByText("Toggle Sidebar").click()
@@ -31,7 +31,7 @@ test('ticket screenshot', async ({ page }) => {
 })
 
 test('tasks screenshot', async ({ page }) => {
-  await login(page)
+  await login(page, false)
   const ticketName = 'INCIDENT-1234'
   await createFullTicket(page, ticketName)
   await createTask(page, 'Follow up with HR department', false)
@@ -41,7 +41,7 @@ test('tasks screenshot', async ({ page }) => {
 })
 
 test('reactions screenshot', async ({ page }) => {
-  await login(page)
+  await login(page, false)
   await page.goto('reactions')
   await page.getByText('Assign new Tickets').click()
   await expect(page.getByRole('heading', { name: 'Reactions' })).toBeVisible()

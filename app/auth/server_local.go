@@ -23,7 +23,7 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	var data loginData
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		scimUnauthorized(w, "Invalid request")
+		unauthorizedJSON(w, "Invalid request")
 
 		return
 	}
@@ -31,26 +31,26 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 	user, err := s.loginWithMail(r.Context(), data.Email, data.Password)
 	if err != nil {
 		if errors.Is(err, ErrUserInactive) {
-			scimUnauthorized(w, "User is inactive")
+			unauthorizedJSON(w, "User is inactive")
 
 			return
 		}
 
-		scimUnauthorized(w, "Login failed")
+		unauthorizedJSON(w, "Login failed")
 
 		return
 	}
 
 	permissions, err := s.queries.ListUserPermissions(r.Context(), user.ID)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to get user permissions")
+		errorJSON(w, http.StatusInternalServerError, "Failed to get user permissions")
 
 		return
 	}
 
 	token, err := s.CreateAccessToken(user, permissions, time.Hour*24)
 	if err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to create login token")
+		errorJSON(w, http.StatusInternalServerError, "Failed to create login token")
 
 		return
 	}
@@ -63,7 +63,7 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		scimError(w, http.StatusInternalServerError, "Failed to encode response")
+		errorJSON(w, http.StatusInternalServerError, "Failed to encode response")
 
 		return
 	}

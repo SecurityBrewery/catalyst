@@ -40,13 +40,13 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signingKey := s.config.AppSecret + user.Tokenkey
+	signingKey := user.Tokenkey + s.config.AppSecret
 
 	return token.SignedString([]byte(signingKey))
 }
 
 func (s *Service) verifyToken(tokenStr string, user *sqlc.User) (jwt.MapClaims, error) { //nolint:cyclop
-	signingKey := s.config.AppSecret + user.Tokenkey
+	signingKey := user.Tokenkey + s.config.AppSecret
 
 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {

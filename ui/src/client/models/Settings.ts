@@ -12,13 +12,6 @@
  * Do not edit the class manually.
  */
 import { mapValues } from '../runtime'
-import type { AuthConfig } from './AuthConfig'
-import {
-  AuthConfigFromJSON,
-  AuthConfigFromJSONTyped,
-  AuthConfigToJSON,
-  AuthConfigToJSONTyped
-} from './AuthConfig'
 import type { S3Config } from './S3Config'
 import {
   S3ConfigFromJSON,
@@ -54,13 +47,6 @@ import {
   SettingsSmtpToJSON,
   SettingsSmtpToJSONTyped
 } from './SettingsSmtp'
-import type { TokenConfig } from './TokenConfig'
-import {
-  TokenConfigFromJSON,
-  TokenConfigFromJSONTyped,
-  TokenConfigToJSON,
-  TokenConfigToJSONTyped
-} from './TokenConfig'
 
 /**
  *
@@ -98,60 +84,6 @@ export interface Settings {
    * @memberof Settings
    */
   backups: SettingsBackups
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  adminAuthToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  adminPasswordResetToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  adminFileToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  recordAuthToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  recordPasswordResetToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  recordEmailChangeToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  recordVerificationToken: TokenConfig
-  /**
-   *
-   * @type {TokenConfig}
-   * @memberof Settings
-   */
-  recordFileToken: TokenConfig
-  /**
-   *
-   * @type {AuthConfig}
-   * @memberof Settings
-   */
-  emailAuth: AuthConfig
 }
 
 /**
@@ -163,19 +95,6 @@ export function instanceOfSettings(value: object): value is Settings {
   if (!('smtp' in value) || value['smtp'] === undefined) return false
   if (!('s3' in value) || value['s3'] === undefined) return false
   if (!('backups' in value) || value['backups'] === undefined) return false
-  if (!('adminAuthToken' in value) || value['adminAuthToken'] === undefined) return false
-  if (!('adminPasswordResetToken' in value) || value['adminPasswordResetToken'] === undefined)
-    return false
-  if (!('adminFileToken' in value) || value['adminFileToken'] === undefined) return false
-  if (!('recordAuthToken' in value) || value['recordAuthToken'] === undefined) return false
-  if (!('recordPasswordResetToken' in value) || value['recordPasswordResetToken'] === undefined)
-    return false
-  if (!('recordEmailChangeToken' in value) || value['recordEmailChangeToken'] === undefined)
-    return false
-  if (!('recordVerificationToken' in value) || value['recordVerificationToken'] === undefined)
-    return false
-  if (!('recordFileToken' in value) || value['recordFileToken'] === undefined) return false
-  if (!('emailAuth' in value) || value['emailAuth'] === undefined) return false
   return true
 }
 
@@ -192,16 +111,7 @@ export function SettingsFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     logs: SettingsLogsFromJSON(json['logs']),
     smtp: SettingsSmtpFromJSON(json['smtp']),
     s3: S3ConfigFromJSON(json['s3']),
-    backups: SettingsBackupsFromJSON(json['backups']),
-    adminAuthToken: TokenConfigFromJSON(json['admin_auth_token']),
-    adminPasswordResetToken: TokenConfigFromJSON(json['admin_password_reset_token']),
-    adminFileToken: TokenConfigFromJSON(json['admin_file_token']),
-    recordAuthToken: TokenConfigFromJSON(json['record_auth_token']),
-    recordPasswordResetToken: TokenConfigFromJSON(json['record_password_reset_token']),
-    recordEmailChangeToken: TokenConfigFromJSON(json['record_email_change_token']),
-    recordVerificationToken: TokenConfigFromJSON(json['record_verification_token']),
-    recordFileToken: TokenConfigFromJSON(json['record_file_token']),
-    emailAuth: AuthConfigFromJSON(json['email_auth'])
+    backups: SettingsBackupsFromJSON(json['backups'])
   }
 }
 
@@ -222,15 +132,6 @@ export function SettingsToJSONTyped(
     logs: SettingsLogsToJSON(value['logs']),
     smtp: SettingsSmtpToJSON(value['smtp']),
     s3: S3ConfigToJSON(value['s3']),
-    backups: SettingsBackupsToJSON(value['backups']),
-    admin_auth_token: TokenConfigToJSON(value['adminAuthToken']),
-    admin_password_reset_token: TokenConfigToJSON(value['adminPasswordResetToken']),
-    admin_file_token: TokenConfigToJSON(value['adminFileToken']),
-    record_auth_token: TokenConfigToJSON(value['recordAuthToken']),
-    record_password_reset_token: TokenConfigToJSON(value['recordPasswordResetToken']),
-    record_email_change_token: TokenConfigToJSON(value['recordEmailChangeToken']),
-    record_verification_token: TokenConfigToJSON(value['recordVerificationToken']),
-    record_file_token: TokenConfigToJSON(value['recordFileToken']),
-    email_auth: AuthConfigToJSON(value['emailAuth'])
+    backups: SettingsBackupsToJSON(value['backups'])
   }
 }

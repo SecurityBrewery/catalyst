@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './AuthConfig'
 export * from './Comment'
 export * from './CommentUpdate'
 export * from './Config'
@@ -47,7 +46,6 @@ export * from './TicketSearch'
 export * from './TicketUpdate'
 export * from './TimelineEntry'
 export * from './TimelineEntryUpdate'
-export * from './TokenConfig'
 export * from './Type'
 export * from './TypeUpdate'
 export * from './User'

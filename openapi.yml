@@ -1068,25 +1068,7 @@ components:
           $ref: '#/components/schemas/S3Config'
         backups:
           $ref: '#/components/schemas/SettingsBackups'
-        admin_auth_token:
-          $ref: '#/components/schemas/TokenConfig'
-        admin_password_reset_token:
-          $ref: '#/components/schemas/TokenConfig'
-        admin_file_token:
-          $ref: '#/components/schemas/TokenConfig'
-        record_auth_token:
-          $ref: '#/components/schemas/TokenConfig'
-        record_password_reset_token:
-          $ref: '#/components/schemas/TokenConfig'
-        record_email_change_token:
-          $ref: '#/components/schemas/TokenConfig'
-        record_verification_token:
-          $ref: '#/components/schemas/TokenConfig'
-        record_file_token:
-          $ref: '#/components/schemas/TokenConfig'
-        email_auth:
-          $ref: '#/components/schemas/AuthConfig'
-      required: [ "meta", "logs", "smtp", "s3", "backups", "admin_auth_token", "admin_password_reset_token", "admin_file_token", "record_auth_token", "record_password_reset_token", "record_email_change_token", "record_verification_token", "record_file_token", "email_auth" ]
+      required: [ "meta", "logs", "smtp", "s3", "backups" ]
     SettingsMeta:
       type: object
       properties:
@@ -1177,23 +1159,3 @@ components:
         force_path_style:
           type: boolean
       required: [ "enabled", "bucket", "region", "endpoint", "access_key", "secret", "force_path_style" ]
-    TokenConfig:
-      type: object
-      properties:
-        secret:
-          type: string
-        duration:
-          type: integer
-      required: [ "secret", "duration" ]
-    AuthConfig:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-        except_domains:
-          type: string
-        only_domains:
-          type: string
-        min_password_length:
-          type: integer
-      required: [ "enabled", "except_domains", "only_domains", "min_password_length" ]
