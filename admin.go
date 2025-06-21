@@ -31,7 +31,7 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 		return errors.New("failed to hash password: " + err.Error())
 	}
 
-	admin, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
+	user, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
 		ID:           database.GenerateID("u"),
 		Name:         command.Args().Get(0),
 		Email:        command.Args().Get(0),
@@ -46,13 +46,13 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 	}
 
 	if err := catalyst.Queries.AssignGroupToUser(ctx, sqlc.AssignGroupToUserParams{
-		UserID:  admin.ID,
+		UserID:  user.ID,
 		GroupID: "admin",
 	}); err != nil {
 		return err
 	}
 
-	slog.InfoContext(ctx, "creating test user", "id", admin.ID)
+	slog.InfoContext(ctx, "Creating admin", "id", user.ID, "email", user.Email)
 
 	return nil
 }
@@ -87,7 +87,7 @@ func adminSetPassword(ctx context.Context, command *cli.Command) error {
 		return err
 	}
 
-	slog.InfoContext(ctx, "setting password for user", "id", user.ID)
+	slog.InfoContext(ctx, "Setting password for admin", "id", user.ID, "email", user.Email)
 
 	return nil
 }
@@ -115,7 +115,7 @@ func adminDelete(ctx context.Context, command *cli.Command) error {
 		return err
 	}
 
-	slog.InfoContext(ctx, "deleting user", "id", mail)
+	slog.InfoContext(ctx, "Deleted admin", "id", user.ID, "email", mail)
 
 	return nil
 }

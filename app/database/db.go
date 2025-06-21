@@ -4,26 +4,19 @@ import (
 	"context"
 	"crypto/rand"
 	"database/sql"
-	"embed"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/mattn/go-sqlite3" // import sqlite driver
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/migration"
 )
 
 const sqliteDriver = "sqlite3"
-
-//go:embed migrations/*.sql
-var schema embed.FS
 
 func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	slog.InfoContext(ctx, "Connecting to database", "path", filename)
@@ -74,7 +67,7 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	read.SetMaxOpenConns(100)
 	read.SetConnMaxIdleTime(time.Minute)
 
-	if err := migrateDB(write); err != nil {
+	if err := migration.Apply(ctx, write); err != nil {
 		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
@@ -87,29 +80,6 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 			slog.Error("failed to close write connection", "error", err)
 		}
 	}, nil
-}
-
-func migrateDB(db *sql.DB) error {
-	iofsSource, err := iofs.New(schema, "migrations")
-	if err != nil {
-		return fmt.Errorf("failed to create iofs source: %w", err)
-	}
-
-	sqliteDriver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
-	if err != nil {
-		return fmt.Errorf("failed to create sqlite driver: %w", err)
-	}
-
-	m, err := migrate.NewWithInstance("iofs", iofsSource, "sqlite", sqliteDriver)
-	if err != nil {
-		return fmt.Errorf("failed to create migrate instance: %w", err)
-	}
-
-	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("migration failed: %w", err)
-	}
-
-	return nil
 }
 
 func GenerateID(prefix string) string {

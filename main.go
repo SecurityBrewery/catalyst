@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -72,8 +71,11 @@ func main() {
 		},
 	}
 
-	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		log.Fatal(err)
+	ctx := context.Background()
+	if err := cmd.Run(ctx, os.Args); err != nil {
+		slog.ErrorContext(ctx, "Error running catalyst", "error", err)
+
+		os.Exit(1)
 	}
 }
 
@@ -123,6 +125,8 @@ func serve(ctx context.Context, command *cli.Command) error {
 		ReadTimeout: 10 * time.Minute,
 	}
 
+	slog.InfoContext(ctx, "Starting Catalyst server", "address", server.Addr)
+
 	return server.ListenAndServe()
 }
 
@@ -142,7 +146,7 @@ func fakeData(ctx context.Context, command *cli.Command) error {
 		return err
 	}
 
-	slog.InfoContext(ctx, "fake data generated", "users", command.Int("users"), "tickets", command.Int("tickets"))
+	slog.InfoContext(ctx, "Fake data generated", "users", command.Int("users"), "tickets", command.Int("tickets"))
 
 	return nil
 }
