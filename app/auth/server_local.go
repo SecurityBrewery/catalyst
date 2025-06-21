@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"net/http"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
