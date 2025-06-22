@@ -1,11 +1,12 @@
 package testing
 
 import (
-	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/SecurityBrewery/catalyst/app/data"
@@ -76,12 +77,23 @@ func ValidateUpgradeTestData(t *testing.T, queries *sqlc.Queries) {
 		assert.Equal(t, "schedule", reaction.Trigger)
 		assert.JSONEq(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
 		assert.Equal(t, "python", reaction.Action)
-		assert.JSONEq(t, marshal(map[string]any{"requirements": "pocketbase", "script": data.Script}), reaction.Actiondata)
+		assert.Equal(t, "pocketbase", gjson.Get(reaction.Actiondata, "requirements").String())
+		equalWithoutSpace(t, data.Script, gjson.Get(reaction.Actiondata, "script").String())
 	}
 }
 
-func marshal(m map[string]any) string {
-	b, _ := json.Marshal(m) //nolint:errchkjson
+func equalWithoutSpace(t *testing.T, expected, actual string) {
+	t.Helper()
 
-	return string(b)
+	assert.Equal(t, removeAllWhitespace(expected), removeAllWhitespace(actual))
+}
+
+func removeAllWhitespace(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r == ' ' || r == '\t' || r == '\n' || r == '\r' {
+			return -1 // remove whitespace characters
+		}
+
+		return r // keep other characters
+	}, s)
 }

@@ -65,7 +65,6 @@ func TestReadWrite(t *testing.T) {
 
 	for range 3 {
 		y, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
-			ID:       "foo-type",
 			Singular: "Foo",
 			Plural:   "Foos",
 			Icon:     "Bug",

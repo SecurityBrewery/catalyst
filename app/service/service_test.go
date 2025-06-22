@@ -130,14 +130,14 @@ func TestService_DownloadFile_Errors(t *testing.T) {
 	s := New(queries, hooks, nil)
 
 	// invalid format
-	_, err := queries.CreateFile(t.Context(), sqlc.CreateFileParams{ID: "f_invalid_format", Name: "bad", Blob: "invalid", Size: 1, Ticket: "test-ticket"})
+	_, err := queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "invalid", Size: 1, Ticket: "test-ticket"})
 	require.NoError(t, err)
 
 	_, err = s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_invalid_format"})
 	require.Error(t, err)
 
 	// invalid base64
-	_, err = queries.CreateFile(t.Context(), sqlc.CreateFileParams{ID: "f_invalid_base64", Name: "bad", Blob: "data:text/plain;base64,???", Size: 1, Ticket: "test-ticket"})
+	_, err = queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "data:text/plain;base64,???", Size: 1, Ticket: "test-ticket"})
 	require.NoError(t, err)
 
 	_, err = s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_invalid_base64"})

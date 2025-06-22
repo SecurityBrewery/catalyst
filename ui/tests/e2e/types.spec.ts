@@ -13,7 +13,7 @@ const createType = async (page, name: string) => {
   const saveBtn = page.getByRole('button', { name: 'Save' }).last()
   await expect(saveBtn).toBeEnabled()
   await saveBtn.click()
-  await page.waitForURL('**/types/y*')
+  await page.waitForURL('**/types/r*')
 }
 
 test('types list shows incident', async ({ page }) => {

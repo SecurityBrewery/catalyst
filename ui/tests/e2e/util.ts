@@ -34,7 +34,7 @@ export const createTicket = async (page, name: string) => {
   await page.locator('#description').fill('Suspicious behavior detected by user in HR department.')
   await page.locator('#severity').selectOption('Low')
   await page.getByRole('button', { name: 'Save' }).click()
-  await page.waitForURL('**/tickets/incident/incident*')
+  await page.waitForURL('**/tickets/incident/r*')
 }
 
 export const createTimeline = async (page, message: string) => {

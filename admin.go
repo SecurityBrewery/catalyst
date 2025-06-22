@@ -6,12 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/urfave/cli/v3"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -27,22 +25,22 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 		return errors.New("usage: catalyst admin create <email> <password>")
 	}
 
-	passwordHash, tokenKey, err := password.Hash(command.Args().Get(1))
+	name, email := command.Args().Get(0), command.Args().Get(0)
+	pw := command.Args().Get(1)
+
+	passwordHash, tokenKey, err := password.Hash(pw)
 	if err != nil {
 		return errors.New("failed to hash password: " + err.Error())
 	}
 
 	user, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:           database.GenerateID("u"),
-		Name:         command.Args().Get(0),
-		Email:        command.Args().Get(0),
+		Name:         name,
+		Email:        email,
 		Username:     "admin",
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
 		Avatar:       "",
 		Verified:     true,
-		Created:      time.Now().UTC().Format(time.RFC3339),
-		Updated:      time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return err
