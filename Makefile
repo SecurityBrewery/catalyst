@@ -142,6 +142,12 @@ dev-proxy-ui: reset_data
 dev-upgrade-proxy-ui: copy_existing_data
 	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
 
+.PHONY: dev-10000-proxy-ui
+dev-10000-proxy-ui: reset_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . fake-data --users 87 --tickets 12425
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
+
 .PHONY: dev-upgrade
 dev-upgrade: copy_existing_data
 	go run . admin create admin@catalyst-soar.com 1234567890

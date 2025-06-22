@@ -209,7 +209,7 @@ func CreateUpgradeTestDataReaction() map[string]sqlc.Reaction {
 }
 
 func dateTime(updated time.Time) string {
-	return updated.Format(time.RFC3339)
+	return updated.UTC().Format(time.RFC3339)
 }
 
 func marshal(m map[string]any) string {

@@ -50,10 +50,8 @@ type DashboardCounts struct {
 
 // EmailTemplate defines model for EmailTemplate.
 type EmailTemplate struct {
-	ActionUrl string `json:"action_url"`
-	Body      string `json:"body"`
-	Hidden    bool   `json:"hidden"`
-	Subject   string `json:"subject"`
+	Body    string `json:"body"`
+	Subject string `json:"subject"`
 }
 
 // Error defines model for Error.
@@ -296,50 +294,19 @@ type ReactionUpdate struct {
 	Triggerdata *map[string]interface{} `json:"triggerdata,omitempty"`
 }
 
-// S3Config defines model for S3Config.
-type S3Config struct {
-	AccessKey      string `json:"access_key"`
-	Bucket         string `json:"bucket"`
-	Enabled        bool   `json:"enabled"`
-	Endpoint       string `json:"endpoint"`
-	ForcePathStyle bool   `json:"force_path_style"`
-	Region         string `json:"region"`
-	Secret         string `json:"secret"`
-}
-
 // Settings defines model for Settings.
 type Settings struct {
-	Backups SettingsBackups `json:"backups"`
-	Logs    SettingsLogs    `json:"logs"`
-	Meta    SettingsMeta    `json:"meta"`
-	S3      S3Config        `json:"s3"`
-	Smtp    SettingsSmtp    `json:"smtp"`
-}
-
-// SettingsBackups defines model for SettingsBackups.
-type SettingsBackups struct {
-	Cron        string   `json:"cron"`
-	CronMaxKeep int      `json:"cron_max_keep"`
-	S3          S3Config `json:"s3"`
-}
-
-// SettingsLogs defines model for SettingsLogs.
-type SettingsLogs struct {
-	LogIp    bool `json:"log_ip"`
-	MaxDays  int  `json:"max_days"`
-	MinLevel int  `json:"min_level"`
+	Meta SettingsMeta `json:"meta"`
+	Smtp SettingsSmtp `json:"smtp"`
 }
 
 // SettingsMeta defines model for SettingsMeta.
 type SettingsMeta struct {
-	AppName                    string        `json:"app_name"`
-	AppUrl                     string        `json:"app_url"`
-	ConfirmEmailChangeTemplate EmailTemplate `json:"confirm_email_change_template"`
-	HideControls               bool          `json:"hide_controls"`
-	ResetPasswordTemplate      EmailTemplate `json:"reset_password_template"`
-	SenderAddress              string        `json:"sender_address"`
-	SenderName                 string        `json:"sender_name"`
-	VerificationTemplate       EmailTemplate `json:"verification_template"`
+	AppName               string        `json:"app_name"`
+	AppUrl                string        `json:"app_url"`
+	ResetPasswordTemplate EmailTemplate `json:"reset_password_template"`
+	SenderAddress         string        `json:"sender_address"`
+	SenderName            string        `json:"sender_name"`
 }
 
 // SettingsSmtp defines model for SettingsSmtp.

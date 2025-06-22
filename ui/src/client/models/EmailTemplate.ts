@@ -31,18 +31,6 @@ export interface EmailTemplate {
    * @memberof EmailTemplate
    */
   subject: string
-  /**
-   *
-   * @type {string}
-   * @memberof EmailTemplate
-   */
-  actionUrl: string
-  /**
-   *
-   * @type {boolean}
-   * @memberof EmailTemplate
-   */
-  hidden: boolean
 }
 
 /**
@@ -51,8 +39,6 @@ export interface EmailTemplate {
 export function instanceOfEmailTemplate(value: object): value is EmailTemplate {
   if (!('body' in value) || value['body'] === undefined) return false
   if (!('subject' in value) || value['subject'] === undefined) return false
-  if (!('actionUrl' in value) || value['actionUrl'] === undefined) return false
-  if (!('hidden' in value) || value['hidden'] === undefined) return false
   return true
 }
 
@@ -66,9 +52,7 @@ export function EmailTemplateFromJSONTyped(json: any, ignoreDiscriminator: boole
   }
   return {
     body: json['body'],
-    subject: json['subject'],
-    actionUrl: json['action_url'],
-    hidden: json['hidden']
+    subject: json['subject']
   }
 }
 
@@ -86,8 +70,6 @@ export function EmailTemplateToJSONTyped(
 
   return {
     body: value['body'],
-    subject: value['subject'],
-    action_url: value['actionUrl'],
-    hidden: value['hidden']
+    subject: value['subject']
   }
 }

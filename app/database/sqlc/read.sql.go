@@ -1364,6 +1364,7 @@ WHERE (?1 = '' OR (name LIKE '%' || ?1 || '%'
     OR timeline_messages LIKE '%' || ?1 || '%'))
   AND (?2 IS NULL OR type = ?2)
   AND (?3 IS NULL OR open = ?3)
+ORDER BY created DESC
 LIMIT ?5 OFFSET ?4
 `
 

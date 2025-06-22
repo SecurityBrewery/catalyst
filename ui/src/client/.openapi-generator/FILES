@@ -34,10 +34,7 @@ models/NewUser.ts
 models/NewWebhook.ts
 models/Reaction.ts
 models/ReactionUpdate.ts
-models/S3Config.ts
 models/Settings.ts
-models/SettingsBackups.ts
-models/SettingsLogs.ts
 models/SettingsMeta.ts
 models/SettingsSmtp.ts
 models/Sidebar.ts

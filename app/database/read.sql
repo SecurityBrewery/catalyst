@@ -224,6 +224,7 @@ WHERE (@query = '' OR (name LIKE '%' || @query || '%'
     OR timeline_messages LIKE '%' || @query || '%'))
   AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
   AND (sqlc.narg('open') IS NULL OR open = sqlc.narg('open'))
+ORDER BY created DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------

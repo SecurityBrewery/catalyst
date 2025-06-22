@@ -45,7 +45,7 @@ func GenerateDemoData(ctx context.Context, queries *sqlc.Queries, userCount, tic
 		return fmt.Errorf("failed to list types: %w", err)
 	}
 
-	users, err := generateDemoUsers(ctx, queries, userCount)
+	users, err := generateDemoUsers(ctx, queries, userCount, ticketCount)
 	if err != nil {
 		return fmt.Errorf("failed to create user records: %w", err)
 	}
@@ -62,18 +62,18 @@ func GenerateDemoData(ctx context.Context, queries *sqlc.Queries, userCount, tic
 		return fmt.Errorf("failed to create ticket records: %w", err)
 	}
 
-	if err := generateDemoReactions(ctx, queries); err != nil {
+	if err := generateDemoReactions(ctx, queries, ticketCount); err != nil {
 		return fmt.Errorf("failed to create reaction records: %w", err)
 	}
 
-	if err := generateDemoGroups(ctx, queries, users); err != nil {
+	if err := generateDemoGroups(ctx, queries, users, ticketCount); err != nil {
 		return fmt.Errorf("failed to create group records: %w", err)
 	}
 
 	return nil
 }
 
-func generateDemoUsers(ctx context.Context, queries *sqlc.Queries, count int) ([]sqlc.User, error) {
+func generateDemoUsers(ctx context.Context, queries *sqlc.Queries, count, ticketCount int) ([]sqlc.User, error) {
 	users := make([]sqlc.User, 0, count)
 
 	// create the test user
@@ -90,7 +90,7 @@ func generateDemoUsers(ctx context.Context, queries *sqlc.Queries, count int) ([
 	}
 
 	for range count - 1 {
-		newUser, err := createDemoUser(ctx, queries)
+		newUser, err := createDemoUser(ctx, queries, ticketCount)
 		if err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func generateDemoUsers(ctx context.Context, queries *sqlc.Queries, count int) ([
 	return users, nil
 }
 
-func createDemoUser(ctx context.Context, queries *sqlc.Queries) (sqlc.User, error) {
+func createDemoUser(ctx context.Context, queries *sqlc.Queries, ticketCount int) (sqlc.User, error) {
 	username := gofakeit.Username()
 
 	passwordHash, tokenKey, err := password.Hash(gofakeit.Password(true, true, true, true, false, 16))
@@ -109,8 +109,7 @@ func createDemoUser(ctx context.Context, queries *sqlc.Queries) (sqlc.User, erro
 		return sqlc.User{}, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+	created, updated := dates(ticketCount)
 
 	return queries.InsertUser(ctx, sqlc.InsertUserParams{
 		ID:           database.GenerateID("u"),
@@ -120,8 +119,8 @@ func createDemoUser(ctx context.Context, queries *sqlc.Queries) (sqlc.User, erro
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
 		Verified:     gofakeit.Bool(),
-		Created:      dateTime(created),
-		Updated:      dateTime(updated),
+		Created:      created,
+		Updated:      updated,
 	})
 }
 
@@ -129,34 +128,34 @@ var ticketCreated = time.Date(2025, 2, 1, 11, 29, 35, 0, time.UTC)
 
 func generateDemoTickets(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, types []sqlc.ListTypesRow, count int) error { //nolint:cyclop
 	for range count {
-		newTicket, err := createDemoTicket(ctx, queries, random(types), random(users).ID, fakeTicketTitle(), fakeTicketDescription())
+		newTicket, err := createDemoTicket(ctx, queries, random(types), random(users).ID, fakeTicketTitle(), fakeTicketDescription(), count)
 		if err != nil {
 			return fmt.Errorf("failed to create ticket: %w", err)
 		}
 
 		for range gofakeit.IntN(5) {
-			_, err := createDemoComment(ctx, queries, newTicket.ID, random(users).ID, fakeTicketComment())
+			_, err := createDemoComment(ctx, queries, newTicket.ID, random(users).ID, fakeTicketComment(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create comment for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
 		for range gofakeit.IntN(5) {
-			_, err := createDemoTimeline(ctx, queries, newTicket.ID, fakeTicketTimelineMessage())
+			_, err := createDemoTimeline(ctx, queries, newTicket.ID, fakeTicketTimelineMessage(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create timeline for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
 		for range gofakeit.IntN(5) {
-			_, err := createDemoTask(ctx, queries, newTicket.ID, random(users).ID, fakeTicketTask())
+			_, err := createDemoTask(ctx, queries, newTicket.ID, random(users).ID, fakeTicketTask(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create task for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
 		for range gofakeit.IntN(5) {
-			_, err := createDemoLink(ctx, queries, newTicket.ID, random([]string{"Blog", "Forum", "Wiki", "Documentation"}), gofakeit.URL())
+			_, err := createDemoLink(ctx, queries, newTicket.ID, random([]string{"Blog", "Forum", "Wiki", "Documentation"}), gofakeit.URL(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create link for ticket %s: %w", newTicket.ID, err)
 			}
@@ -166,9 +165,8 @@ func generateDemoTickets(ctx context.Context, queries *sqlc.Queries, users []sql
 	return nil
 }
 
-func createDemoTicket(ctx context.Context, queries *sqlc.Queries, ticketType sqlc.ListTypesRow, userID, name, description string) (sqlc.Ticket, error) {
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+func createDemoTicket(ctx context.Context, queries *sqlc.Queries, ticketType sqlc.ListTypesRow, userID, name, description string, ticketCount int) (sqlc.Ticket, error) {
+	created, updated := dates(ticketCount)
 
 	ticket, err := queries.InsertTicket(
 		ctx,
@@ -181,8 +179,8 @@ func createDemoTicket(ctx context.Context, queries *sqlc.Queries, ticketType sql
 			Schema:      marshal(map[string]any{"type": "object", "properties": map[string]any{"tlp": map[string]any{"title": "TLP", "type": "string"}}}),
 			State:       marshal(map[string]any{"severity": "Medium"}),
 			Type:        ticketType.ID,
-			Created:     created.Format(time.RFC3339),
-			Updated:     updated.Format(time.RFC3339),
+			Created:     created,
+			Updated:     updated,
 		},
 	)
 	if err != nil {
@@ -192,17 +190,16 @@ func createDemoTicket(ctx context.Context, queries *sqlc.Queries, ticketType sql
 	return ticket, nil
 }
 
-func createDemoComment(ctx context.Context, queries *sqlc.Queries, ticketID, userID, message string) (*sqlc.Comment, error) {
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+func createDemoComment(ctx context.Context, queries *sqlc.Queries, ticketID, userID, message string, ticketCount int) (*sqlc.Comment, error) {
+	created, updated := dates(ticketCount)
 
 	comment, err := queries.InsertComment(ctx, sqlc.InsertCommentParams{
 		ID:      database.GenerateID("c"),
 		Ticket:  ticketID,
 		Author:  userID,
 		Message: message,
-		Created: created.Format(time.RFC3339),
-		Updated: updated.Format(time.RFC3339),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create comment for ticket %s: %w", ticketID, err)
@@ -211,17 +208,16 @@ func createDemoComment(ctx context.Context, queries *sqlc.Queries, ticketID, use
 	return &comment, nil
 }
 
-func createDemoTimeline(ctx context.Context, queries *sqlc.Queries, ticketID, message string) (*sqlc.Timeline, error) {
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+func createDemoTimeline(ctx context.Context, queries *sqlc.Queries, ticketID, message string, ticketCount int) (*sqlc.Timeline, error) {
+	created, updated := dates(ticketCount)
 
 	timeline, err := queries.InsertTimeline(ctx, sqlc.InsertTimelineParams{
 		ID:      database.GenerateID("tl"),
 		Ticket:  ticketID,
 		Message: message,
-		Time:    created.Format(time.RFC3339),
-		Created: created.Format(time.RFC3339),
-		Updated: updated.Format(time.RFC3339),
+		Time:    created,
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create timeline for ticket %s: %w", ticketID, err)
@@ -230,9 +226,8 @@ func createDemoTimeline(ctx context.Context, queries *sqlc.Queries, ticketID, me
 	return &timeline, nil
 }
 
-func createDemoTask(ctx context.Context, queries *sqlc.Queries, ticketID, userID, name string) (*sqlc.Task, error) {
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+func createDemoTask(ctx context.Context, queries *sqlc.Queries, ticketID, userID, name string, ticketCount int) (*sqlc.Task, error) {
+	created, updated := dates(ticketCount)
 
 	task, err := queries.InsertTask(ctx, sqlc.InsertTaskParams{
 		ID:      database.GenerateID("t"),
@@ -240,8 +235,8 @@ func createDemoTask(ctx context.Context, queries *sqlc.Queries, ticketID, userID
 		Owner:   userID,
 		Name:    name,
 		Open:    gofakeit.Bool(),
-		Created: created.Format(time.RFC3339),
-		Updated: updated.Format(time.RFC3339),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create task for ticket %s: %w", ticketID, err)
@@ -250,17 +245,16 @@ func createDemoTask(ctx context.Context, queries *sqlc.Queries, ticketID, userID
 	return &task, nil
 }
 
-func createDemoLink(ctx context.Context, queries *sqlc.Queries, ticketID, name, url string) (*sqlc.Link, error) {
-	updated := gofakeit.PastDate()
-	created := updated.Add(time.Duration(gofakeit.IntN(24)) * time.Hour)
+func createDemoLink(ctx context.Context, queries *sqlc.Queries, ticketID, name, url string, ticketCount int) (*sqlc.Link, error) {
+	created, updated := dates(ticketCount)
 
 	link, err := queries.InsertLink(ctx, sqlc.InsertLinkParams{
 		ID:      database.GenerateID("l"),
 		Ticket:  ticketID,
 		Name:    name,
 		Url:     url,
-		Created: created.Format(time.RFC3339),
-		Updated: updated.Format(time.RFC3339),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create link for ticket %s: %w", ticketID, err)
@@ -269,7 +263,9 @@ func createDemoLink(ctx context.Context, queries *sqlc.Queries, ticketID, name, 
 	return &link, nil
 }
 
-func generateDemoReactions(ctx context.Context, queries *sqlc.Queries) error {
+func generateDemoReactions(ctx context.Context, queries *sqlc.Queries, ticketCount int) error {
+	created, updated := dates(ticketCount)
+
 	_, err := queries.InsertReaction(ctx, sqlc.InsertReactionParams{
 		ID:          "r-schedule",
 		Name:        "Create New Ticket",
@@ -280,12 +276,14 @@ func generateDemoReactions(ctx context.Context, queries *sqlc.Queries) error {
 			"requirements": "requests",
 			"script":       createTicketPy,
 		}),
-		Created: dateTime(gofakeit.PastDate()),
-		Updated: dateTime(gofakeit.PastDate()),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create reaction for schedule trigger: %w", err)
 	}
+
+	created, updated = dates(ticketCount)
 
 	_, err = queries.InsertReaction(ctx, sqlc.InsertReactionParams{
 		ID:          "r-webhook",
@@ -297,12 +295,14 @@ func generateDemoReactions(ctx context.Context, queries *sqlc.Queries) error {
 			"requirements": "requests",
 			"script":       alertIngestPy,
 		}),
-		Created: dateTime(gofakeit.PastDate()),
-		Updated: dateTime(gofakeit.PastDate()),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create reaction for webhook trigger: %w", err)
 	}
+
+	created, updated = dates(ticketCount)
 
 	_, err = queries.InsertReaction(ctx, sqlc.InsertReactionParams{
 		ID:          "r-hook",
@@ -314,8 +314,8 @@ func generateDemoReactions(ctx context.Context, queries *sqlc.Queries) error {
 			"requirements": "requests",
 			"script":       assignTicketsPy,
 		}),
-		Created: dateTime(gofakeit.PastDate()),
-		Updated: dateTime(gofakeit.PastDate()),
+		Created: created,
+		Updated: updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create reaction for hook trigger: %w", err)
@@ -324,46 +324,54 @@ func generateDemoReactions(ctx context.Context, queries *sqlc.Queries) error {
 	return nil
 }
 
-func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.User) error { //nolint:cyclop
+func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc.User, ticketCount int) error { //nolint:cyclop
+	created, updated := dates(ticketCount)
+
 	_, err := queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-ir",
 		Name:        "IR Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
-		Created:     dateTime(gofakeit.PastDate()),
-		Updated:     dateTime(gofakeit.PastDate()),
+		Created:     created,
+		Updated:     updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create IR team group: %w", err)
 	}
+
+	created, updated = dates(ticketCount)
 
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-seceng",
 		Name:        "Security Engineering Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
-		Created:     dateTime(gofakeit.PastDate()),
-		Updated:     dateTime(gofakeit.PastDate()),
+		Created:     created,
+		Updated:     updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create IR team group: %w", err)
 	}
 
+	created, updated = dates(ticketCount)
+
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-security",
 		Name:        "Security Team",
 		Permissions: permission.ToJSONArray(ctx, []string{}),
-		Created:     dateTime(gofakeit.PastDate()),
-		Updated:     dateTime(gofakeit.PastDate()),
+		Created:     created,
+		Updated:     updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create security team group: %w", err)
 	}
 
+	created, updated = dates(ticketCount)
+
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "g-engineer",
 		Name:        "Engineer",
 		Permissions: permission.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
-		Created:     dateTime(gofakeit.PastDate()),
-		Updated:     dateTime(gofakeit.PastDate()),
+		Created:     created,
+		Updated:     updated,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create analyst group: %w", err)
@@ -416,4 +424,18 @@ func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc
 	}
 
 	return nil
+}
+
+func weeksAgo(c int) time.Time {
+	return time.Now().UTC().AddDate(0, 0, -7*c)
+}
+
+func dates(ticketCount int) (string, string) {
+	const ticketsPerWeek = 10
+	weeks := ticketCount / ticketsPerWeek
+
+	created := gofakeit.DateRange(weeksAgo(1), weeksAgo(weeks+1))
+	updated := gofakeit.DateRange(created, time.Now())
+
+	return created.UTC().Format(time.RFC3339), updated.UTC().Format(time.RFC3339)
 }

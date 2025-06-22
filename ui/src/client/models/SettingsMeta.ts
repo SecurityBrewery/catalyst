@@ -40,12 +40,6 @@ export interface SettingsMeta {
   appUrl: string
   /**
    *
-   * @type {boolean}
-   * @memberof SettingsMeta
-   */
-  hideControls: boolean
-  /**
-   *
    * @type {string}
    * @memberof SettingsMeta
    */
@@ -61,19 +55,7 @@ export interface SettingsMeta {
    * @type {EmailTemplate}
    * @memberof SettingsMeta
    */
-  verificationTemplate: EmailTemplate
-  /**
-   *
-   * @type {EmailTemplate}
-   * @memberof SettingsMeta
-   */
   resetPasswordTemplate: EmailTemplate
-  /**
-   *
-   * @type {EmailTemplate}
-   * @memberof SettingsMeta
-   */
-  confirmEmailChangeTemplate: EmailTemplate
 }
 
 /**
@@ -82,14 +64,9 @@ export interface SettingsMeta {
 export function instanceOfSettingsMeta(value: object): value is SettingsMeta {
   if (!('appName' in value) || value['appName'] === undefined) return false
   if (!('appUrl' in value) || value['appUrl'] === undefined) return false
-  if (!('hideControls' in value) || value['hideControls'] === undefined) return false
   if (!('senderName' in value) || value['senderName'] === undefined) return false
   if (!('senderAddress' in value) || value['senderAddress'] === undefined) return false
-  if (!('verificationTemplate' in value) || value['verificationTemplate'] === undefined)
-    return false
   if (!('resetPasswordTemplate' in value) || value['resetPasswordTemplate'] === undefined)
-    return false
-  if (!('confirmEmailChangeTemplate' in value) || value['confirmEmailChangeTemplate'] === undefined)
     return false
   return true
 }
@@ -105,12 +82,9 @@ export function SettingsMetaFromJSONTyped(json: any, ignoreDiscriminator: boolea
   return {
     appName: json['app_name'],
     appUrl: json['app_url'],
-    hideControls: json['hide_controls'],
     senderName: json['sender_name'],
     senderAddress: json['sender_address'],
-    verificationTemplate: EmailTemplateFromJSON(json['verification_template']),
-    resetPasswordTemplate: EmailTemplateFromJSON(json['reset_password_template']),
-    confirmEmailChangeTemplate: EmailTemplateFromJSON(json['confirm_email_change_template'])
+    resetPasswordTemplate: EmailTemplateFromJSON(json['reset_password_template'])
   }
 }
 
@@ -129,11 +103,8 @@ export function SettingsMetaToJSONTyped(
   return {
     app_name: value['appName'],
     app_url: value['appUrl'],
-    hide_controls: value['hideControls'],
     sender_name: value['senderName'],
     sender_address: value['senderAddress'],
-    verification_template: EmailTemplateToJSON(value['verificationTemplate']),
-    reset_password_template: EmailTemplateToJSON(value['resetPasswordTemplate']),
-    confirm_email_change_template: EmailTemplateToJSON(value['confirmEmailChangeTemplate'])
+    reset_password_template: EmailTemplateToJSON(value['resetPasswordTemplate'])
   }
 }

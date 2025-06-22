@@ -12,27 +12,6 @@
  * Do not edit the class manually.
  */
 import { mapValues } from '../runtime'
-import type { S3Config } from './S3Config'
-import {
-  S3ConfigFromJSON,
-  S3ConfigFromJSONTyped,
-  S3ConfigToJSON,
-  S3ConfigToJSONTyped
-} from './S3Config'
-import type { SettingsBackups } from './SettingsBackups'
-import {
-  SettingsBackupsFromJSON,
-  SettingsBackupsFromJSONTyped,
-  SettingsBackupsToJSON,
-  SettingsBackupsToJSONTyped
-} from './SettingsBackups'
-import type { SettingsLogs } from './SettingsLogs'
-import {
-  SettingsLogsFromJSON,
-  SettingsLogsFromJSONTyped,
-  SettingsLogsToJSON,
-  SettingsLogsToJSONTyped
-} from './SettingsLogs'
 import type { SettingsMeta } from './SettingsMeta'
 import {
   SettingsMetaFromJSON,
@@ -62,28 +41,10 @@ export interface Settings {
   meta: SettingsMeta
   /**
    *
-   * @type {SettingsLogs}
-   * @memberof Settings
-   */
-  logs: SettingsLogs
-  /**
-   *
    * @type {SettingsSmtp}
    * @memberof Settings
    */
   smtp: SettingsSmtp
-  /**
-   *
-   * @type {S3Config}
-   * @memberof Settings
-   */
-  s3: S3Config
-  /**
-   *
-   * @type {SettingsBackups}
-   * @memberof Settings
-   */
-  backups: SettingsBackups
 }
 
 /**
@@ -91,10 +52,7 @@ export interface Settings {
  */
 export function instanceOfSettings(value: object): value is Settings {
   if (!('meta' in value) || value['meta'] === undefined) return false
-  if (!('logs' in value) || value['logs'] === undefined) return false
   if (!('smtp' in value) || value['smtp'] === undefined) return false
-  if (!('s3' in value) || value['s3'] === undefined) return false
-  if (!('backups' in value) || value['backups'] === undefined) return false
   return true
 }
 
@@ -108,10 +66,7 @@ export function SettingsFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
   }
   return {
     meta: SettingsMetaFromJSON(json['meta']),
-    logs: SettingsLogsFromJSON(json['logs']),
-    smtp: SettingsSmtpFromJSON(json['smtp']),
-    s3: S3ConfigFromJSON(json['s3']),
-    backups: SettingsBackupsFromJSON(json['backups'])
+    smtp: SettingsSmtpFromJSON(json['smtp'])
   }
 }
 
@@ -129,9 +84,6 @@ export function SettingsToJSONTyped(
 
   return {
     meta: SettingsMetaToJSON(value['meta']),
-    logs: SettingsLogsToJSON(value['logs']),
-    smtp: SettingsSmtpToJSON(value['smtp']),
-    s3: S3ConfigToJSON(value['s3']),
-    backups: SettingsBackupsToJSON(value['backups'])
+    smtp: SettingsSmtpToJSON(value['smtp'])
   }
 }

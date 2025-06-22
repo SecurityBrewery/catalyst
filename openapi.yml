@@ -1060,15 +1060,9 @@ components:
       properties:
         meta:
           $ref: '#/components/schemas/SettingsMeta'
-        logs:
-          $ref: '#/components/schemas/SettingsLogs'
         smtp:
           $ref: '#/components/schemas/SettingsSmtp'
-        s3:
-          $ref: '#/components/schemas/S3Config'
-        backups:
-          $ref: '#/components/schemas/SettingsBackups'
-      required: [ "meta", "logs", "smtp", "s3", "backups" ]
+      required: [ "meta", "smtp" ]
     SettingsMeta:
       type: object
       properties:
@@ -1076,29 +1070,13 @@ components:
           type: string
         app_url:
           type: string
-        hide_controls:
-          type: boolean
         sender_name:
           type: string
         sender_address:
           type: string
-        verification_template:
-          $ref: '#/components/schemas/EmailTemplate'
         reset_password_template:
           $ref: '#/components/schemas/EmailTemplate'
-        confirm_email_change_template:
-          $ref: '#/components/schemas/EmailTemplate'
-      required: [ "app_name", "app_url", "hide_controls", "sender_name", "sender_address", "verification_template", "reset_password_template", "confirm_email_change_template" ]
-    SettingsLogs:
-      type: object
-      properties:
-        max_days:
-          type: integer
-        min_level:
-          type: integer
-        log_ip:
-          type: boolean
-      required: [ "max_days", "min_level", "log_ip" ]
+      required: [ "app_name", "app_url", "sender_name", "sender_address", "reset_password_template" ]
     SettingsSmtp:
       type: object
       properties:
@@ -1119,16 +1097,6 @@ components:
         local_name:
           type: string
       required: [ "enabled", "host", "port", "username", "password", "auth_method", "tls", "local_name" ]
-    SettingsBackups:
-      type: object
-      properties:
-        cron:
-          type: string
-        cron_max_keep:
-          type: integer
-        s3:
-          $ref: '#/components/schemas/S3Config'
-      required: [ "cron", "cron_max_keep", "s3" ]
     EmailTemplate:
       type: object
       properties:
@@ -1136,29 +1104,7 @@ components:
           type: string
         subject:
           type: string
-        action_url:
-          type: string
-        hidden:
-          type: boolean
-      required: [ "body", "subject", "action_url", "hidden" ]
-    S3Config:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-        bucket:
-          type: string
-        region:
-          type: string
-        endpoint:
-          type: string
-        access_key:
-          type: string
-        secret:
-          type: string
-        force_path_style:
-          type: boolean
-      required: [ "enabled", "bucket", "region", "endpoint", "access_key", "secret", "force_path_style" ]
+      required: [ "body", "subject" ]
     Error:
       type: object
       properties:
