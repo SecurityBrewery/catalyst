@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
-func TestCommentsCollection(t *testing.T) {
+func TestTypesCollection(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
-				Name:   "ListComments",
+			baseTest: baseTest{
+				Name:   "ListTypes",
 				Method: http.MethodGet,
-				URL:    "/api/comments?ticket=test-ticket",
+				URL:    "/api/types",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -28,37 +28,38 @@ func TestCommentsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
-						"X-Total-Count": "1",
+						"X-Total-Count": "4",
 					},
 					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
-						"X-Total-Count": "1",
+						"X-Total-Count": "4",
 					},
 					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "CreateComment",
+			baseTest: baseTest{
+				Name:           "CreateType",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/comments",
+				URL:            "/api/types",
 				Body: s(map[string]any{
-					"author":  "u_bob_analyst",
-					"message": "new",
-					"ticket":  "test-ticket",
+					"singular": "Example",
+					"plural":   "Examples",
+					"icon":     "Bug",
+					"schema":   map[string]any{},
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -68,22 +69,18 @@ func TestCommentsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusOK,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"ticket":"test-ticket"`,
-					},
-					ExpectedEvents: map[string]int{
-						"OnRecordAfterCreateRequest":  1,
-						"OnRecordBeforeCreateRequest": 1,
+						`"missing required scopes"`,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"ticket":"test-ticket"`,
+						`"singular":"Example"`,
 					},
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterCreateRequest":  1,
@@ -93,12 +90,12 @@ func TestCommentsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "GetComment",
+			baseTest: baseTest{
+				Name:   "GetType",
 				Method: http.MethodGet,
-				URL:    "/api/comments/c_test_comment",
+				URL:    "/api/types/test-type",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -108,33 +105,33 @@ func TestCommentsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"c_test_comment"`,
+						`"id":"test-type"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"c_test_comment"`,
+						`"id":"test-type"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "UpdateComment",
+			baseTest: baseTest{
+				Name:           "UpdateType",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/comments/c_test_comment",
-				Body:           s(map[string]any{"message": "update"}),
+				URL:            "/api/types/test-type",
+				Body:           s(map[string]any{"singular": "Update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -144,24 +141,19 @@ func TestCommentsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusOK,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusUnauthorized,
 					ExpectedContent: []string{
-						`"id":"c_test_comment"`,
-						`"message":"update"`,
-					},
-					ExpectedEvents: map[string]int{
-						"OnRecordAfterUpdateRequest":  1,
-						"OnRecordBeforeUpdateRequest": 1,
+						`"missing required scopes"`,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"c_test_comment"`,
-						`"message":"update"`,
+						`"id":"test-type"`,
+						`"singular":"Update"`,
 					},
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterUpdateRequest":  1,
@@ -171,12 +163,12 @@ func TestCommentsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "DeleteComment",
+			baseTest: baseTest{
+				Name:   "DeleteType",
 				Method: http.MethodDelete,
-				URL:    "/api/comments/c_test_comment",
+				URL:    "/api/types/test-type",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -186,16 +178,15 @@ func TestCommentsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusNoContent,
-					ExpectedEvents: map[string]int{
-						"OnRecordAfterDeleteRequest":  1,
-						"OnRecordBeforeDeleteRequest": 1,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusUnauthorized,
+					ExpectedContent: []string{
+						`"missing required scopes"`,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

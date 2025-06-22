@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
 func TestWebhookReactions(t *testing.T) {
@@ -23,13 +23,13 @@ func TestWebhookReactions(t *testing.T) {
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "TriggerWebhookReaction",
 				Method:         http.MethodGet,
 				RequestHeaders: map[string]string{"Authorization": "Bearer 1234567890"},
 				URL:            "/reaction/test",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusOK,
@@ -38,12 +38,12 @@ func TestWebhookReactions(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "TriggerWebhookReaction2",
 				Method: http.MethodGet,
 				URL:    "/reaction/test2",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusOK,
@@ -80,7 +80,7 @@ func TestHookReactions(t *testing.T) {
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "TriggerHookReaction",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
@@ -89,7 +89,7 @@ func TestHookReactions(t *testing.T) {
 					"name": "test",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				// {
 				// 	Name:            "Unauthorized",
 				// 	ExpectedStatus:  http.StatusOK,
@@ -97,7 +97,7 @@ func TestHookReactions(t *testing.T) {
 				// },
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"test"`,

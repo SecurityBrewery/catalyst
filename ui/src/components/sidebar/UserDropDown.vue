@@ -10,12 +10,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { CircleUser } from 'lucide-vue-next'
+import { CircleUser, LogOut } from 'lucide-vue-next'
 
 import { useRouter } from 'vue-router'
 
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+import { useCatalystStore } from '@/store/catalyst'
 
 defineProps<{
   isCollapsed: boolean
@@ -23,6 +24,7 @@ defineProps<{
 
 const variant = 'secondary'
 
+const catalystStore = useCatalystStore()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -77,5 +79,25 @@ const logout = () => {
         </DropdownMenuContent>
       </DropdownMenu>
     </nav>
+  </div>
+  <div
+    v-if="!authStore.user"
+    :class="cn('flex h-14 items-center px-3', !catalystStore.sidebarCollapsed && 'px-2')"
+  >
+    <Button
+      variant="ghost"
+      @click="router.push({ name: 'login' })"
+      size="default"
+      :class="
+        cn(
+          'p-0',
+          catalystStore.sidebarCollapsed && 'w-9',
+          !catalystStore.sidebarCollapsed && 'w-full justify-start px-3'
+        )
+      "
+    >
+      <LogOut class="size-4" />
+      <span v-if="!catalystStore.sidebarCollapsed" class="ml-2"> Login </span>
+    </Button>
   </div>
 </template>

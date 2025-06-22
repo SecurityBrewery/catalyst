@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
 func TestFilesCollection(t *testing.T) {
@@ -12,12 +12,12 @@ func TestFilesCollection(t *testing.T) {
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "ListFiles",
 				Method: http.MethodGet,
 				URL:    "/api/files?ticket=test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -25,14 +25,14 @@ func TestFilesCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedHeaders: map[string]string{"X-Total-Count": "1"},
 					ExpectedEvents:  map[string]int{},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedHeaders: map[string]string{"X-Total-Count": "1"},
 					ExpectedEvents:  map[string]int{},
@@ -40,7 +40,7 @@ func TestFilesCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "CreateFile",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
@@ -52,7 +52,7 @@ func TestFilesCollection(t *testing.T) {
 					"blob":   "data:text/plain;base64,bmV3",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -60,13 +60,13 @@ func TestFilesCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"ticket":"test-ticket"`},
 					ExpectedEvents: map[string]int{
@@ -77,12 +77,12 @@ func TestFilesCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "GetFile",
 				Method: http.MethodGet,
 				URL:    "/api/files/b_test_file",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -90,14 +90,14 @@ func TestFilesCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"id":"b_test_file"`},
 					ExpectedEvents:  map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"id":"b_test_file"`},
 					ExpectedEvents:  map[string]int{"OnRecordViewRequest": 1},
@@ -105,14 +105,14 @@ func TestFilesCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "UpdateFile",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/files/b_test_file",
 				Body:           s(map[string]any{"name": "update.txt"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -120,13 +120,13 @@ func TestFilesCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"name":"update.txt"`},
 					ExpectedEvents: map[string]int{
@@ -137,12 +137,12 @@ func TestFilesCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "DeleteFile",
 				Method: http.MethodDelete,
 				URL:    "/api/files/b_test_file",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -150,13 +150,13 @@ func TestFilesCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

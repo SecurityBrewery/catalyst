@@ -11,17 +11,17 @@ import (
 	"github.com/tidwall/sjson"
 
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
-	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
+	testing2 "github.com/SecurityBrewery/catalyst/testing"
 )
 
 func TestWebhook_Run(t *testing.T) {
 	t.Parallel()
 
-	server := catalystTesting.NewRecordingServer()
+	server := testing2.NewRecordingServer()
 
 	go http.ListenAndServe("127.0.0.1:12347", server) //nolint:gosec,errcheck
 
-	if err := catalystTesting.WaitForStatus("http://127.0.0.1:12347/health", http.StatusOK, 5*time.Second); err != nil {
+	if err := testing2.WaitForStatus("http://127.0.0.1:12347/health", http.StatusOK, 5*time.Second); err != nil {
 		t.Fatal(err)
 	}
 

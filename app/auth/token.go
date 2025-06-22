@@ -60,7 +60,7 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 func (s *Service) verifyToken(tokenStr string, user *sqlc.User, url, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
 	signingKey := user.Tokenkey + appToken
 
-	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected algorithm: %v", t.Header["alg"])
 		}

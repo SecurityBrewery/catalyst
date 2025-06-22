@@ -42,8 +42,8 @@ func (q *WriteQueries) AssignParentGroup(ctx context.Context, arg AssignParentGr
 
 const createComment = `-- name: CreateComment :one
 
-INSERT INTO comments (id, author, message, ticket)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO comments (id, author, message, ticket, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
 RETURNING author, created, id, message, ticket, updated
 `
 
@@ -52,6 +52,8 @@ type CreateCommentParams struct {
 	Author  string `json:"author"`
 	Message string `json:"message"`
 	Ticket  string `json:"ticket"`
+	Created string `json:"created"`
+	Updated string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -61,6 +63,8 @@ func (q *WriteQueries) CreateComment(ctx context.Context, arg CreateCommentParam
 		arg.Author,
 		arg.Message,
 		arg.Ticket,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Comment
 	err := row.Scan(
@@ -96,17 +100,19 @@ func (q *WriteQueries) CreateFeature(ctx context.Context, name string) (Feature,
 
 const createFile = `-- name: CreateFile :one
 
-INSERT INTO files (id, name, blob, size, ticket)
-VALUES (?1, ?2, ?3, ?4, ?5)
+INSERT INTO files (id, name, blob, size, ticket, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
 RETURNING blob, created, id, name, size, ticket, updated
 `
 
 type CreateFileParams struct {
-	ID     string  `json:"id"`
-	Name   string  `json:"name"`
-	Blob   string  `json:"blob"`
-	Size   float64 `json:"size"`
-	Ticket string  `json:"ticket"`
+	ID      string  `json:"id"`
+	Name    string  `json:"name"`
+	Blob    string  `json:"blob"`
+	Size    float64 `json:"size"`
+	Ticket  string  `json:"ticket"`
+	Created string  `json:"created"`
+	Updated string  `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -117,6 +123,8 @@ func (q *WriteQueries) CreateFile(ctx context.Context, arg CreateFileParams) (Fi
 		arg.Blob,
 		arg.Size,
 		arg.Ticket,
+		arg.Created,
+		arg.Updated,
 	)
 	var i File
 	err := row.Scan(
@@ -133,8 +141,8 @@ func (q *WriteQueries) CreateFile(ctx context.Context, arg CreateFileParams) (Fi
 
 const createGroup = `-- name: CreateGroup :one
 
-INSERT INTO groups (id, name, permissions)
-VALUES (?1, ?2, ?3)
+INSERT INTO groups (id, name, permissions, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5)
 RETURNING id, name, permissions, created, updated
 `
 
@@ -142,11 +150,19 @@ type CreateGroupParams struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Permissions string `json:"permissions"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
 func (q *WriteQueries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error) {
-	row := q.db.QueryRowContext(ctx, createGroup, arg.ID, arg.Name, arg.Permissions)
+	row := q.db.QueryRowContext(ctx, createGroup,
+		arg.ID,
+		arg.Name,
+		arg.Permissions,
+		arg.Created,
+		arg.Updated,
+	)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -160,16 +176,18 @@ func (q *WriteQueries) CreateGroup(ctx context.Context, arg CreateGroupParams) (
 
 const createLink = `-- name: CreateLink :one
 
-INSERT INTO links (id, name, url, ticket)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO links (id, name, url, ticket, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
 RETURNING created, id, name, ticket, updated, url
 `
 
 type CreateLinkParams struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Url    string `json:"url"`
-	Ticket string `json:"ticket"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Url     string `json:"url"`
+	Ticket  string `json:"ticket"`
+	Created string `json:"created"`
+	Updated string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -179,6 +197,8 @@ func (q *WriteQueries) CreateLink(ctx context.Context, arg CreateLinkParams) (Li
 		arg.Name,
 		arg.Url,
 		arg.Ticket,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Link
 	err := row.Scan(
@@ -211,8 +231,8 @@ func (q *WriteQueries) CreateParam(ctx context.Context, arg CreateParamParams) e
 
 const createReaction = `-- name: CreateReaction :one
 
-INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
 RETURNING "action", actiondata, created, id, name, "trigger", triggerdata, updated
 `
 
@@ -223,6 +243,8 @@ type CreateReactionParams struct {
 	Actiondata  string `json:"actiondata"`
 	Trigger     string `json:"trigger"`
 	Triggerdata string `json:"triggerdata"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -234,6 +256,8 @@ func (q *WriteQueries) CreateReaction(ctx context.Context, arg CreateReactionPar
 		arg.Actiondata,
 		arg.Trigger,
 		arg.Triggerdata,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Reaction
 	err := row.Scan(
@@ -251,17 +275,19 @@ func (q *WriteQueries) CreateReaction(ctx context.Context, arg CreateReactionPar
 
 const createTask = `-- name: CreateTask :one
 
-INSERT INTO tasks (id, name, open, owner, ticket)
-VALUES (?1, ?2, ?3, ?4, ?5)
+INSERT INTO tasks (id, name, open, owner, ticket, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
 RETURNING created, id, name, open, owner, ticket, updated
 `
 
 type CreateTaskParams struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Open   bool   `json:"open"`
-	Owner  string `json:"owner"`
-	Ticket string `json:"ticket"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Open    bool   `json:"open"`
+	Owner   string `json:"owner"`
+	Ticket  string `json:"ticket"`
+	Created string `json:"created"`
+	Updated string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -272,6 +298,8 @@ func (q *WriteQueries) CreateTask(ctx context.Context, arg CreateTaskParams) (Ta
 		arg.Open,
 		arg.Owner,
 		arg.Ticket,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Task
 	err := row.Scan(
@@ -288,8 +316,8 @@ func (q *WriteQueries) CreateTask(ctx context.Context, arg CreateTaskParams) (Ta
 
 const createTicket = `-- name: CreateTicket :one
 
-INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
 RETURNING created, description, id, name, open, owner, resolution, schema, state, type, updated
 `
 
@@ -303,6 +331,8 @@ type CreateTicketParams struct {
 	Schema      string `json:"schema"`
 	State       string `json:"state"`
 	Type        string `json:"type"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -317,6 +347,8 @@ func (q *WriteQueries) CreateTicket(ctx context.Context, arg CreateTicketParams)
 		arg.Schema,
 		arg.State,
 		arg.Type,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Ticket
 	err := row.Scan(
@@ -337,8 +369,8 @@ func (q *WriteQueries) CreateTicket(ctx context.Context, arg CreateTicketParams)
 
 const createTimeline = `-- name: CreateTimeline :one
 
-INSERT INTO timeline (id, message, ticket, time)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO timeline (id, message, ticket, time, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
 RETURNING created, id, message, ticket, time, updated
 `
 
@@ -347,6 +379,8 @@ type CreateTimelineParams struct {
 	Message string `json:"message"`
 	Ticket  string `json:"ticket"`
 	Time    string `json:"time"`
+	Created string `json:"created"`
+	Updated string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -356,6 +390,8 @@ func (q *WriteQueries) CreateTimeline(ctx context.Context, arg CreateTimelinePar
 		arg.Message,
 		arg.Ticket,
 		arg.Time,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Timeline
 	err := row.Scan(
@@ -371,8 +407,8 @@ func (q *WriteQueries) CreateTimeline(ctx context.Context, arg CreateTimelinePar
 
 const createType = `-- name: CreateType :one
 
-INSERT INTO types (id, singular, plural, icon, schema)
-VALUES (?1, ?2, ?3, ?4, ?5)
+INSERT INTO types (id, singular, plural, icon, schema, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
 RETURNING created, icon, id, plural, schema, singular, updated
 `
 
@@ -382,6 +418,8 @@ type CreateTypeParams struct {
 	Plural   string `json:"plural"`
 	Icon     string `json:"icon"`
 	Schema   string `json:"schema"`
+	Created  string `json:"created"`
+	Updated  string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -392,6 +430,8 @@ func (q *WriteQueries) CreateType(ctx context.Context, arg CreateTypeParams) (Ty
 		arg.Plural,
 		arg.Icon,
 		arg.Schema,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Type
 	err := row.Scan(
@@ -408,8 +448,8 @@ func (q *WriteQueries) CreateType(ctx context.Context, arg CreateTypeParams) (Ty
 
 const createUser = `-- name: CreateUser :one
 
-INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
 RETURNING avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 `
 
@@ -422,6 +462,8 @@ type CreateUserParams struct {
 	TokenKey     string `json:"tokenKey"`
 	Avatar       string `json:"avatar"`
 	Verified     bool   `json:"verified"`
+	Created      string `json:"created"`
+	Updated      string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -435,6 +477,8 @@ func (q *WriteQueries) CreateUser(ctx context.Context, arg CreateUserParams) (Us
 		arg.TokenKey,
 		arg.Avatar,
 		arg.Verified,
+		arg.Created,
+		arg.Updated,
 	)
 	var i User
 	err := row.Scan(
@@ -456,8 +500,8 @@ func (q *WriteQueries) CreateUser(ctx context.Context, arg CreateUserParams) (Us
 
 const createWebhook = `-- name: CreateWebhook :one
 
-INSERT INTO webhooks (id, name, collection, destination)
-VALUES (?1, ?2, ?3, ?4)
+INSERT INTO webhooks (id, name, collection, destination, created, updated)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
 RETURNING collection, created, destination, id, name, updated
 `
 
@@ -466,6 +510,8 @@ type CreateWebhookParams struct {
 	Name        string `json:"name"`
 	Collection  string `json:"collection"`
 	Destination string `json:"destination"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
 }
 
 // ----------------------------------------------------------------
@@ -475,6 +521,8 @@ func (q *WriteQueries) CreateWebhook(ctx context.Context, arg CreateWebhookParam
 		arg.Name,
 		arg.Collection,
 		arg.Destination,
+		arg.Created,
+		arg.Updated,
 	)
 	var i Webhook
 	err := row.Scan(

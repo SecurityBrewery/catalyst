@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
-func TestTimelineCollection(t *testing.T) {
+func TestCommentsCollection(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
-				Name:   "ListTimeline",
+			baseTest: baseTest{
+				Name:   "ListComments",
 				Method: http.MethodGet,
-				URL:    "/api/timeline?ticket=test-ticket",
+				URL:    "/api/comments?ticket=test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -28,7 +28,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -37,7 +37,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -47,18 +47,18 @@ func TestTimelineCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "CreateTimeline",
+			baseTest: baseTest{
+				Name:           "CreateComment",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/timeline",
+				URL:            "/api/comments",
 				Body: s(map[string]any{
-					"ticket":  "test-ticket",
+					"author":  "u_bob_analyst",
 					"message": "new",
-					"time":    "2023-01-01T00:00:00Z",
+					"ticket":  "test-ticket",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -68,7 +68,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"ticket":"test-ticket"`,
@@ -80,7 +80,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"ticket":"test-ticket"`,
@@ -93,12 +93,12 @@ func TestTimelineCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "GetTimeline",
+			baseTest: baseTest{
+				Name:   "GetComment",
 				Method: http.MethodGet,
-				URL:    "/api/timeline/h_test_timeline",
+				URL:    "/api/comments/c_test_comment",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -108,33 +108,33 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"h_test_timeline"`,
+						`"id":"c_test_comment"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"h_test_timeline"`,
+						`"id":"c_test_comment"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "UpdateTimeline",
+			baseTest: baseTest{
+				Name:           "UpdateComment",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/timeline/h_test_timeline",
+				URL:            "/api/comments/c_test_comment",
 				Body:           s(map[string]any{"message": "update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -144,10 +144,10 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"h_test_timeline"`,
+						`"id":"c_test_comment"`,
 						`"message":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -157,10 +157,10 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"h_test_timeline"`,
+						`"id":"c_test_comment"`,
 						`"message":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -171,12 +171,12 @@ func TestTimelineCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "DeleteTimeline",
+			baseTest: baseTest{
+				Name:   "DeleteComment",
 				Method: http.MethodDelete,
-				URL:    "/api/timeline/h_test_timeline",
+				URL:    "/api/comments/c_test_comment",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -186,7 +186,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,
@@ -195,7 +195,7 @@ func TestTimelineCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

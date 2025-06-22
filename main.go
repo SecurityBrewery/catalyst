@@ -17,7 +17,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction"
 	"github.com/SecurityBrewery/catalyst/app/webhook"
-	"github.com/SecurityBrewery/catalyst/upgradetest"
 )
 
 func main() {
@@ -48,7 +47,8 @@ func main() {
 				Action: serve,
 			},
 			{
-				Name: "fake-data",
+				Name:    "demo-data",
+				Aliases: []string{"fake-data"},
 				Flags: []cli.Flag{
 					&cli.IntFlag{Name: "users", Usage: "Number of fake users to generate", Value: 10},
 					&cli.IntFlag{Name: "tickets", Usage: "Number of fake tickets to generate", Value: 100},
@@ -56,9 +56,10 @@ func main() {
 				Action: fakeData,
 			},
 			{
-				Name:   "default-data",
-				Usage:  "Generate default data for Catalyst",
-				Action: defaultData,
+				Name:    "upgrade-test-data",
+				Aliases: []string{"default-data"},
+				Usage:   "Generate default data for Catalyst",
+				Action:  defaultData,
 			},
 			{
 				Name: "admin",
@@ -107,10 +108,6 @@ func serve(ctx context.Context, command *cli.Command) error {
 		return fmt.Errorf("failed to setup catalyst: %w", err)
 	}
 
-	if err := catalyst.SetupRoutes(); err != nil {
-		return err
-	}
-
 	defer cleanup()
 
 	if err := reaction.BindHooks(catalyst, false); err != nil {
@@ -136,10 +133,6 @@ func fakeData(ctx context.Context, command *cli.Command) error {
 		return fmt.Errorf("failed to setup catalyst: %w", err)
 	}
 
-	if err := catalyst.SetupRoutes(); err != nil {
-		return err
-	}
-
 	defer cleanup()
 
 	if err := data.GenerateDemoData(ctx, catalyst.Queries, command.Int("users"), command.Int("tickets")); err != nil {
@@ -159,7 +152,7 @@ func defaultData(ctx context.Context, command *cli.Command) error {
 
 	defer cleanup()
 
-	if err := upgradetest.GenerateUpgradeTestData(ctx, catalyst.Queries); err != nil {
+	if err := data.GenerateUpgradeTestData(ctx, catalyst.Queries); err != nil {
 		return fmt.Errorf("failed to generate default data: %w", err)
 	}
 

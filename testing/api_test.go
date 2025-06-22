@@ -1,4 +1,4 @@
-package app_test
+package testing
 
 import (
 	"bytes"
@@ -12,8 +12,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
-
-	catalystTesting "github.com/SecurityBrewery/catalyst/app/testing"
 )
 
 type request struct {
@@ -86,8 +84,8 @@ func TestAPI(t *testing.T) { //nolint:cyclop
 		},
 	}
 
-	app, cleanup, _ := catalystTesting.App(t)
-	defer cleanup()
+	app, cleanup, _ := App(t)
+	t.Cleanup(cleanup)
 
 	id, token := "", ""
 

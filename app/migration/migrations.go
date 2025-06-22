@@ -4,7 +4,7 @@ import "fmt"
 
 var migrationGenerators = []func() (migration, error){
 	newSQLMigration("000_create_tables"),
-	newSQLMigration("002_create_testdata"),
+	newSQLMigration("002_create_defaultdata"),
 	newSQLMigration("003_create_groups"),
 	newSQLMigration("004_cleanup_pocketbase"),
 }

@@ -4,20 +4,43 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
-func TestFeaturesConfig(t *testing.T) {
+func Test_Routes(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
+				Name:   "Root",
+				Method: http.MethodGet,
+				URL:    "/",
+			},
+			userTests: []userTest{
+				{
+					Name:           "Unauthorized",
+					ExpectedStatus: http.StatusFound,
+				},
+				{
+					Name:           "Analyst",
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusFound,
+				},
+				{
+					Name:           "Admin",
+					Admin:          data.AdminEmail,
+					ExpectedStatus: http.StatusFound,
+				},
+			},
+		},
+		{
+			baseTest: baseTest{
 				Name:   "Config",
 				Method: http.MethodGet,
 				URL:    "/api/config",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "NoAuth",
 					ExpectedStatus: http.StatusOK,
@@ -27,7 +50,7 @@ func TestFeaturesConfig(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":`,
@@ -35,7 +58,7 @@ func TestFeaturesConfig(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"flags":`,
@@ -44,7 +67,6 @@ func TestFeaturesConfig(t *testing.T) {
 			},
 		},
 	}
-
 	for _, testSet := range testSets {
 		t.Run(testSet.baseTest.Name, func(t *testing.T) {
 			t.Parallel()

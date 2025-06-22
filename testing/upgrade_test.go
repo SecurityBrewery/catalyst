@@ -1,4 +1,4 @@
-package upgradetest
+package testing
 
 import (
 	"log"
@@ -37,7 +37,7 @@ func TestUpgrades(t *testing.T) {
 
 			t.Cleanup(cleanup)
 
-			validateUpgradeTestData(t, pb)
+			ValidateUpgradeTestData(t, pb.Queries)
 		})
 	}
 }

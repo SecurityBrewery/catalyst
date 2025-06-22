@@ -19,7 +19,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/ui"
 )
 
-func (a *App) SetupRoutes() error {
+func (a *App) setupRoutes() error {
 	// middleware for the router
 	a.Router.Use(func(next http.Handler) http.Handler {
 		return http.Handler(cors.NewHandler(next))

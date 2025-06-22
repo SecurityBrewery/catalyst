@@ -21,6 +21,7 @@ install-playwright:
 .PHONY: fmt-go
 fmt-go:
 	go mod tidy
+	gofmt -r 'interface{} -> any' -w **/*.go
 	golangci-lint fmt ./...
 
 .PHONY: fmt-ui
@@ -86,7 +87,7 @@ test-playwright-ui:
 
 .PHONY: test-upgrade-playwright
 test-upgrade-playwright:
-	./upgradetest/test_all.sh
+	./testing/test_all.sh
 
 .PHONY: test
 test: test-short test-playwright test-upgrade-playwright
@@ -129,7 +130,7 @@ reset_data:
 .PHONY: copy_existing_data
 copy_existing_data: reset_data
 	mkdir -p catalyst_data
-	cp upgradetest/data/v0.14.1/data.db catalyst_data/data.db
+	cp testing/data/v0.14.1/data.db catalyst_data/data.db
 
 .PHONY: dev-proxy-ui
 dev-proxy-ui: reset_data

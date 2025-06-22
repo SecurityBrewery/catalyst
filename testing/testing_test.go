@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type BaseTest struct {
+type baseTest struct {
 	Name           string
 	Method         string
 	RequestHeaders map[string]string
@@ -19,7 +19,7 @@ type BaseTest struct {
 	Body           string
 }
 
-type UserTest struct {
+type userTest struct {
 	Name               string
 	AuthRecord         string
 	Admin              string
@@ -31,11 +31,11 @@ type UserTest struct {
 }
 
 type catalystTest struct {
-	baseTest  BaseTest
-	userTests []UserTest
+	baseTest  baseTest
+	userTests []userTest
 }
 
-func runMatrixTest(t *testing.T, baseTest BaseTest, userTest UserTest) {
+func runMatrixTest(t *testing.T, baseTest baseTest, userTest userTest) {
 	t.Helper()
 
 	baseApp, cleanup, counter := App(t)

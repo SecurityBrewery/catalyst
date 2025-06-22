@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database"
@@ -87,6 +88,8 @@ func (s *Service) CreateComment(ctx context.Context, request openapi.CreateComme
 		Author:  request.Body.Author,
 		Message: request.Body.Message,
 		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC().Format(time.RFC3339),
+		Updated: time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -225,11 +228,13 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.FilesTable.ID, request.Body)
 
 	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
-		ID:     database.GenerateID("b"),
-		Name:   request.Body.Name,
-		Blob:   request.Body.Blob,
-		Size:   request.Body.Size,
-		Ticket: request.Body.Ticket,
+		ID:      database.GenerateID("b"),
+		Name:    request.Body.Name,
+		Blob:    request.Body.Blob,
+		Size:    request.Body.Size,
+		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC().Format(time.RFC3339),
+		Updated: time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -372,10 +377,12 @@ func (s *Service) CreateLink(ctx context.Context, request openapi.CreateLinkRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.LinksTable.ID, request.Body)
 
 	link, err := s.queries.CreateLink(ctx, sqlc.CreateLinkParams{
-		ID:     database.GenerateID("l"),
-		Name:   request.Body.Name,
-		Url:    request.Body.Url,
-		Ticket: request.Body.Ticket,
+		ID:      database.GenerateID("l"),
+		Name:    request.Body.Name,
+		Url:     request.Body.Url,
+		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC().Format(time.RFC3339),
+		Updated: time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -502,6 +509,8 @@ func (s *Service) CreateReaction(ctx context.Context, request openapi.CreateReac
 		Trigger:     request.Body.Trigger,
 		Actiondata:  marshal(request.Body.Actiondata),
 		Triggerdata: marshal(request.Body.Triggerdata),
+		Created:     time.Now().UTC().Format(time.RFC3339),
+		Updated:     time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -668,11 +677,13 @@ func (s *Service) CreateTask(ctx context.Context, request openapi.CreateTaskRequ
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TasksTable.ID, request.Body)
 
 	task, err := s.queries.CreateTask(ctx, sqlc.CreateTaskParams{
-		ID:     database.GenerateID("k"),
-		Name:   request.Body.Name,
-		Open:   request.Body.Open,
-		Owner:  request.Body.Owner,
-		Ticket: request.Body.Ticket,
+		ID:      database.GenerateID("k"),
+		Name:    request.Body.Name,
+		Open:    request.Body.Open,
+		Owner:   request.Body.Owner,
+		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC().Format(time.RFC3339),
+		Updated: time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -848,7 +859,7 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.TicketsTable.ID, request.Body)
 
 	ticket, err := s.queries.CreateTicket(ctx, sqlc.CreateTicketParams{
-		ID:          database.GenerateID(request.Body.Type),
+		ID:          database.GenerateID(request.Body.Type), // TODO: use singular?
 		Name:        request.Body.Name,
 		Description: request.Body.Description,
 		Owner:       request.Body.Owner,
@@ -856,6 +867,8 @@ func (s *Service) CreateTicket(ctx context.Context, request openapi.CreateTicket
 		Resolution:  request.Body.Resolution,
 		Type:        request.Body.Type,
 		State:       marshal(request.Body.State),
+		Created:     time.Now().UTC().Format(time.RFC3339),
+		Updated:     time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1003,6 +1016,8 @@ func (s *Service) CreateTimeline(ctx context.Context, request openapi.CreateTime
 		Message: request.Body.Message,
 		Time:    request.Body.Time,
 		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC().Format(time.RFC3339),
+		Updated: time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1127,6 +1142,8 @@ func (s *Service) CreateType(ctx context.Context, request openapi.CreateTypeRequ
 		Plural:   request.Body.Plural,
 		Singular: request.Body.Singular,
 		Schema:   marshal(request.Body.Schema),
+		Created:  time.Now().UTC().Format(time.RFC3339),
+		Updated:  time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1266,6 +1283,8 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		TokenKey:     tokenKey,
 		Avatar:       request.Body.Avatar,
 		Verified:     request.Body.Verified,
+		Created:      time.Now().UTC().Format(time.RFC3339),
+		Updated:      time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1424,6 +1443,8 @@ func (s *Service) CreateGroup(ctx context.Context, request openapi.CreateGroupRe
 		ID:          database.GenerateID("g"),
 		Name:        request.Body.Name,
 		Permissions: permission.ToJSONArray(ctx, request.Body.Permissions),
+		Created:     time.Now().UTC().Format(time.RFC3339),
+		Updated:     time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1736,6 +1757,8 @@ func (s *Service) CreateWebhook(ctx context.Context, request openapi.CreateWebho
 		Name:        request.Body.Name,
 		Destination: request.Body.Destination,
 		Collection:  request.Body.Collection,
+		Created:     time.Now().UTC().Format(time.RFC3339),
+		Updated:     time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return nil, err
@@ -1946,13 +1969,13 @@ func toNullBool(value *bool) sql.NullBool {
 	return sql.NullBool{Bool: *value, Valid: true}
 }
 
-func marshal(state map[string]interface{}) string {
+func marshal(state map[string]any) string {
 	b, _ := json.Marshal(state) //nolint:errchkjson
 
 	return string(b)
 }
 
-func marshalPointer(state *map[string]interface{}) string {
+func marshalPointer(state *map[string]any) string {
 	if state == nil {
 		return "{}"
 	}
@@ -1962,8 +1985,8 @@ func marshalPointer(state *map[string]interface{}) string {
 	return string(b)
 }
 
-func unmarshal(data string) map[string]interface{} {
-	var m map[string]interface{}
+func unmarshal(data string) map[string]any {
+	var m map[string]any
 
 	if err := json.Unmarshal([]byte(data), &m); err != nil {
 		return nil

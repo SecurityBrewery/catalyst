@@ -11,11 +11,11 @@ import (
 func Test_marshal(t *testing.T) {
 	t.Parallel()
 
-	data := map[string]interface{}{"a": 1}
+	data := map[string]any{"a": 1}
 
 	out := marshal(data)
 
-	var res map[string]interface{}
+	var res map[string]any
 	err := json.Unmarshal([]byte(out), &res)
 	require.NoError(t, err, "invalid json")
 

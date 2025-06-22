@@ -2,6 +2,27 @@ package data
 
 import "github.com/brianvoe/gofakeit/v7"
 
+func fakeTicketTitle() string {
+	return random([]string{
+		"Unauthorized Access Attempt",
+		"Multiple Failed Login Attempts",
+		"Suspicious File Download",
+		"User Account Locked",
+		"Unusual Network Activity",
+		"Phishing Email Reported",
+		"Sensitive Data Transfer Detected",
+		"Malware Infection Found",
+		"Unauthorized Device Connected",
+		"Brute-Force Attack Attempt",
+		"Security Patch Required",
+		"External IP Address Probing Network",
+		"Suspicious Behavior Detected",
+		"Unauthorized Software Installation",
+		"Access Control System Malfunction",
+		"DDoS Attack Detected",
+	})
+}
+
 func fakeTicketDescription() string {
 	return random([]string{
 		"Unauthorized access attempt detected in the main server room.",

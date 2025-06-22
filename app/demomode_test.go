@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
 func Test_isCriticalPath(t *testing.T) {
@@ -49,7 +49,7 @@ func Test_isCriticalMethod(t *testing.T) {
 func Test_isDemoMode(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 	assert.False(t, isDemoMode(t.Context(), queries))
 
 	_, err := queries.CreateFeature(t.Context(), "demo")
@@ -61,7 +61,7 @@ func Test_isDemoMode(t *testing.T) {
 func Test_demoModeMiddleware(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 	mw := demoMode(queries)
 	nextCalled := false
 
@@ -103,7 +103,7 @@ func Test_demoModeMiddleware(t *testing.T) {
 func Test_handlers(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 	a := &App{Queries: queries}
 
 	// healthHandler

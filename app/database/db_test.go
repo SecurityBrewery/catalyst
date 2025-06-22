@@ -1,12 +1,12 @@
 package database_test
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
@@ -14,9 +14,7 @@ import (
 func TestDBInitialization(t *testing.T) {
 	t.Parallel()
 
-	queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
-	require.NoError(t, err)
-	t.Cleanup(cleanup)
+	queries := database.TestDB(t)
 
 	user, err := queries.SystemUser(t.Context())
 	require.NoError(t, err)
@@ -30,25 +28,22 @@ func TestDBInitialization(t *testing.T) {
 func TestDBForeignKeyConstraints(t *testing.T) {
 	t.Parallel()
 
-	queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
-	require.NoError(t, err)
-	t.Cleanup(cleanup)
+	queries := database.TestDB(t)
 
-	err = queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
+	assert.Error(t, queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
 		UserID:  "does_not_exist",
 		GroupID: "also_missing",
-	})
-	assert.Error(t, err)
+	}))
 }
 
 func TestNewTestDBDefaultData(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 
-	user, err := queries.UserByEmail(t.Context(), database.AdminEmail)
+	user, err := queries.UserByEmail(t.Context(), data.AdminEmail)
 	require.NoError(t, err)
-	assert.Equal(t, database.AdminEmail, user.Email)
+	assert.Equal(t, data.AdminEmail, user.Email)
 
 	ticket, err := queries.Ticket(t.Context(), "test-ticket")
 	require.NoError(t, err)
@@ -66,7 +61,7 @@ func TestNewTestDBDefaultData(t *testing.T) {
 func TestReadWrite(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 
 	for range 3 {
 		y, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
@@ -89,7 +84,7 @@ func TestReadWrite(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 
 	// read from a table
 	_, err := queries.GetUser(t.Context(), "u_bob_analyst")

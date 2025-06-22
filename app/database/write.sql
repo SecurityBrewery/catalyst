@@ -12,8 +12,8 @@ RETURNING *;
 ------------------------------------------------------------------
 
 -- name: CreateTicket :one
-INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type)
-VALUES (@id, @name, @description, @open, @owner, @resolution, @schema, @state, @type)
+INSERT INTO tickets (id, name, description, open, owner, resolution, schema, state, type, created, updated)
+VALUES (@id, @name, @description, @open, @owner, @resolution, @schema, @state, @type, @created, @updated)
 RETURNING *;
 
 -- name: UpdateTicket :one
@@ -37,8 +37,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateComment :one
-INSERT INTO comments (id, author, message, ticket)
-VALUES (@id, @author, @message, @ticket)
+INSERT INTO comments (id, author, message, ticket, created, updated)
+VALUES (@id, @author, @message, @ticket, @created, @updated)
 RETURNING *;
 
 -- name: UpdateComment :one
@@ -73,8 +73,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateFile :one
-INSERT INTO files (id, name, blob, size, ticket)
-VALUES (@id, @name, @blob, @size, @ticket)
+INSERT INTO files (id, name, blob, size, ticket, created, updated)
+VALUES (@id, @name, @blob, @size, @ticket, @created, @updated)
 RETURNING *;
 
 -- name: UpdateFile :one
@@ -93,8 +93,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateLink :one
-INSERT INTO links (id, name, url, ticket)
-VALUES (@id, @name, @url, @ticket)
+INSERT INTO links (id, name, url, ticket, created, updated)
+VALUES (@id, @name, @url, @ticket, @created, @updated)
 RETURNING *;
 
 -- name: UpdateLink :one
@@ -112,8 +112,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateReaction :one
-INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata)
-VALUES (@id, @name, @action, @actiondata, @trigger, @triggerdata)
+INSERT INTO reactions (id, name, action, actiondata, trigger, triggerdata, created, updated)
+VALUES (@id, @name, @action, @actiondata, @trigger, @triggerdata, @created, @updated)
 RETURNING *;
 
 -- name: UpdateReaction :one
@@ -134,8 +134,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateTask :one
-INSERT INTO tasks (id, name, open, owner, ticket)
-VALUES (@id, @name, @open, @owner, @ticket)
+INSERT INTO tasks (id, name, open, owner, ticket, created, updated)
+VALUES (@id, @name, @open, @owner, @ticket, @created, @updated)
 RETURNING *;
 
 -- name: UpdateTask :one
@@ -154,8 +154,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateTimeline :one
-INSERT INTO timeline (id, message, ticket, time)
-VALUES (@id, @message, @ticket, @time)
+INSERT INTO timeline (id, message, ticket, time, created, updated)
+VALUES (@id, @message, @ticket, @time, @created, @updated)
 RETURNING *;
 
 -- name: UpdateTimeline :one
@@ -173,8 +173,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateType :one
-INSERT INTO types (id, singular, plural, icon, schema)
-VALUES (@id, @singular, @plural, @icon, @schema)
+INSERT INTO types (id, singular, plural, icon, schema, created, updated)
+VALUES (@id, @singular, @plural, @icon, @schema, @created, @updated)
 RETURNING *;
 
 -- name: UpdateType :one
@@ -194,8 +194,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateUser :one
-INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified)
-VALUES (@id, @name, @email, @username, @passwordHash, @tokenKey, @avatar, @verified)
+INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified, created, updated)
+VALUES (@id, @name, @email, @username, @passwordHash, @tokenKey, @avatar, @verified, @created, @updated)
 RETURNING *;
 
 -- name: UpdateUser :one
@@ -222,8 +222,8 @@ WHERE id = @id
 ------------------------------------------------------------------
 
 -- name: CreateWebhook :one
-INSERT INTO webhooks (id, name, collection, destination)
-VALUES (@id, @name, @collection, @destination)
+INSERT INTO webhooks (id, name, collection, destination, created, updated)
+VALUES (@id, @name, @collection, @destination, @created, @updated)
 RETURNING *;
 
 -- name: UpdateWebhook :one
@@ -242,8 +242,8 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateGroup :one
-INSERT INTO groups (id, name, permissions)
-VALUES (@id, @name, @permissions)
+INSERT INTO groups (id, name, permissions, created, updated)
+VALUES (@id, @name, @permissions, @created, @updated)
 RETURNING *;
 
 -- name: UpdateGroup :one

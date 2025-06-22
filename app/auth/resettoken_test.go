@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -75,9 +74,7 @@ func TestService_createResetToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries, cleanup, err := database.DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
-			require.NoError(t, err)
-			t.Cleanup(cleanup)
+			queries := database.TestDB(t)
 
 			s := &Service{
 				queries: queries,

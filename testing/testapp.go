@@ -7,31 +7,27 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app"
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/counter"
+	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/reaction"
 )
 
-func App(t *testing.T) (*app.App, func(), *Counter) {
+func App(t *testing.T) (*app.App, func(), *counter.Counter) {
 	t.Helper()
 
 	baseApp, cleanup, err := app.New(t.Context(), t.TempDir())
 	require.NoError(t, err)
 
-	err = baseApp.SetupRoutes()
-	require.NoError(t, err)
-
 	err = reaction.BindHooks(baseApp, true)
 	require.NoError(t, err)
 
-	database.DefaultTestData(t, baseApp.Queries)
+	data.DefaultTestData(t, baseApp.Queries)
 
-	counter := countEvents(baseApp)
-
-	return baseApp, cleanup, counter
+	return baseApp, cleanup, countEvents(baseApp)
 }
 
-func countEvents(app *app.App) *Counter {
-	c := NewCounter()
+func countEvents(app *app.App) *counter.Counter {
+	c := counter.NewCounter()
 
 	app.Hooks.OnRecordsListRequest.Subscribe(count(c, "OnRecordsListRequest"))
 	app.Hooks.OnRecordViewRequest.Subscribe(count(c, "OnRecordViewRequest"))
@@ -45,7 +41,7 @@ func countEvents(app *app.App) *Counter {
 	return c
 }
 
-func count(c *Counter, name string) func(ctx context.Context, table string, record any) {
+func count(c *counter.Counter, name string) func(ctx context.Context, table string, record any) {
 	return func(_ context.Context, _ string, _ any) {
 		c.Increment(name)
 	}

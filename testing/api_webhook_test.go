@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
 func TestWebhooksCollection(t *testing.T) {
@@ -12,12 +12,12 @@ func TestWebhooksCollection(t *testing.T) {
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "ListWebhooks",
 				Method: http.MethodGet,
 				URL:    "/api/webhooks",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -26,13 +26,13 @@ func TestWebhooksCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedHeaders: map[string]string{"X-Total-Count": "1"},
 					ExpectedContent: []string{`"id":"w_test_webhook"`},
@@ -41,7 +41,7 @@ func TestWebhooksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "CreateWebhook",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
@@ -52,7 +52,7 @@ func TestWebhooksCollection(t *testing.T) {
 					"destination": "https://example.com/new",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -60,13 +60,13 @@ func TestWebhooksCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"name":"new"`},
 					ExpectedEvents: map[string]int{
@@ -77,12 +77,12 @@ func TestWebhooksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "GetWebhook",
 				Method: http.MethodGet,
 				URL:    "/api/webhooks/w_test_webhook",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -90,13 +90,13 @@ func TestWebhooksCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"id":"w_test_webhook"`},
 					ExpectedEvents:  map[string]int{"OnRecordViewRequest": 1},
@@ -104,14 +104,14 @@ func TestWebhooksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "UpdateWebhook",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/webhooks/w_test_webhook",
 				Body:           s(map[string]any{"name": "update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -119,13 +119,13 @@ func TestWebhooksCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:            "Admin",
-					Admin:           database.AdminEmail,
+					Admin:           data.AdminEmail,
 					ExpectedStatus:  http.StatusOK,
 					ExpectedContent: []string{`"id":"w_test_webhook"`, `"name":"update"`},
 					ExpectedEvents: map[string]int{
@@ -136,12 +136,12 @@ func TestWebhooksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "DeleteWebhook",
 				Method: http.MethodDelete,
 				URL:    "/api/webhooks/w_test_webhook",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:            "Unauthorized",
 					ExpectedStatus:  http.StatusUnauthorized,
@@ -149,13 +149,13 @@ func TestWebhooksCollection(t *testing.T) {
 				},
 				{
 					Name:            "Analyst",
-					AuthRecord:      database.AnalystEmail,
+					AuthRecord:      data.AnalystEmail,
 					ExpectedStatus:  http.StatusUnauthorized,
 					ExpectedContent: []string{`"missing required scopes"`},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

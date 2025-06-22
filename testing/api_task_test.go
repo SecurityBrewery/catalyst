@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
-func TestLinksCollection(t *testing.T) {
+func TestTasksCollection(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
-				Name:   "ListLinks",
+			baseTest: baseTest{
+				Name:   "ListTasks",
 				Method: http.MethodGet,
-				URL:    "/api/links?ticket=test-ticket",
+				URL:    "/api/tasks?ticket=test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -28,7 +28,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -37,7 +37,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -47,18 +47,19 @@ func TestLinksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "CreateLink",
+			baseTest: baseTest{
+				Name:           "CreateTask",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/links",
+				URL:            "/api/tasks",
 				Body: s(map[string]any{
 					"ticket": "test-ticket",
 					"name":   "new",
-					"url":    "https://example.com/new",
+					"open":   true,
+					"owner":  "u_bob_analyst",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -68,7 +69,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"ticket":"test-ticket"`,
@@ -80,7 +81,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"ticket":"test-ticket"`,
@@ -93,12 +94,12 @@ func TestLinksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "GetLink",
+			baseTest: baseTest{
+				Name:   "GetTask",
 				Method: http.MethodGet,
-				URL:    "/api/links/l_test_link",
+				URL:    "/api/tasks/k_test_task",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -108,33 +109,33 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"l_test_link"`,
+						`"id":"k_test_task"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"l_test_link"`,
+						`"id":"k_test_task"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "UpdateLink",
+			baseTest: baseTest{
+				Name:           "UpdateTask",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/links/l_test_link",
+				URL:            "/api/tasks/k_test_task",
 				Body:           s(map[string]any{"name": "update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -144,10 +145,10 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"l_test_link"`,
+						`"id":"k_test_task"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -157,10 +158,10 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"l_test_link"`,
+						`"id":"k_test_task"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
@@ -171,12 +172,12 @@ func TestLinksCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "DeleteLink",
+			baseTest: baseTest{
+				Name:   "DeleteTask",
 				Method: http.MethodDelete,
-				URL:    "/api/links/l_test_link",
+				URL:    "/api/tasks/k_test_task",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -186,7 +187,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,
@@ -195,7 +196,7 @@ func TestLinksCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

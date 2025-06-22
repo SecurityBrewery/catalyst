@@ -8,9 +8,12 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
+	"testing"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3" // import sqlite driver
+	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/migration"
@@ -82,8 +85,16 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	}, nil
 }
 
+func TestDB(t *testing.T) *sqlc.Queries {
+	queries, cleanup, err := DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
+	require.NoError(t, err)
+	t.Cleanup(cleanup)
+
+	return queries
+}
+
 func GenerateID(prefix string) string {
-	return prefix + randomstring(12)
+	return strings.ToLower(prefix) + randomstring(12)
 }
 
 const base32alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

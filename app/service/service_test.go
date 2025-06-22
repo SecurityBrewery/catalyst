@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
@@ -16,7 +17,7 @@ import (
 func newTestService(t *testing.T) *Service {
 	t.Helper()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 	hooks := hook.NewHooks()
 
 	return New(queries, hooks, nil)
@@ -62,7 +63,7 @@ func Test_toNullBool(t *testing.T) {
 func Test_marshal_unmarshal(t *testing.T) {
 	t.Parallel()
 
-	m := map[string]interface{}{"key": "value"}
+	m := map[string]any{"key": "value"}
 	json := marshal(m)
 	assert.JSONEq(t, `{"key":"value"}`, json)
 
@@ -76,7 +77,7 @@ func Test_marshal_unmarshal(t *testing.T) {
 func Test_marshalPointer(t *testing.T) {
 	t.Parallel()
 
-	m := map[string]interface{}{"x": 1}
+	m := map[string]any{"x": 1}
 	assert.Equal(t, `{"x":1}`, marshalPointer(&m))
 	assert.Equal(t, "{}", marshalPointer(nil))
 }
@@ -124,7 +125,7 @@ func TestService_DownloadFile(t *testing.T) {
 func TestService_DownloadFile_Errors(t *testing.T) {
 	t.Parallel()
 
-	queries := database.NewTestDB(t)
+	queries := data.NewTestDB(t)
 	hooks := hook.NewHooks()
 	s := New(queries, hooks, nil)
 

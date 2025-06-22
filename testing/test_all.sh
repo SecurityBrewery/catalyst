@@ -13,8 +13,8 @@ run_playwright_tests() {
 }
 
 run_upgradetest() {
-    # iterate over all folders in ./upgradetest/data
-    for dir in ./upgradetest/data/*/; do
+    # iterate over all folders in ./testing/data
+    for dir in ./testing/data/*/; do
         echo "Running tests with data from $dir"
         reset_catalyst_data
         cp "$dir"/data.db catalyst_data/data.db

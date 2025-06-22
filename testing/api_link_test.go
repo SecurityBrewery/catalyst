@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
-func TestReactionsCollection(t *testing.T) {
+func TestLinksCollection(t *testing.T) {
 	t.Parallel()
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
-				Name:   "ListReactions",
+			baseTest: baseTest{
+				Name:   "ListLinks",
 				Method: http.MethodGet,
-				URL:    "/api/reactions",
+				URL:    "/api/links?ticket=test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -28,44 +28,37 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusUnauthorized,
-					ExpectedContent: []string{
-						`"missing required scopes"`,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusOK,
+					ExpectedHeaders: map[string]string{
+						"X-Total-Count": "1",
 					},
+					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
-					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
-					},
 					ExpectedHeaders: map[string]string{
-						"X-Total-Count": "3",
-					},
-					NotExpectedContent: []string{
-						`"items":[]`,
+						"X-Total-Count": "1",
 					},
 					ExpectedEvents: map[string]int{"OnRecordsListRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "CreateReaction",
+			baseTest: baseTest{
+				Name:           "CreateLink",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/reactions",
+				URL:            "/api/links",
 				Body: s(map[string]any{
-					"name":        "test",
-					"trigger":     "webhook",
-					"triggerdata": map[string]any{"path": "test"},
-					"action":      "python",
-					"actiondata":  map[string]any{"script": "print('Hello, World!')"},
+					"ticket": "test-ticket",
+					"name":   "new",
+					"url":    "https://example.com/new",
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -75,25 +68,24 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusUnauthorized,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"missing required scopes"`,
+						`"ticket":"test-ticket"`,
+					},
+					ExpectedEvents: map[string]int{
+						"OnRecordAfterCreateRequest":  1,
+						"OnRecordBeforeCreateRequest": 1,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"name":"test"`,
-					},
-					NotExpectedContent: []string{
-						`"items":[]`,
+						`"ticket":"test-ticket"`,
 					},
 					ExpectedEvents: map[string]int{
-						// "OnModelAfterCreate":          1,
-						// "OnModelBeforeCreate":         1,
 						"OnRecordAfterCreateRequest":  1,
 						"OnRecordBeforeCreateRequest": 1,
 					},
@@ -101,13 +93,12 @@ func TestReactionsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "GetReaction",
-				Method:         http.MethodGet,
-				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/reactions/r-test-webhook",
+			baseTest: baseTest{
+				Name:   "GetLink",
+				Method: http.MethodGet,
+				URL:    "/api/links/l_test_link",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -117,32 +108,33 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusUnauthorized,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"missing required scopes"`,
+						`"id":"l_test_link"`,
 					},
+					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
+						`"id":"l_test_link"`,
 					},
 					ExpectedEvents: map[string]int{"OnRecordViewRequest": 1},
 				},
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:           "UpdateReaction",
+			baseTest: baseTest{
+				Name:           "UpdateLink",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/reactions/r-test-webhook",
+				URL:            "/api/links/l_test_link",
 				Body:           s(map[string]any{"name": "update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -152,23 +144,26 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusUnauthorized,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"missing required scopes"`,
+						`"id":"l_test_link"`,
+						`"name":"update"`,
+					},
+					ExpectedEvents: map[string]int{
+						"OnRecordAfterUpdateRequest":  1,
+						"OnRecordBeforeUpdateRequest": 1,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
-						`"id":"r-test-webhook"`,
+						`"id":"l_test_link"`,
 						`"name":"update"`,
 					},
 					ExpectedEvents: map[string]int{
-						// "OnModelAfterUpdate":          1,
-						// "OnModelBeforeUpdate":         1,
 						"OnRecordAfterUpdateRequest":  1,
 						"OnRecordBeforeUpdateRequest": 1,
 					},
@@ -176,12 +171,12 @@ func TestReactionsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
-				Name:   "DeleteReaction",
+			baseTest: baseTest{
+				Name:   "DeleteLink",
 				Method: http.MethodDelete,
-				URL:    "/api/reactions/r-test-webhook",
+				URL:    "/api/links/l_test_link",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -191,19 +186,18 @@ func TestReactionsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
-					ExpectedStatus: http.StatusUnauthorized,
-					ExpectedContent: []string{
-						`"missing required scopes"`,
+					AuthRecord:     data.AnalystEmail,
+					ExpectedStatus: http.StatusNoContent,
+					ExpectedEvents: map[string]int{
+						"OnRecordAfterDeleteRequest":  1,
+						"OnRecordBeforeDeleteRequest": 1,
 					},
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
-						// "OnModelAfterDelete":          1,
-						// "OnModelBeforeDelete":         1,
 						"OnRecordAfterDeleteRequest":  1,
 						"OnRecordBeforeDeleteRequest": 1,
 					},

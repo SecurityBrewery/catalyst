@@ -109,7 +109,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-dirs
         run: |
-          FOLDERS=$(ls -d ./upgradetest/data/*/ | xargs -n 1 basename | jq -R . | jq -c -s .)
+          FOLDERS=$(ls -d ./testing/data/*/ | xargs -n 1 basename | jq -R . | jq -c -s .)
           echo "matrix=$FOLDERS" >> $GITHUB_OUTPUT
 
   test-upgrade-playwright:
@@ -125,5 +125,5 @@ jobs:
         with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
       - run: mkdir -p catalyst_data
-      - run: cp upgradetest/data/${{ matrix.folder }}/data.db catalyst_data/data.db
+      - run: cp testing/data/${{ matrix.folder }}/data.db catalyst_data/data.db
       - run: make install-ui build-ui install-playwright test-playwright

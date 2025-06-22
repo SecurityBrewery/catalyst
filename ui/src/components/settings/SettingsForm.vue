@@ -321,10 +321,7 @@ const onSubmit = handleSubmit((vals) => {
               <FormControl>
                 <Switch :checked="value" @update:checked="handleChange" />
               </FormControl>
-              <FormDescription>
-                Check to enable SMTP settings. If enabled, you must provide the host, port,
-                username, and password.
-              </FormDescription>
+              <FormDescription> Enable email sending through an SMTP server</FormDescription>
             </div>
           </FormItem>
         </FormField>
@@ -334,6 +331,7 @@ const onSubmit = handleSubmit((vals) => {
             <FormLabel for="smtp.host" class="text-right">Host</FormLabel>
             <Input id="smtp.host" class="col-span-3" v-bind="componentField" />
             <FormMessage />
+            <FormDescription>SMTP server hostname (e.g., smtp.gmail.com)</FormDescription>
           </FormItem>
         </FormField>
 
@@ -342,6 +340,7 @@ const onSubmit = handleSubmit((vals) => {
             <FormLabel for="smtp.port" class="text-right">Port</FormLabel>
             <Input id="smtp.port" type="number" class="col-span-3" v-bind="componentField" />
             <FormMessage />
+            <FormDescription>Common ports: 25, 465 (SSL), 587 (TLS)</FormDescription>
           </FormItem>
         </FormField>
 
@@ -386,7 +385,7 @@ const onSubmit = handleSubmit((vals) => {
               <FormControl>
                 <Switch :checked="value" @update:checked="handleChange" />
               </FormControl>
-              <FormDescription> Check to enable TLS for SMTP connections.</FormDescription>
+              <FormDescription>Enable TLS/SSL for SMTP connections (recommended)</FormDescription>
             </div>
           </FormItem>
         </FormField>
@@ -395,6 +394,7 @@ const onSubmit = handleSubmit((vals) => {
           <FormItem class="w-full">
             <FormLabel for="smtp.localName" class="text-right">HELO domain</FormLabel>
             <Input id="smtp.localName" class="col-span-3" v-bind="componentField" />
+            <FormDescription>Optional. Leave empty to use default hostname.</FormDescription>
             <FormMessage />
           </FormItem>
         </FormField>

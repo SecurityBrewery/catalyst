@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/urfave/cli/v3"
 
@@ -40,6 +41,8 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 		TokenKey:     tokenKey,
 		Avatar:       "",
 		Verified:     true,
+		Created:      time.Now().UTC().Format(time.RFC3339),
+		Updated:      time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
 		return err

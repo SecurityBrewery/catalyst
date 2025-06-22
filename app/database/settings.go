@@ -110,21 +110,21 @@ type TokenConfig struct {
 }
 
 type EmailAuth struct {
-	Enabled           bool        `json:"enabled"`
-	ExceptDomains     interface{} `json:"exceptDomains"`
-	OnlyDomains       interface{} `json:"onlyDomains"`
-	MinPasswordLength int         `json:"minPasswordLength"`
+	Enabled           bool `json:"enabled"`
+	ExceptDomains     any  `json:"exceptDomains"`
+	OnlyDomains       any  `json:"onlyDomains"`
+	MinPasswordLength int  `json:"minPasswordLength"`
 }
 
 type OAuthConfig struct {
-	Enabled      bool        `json:"enabled"`
-	ClientID     string      `json:"clientID"`
-	ClientSecret string      `json:"clientSecret"`
-	AuthURL      string      `json:"authURL"`
-	TokenURL     string      `json:"tokenURL"`
-	UserAPIURL   string      `json:"userAPIURL"`
-	DisplayName  string      `json:"displayName"`
-	Pkce         interface{} `json:"pkce"`
+	Enabled      bool   `json:"enabled"`
+	ClientID     string `json:"clientID"`
+	ClientSecret string `json:"clientSecret"`
+	AuthURL      string `json:"authURL"`
+	TokenURL     string `json:"tokenURL"`
+	UserAPIURL   string `json:"userAPIURL"`
+	DisplayName  string `json:"displayName"`
+	Pkce         any    `json:"pkce"`
 }
 
 func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error) {

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 )
 
 func TestTicketsCollection(t *testing.T) {
@@ -12,12 +12,12 @@ func TestTicketsCollection(t *testing.T) {
 
 	testSets := []catalystTest{
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "ListTickets",
 				Method: http.MethodGet,
 				URL:    "/api/tickets",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -27,7 +27,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -36,7 +36,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedHeaders: map[string]string{
 						"X-Total-Count": "1",
@@ -46,7 +46,7 @@ func TestTicketsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "CreateTicket",
 				Method:         http.MethodPost,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
@@ -62,7 +62,7 @@ func TestTicketsCollection(t *testing.T) {
 					"state":       map[string]any{},
 				}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -72,7 +72,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"new"`,
@@ -84,7 +84,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"name":"new"`,
@@ -97,12 +97,12 @@ func TestTicketsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "GetTicket",
 				Method: http.MethodGet,
 				URL:    "/api/tickets/test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -112,7 +112,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"test-ticket"`,
@@ -121,7 +121,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"test-ticket"`,
@@ -131,14 +131,14 @@ func TestTicketsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:           "UpdateTicket",
 				Method:         http.MethodPatch,
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/tickets/test-ticket",
 				Body:           s(map[string]any{"name": "update"}),
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -148,7 +148,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"test-ticket"`,
@@ -161,7 +161,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusOK,
 					ExpectedContent: []string{
 						`"id":"test-ticket"`,
@@ -175,12 +175,12 @@ func TestTicketsCollection(t *testing.T) {
 			},
 		},
 		{
-			baseTest: BaseTest{
+			baseTest: baseTest{
 				Name:   "DeleteTicket",
 				Method: http.MethodDelete,
 				URL:    "/api/tickets/test-ticket",
 			},
-			userTests: []UserTest{
+			userTests: []userTest{
 				{
 					Name:           "Unauthorized",
 					ExpectedStatus: http.StatusUnauthorized,
@@ -190,7 +190,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Analyst",
-					AuthRecord:     database.AnalystEmail,
+					AuthRecord:     data.AnalystEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,
@@ -199,7 +199,7 @@ func TestTicketsCollection(t *testing.T) {
 				},
 				{
 					Name:           "Admin",
-					Admin:          database.AdminEmail,
+					Admin:          data.AdminEmail,
 					ExpectedStatus: http.StatusNoContent,
 					ExpectedEvents: map[string]int{
 						"OnRecordAfterDeleteRequest":  1,

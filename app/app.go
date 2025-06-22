@@ -37,17 +37,23 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 
 	scheduler, err := schedule.New(ctx, authService, queries)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create scheduler: %w", err)
+		return nil, cleanup, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
 	hooks := hook.NewHooks()
 
-	return &App{
+	app := &App{
 		Hooks:     hooks,
 		Queries:   queries,
 		Router:    chi.NewRouter(),
 		Service:   service.New(queries, hooks, scheduler),
 		Auth:      authService,
 		Scheduler: scheduler,
-	}, cleanup, nil
+	}
+
+	if err := app.setupRoutes(); err != nil {
+		return nil, cleanup, fmt.Errorf("failed to setup routes: %w", err)
+	}
+
+	return app, cleanup, nil
 }

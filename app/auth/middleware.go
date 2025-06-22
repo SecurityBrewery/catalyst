@@ -54,7 +54,7 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 }
 
 func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (response any, err error) {
 		requiredScopes, err := requiredScopes(r)
 		if err != nil {
 			slog.ErrorContext(ctx, "failed to get required scopes", "error", err)
@@ -86,7 +86,7 @@ func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictne
 }
 
 func LogError(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (response interface{}, err error) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (response any, err error) {
 		re, err := next(ctx, w, r, request)
 		if err != nil {
 			if err.Error() == "context canceled" {

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
-	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
 
@@ -85,7 +85,7 @@ func TestService_Middleware(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries := database.NewTestDB(t)
+			queries := data.NewTestDB(t)
 
 			auth := New(queries, nil)
 
@@ -159,7 +159,7 @@ func TestService_ValidateScopes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			handler := ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ interface{}) (response interface{}, err error) {
+			handler := ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ any) (response any, err error) {
 				tt.args.next(w, r)
 
 				return w, nil
