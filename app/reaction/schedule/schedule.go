@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
-
 	"github.com/go-co-op/gocron/v2"
+	"log/slog"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
@@ -40,6 +39,8 @@ func New(ctx context.Context, service *auth.Service, queries *sqlc.Queries) (*Sc
 	if err := scheduler.loadJobs(ctx); err != nil {
 		return nil, fmt.Errorf("failed to load jobs: %w", err)
 	}
+
+	innerScheduler.Start()
 
 	return scheduler, nil
 }

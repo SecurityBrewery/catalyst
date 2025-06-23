@@ -309,7 +309,6 @@ const getUser = `-- name: GetUser :one
 SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE id = ?1
-  AND id != 'system'
 `
 
 // ----------------------------------------------------------------
@@ -1506,7 +1505,6 @@ const userByEmail = `-- name: UserByEmail :one
 SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE email = ?1
-  AND id != 'system'
 `
 
 func (q *ReadQueries) UserByEmail(ctx context.Context, email string) (User, error) {
@@ -1533,7 +1531,6 @@ const userByUserName = `-- name: UserByUserName :one
 SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
 FROM users
 WHERE username = ?1
-  AND id != 'system'
 `
 
 func (q *ReadQueries) UserByUserName(ctx context.Context, username string) (User, error) {

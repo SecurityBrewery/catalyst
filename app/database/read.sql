@@ -153,20 +153,17 @@ LIMIT @limit OFFSET @offset;
 -- name: GetUser :one
 SELECT *
 FROM users
-WHERE id = @id
-  AND id != 'system';
+WHERE id = @id;
 
 -- name: UserByUserName :one
 SELECT *
 FROM users
-WHERE username = @username
-  AND id != 'system';
+WHERE username = @username;
 
 -- name: UserByEmail :one
 SELECT *
 FROM users
-WHERE email = @email
-  AND id != 'system';
+WHERE email = @email;
 
 -- name: SystemUser :one
 SELECT *

@@ -253,8 +253,10 @@ const curlExample = computed(() => {
     cmd += ` -H "Authorization: Bearer ${values.triggerdata.token}"`
   }
 
+  const url = `${location.protocol}//${location.hostname}:${location.port}`
+
   if (values.triggerdata.path) {
-    cmd += ` https://${location.hostname}/reaction/${values.triggerdata.path}`
+    cmd += ` -d '{"foo":"bar"}' ${url}/reaction/${values.triggerdata.path}`
   }
 
   return cmd

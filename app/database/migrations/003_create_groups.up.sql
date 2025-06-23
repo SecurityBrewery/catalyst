@@ -68,7 +68,11 @@ FROM user_effective_groups uer
 INSERT INTO groups (id, name, permissions)
 VALUES ('analyst', 'Analyst', '["type:read", "file:read", "ticket:read", "ticket:write", "user:read", "group:read"]'),
        ('admin', 'Admin', '["admin"]');
+
 INSERT INTO user_groups (user_id, group_id)
 SELECT id, 'analyst'
 FROM users
 WHERE id != 'system'; -- Exclude the system user
+
+INSERT INTO user_groups (user_id, group_id)
+VALUES ('system', 'admin'); -- Assign the admin group to the system user
