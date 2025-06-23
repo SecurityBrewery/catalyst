@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-co-op/gocron/v2"
 	"log/slog"
+
+	"github.com/go-co-op/gocron/v2"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
