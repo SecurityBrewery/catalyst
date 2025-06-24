@@ -19,7 +19,6 @@ import type {
   ExtendedComment,
   ExtendedTask,
   ExtendedTicket,
-  FileUpdate,
   Group,
   GroupRelation,
   GroupUpdate,
@@ -71,8 +70,6 @@ import {
   ExtendedTaskToJSON,
   ExtendedTicketFromJSON,
   ExtendedTicketToJSON,
-  FileUpdateFromJSON,
-  FileUpdateToJSON,
   GroupFromJSON,
   GroupRelationFromJSON,
   GroupRelationToJSON,
@@ -397,11 +394,6 @@ export interface SearchTicketsRequest {
 export interface UpdateCommentRequest {
   id: string
   commentUpdate: CommentUpdate
-}
-
-export interface UpdateFileRequest {
-  id: string
-  fileUpdate: FileUpdate
 }
 
 export interface UpdateGroupRequest {
@@ -3200,65 +3192,6 @@ export class DefaultApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction
   ): Promise<Comment> {
     const response = await this.updateCommentRaw(requestParameters, initOverrides)
-    return await response.value()
-  }
-
-  /**
-   * Update a file by ID
-   */
-  async updateFileRaw(
-    requestParameters: UpdateFileRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<runtime.ApiResponse<any>> {
-    if (requestParameters['id'] == null) {
-      throw new runtime.RequiredError(
-        'id',
-        'Required parameter "id" was null or undefined when calling updateFile().'
-      )
-    }
-
-    if (requestParameters['fileUpdate'] == null) {
-      throw new runtime.RequiredError(
-        'fileUpdate',
-        'Required parameter "fileUpdate" was null or undefined when calling updateFile().'
-      )
-    }
-
-    const queryParameters: any = {}
-
-    const headerParameters: runtime.HTTPHeaders = {}
-
-    headerParameters['Content-Type'] = 'application/json'
-
-    const response = await this.request(
-      {
-        path: `/files/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
-        method: 'PATCH',
-        headers: headerParameters,
-        query: queryParameters,
-        body: FileUpdateToJSON(requestParameters['fileUpdate'])
-      },
-      initOverrides
-    )
-
-    if (this.isJsonMime(response.headers.get('content-type'))) {
-      return new runtime.JSONApiResponse<any>(response)
-    } else {
-      return new runtime.TextApiResponse(response) as any
-    }
-  }
-
-  /**
-   * Update a file by ID
-   */
-  async updateFile(
-    requestParameters: UpdateFileRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction
-  ): Promise<any> {
-    const response = await this.updateFileRaw(requestParameters, initOverrides)
     return await response.value()
   }
 

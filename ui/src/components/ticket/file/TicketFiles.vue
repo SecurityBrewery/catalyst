@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import '@uppy/core/dist/style.min.css'
+import '@uppy/dashboard/dist/style.min.css'
+
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
@@ -58,9 +61,9 @@ const { data: config } = useQuery({
 
 const deleteMutation = useMutation({
   mutationFn: (id: string) => api.deleteFile({ id }),
-  onSuccess: () => {
-    queryClient.removeQueries({ queryKey: ['files', props.ticket.id] })
-    queryClient.invalidateQueries({ queryKey: ['files'] })
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['files', id] })
+    queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
     toast({
       title: 'File deleted',
       description: 'The file has been deleted successfully'

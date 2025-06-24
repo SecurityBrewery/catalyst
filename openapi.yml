@@ -130,15 +130,6 @@ paths:
       responses:
         "200": { "description": "A single file", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
       security: [ OAuth2: [ "file:read" ] ]
-    patch:
-      summary: Update a file by ID
-      operationId: updateFile
-      parameters:
-        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FileUpdate" } } } }
-      responses:
-        "200": { "description": "File updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
-      security: [ OAuth2: [ "file:write" ] ]
     delete:
       summary: Delete a file by ID
       operationId: deleteFile

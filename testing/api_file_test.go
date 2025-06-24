@@ -106,38 +106,6 @@ func TestFilesCollection(t *testing.T) {
 		},
 		{
 			baseTest: baseTest{
-				Name:           "UpdateFile",
-				Method:         http.MethodPatch,
-				RequestHeaders: map[string]string{"Content-Type": "application/json"},
-				URL:            "/api/files/b_test_file",
-				Body:           s(map[string]any{"name": "update.txt"}),
-			},
-			userTests: []userTest{
-				{
-					Name:            "Unauthorized",
-					ExpectedStatus:  http.StatusUnauthorized,
-					ExpectedContent: []string{`"invalid bearer token"`},
-				},
-				{
-					Name:            "Analyst",
-					AuthRecord:      data.AnalystEmail,
-					ExpectedStatus:  http.StatusUnauthorized,
-					ExpectedContent: []string{`"missing required scopes"`},
-				},
-				{
-					Name:            "Admin",
-					Admin:           data.AdminEmail,
-					ExpectedStatus:  http.StatusOK,
-					ExpectedContent: []string{`"name":"update.txt"`},
-					ExpectedEvents: map[string]int{
-						"OnRecordAfterUpdateRequest":  1,
-						"OnRecordBeforeUpdateRequest": 1,
-					},
-				},
-			},
-		},
-		{
-			baseTest: baseTest{
 				Name:   "DeleteFile",
 				Method: http.MethodDelete,
 				URL:    "/api/files/b_test_file",

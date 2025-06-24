@@ -15,13 +15,15 @@ import (
 func App(t *testing.T) (*app.App, func(), *counter.Counter) {
 	t.Helper()
 
-	baseApp, cleanup, err := app.New(t.Context(), t.TempDir())
+	dir := t.TempDir()
+
+	baseApp, cleanup, err := app.New(t.Context(), dir)
 	require.NoError(t, err)
 
 	err = reaction.BindHooks(baseApp, true)
 	require.NoError(t, err)
 
-	data.DefaultTestData(t, baseApp.Queries)
+	data.DefaultTestData(t, dir, baseApp.Queries)
 
 	return baseApp, cleanup, countEvents(baseApp)
 }

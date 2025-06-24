@@ -49,7 +49,7 @@ func Test_isCriticalMethod(t *testing.T) {
 func Test_isDemoMode(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 	assert.False(t, isDemoMode(t.Context(), queries))
 
 	_, err := queries.CreateFeature(t.Context(), "demo")
@@ -61,7 +61,7 @@ func Test_isDemoMode(t *testing.T) {
 func Test_demoModeMiddleware(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 	mw := demoMode(queries)
 	nextCalled := false
 
@@ -103,7 +103,7 @@ func Test_demoModeMiddleware(t *testing.T) {
 func Test_handlers(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 	a := &App{Queries: queries}
 
 	// healthHandler

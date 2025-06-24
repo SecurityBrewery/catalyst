@@ -7,12 +7,12 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
-func NewTestDB(t *testing.T) *sqlc.Queries {
+func NewTestDB(t *testing.T, dir string) *sqlc.Queries {
 	t.Helper()
 
-	queries := database.TestDB(t)
+	queries := database.TestDB(t, dir)
 
-	DefaultTestData(t, queries)
+	DefaultTestData(t, dir, queries)
 
 	return queries
 }

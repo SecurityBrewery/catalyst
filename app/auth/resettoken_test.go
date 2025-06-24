@@ -74,7 +74,7 @@ func TestService_createResetToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries := database.TestDB(t)
+			queries := database.TestDB(t, t.TempDir())
 
 			s := &Service{
 				queries: queries,

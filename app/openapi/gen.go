@@ -570,9 +570,6 @@ type UpdateCommentJSONRequestBody = CommentUpdate
 // CreateFileJSONRequestBody defines body for CreateFile for application/json ContentType.
 type CreateFileJSONRequestBody = NewFile
 
-// UpdateFileJSONRequestBody defines body for UpdateFile for application/json ContentType.
-type UpdateFileJSONRequestBody = FileUpdate
-
 // CreateGroupJSONRequestBody defines body for CreateGroup for application/json ContentType.
 type CreateGroupJSONRequestBody = NewGroup
 
@@ -671,9 +668,6 @@ type ServerInterface interface {
 	// Get a single file by ID
 	// (GET /files/{id})
 	GetFile(w http.ResponseWriter, r *http.Request, id string)
-	// Update a file by ID
-	// (PATCH /files/{id})
-	UpdateFile(w http.ResponseWriter, r *http.Request, id string)
 	// Download a file by ID
 	// (GET /files/{id}/download)
 	DownloadFile(w http.ResponseWriter, r *http.Request, id string)
@@ -923,12 +917,6 @@ func (_ Unimplemented) DeleteFile(w http.ResponseWriter, r *http.Request, id str
 // Get a single file by ID
 // (GET /files/{id})
 func (_ Unimplemented) GetFile(w http.ResponseWriter, r *http.Request, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update a file by ID
-// (PATCH /files/{id})
-func (_ Unimplemented) UpdateFile(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1619,37 +1607,6 @@ func (siw *ServerInterfaceWrapper) GetFile(w http.ResponseWriter, r *http.Reques
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFile(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateFile operation middleware
-func (siw *ServerInterfaceWrapper) UpdateFile(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, OAuth2Scopes, []string{"file:write"})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateFile(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3700,9 +3657,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/files/{id}", wrapper.GetFile)
 	})
 	r.Group(func(r chi.Router) {
-		r.Patch(options.BaseURL+"/files/{id}", wrapper.UpdateFile)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/files/{id}/download", wrapper.DownloadFile)
 	})
 	r.Group(func(r chi.Router) {
@@ -4080,24 +4034,6 @@ type GetFileResponseObject interface {
 type GetFile200JSONResponse File
 
 func (response GetFile200JSONResponse) VisitGetFileResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateFileRequestObject struct {
-	Id   string `json:"id"`
-	Body *UpdateFileJSONRequestBody
-}
-
-type UpdateFileResponseObject interface {
-	VisitUpdateFileResponse(w http.ResponseWriter) error
-}
-
-type UpdateFile200JSONResponse File
-
-func (response UpdateFile200JSONResponse) VisitUpdateFileResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -5255,9 +5191,6 @@ type StrictServerInterface interface {
 	// Get a single file by ID
 	// (GET /files/{id})
 	GetFile(ctx context.Context, request GetFileRequestObject) (GetFileResponseObject, error)
-	// Update a file by ID
-	// (PATCH /files/{id})
-	UpdateFile(ctx context.Context, request UpdateFileRequestObject) (UpdateFileResponseObject, error)
 	// Download a file by ID
 	// (GET /files/{id}/download)
 	DownloadFile(ctx context.Context, request DownloadFileRequestObject) (DownloadFileResponseObject, error)
@@ -5761,39 +5694,6 @@ func (sh *strictHandler) GetFile(w http.ResponseWriter, r *http.Request, id stri
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetFileResponseObject); ok {
 		if err := validResponse.VisitGetFileResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// UpdateFile operation middleware
-func (sh *strictHandler) UpdateFile(w http.ResponseWriter, r *http.Request, id string) {
-	var request UpdateFileRequestObject
-
-	request.Id = id
-
-	var body UpdateFileJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.UpdateFile(ctx, request.(UpdateFileRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "UpdateFile")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(UpdateFileResponseObject); ok {
-		if err := validResponse.VisitUpdateFileResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

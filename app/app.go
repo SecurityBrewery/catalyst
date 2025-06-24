@@ -14,6 +14,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/mail"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 	"github.com/SecurityBrewery/catalyst/app/service"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 type App struct {
@@ -23,10 +24,11 @@ type App struct {
 	Auth      *auth.Service
 	Hooks     *hook.Hooks
 	Scheduler *schedule.Scheduler
+	Uploader  *upload.Uploader
 }
 
-func New(ctx context.Context, filename string) (*App, func(), error) {
-	queries, cleanup, err := database.DB(ctx, filepath.Join(filename, "data.db"))
+func New(ctx context.Context, dir string) (*App, func(), error) {
+	queries, cleanup, err := database.DB(ctx, filepath.Join(dir, "data.db"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -42,12 +44,15 @@ func New(ctx context.Context, filename string) (*App, func(), error) {
 
 	hooks := hook.NewHooks()
 
+	uploader := upload.NewUploader(dir, authService, queries)
+
 	app := &App{
 		Hooks:     hooks,
 		Queries:   queries,
 		Router:    chi.NewRouter(),
-		Service:   service.New(queries, hooks, scheduler),
+		Service:   service.New(queries, hooks, uploader, scheduler),
 		Auth:      authService,
+		Uploader:  uploader,
 		Scheduler: scheduler,
 	}
 

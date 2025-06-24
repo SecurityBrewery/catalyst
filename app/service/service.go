@@ -1,16 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
-	"strings"
-
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
@@ -18,6 +13,8 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 	"github.com/SecurityBrewery/catalyst/app/permission"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
+	"github.com/SecurityBrewery/catalyst/app/upload"
+	"log/slog"
 )
 
 const (
@@ -30,13 +27,15 @@ var _ openapi.StrictServerInterface = (*Service)(nil)
 type Service struct {
 	queries   *sqlc.Queries
 	hooks     *hook.Hooks
+	uploader  *upload.Uploader
 	scheduler *schedule.Scheduler
 }
 
-func New(queries *sqlc.Queries, hooks *hook.Hooks, scheduler *schedule.Scheduler) *Service {
+func New(queries *sqlc.Queries, hooks *hook.Hooks, uploader *upload.Uploader, scheduler *schedule.Scheduler) *Service {
 	return &Service{
 		queries:   queries,
 		hooks:     hooks,
+		uploader:  uploader,
 		scheduler: scheduler,
 	}
 }
@@ -248,6 +247,10 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 func (s *Service) DeleteFile(ctx context.Context, request openapi.DeleteFileRequestObject) (openapi.DeleteFileResponseObject, error) {
 	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, permission.FilesTable.ID, request.Id)
 
+	if err := s.uploader.DeleteFile(request.Id); err != nil {
+		return nil, fmt.Errorf("failed to delete file from uploader: %w", err)
+	}
+
 	err := s.queries.DeleteFile(ctx, request.Id)
 	if err != nil {
 		return nil, err
@@ -276,31 +279,6 @@ func (s *Service) GetFile(ctx context.Context, request openapi.GetFileRequestObj
 	s.hooks.OnRecordViewRequest.Publish(ctx, permission.FilesTable.ID, response)
 
 	return openapi.GetFile200JSONResponse(response), nil
-}
-
-func (s *Service) UpdateFile(ctx context.Context, request openapi.UpdateFileRequestObject) (openapi.UpdateFileResponseObject, error) {
-	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.FilesTable.ID, request.Body)
-
-	file, err := s.queries.UpdateFile(ctx, sqlc.UpdateFileParams{
-		ID:   request.Id,
-		Name: toNullString(request.Body.Name),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	response := openapi.File{
-		Created: file.Created,
-		Id:      file.ID,
-		Name:    file.Name,
-		Size:    file.Size,
-		Ticket:  file.Ticket,
-		Updated: file.Updated,
-	}
-
-	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, permission.FilesTable.ID, response)
-
-	return openapi.UpdateFile200JSONResponse(response), nil
 }
 
 func (s *Service) ListLinks(ctx context.Context, request openapi.ListLinksRequestObject) (openapi.ListLinksResponseObject, error) {
@@ -346,22 +324,17 @@ func (s *Service) DownloadFile(ctx context.Context, request openapi.DownloadFile
 		return nil, err
 	}
 
-	header, blob, ok := strings.Cut(file.Blob, ";base64,")
-	if !ok {
-		return nil, fmt.Errorf("invalid file blob format for file ID %s", request.Id)
-	}
-
-	data, err := base64.StdEncoding.DecodeString(blob)
+	f, contentType, size, err := s.uploader.File(file.ID, file.Blob)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode file blob: %w", err)
+		return nil, fmt.Errorf("failed to get file from uploader: %w", err)
 	}
 
 	return openapi.DownloadFile200ApplicationoctetStreamResponse{
-		Body:          bytes.NewReader(data),
-		ContentLength: int64(len(data)),
+		Body:          f,
+		ContentLength: size,
 		Headers: openapi.DownloadFile200ResponseHeaders{
 			ContentDisposition: "attachment; filename=\"" + file.Name + "\"",
-			ContentType:        strings.TrimPrefix(header, "data:"),
+			ContentType:        contentType,
 		},
 	}, nil
 }

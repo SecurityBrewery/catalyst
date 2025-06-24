@@ -7,20 +7,25 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 func newTestService(t *testing.T) *Service {
 	t.Helper()
 
-	queries := data.NewTestDB(t)
+	dir := t.TempDir()
+	queries := data.NewTestDB(t, dir)
 	hooks := hook.NewHooks()
+	auth := auth.New(queries, nil)
+	uploader := upload.NewUploader(dir, auth, queries)
 
-	return New(queries, hooks, nil)
+	return New(queries, hooks, uploader, nil)
 }
 
 func Test_toString(t *testing.T) {
@@ -125,19 +130,17 @@ func TestService_DownloadFile(t *testing.T) {
 func TestService_DownloadFile_Errors(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
-	hooks := hook.NewHooks()
-	s := New(queries, hooks, nil)
+	s := newTestService(t)
 
 	// invalid format
-	_, err := queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "invalid", Size: 1, Ticket: "test-ticket"})
+	_, err := s.queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "invalid", Size: 1, Ticket: "test-ticket"})
 	require.NoError(t, err)
 
 	_, err = s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_invalid_format"})
 	require.Error(t, err)
 
 	// invalid base64
-	_, err = queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "data:text/plain;base64,???", Size: 1, Ticket: "test-ticket"})
+	_, err = s.queries.CreateFile(t.Context(), sqlc.CreateFileParams{Name: "bad", Blob: "data:text/plain;base64,???", Size: 1, Ticket: "test-ticket"})
 	require.NoError(t, err)
 
 	_, err = s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_invalid_base64"})

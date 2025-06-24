@@ -85,7 +85,7 @@ func TestService_Middleware(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries := data.NewTestDB(t)
+			queries := data.NewTestDB(t, t.TempDir())
 
 			auth := New(queries, nil)
 
@@ -159,7 +159,7 @@ func TestService_ValidateScopes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			handler := ValidateScopes(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ any) (response any, err error) {
+			handler := ValidateScopesStrict(func(_ context.Context, w http.ResponseWriter, r *http.Request, _ any) (response any, err error) {
 				tt.args.next(w, r)
 
 				return w, nil
@@ -263,7 +263,7 @@ func Test_requiredScopes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := requiredScopes(tt.args.r)
+			got, err := requiredScopes(tt.args.r.Context())
 			if !tt.wantErr(t, err, fmt.Sprintf("requiredScopes(%v)", tt.args.r)) {
 				return
 			}

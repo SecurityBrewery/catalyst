@@ -85,8 +85,8 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	}, nil
 }
 
-func TestDB(t *testing.T) *sqlc.Queries {
-	queries, cleanup, err := DB(t.Context(), filepath.Join(t.TempDir(), "data.db"))
+func TestDB(t *testing.T, dir string) *sqlc.Queries {
+	queries, cleanup, err := DB(t.Context(), filepath.Join(dir, "data.db"))
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 

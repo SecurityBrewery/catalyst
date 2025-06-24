@@ -14,7 +14,7 @@ import (
 func TestDBInitialization(t *testing.T) {
 	t.Parallel()
 
-	queries := database.TestDB(t)
+	queries := database.TestDB(t, t.TempDir())
 
 	user, err := queries.SystemUser(t.Context())
 	require.NoError(t, err)
@@ -28,7 +28,7 @@ func TestDBInitialization(t *testing.T) {
 func TestDBForeignKeyConstraints(t *testing.T) {
 	t.Parallel()
 
-	queries := database.TestDB(t)
+	queries := database.TestDB(t, t.TempDir())
 
 	assert.Error(t, queries.AssignGroupToUser(t.Context(), sqlc.AssignGroupToUserParams{
 		UserID:  "does_not_exist",
@@ -39,7 +39,7 @@ func TestDBForeignKeyConstraints(t *testing.T) {
 func TestNewTestDBDefaultData(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 
 	user, err := queries.UserByEmail(t.Context(), data.AdminEmail)
 	require.NoError(t, err)
@@ -61,7 +61,7 @@ func TestNewTestDBDefaultData(t *testing.T) {
 func TestReadWrite(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 
 	for range 3 {
 		y, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
@@ -83,7 +83,7 @@ func TestReadWrite(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	queries := data.NewTestDB(t)
+	queries := data.NewTestDB(t, t.TempDir())
 
 	// read from a table
 	_, err := queries.GetUser(t.Context(), "u_bob_analyst")

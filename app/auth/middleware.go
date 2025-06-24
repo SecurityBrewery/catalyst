@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -53,32 +54,39 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func ValidateScopes(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (response any, err error) {
-		requiredScopes, err := requiredScopes(r)
-		if err != nil {
-			slog.ErrorContext(ctx, "failed to get required scopes", "error", err)
+func ValidateFileScopes(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requiredScopes := []string{"file:read"}
+		if slices.Contains([]string{http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodDelete}, r.Method) {
+			requiredScopes = []string{"file:write"}
+		}
 
-			unauthorizedJSON(w, "failed to get required scopes")
+		if err := validateScopes(r.Context(), requiredScopes); err != nil {
+			slog.ErrorContext(r.Context(), "failed to validate scopes", "error", err)
+			unauthorizedJSON(w, "missing required scopes")
 
 			return
 		}
 
-		if len(requiredScopes) > 0 {
-			permissions, ok := usercontext.PermissionFromContext(ctx)
-			if !ok {
-				slog.ErrorContext(ctx, "missing permissions")
-				unauthorizedJSON(w, "missing permissions")
+		next.ServeHTTP(w, r)
+	})
+}
 
-				return
-			}
+func ValidateScopesStrict(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.StrictHTTPHandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (response any, err error) {
+		requiredScopes, err := requiredScopes(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "failed to get required scopes", "error", err)
+			unauthorizedJSON(w, "failed to get required scopes")
 
-			if !hasScope(permissions, requiredScopes) {
-				slog.ErrorContext(ctx, "missing required scopes", "required", requiredScopes, "permissions", permissions)
-				unauthorizedJSON(w, "missing required scopes")
+			return nil, fmt.Errorf("failed to get required scopes: %w", err)
+		}
 
-				return
-			}
+		if err := validateScopes(ctx, requiredScopes); err != nil {
+			slog.ErrorContext(ctx, "failed to validate scopes", "error", err)
+			unauthorizedJSON(w, "missing required scopes")
+
+			return nil, fmt.Errorf("missing required scopes: %w", err)
 		}
 
 		return next(ctx, w, r, request)
@@ -102,8 +110,23 @@ func LogError(next strictnethttp.StrictHTTPHandlerFunc, _ string) strictnethttp.
 	}
 }
 
-func requiredScopes(r *http.Request) ([]string, error) {
-	requiredScopesValue := r.Context().Value(openapi.OAuth2Scopes)
+func validateScopes(ctx context.Context, requiredScopes []string) error {
+	if len(requiredScopes) > 0 {
+		permissions, ok := usercontext.PermissionFromContext(ctx)
+		if !ok {
+			return errors.New("missing permissions")
+		}
+
+		if !hasScope(permissions, requiredScopes) {
+			return fmt.Errorf("missing required scopes: %v", requiredScopes)
+		}
+	}
+
+	return nil
+}
+
+func requiredScopes(ctx context.Context) ([]string, error) {
+	requiredScopesValue := ctx.Value(openapi.OAuth2Scopes)
 	if requiredScopesValue == nil {
 		return nil, nil
 	}

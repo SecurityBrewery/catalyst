@@ -42,12 +42,19 @@ func (a *App) setupRoutes() error {
 	a.Router.Mount("/auth", a.Auth.Server())
 
 	// API routes
-	middlewareFuncs := []openapi.StrictMiddlewareFunc{auth.ValidateScopes, auth.LogError}
+	middlewareFuncs := []openapi.StrictMiddlewareFunc{auth.ValidateScopesStrict, auth.LogError}
 	apiHandler := openapi.Handler(openapi.NewStrictHandlerWithOptions(a.Service, middlewareFuncs, openapi.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc:  jsonError,
 		ResponseErrorHandlerFunc: jsonError,
 	}))
 	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
+
+	uploadHandler, err := a.Uploader.Routes()
+	if err != nil {
+		return err
+	}
+
+	a.Router.Mount("/files", http.StripPrefix("/files", uploadHandler))
 
 	return nil
 }

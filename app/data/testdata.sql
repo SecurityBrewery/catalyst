@@ -7,7 +7,7 @@ INSERT INTO tasks VALUES('2025-06-21 22:21:26.271Z','k_test_task','Test Task',1,
 INSERT INTO comments VALUES('u_bob_analyst','2025-06-21 22:21:26.271Z','c_test_comment','Initial comment on the test ticket.','test-ticket','2025-06-21 22:21:26.271Z');
 INSERT INTO timeline VALUES('2025-06-21 22:21:26.271Z','h_test_timeline','Initial timeline entry.','test-ticket','2023-01-01T00:00:00Z','2025-06-21 22:21:26.271Z');
 INSERT INTO links VALUES('2025-06-21 22:21:26.271Z','l_test_link','Catalyst','test-ticket','2025-06-21 22:21:26.271Z','https://example.com');
-INSERT INTO files VALUES('data:text/plain;base64,aGVsbG8=','2025-06-21 22:21:26.271Z','b_test_file','hello.txt',5,'test-ticket','2025-06-21 22:21:26.271Z');
+INSERT INTO files VALUES('hello_a20DUE9c77rj.txt','2025-06-21 22:21:26.271Z','b_test_file','hello.txt',5,'test-ticket','2025-06-21 22:21:26.271Z');
 INSERT INTO features VALUES('2025-06-21 22:21:26.271Z','rce91818107f46a','dev','2025-06-21 22:21:26.271Z');
 INSERT INTO reactions VALUES('python','{"requirements":"requests","script":"print(''Hello, World!'')"}','','r-test-webhook','Reaction','webhook','{"token":"1234567890","path":"test"}','2025-06-21 22:21:26.271Z');
 INSERT INTO reactions VALUES('webhook','{"headers":{"Content-Type":"application/json"},"url":"http://127.0.0.1:12345/webhook"}','','r-test-proxy','Reaction','webhook','{"path":"test2"}','2025-06-21 22:21:26.271Z');
