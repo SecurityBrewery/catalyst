@@ -38,11 +38,11 @@ func DefaultTestData(t *testing.T, dir string, queries *sqlc.Queries) {
 		infoFilePath := path.Join(dir, "uploads", file.ID+".info")
 		slog.InfoContext(t.Context(), "Creating file info", "path", infoFilePath)
 
-		if err := os.WriteFile(infoFilePath, []byte(`{"MetaData":{"filetype":"text/plain"}}`), 0o644); err != nil {
+		if err := os.WriteFile(infoFilePath, []byte(`{"MetaData":{"filetype":"text/plain"}}`), 0o600); err != nil {
 			t.Fatalf("failed to write file %s: %v", file.Name, err)
 		}
 
-		if err := os.WriteFile(path.Join(dir, "uploads", file.ID, file.Blob), []byte("hello"), 0o644); err != nil {
+		if err := os.WriteFile(path.Join(dir, "uploads", file.ID, file.Blob), []byte("hello"), 0o600); err != nil {
 			t.Fatalf("failed to write file %s: %v", file.Name, err)
 		}
 	}
