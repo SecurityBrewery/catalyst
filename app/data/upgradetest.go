@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
 
 //go:embed scripts/upgradetest.py
@@ -95,7 +96,7 @@ func GenerateUpgradeTestData(ctx context.Context, queries *sqlc.Queries) error {
 	}
 
 	for _, reaction := range CreateUpgradeTestDataReaction() {
-		_, err := queries.InsertReaction(ctx, sqlc.InsertReactionParams{
+		_, err := queries.InsertReaction(ctx, sqlc.InsertReactionParams{ //nolint: staticcheck
 			ID:          reaction.ID,
 			Name:        reaction.Name,
 			Trigger:     reaction.Trigger,
@@ -117,15 +118,15 @@ func CreateUpgradeTestDataTickets() map[string]sqlc.Ticket {
 	return map[string]sqlc.Ticket{
 		"t_0": {
 			ID:          "t_0",
-			Created:     dateTime(ticketCreated),
-			Updated:     dateTime(ticketCreated.Add(time.Minute * 5)),
+			Created:     ticketCreated,
+			Updated:     ticketCreated.Add(time.Minute * 5),
 			Name:        "phishing-123",
 			Type:        "alert",
 			Description: "Phishing email reported by several employees.",
 			Open:        true,
-			Schema:      `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`,
-			State:       `{"severity":"Medium"}`,
-			Owner:       "u_test",
+			Schema:      json.RawMessage(`{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`),
+			State:       json.RawMessage(`{"severity":"Medium"}`),
+			Owner:       pointer.Pointer("u_test"),
 		},
 	}
 }
@@ -134,8 +135,8 @@ func CreateUpgradeTestDataComments() map[string]sqlc.Comment {
 	return map[string]sqlc.Comment{
 		"c_0": {
 			ID:      "c_0",
-			Created: dateTime(ticketCreated.Add(time.Minute * 10)),
-			Updated: dateTime(ticketCreated.Add(time.Minute * 15)),
+			Created: ticketCreated.Add(time.Minute * 10),
+			Updated: ticketCreated.Add(time.Minute * 15),
 			Ticket:  "t_0",
 			Author:  "u_test",
 			Message: "This is a test comment.",
@@ -147,10 +148,10 @@ func CreateUpgradeTestDataTimeline() map[string]sqlc.Timeline {
 	return map[string]sqlc.Timeline{
 		"tl_0": {
 			ID:      "tl_0",
-			Created: dateTime(ticketCreated.Add(time.Minute * 15)),
-			Updated: dateTime(ticketCreated.Add(time.Minute * 20)),
+			Created: ticketCreated.Add(time.Minute * 15),
+			Updated: ticketCreated.Add(time.Minute * 20),
 			Ticket:  "t_0",
-			Time:    dateTime(ticketCreated.Add(time.Minute * 15)),
+			Time:    ticketCreated.Add(time.Minute * 15),
 			Message: "This is a test timeline message.",
 		},
 	}
@@ -160,12 +161,12 @@ func CreateUpgradeTestDataTasks() map[string]sqlc.Task {
 	return map[string]sqlc.Task{
 		"ts_0": {
 			ID:      "ts_0",
-			Created: dateTime(ticketCreated.Add(time.Minute * 20)),
-			Updated: dateTime(ticketCreated.Add(time.Minute * 25)),
+			Created: ticketCreated.Add(time.Minute * 20),
+			Updated: ticketCreated.Add(time.Minute * 25),
 			Ticket:  "t_0",
 			Name:    "This is a test task.",
 			Open:    true,
-			Owner:   "u_test",
+			Owner:   pointer.Pointer("u_test"),
 		},
 	}
 }
@@ -174,8 +175,8 @@ func CreateUpgradeTestDataLinks() map[string]sqlc.Link {
 	return map[string]sqlc.Link{
 		"l_0": {
 			ID:      "l_0",
-			Created: dateTime(ticketCreated.Add(time.Minute * 25)),
-			Updated: dateTime(ticketCreated.Add(time.Minute * 30)),
+			Created: ticketCreated.Add(time.Minute * 25),
+			Updated: ticketCreated.Add(time.Minute * 30),
 			Ticket:  "t_0",
 			Url:     "https://www.example.com",
 			Name:    "This is a test link.",
@@ -197,23 +198,19 @@ func CreateUpgradeTestDataReaction() map[string]sqlc.Reaction {
 	return map[string]sqlc.Reaction{
 		"w_0": {
 			ID:          "w_0",
-			Created:     dateTime(reactionCreated),
-			Updated:     dateTime(reactionUpdated),
+			Created:     reactionCreated,
+			Updated:     reactionUpdated,
 			Name:        "Create New Ticket",
 			Trigger:     "schedule",
-			Triggerdata: `{"expression":"12 * * * *"}`,
+			Triggerdata: json.RawMessage(`{"expression":"12 * * * *"}`),
 			Action:      "python",
 			Actiondata:  createTicketActionData,
 		},
 	}
 }
 
-func dateTime(updated time.Time) string {
-	return updated.UTC().Format(time.RFC3339)
-}
-
-func marshal(m map[string]any) string {
+func marshal(m map[string]any) json.RawMessage {
 	b, _ := json.Marshal(m) //nolint:errchkjson
 
-	return string(b)
+	return b
 }

@@ -45,16 +45,16 @@ export interface Link {
   url: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Link
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Link
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -83,8 +83,8 @@ export function LinkFromJSONTyped(json: any, ignoreDiscriminator: boolean): Link
     ticket: json['ticket'],
     name: json['name'],
     url: json['url'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -102,7 +102,7 @@ export function LinkToJSONTyped(value?: Link | null, ignoreDiscriminator: boolea
     ticket: value['ticket'],
     name: value['name'],
     url: value['url'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

@@ -46,12 +46,12 @@ LIMIT @limit OFFSET @offset;
 -- name: GetFeature :one
 SELECT *
 FROM features
-WHERE id = @id;
+WHERE key = @key;
 
 -- name: ListFeatures :many
 SELECT features.*, COUNT(*) OVER () as total_count
 FROM features
-ORDER BY features.created DESC
+ORDER BY features.key DESC
 LIMIT @limit OFFSET @offset;
 
 ------------------------------------------------------------------

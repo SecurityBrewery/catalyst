@@ -30,7 +30,7 @@ const { data: tickets } = useQuery({
 })
 
 const age = (ticket: ExtendedTicket) => {
-  const days = intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
+  const days = intervalToDuration({ start: ticket.created, end: new Date() }).days
 
   if (!days) return 'today'
   if (days === 1) return 'yesterday'
@@ -47,9 +47,9 @@ const age = (ticket: ExtendedTicket) => {
       </div>
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
-        <Separator orientation="vertical" class="hidden h-4 sm:block" />
+        <Separator orientation="vertical" class="hidden h-4 md:block" />
         <span class="text-muted-foreground text-sm">{{ ticket.typeSingular }}</span>
-        <Separator orientation="vertical" class="hidden h-4 sm:block" />
+        <Separator orientation="vertical" class="hidden h-4 md:block" />
         <span class="text-muted-foreground text-sm">Open since {{ age(ticket) }}</span>
         <RouterLink
           :to="{
@@ -59,12 +59,12 @@ const age = (ticket: ExtendedTicket) => {
           :class="
             cn(
               buttonVariants({ variant: 'outline', size: 'sm' }),
-              'h-8 w-full sm:ml-auto sm:w-auto'
+              'h-8 w-full md:ml-auto sm:w-auto'
             )
           "
         >
           <span class="flex flex-row items-center text-sm text-gray-500">
-            Go to {{ ticket.name }}
+            Open
             <ChevronRight class="ml-2 h-4 w-4" />
           </span>
         </RouterLink>

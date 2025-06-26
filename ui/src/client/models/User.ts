@@ -36,55 +36,49 @@ export interface User {
    * @type {string}
    * @memberof User
    */
-  avatar: string
+  avatar?: string
   /**
    *
    * @type {string}
    * @memberof User
    */
-  email: string
+  email?: string
+  /**
+   *
+   * @type {Date}
+   * @memberof User
+   */
+  lastResetSentAt?: Date
+  /**
+   *
+   * @type {Date}
+   * @memberof User
+   */
+  lastVerificationSentAt?: Date
   /**
    *
    * @type {string}
    * @memberof User
    */
-  lastLoginAlertSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof User
-   */
-  lastResetSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof User
-   */
-  lastVerificationSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof User
-   */
-  name: string
+  name?: string
   /**
    *
    * @type {boolean}
    * @memberof User
    */
-  verified: boolean
+  active: boolean
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof User
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof User
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -93,15 +87,7 @@ export interface User {
 export function instanceOfUser(value: object): value is User {
   if (!('id' in value) || value['id'] === undefined) return false
   if (!('username' in value) || value['username'] === undefined) return false
-  if (!('avatar' in value) || value['avatar'] === undefined) return false
-  if (!('email' in value) || value['email'] === undefined) return false
-  if (!('lastLoginAlertSentAt' in value) || value['lastLoginAlertSentAt'] === undefined)
-    return false
-  if (!('lastResetSentAt' in value) || value['lastResetSentAt'] === undefined) return false
-  if (!('lastVerificationSentAt' in value) || value['lastVerificationSentAt'] === undefined)
-    return false
-  if (!('name' in value) || value['name'] === undefined) return false
-  if (!('verified' in value) || value['verified'] === undefined) return false
+  if (!('active' in value) || value['active'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
   return true
@@ -118,15 +104,16 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
   return {
     id: json['id'],
     username: json['username'],
-    avatar: json['avatar'],
-    email: json['email'],
-    lastLoginAlertSentAt: json['lastLoginAlertSentAt'],
-    lastResetSentAt: json['lastResetSentAt'],
-    lastVerificationSentAt: json['lastVerificationSentAt'],
-    name: json['name'],
-    verified: json['verified'],
-    created: json['created'],
-    updated: json['updated']
+    avatar: json['avatar'] == null ? undefined : json['avatar'],
+    email: json['email'] == null ? undefined : json['email'],
+    lastResetSentAt:
+      json['lastResetSentAt'] == null ? undefined : new Date(json['lastResetSentAt']),
+    lastVerificationSentAt:
+      json['lastVerificationSentAt'] == null ? undefined : new Date(json['lastVerificationSentAt']),
+    name: json['name'] == null ? undefined : json['name'],
+    active: json['active'],
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -144,12 +131,15 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
     username: value['username'],
     avatar: value['avatar'],
     email: value['email'],
-    lastLoginAlertSentAt: value['lastLoginAlertSentAt'],
-    lastResetSentAt: value['lastResetSentAt'],
-    lastVerificationSentAt: value['lastVerificationSentAt'],
+    lastResetSentAt:
+      value['lastResetSentAt'] == null ? undefined : value['lastResetSentAt'].toISOString(),
+    lastVerificationSentAt:
+      value['lastVerificationSentAt'] == null
+        ? undefined
+        : value['lastVerificationSentAt'].toISOString(),
     name: value['name'],
-    verified: value['verified'],
-    created: value['created'],
-    updated: value['updated']
+    active: value['active'],
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

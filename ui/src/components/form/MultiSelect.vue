@@ -16,11 +16,13 @@ const props = withDefaults(
     modelValue?: string[]
     items: string[]
     placeholder?: string
+    disabled?: boolean
   }>(),
   {
     modelValue: () => [],
     items: () => [],
-    placeholder: ''
+    placeholder: '',
+    disabled: false
   }
 )
 
@@ -40,6 +42,13 @@ const filteredItems = computed(() => {
   if (!selectedItems.value) return props.items
   return props.items.filter((i) => !selectedItems.value.includes(i))
 })
+
+const removeItem = (item: string) => {
+  const index = selectedItems.value.indexOf(item)
+  if (index > -1) {
+    selectedItems.value.splice(index, 1)
+  }
+}
 </script>
 
 <template>
@@ -47,11 +56,12 @@ const filteredItems = computed(() => {
     <div class="flex flex-wrap items-center gap-2">
       <TagsInputItem v-for="item in selectedItems" :key="item" :value="item">
         <TagsInputItemText />
-        <TagsInputItemDelete />
+        <TagsInputItemDelete v-if="!disabled" @click="removeItem(item)" />
       </TagsInputItem>
     </div>
 
     <ComboboxRoot
+      v-if="!disabled"
       v-model="selectedItems"
       v-model:open="open"
       v-model:searchTerm="searchTerm"

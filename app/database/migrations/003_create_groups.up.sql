@@ -1,11 +1,10 @@
 CREATE TABLE groups
 (
-    id          TEXT default ('g' || lower(hex(randomblob(7)))) not null
-        primary key,
-    name        TEXT UNIQUE                                     NOT NULL,
-    permissions TEXT                                            NOT NULL, -- JSON array string like '["read:article","write:article"]'
-    created     TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null,
-    updated     TEXT default (strftime('%Y-%m-%d %H:%M:%fZ'))   not null
+    id          TEXT PRIMARY KEY DEFAULT ('g' || lower(hex(randomblob(7)))) NOT NULL,
+    name        TEXT UNIQUE                                                 NOT NULL,
+    permissions TEXT                                                        NOT NULL, -- JSON array string like '["read:article","write:article"]'
+    created     DATETIME         DEFAULT CURRENT_TIMESTAMP                  NOT NULL,
+    updated     DATETIME         DEFAULT CURRENT_TIMESTAMP                  NOT NULL
 );
 
 CREATE TABLE user_groups
@@ -72,7 +71,12 @@ VALUES ('analyst', 'Analyst', '["type:read", "file:read", "ticket:read", "ticket
 INSERT INTO user_groups (user_id, group_id)
 SELECT id, 'analyst'
 FROM users
-WHERE id != 'system'; -- Exclude the system user
+WHERE NOT admin;
 
 INSERT INTO user_groups (user_id, group_id)
-VALUES ('system', 'admin'); -- Assign the admin group to the system user
+SELECT id, 'admin'
+FROM users
+WHERE admin;
+
+ALTER TABLE users
+    DROP COLUMN admin;

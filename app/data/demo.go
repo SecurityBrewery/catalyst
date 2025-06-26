@@ -12,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
 
 const (
@@ -113,12 +114,12 @@ func createDemoUser(ctx context.Context, queries *sqlc.Queries, ticketCount int)
 
 	return queries.InsertUser(ctx, sqlc.InsertUserParams{
 		ID:           database.GenerateID("u"),
-		Name:         gofakeit.Name(),
-		Email:        username + "@catalyst-soar.com",
+		Name:         pointer.Pointer(gofakeit.Name()),
+		Email:        pointer.Pointer(username + "@catalyst-soar.com"),
 		Username:     username,
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
-		Verified:     gofakeit.Bool(),
+		Active:       gofakeit.Bool(),
 		Created:      created,
 		Updated:      updated,
 	})
@@ -175,7 +176,7 @@ func createDemoTicket(ctx context.Context, queries *sqlc.Queries, ticketType sql
 			Name:        name,
 			Description: description,
 			Open:        gofakeit.Bool(),
-			Owner:       userID,
+			Owner:       &userID,
 			Schema:      marshal(map[string]any{"type": "object", "properties": map[string]any{"tlp": map[string]any{"title": "TLP", "type": "string"}}}),
 			State:       marshal(map[string]any{"severity": "Medium"}),
 			Type:        ticketType.ID,
@@ -215,7 +216,7 @@ func createDemoTimeline(ctx context.Context, queries *sqlc.Queries, ticketID, me
 		ID:      database.GenerateID("tl"),
 		Ticket:  ticketID,
 		Message: message,
-		Time:    created,
+		Time:    ticketCreated,
 		Created: created,
 		Updated: updated,
 	})
@@ -232,7 +233,7 @@ func createDemoTask(ctx context.Context, queries *sqlc.Queries, ticketID, userID
 	task, err := queries.InsertTask(ctx, sqlc.InsertTaskParams{
 		ID:      database.GenerateID("t"),
 		Ticket:  ticketID,
-		Owner:   userID,
+		Owner:   &userID,
 		Name:    name,
 		Open:    gofakeit.Bool(),
 		Created: created,
@@ -430,12 +431,12 @@ func weeksAgo(c int) time.Time {
 	return time.Now().UTC().AddDate(0, 0, -7*c)
 }
 
-func dates(ticketCount int) (string, string) {
+func dates(ticketCount int) (time.Time, time.Time) {
 	const ticketsPerWeek = 10
 	weeks := ticketCount / ticketsPerWeek
 
-	created := gofakeit.DateRange(weeksAgo(1), weeksAgo(weeks+1))
-	updated := gofakeit.DateRange(created, time.Now())
+	created := gofakeit.DateRange(weeksAgo(1), weeksAgo(weeks+1)).UTC()
+	updated := gofakeit.DateRange(created, time.Now()).UTC()
 
-	return created.UTC().Format(time.RFC3339), updated.UTC().Format(time.RFC3339)
+	return created, updated
 }

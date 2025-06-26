@@ -22,9 +22,9 @@ func ValidateUpgradeTestData(t *testing.T, queries *sqlc.Queries) {
 
 	assert.Equal(t, "u_test", userRecord.ID, "user ID does not match expected value")
 	assert.Equal(t, "u_test", userRecord.Username, "username does not match expected value")
-	assert.Equal(t, "Test User", userRecord.Name, "name does not match expected value")
-	assert.Equal(t, "user@catalyst-soar.com", userRecord.Email, "email does not match expected value")
-	assert.True(t, userRecord.Verified, "user should be verified")
+	assert.Equal(t, "Test User", *userRecord.Name, "name does not match expected value")
+	assert.Equal(t, "user@catalyst-soar.com", *userRecord.Email, "email does not match expected value")
+	assert.True(t, userRecord.Active, "user should be verified")
 	require.NoError(t, bcrypt.CompareHashAndPassword([]byte(userRecord.Passwordhash), []byte("1234567890")), "password hash does not match expected value")
 
 	for id := range data.CreateUpgradeTestDataTickets() {
@@ -35,9 +35,9 @@ func ValidateUpgradeTestData(t *testing.T, queries *sqlc.Queries) {
 		assert.Equal(t, "Phishing email reported by several employees.", ticket.Description)
 		assert.True(t, ticket.Open)
 		assert.Equal(t, "alert", ticket.Type)
-		assert.Equal(t, "u_test", ticket.Owner)
-		assert.JSONEq(t, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`, ticket.Schema)
-		assert.JSONEq(t, `{"severity":"Medium"}`, ticket.State)
+		assert.Equal(t, "u_test", *ticket.Owner)
+		assert.JSONEq(t, `{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`, string(ticket.Schema))
+		assert.JSONEq(t, `{"severity":"Medium"}`, string(ticket.State))
 	}
 
 	for id := range data.CreateUpgradeTestDataComments() {
@@ -75,10 +75,10 @@ func ValidateUpgradeTestData(t *testing.T, queries *sqlc.Queries) {
 
 		assert.Equal(t, "Create New Ticket", reaction.Name)
 		assert.Equal(t, "schedule", reaction.Trigger)
-		assert.JSONEq(t, "{\"expression\":\"12 * * * *\"}", reaction.Triggerdata)
+		assert.JSONEq(t, "{\"expression\":\"12 * * * *\"}", string(reaction.Triggerdata))
 		assert.Equal(t, "python", reaction.Action)
-		assert.Equal(t, "pocketbase", gjson.Get(reaction.Actiondata, "requirements").String())
-		equalWithoutSpace(t, data.Script, gjson.Get(reaction.Actiondata, "script").String())
+		assert.Equal(t, "pocketbase", gjson.GetBytes(reaction.Actiondata, "requirements").String())
+		equalWithoutSpace(t, data.Script, gjson.GetBytes(reaction.Actiondata, "script").String())
 	}
 }
 

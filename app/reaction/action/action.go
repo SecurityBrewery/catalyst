@@ -13,7 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, url string, auth *auth.Service, queries *sqlc.Queries, actionName, actionData, payload string) ([]byte, error) {
+func Run(ctx context.Context, url string, auth *auth.Service, queries *sqlc.Queries, actionName string, actionData, payload json.RawMessage) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
@@ -35,25 +35,25 @@ func Run(ctx context.Context, url string, auth *auth.Service, queries *sqlc.Quer
 }
 
 type action interface {
-	Run(ctx context.Context, payload string) ([]byte, error)
+	Run(ctx context.Context, payload json.RawMessage) ([]byte, error)
 }
 
 type authenticatedAction interface {
 	SetEnv(env []string)
 }
 
-func decode(actionName, actionData string) (action, error) {
+func decode(actionName string, actionData json.RawMessage) (action, error) {
 	switch actionName {
 	case "python":
 		var reaction python.Python
-		if err := json.Unmarshal([]byte(actionData), &reaction); err != nil {
+		if err := json.Unmarshal(actionData, &reaction); err != nil {
 			return nil, err
 		}
 
 		return &reaction, nil
 	case "webhook":
 		var reaction webhook.Webhook
-		if err := json.Unmarshal([]byte(actionData), &reaction); err != nil {
+		if err := json.Unmarshal(actionData, &reaction); err != nil {
 			return nil, err
 		}
 

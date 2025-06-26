@@ -36,49 +36,37 @@ export interface GroupUser {
    * @type {string}
    * @memberof GroupUser
    */
-  avatar: string
+  avatar?: string
   /**
    *
    * @type {string}
    * @memberof GroupUser
    */
-  email: string
+  email?: string
+  /**
+   *
+   * @type {Date}
+   * @memberof GroupUser
+   */
+  lastResetSentAt?: Date
+  /**
+   *
+   * @type {Date}
+   * @memberof GroupUser
+   */
+  lastVerificationSentAt?: Date
+  /**
+   *
+   * @type {string}
+   * @memberof GroupUser
+   */
+  name?: string
   /**
    *
    * @type {boolean}
    * @memberof GroupUser
    */
-  emailVisibility: boolean
-  /**
-   *
-   * @type {string}
-   * @memberof GroupUser
-   */
-  lastLoginAlertSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof GroupUser
-   */
-  lastResetSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof GroupUser
-   */
-  lastVerificationSentAt: string
-  /**
-   *
-   * @type {string}
-   * @memberof GroupUser
-   */
-  name: string
-  /**
-   *
-   * @type {boolean}
-   * @memberof GroupUser
-   */
-  verified: boolean
+  active: boolean
   /**
    *
    * @type {string}
@@ -87,16 +75,16 @@ export interface GroupUser {
   type: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof GroupUser
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof GroupUser
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -105,16 +93,7 @@ export interface GroupUser {
 export function instanceOfGroupUser(value: object): value is GroupUser {
   if (!('id' in value) || value['id'] === undefined) return false
   if (!('username' in value) || value['username'] === undefined) return false
-  if (!('avatar' in value) || value['avatar'] === undefined) return false
-  if (!('email' in value) || value['email'] === undefined) return false
-  if (!('emailVisibility' in value) || value['emailVisibility'] === undefined) return false
-  if (!('lastLoginAlertSentAt' in value) || value['lastLoginAlertSentAt'] === undefined)
-    return false
-  if (!('lastResetSentAt' in value) || value['lastResetSentAt'] === undefined) return false
-  if (!('lastVerificationSentAt' in value) || value['lastVerificationSentAt'] === undefined)
-    return false
-  if (!('name' in value) || value['name'] === undefined) return false
-  if (!('verified' in value) || value['verified'] === undefined) return false
+  if (!('active' in value) || value['active'] === undefined) return false
   if (!('type' in value) || value['type'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
@@ -132,17 +111,17 @@ export function GroupUserFromJSONTyped(json: any, ignoreDiscriminator: boolean):
   return {
     id: json['id'],
     username: json['username'],
-    avatar: json['avatar'],
-    email: json['email'],
-    emailVisibility: json['emailVisibility'],
-    lastLoginAlertSentAt: json['lastLoginAlertSentAt'],
-    lastResetSentAt: json['lastResetSentAt'],
-    lastVerificationSentAt: json['lastVerificationSentAt'],
-    name: json['name'],
-    verified: json['verified'],
+    avatar: json['avatar'] == null ? undefined : json['avatar'],
+    email: json['email'] == null ? undefined : json['email'],
+    lastResetSentAt:
+      json['lastResetSentAt'] == null ? undefined : new Date(json['lastResetSentAt']),
+    lastVerificationSentAt:
+      json['lastVerificationSentAt'] == null ? undefined : new Date(json['lastVerificationSentAt']),
+    name: json['name'] == null ? undefined : json['name'],
+    active: json['active'],
     type: json['type'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -163,14 +142,16 @@ export function GroupUserToJSONTyped(
     username: value['username'],
     avatar: value['avatar'],
     email: value['email'],
-    emailVisibility: value['emailVisibility'],
-    lastLoginAlertSentAt: value['lastLoginAlertSentAt'],
-    lastResetSentAt: value['lastResetSentAt'],
-    lastVerificationSentAt: value['lastVerificationSentAt'],
+    lastResetSentAt:
+      value['lastResetSentAt'] == null ? undefined : value['lastResetSentAt'].toISOString(),
+    lastVerificationSentAt:
+      value['lastVerificationSentAt'] == null
+        ? undefined
+        : value['lastVerificationSentAt'].toISOString(),
     name: value['name'],
-    verified: value['verified'],
+    active: value['active'],
     type: value['type'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

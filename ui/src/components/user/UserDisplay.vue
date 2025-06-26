@@ -94,7 +94,7 @@ const deleteMutation = useMutation({
       <div class="ml-auto">
         <DeleteDialog
           v-if="user"
-          :name="user.name"
+          :name="user.name ? user.name : user.username"
           singular="User"
           @delete="deleteMutation.mutate"
         />

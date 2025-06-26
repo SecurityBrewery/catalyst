@@ -33,16 +33,16 @@ export interface Feature {
   name: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Feature
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Feature
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -67,8 +67,8 @@ export function FeatureFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
   return {
     id: json['id'],
     name: json['name'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -87,7 +87,7 @@ export function FeatureToJSONTyped(
   return {
     id: value['id'],
     name: value['name'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

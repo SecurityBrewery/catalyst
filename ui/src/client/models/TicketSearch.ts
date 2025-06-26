@@ -63,10 +63,10 @@ export interface TicketSearch {
   ownerName: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof TicketSearch
    */
-  created: string
+  created: Date
 }
 
 /**
@@ -100,7 +100,7 @@ export function TicketSearchFromJSONTyped(json: any, ignoreDiscriminator: boolea
     type: json['type'],
     state: json['state'],
     ownerName: json['owner_name'],
-    created: json['created']
+    created: new Date(json['created'])
   }
 }
 
@@ -124,6 +124,6 @@ export function TicketSearchToJSONTyped(
     type: value['type'],
     state: value['state'],
     owner_name: value['ownerName'],
-    created: value['created']
+    created: value['created'].toISOString()
   }
 }

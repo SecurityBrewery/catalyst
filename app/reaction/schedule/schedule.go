@@ -48,7 +48,7 @@ func New(ctx context.Context, service *auth.Service, queries *sqlc.Queries) (*Sc
 
 func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
 	var schedule Schedule
-	if err := json.Unmarshal([]byte(reaction.Triggerdata), &schedule); err != nil {
+	if err := json.Unmarshal(reaction.Triggerdata, &schedule); err != nil {
 		return fmt.Errorf("failed to unmarshal schedule data: %w", err)
 	}
 
@@ -63,7 +63,7 @@ func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
 					return
 				}
 
-				_, err = action.Run(ctx, settings.Meta.AppURL, s.auth, s.queries, reaction.Action, reaction.Actiondata, "{}")
+				_, err = action.Run(ctx, settings.Meta.AppURL, s.auth, s.queries, reaction.Action, reaction.Actiondata, json.RawMessage("{}"))
 				if err != nil {
 					slog.ErrorContext(ctx, "Failed to run schedule reaction", "error", err, "reaction_id", reaction.ID)
 				}

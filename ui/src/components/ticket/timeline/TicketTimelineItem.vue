@@ -42,7 +42,7 @@ const props = defineProps<{
 }>()
 
 const isOpen = ref(false)
-const time = ref(new Date(props.timelineItem.time))
+const time = ref(props.timelineItem.time)
 const editMode = ref(false)
 const message = ref(props.timelineItem.message)
 
@@ -51,7 +51,7 @@ const updateTimelineMutation = useMutation({
     api.updateTimeline({
       id: props.timelineItem.id,
       timelineEntryUpdate: {
-        time: update.time?.toISOString(),
+        time: update.time,
         message: update.message
       }
     }),
@@ -62,6 +62,7 @@ const updateTimelineMutation = useMutation({
       description: 'The item has been updated successfully'
     })
     editMode.value = false
+    isOpen.value = false
   },
   onError: handleError('Failed to update timeline item')
 })
@@ -139,8 +140,8 @@ const save = () =>
           <DialogHeader>
             <DialogTitle>Delete timeline item</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this timeline item?</DialogDescription
-            >
+              Are you sure you want to delete this timeline item?
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter class="sm:justify-start">
             <Button @click="deleteTimelineItemMutation.mutate" variant="destructive">

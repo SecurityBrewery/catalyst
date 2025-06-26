@@ -45,16 +45,16 @@ export interface Webhook {
   destination: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Webhook
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Webhook
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -83,8 +83,8 @@ export function WebhookFromJSONTyped(json: any, ignoreDiscriminator: boolean): W
     name: json['name'],
     collection: json['collection'],
     destination: json['destination'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -105,7 +105,7 @@ export function WebhookToJSONTyped(
     name: value['name'],
     collection: value['collection'],
     destination: value['destination'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

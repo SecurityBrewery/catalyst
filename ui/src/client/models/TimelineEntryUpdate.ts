@@ -27,10 +27,10 @@ export interface TimelineEntryUpdate {
   message?: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof TimelineEntryUpdate
    */
-  time?: string
+  time?: Date
 }
 
 /**
@@ -53,7 +53,7 @@ export function TimelineEntryUpdateFromJSONTyped(
   }
   return {
     message: json['message'] == null ? undefined : json['message'],
-    time: json['time'] == null ? undefined : json['time']
+    time: json['time'] == null ? undefined : new Date(json['time'])
   }
 }
 
@@ -71,6 +71,6 @@ export function TimelineEntryUpdateToJSONTyped(
 
   return {
     message: value['message'],
-    time: value['time']
+    time: value['time'] == null ? undefined : value['time'].toISOString()
   }
 }

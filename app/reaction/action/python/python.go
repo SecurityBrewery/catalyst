@@ -2,6 +2,7 @@ package python
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -20,7 +21,7 @@ func (a *Python) SetEnv(env []string) {
 	a.env = env
 }
 
-func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
+func (a *Python) Run(ctx context.Context, payload json.RawMessage) ([]byte, error) {
 	tempDir, err := os.MkdirTemp("", "catalyst_action")
 	if err != nil {
 		return nil, err
@@ -48,7 +49,7 @@ func (a *Python) Run(ctx context.Context, payload string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to run install requirements, %w: %s", err, string(b))
 	}
 
-	b, err = a.pythonRunScript(ctx, tempDir, payload)
+	b, err = a.pythonRunScript(ctx, tempDir, string(payload))
 	if err != nil {
 		var ee *exec.ExitError
 		if errors.As(err, &ee) {

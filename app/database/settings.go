@@ -59,7 +59,7 @@ func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	}
 
 	var settings Settings
-	if err := json.Unmarshal([]byte(param.Value), &settings); err != nil {
+	if err := json.Unmarshal(param.Value, &settings); err != nil {
 		return nil, err
 	}
 
@@ -126,9 +126,8 @@ func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	}
 
 	if err := queries.CreateParam(ctx, sqlc.CreateParamParams{
-		ID:    GenerateID("settings"),
 		Key:   "settings",
-		Value: string(b),
+		Value: b,
 	}); err != nil {
 		return nil, err
 	}
@@ -159,7 +158,7 @@ func SaveSettings(ctx context.Context, queries *sqlc.Queries, settings *Settings
 
 	if err := queries.UpdateParam(ctx, sqlc.UpdateParamParams{
 		Key:   "settings",
-		Value: string(data),
+		Value: data,
 	}); err != nil {
 		return fmt.Errorf("failed to set settings: %w", err)
 	}

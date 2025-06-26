@@ -24,7 +24,7 @@ export interface NewType {
    * @type {string}
    * @memberof NewType
    */
-  icon: string
+  icon?: string
   /**
    *
    * @type {string}
@@ -49,7 +49,6 @@ export interface NewType {
  * Check if a given object implements the NewType interface.
  */
 export function instanceOfNewType(value: object): value is NewType {
-  if (!('icon' in value) || value['icon'] === undefined) return false
   if (!('plural' in value) || value['plural'] === undefined) return false
   if (!('schema' in value) || value['schema'] === undefined) return false
   if (!('singular' in value) || value['singular'] === undefined) return false
@@ -65,7 +64,7 @@ export function NewTypeFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
     return json
   }
   return {
-    icon: json['icon'],
+    icon: json['icon'] == null ? undefined : json['icon'],
     plural: json['plural'],
     schema: json['schema'],
     singular: json['singular']

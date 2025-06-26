@@ -85,7 +85,7 @@ func runHook(ctx context.Context, app *app.App, collection, event string, record
 	}
 
 	for _, hook := range hooks {
-		_, err = action.Run(ctx, settings.Meta.AppURL, app.Auth, app.Queries, hook.Action, hook.Actiondata, string(payload))
+		_, err = action.Run(ctx, settings.Meta.AppURL, app.Auth, app.Queries, hook.Action, hook.Actiondata, payload)
 		if err != nil {
 			errs = multierr.Append(errs, fmt.Errorf("failed to run hook reaction: %w", err))
 		}
@@ -115,7 +115,7 @@ func findByHookTrigger(ctx context.Context, queries *sqlc.Queries, collection, e
 		}
 
 		var hook Hook
-		if err := json.Unmarshal([]byte(reaction.Triggerdata), &hook); err != nil {
+		if err := json.Unmarshal(reaction.Triggerdata, &hook); err != nil {
 			return nil, err
 		}
 

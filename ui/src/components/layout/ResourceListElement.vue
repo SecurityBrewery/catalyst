@@ -10,7 +10,7 @@ defineProps<{
   title: string
   subtitle: string
   description: string
-  created: string
+  created: Date
 
   open: boolean
   active: boolean
@@ -38,7 +38,7 @@ defineProps<{
           <span v-if="open" class="ml-1 flex h-2 w-2 rounded-full bg-blue-600" />
         </div>
         <div :class="cn('ml-auto text-xs', active ? 'text-foreground' : 'text-muted-foreground')">
-          {{ formatDistanceToNow(new Date(created), { addSuffix: true }) }}
+          {{ formatDistanceToNow(created, { addSuffix: true }) }}
         </div>
       </div>
 

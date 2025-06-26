@@ -54,13 +54,13 @@ export interface Ticket {
    * @type {string}
    * @memberof Ticket
    */
-  owner: string
+  owner?: string
   /**
    *
    * @type {string}
    * @memberof Ticket
    */
-  resolution: string
+  resolution?: string
   /**
    *
    * @type {object}
@@ -75,16 +75,16 @@ export interface Ticket {
   state: object
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Ticket
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Ticket
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -96,8 +96,6 @@ export function instanceOfTicket(value: object): value is Ticket {
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('description' in value) || value['description'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
-  if (!('resolution' in value) || value['resolution'] === undefined) return false
   if (!('schema' in value) || value['schema'] === undefined) return false
   if (!('state' in value) || value['state'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
@@ -119,12 +117,12 @@ export function TicketFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ti
     name: json['name'],
     description: json['description'],
     open: json['open'],
-    owner: json['owner'],
-    resolution: json['resolution'],
+    owner: json['owner'] == null ? undefined : json['owner'],
+    resolution: json['resolution'] == null ? undefined : json['resolution'],
     schema: json['schema'],
     state: json['state'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -150,7 +148,7 @@ export function TicketToJSONTyped(
     resolution: value['resolution'],
     schema: value['schema'],
     state: value['state'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

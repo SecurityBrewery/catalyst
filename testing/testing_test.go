@@ -51,7 +51,7 @@ func runMatrixTest(t *testing.T, baseTest baseTest, userTest userTest) {
 	}
 
 	if userTest.AuthRecord != "" {
-		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.AuthRecord)
+		user, err := baseApp.Queries.UserByEmail(t.Context(), &userTest.AuthRecord)
 		require.NoError(t, err)
 
 		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)
@@ -64,7 +64,7 @@ func runMatrixTest(t *testing.T, baseTest baseTest, userTest userTest) {
 	}
 
 	if userTest.Admin != "" {
-		user, err := baseApp.Queries.UserByEmail(t.Context(), userTest.Admin)
+		user, err := baseApp.Queries.UserByEmail(t.Context(), &userTest.Admin)
 		require.NoError(t, err)
 
 		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)

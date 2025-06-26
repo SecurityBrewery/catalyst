@@ -51,16 +51,16 @@ export interface ExtendedComment {
   authorName: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedComment
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedComment
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -94,8 +94,8 @@ export function ExtendedCommentFromJSONTyped(
     author: json['author'],
     message: json['message'],
     authorName: json['author_name'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -117,7 +117,7 @@ export function ExtendedCommentToJSONTyped(
     author: value['author'],
     message: value['message'],
     author_name: value['authorName'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

@@ -42,7 +42,7 @@ export interface NewTask {
    * @type {string}
    * @memberof NewTask
    */
-  owner: string
+  owner?: string
 }
 
 /**
@@ -52,7 +52,6 @@ export function instanceOfNewTask(value: object): value is NewTask {
   if (!('ticket' in value) || value['ticket'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
   return true
 }
 
@@ -68,7 +67,7 @@ export function NewTaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
     ticket: json['ticket'],
     name: json['name'],
     open: json['open'],
-    owner: json['owner']
+    owner: json['owner'] == null ? undefined : json['owner']
   }
 }
 

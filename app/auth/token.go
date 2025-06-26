@@ -159,10 +159,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User, url, appTok
 		return fmt.Errorf("failed to get issued at: %w", err)
 	}
 
-	lastUpdated, err := time.Parse("2006-01-02 15:04:05.000Z", user.Updated) // TODO: create a last reset at column
-	if err != nil {
-		return fmt.Errorf("failed to parse last reset sent at: %w", err)
-	}
+	lastUpdated := user.Updated // TODO: create a last reset at column
 
 	if iat.Before(lastUpdated) {
 		return fmt.Errorf("token already used")

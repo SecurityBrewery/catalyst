@@ -7,25 +7,25 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
+	"time"
 )
 
 const getComment = `-- name: GetComment :one
 
-SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name
+SELECT comments.id, comments.ticket, comments.author, comments.message, comments.created, comments.updated, users.name as author_name
 FROM comments
          LEFT JOIN users ON users.id = comments.author
 WHERE comments.id = ?1
 `
 
 type GetCommentRow struct {
-	Author     string         `json:"author"`
-	Created    string         `json:"created"`
-	ID         string         `json:"id"`
-	Message    string         `json:"message"`
-	Ticket     string         `json:"ticket"`
-	Updated    string         `json:"updated"`
-	AuthorName sql.NullString `json:"author_name"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Author     string    `json:"author"`
+	Message    string    `json:"message"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	AuthorName *string   `json:"author_name"`
 }
 
 // ----------------------------------------------------------------
@@ -33,11 +33,11 @@ func (q *ReadQueries) GetComment(ctx context.Context, id string) (GetCommentRow,
 	row := q.db.QueryRowContext(ctx, getComment, id)
 	var i GetCommentRow
 	err := row.Scan(
-		&i.Author,
-		&i.Created,
 		&i.ID,
-		&i.Message,
 		&i.Ticket,
+		&i.Author,
+		&i.Message,
+		&i.Created,
 		&i.Updated,
 		&i.AuthorName,
 	)
@@ -76,27 +76,21 @@ func (q *ReadQueries) GetDashboardCounts(ctx context.Context) ([]DashboardCount,
 
 const getFeature = `-- name: GetFeature :one
 
-SELECT created, id, name, updated
+SELECT "key"
 FROM features
-WHERE id = ?1
+WHERE key = ?1
 `
 
 // ----------------------------------------------------------------
-func (q *ReadQueries) GetFeature(ctx context.Context, id string) (Feature, error) {
-	row := q.db.QueryRowContext(ctx, getFeature, id)
-	var i Feature
-	err := row.Scan(
-		&i.Created,
-		&i.ID,
-		&i.Name,
-		&i.Updated,
-	)
-	return i, err
+func (q *ReadQueries) GetFeature(ctx context.Context, key string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getFeature, key)
+	err := row.Scan(&key)
+	return key, err
 }
 
 const getFile = `-- name: GetFile :one
 
-SELECT blob, created, id, name, size, ticket, updated
+SELECT id, ticket, name, blob, size, created, updated
 FROM files
 WHERE id = ?1
 `
@@ -106,12 +100,12 @@ func (q *ReadQueries) GetFile(ctx context.Context, id string) (File, error) {
 	row := q.db.QueryRowContext(ctx, getFile, id)
 	var i File
 	err := row.Scan(
-		&i.Blob,
-		&i.Created,
 		&i.ID,
-		&i.Name,
-		&i.Size,
 		&i.Ticket,
+		&i.Name,
+		&i.Blob,
+		&i.Size,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -140,7 +134,7 @@ func (q *ReadQueries) GetGroup(ctx context.Context, id string) (Group, error) {
 
 const getLink = `-- name: GetLink :one
 
-SELECT created, id, name, ticket, updated, url
+SELECT id, ticket, name, url, created, updated
 FROM links
 WHERE id = ?1
 `
@@ -150,19 +144,19 @@ func (q *ReadQueries) GetLink(ctx context.Context, id string) (Link, error) {
 	row := q.db.QueryRowContext(ctx, getLink, id)
 	var i Link
 	err := row.Scan(
-		&i.Created,
 		&i.ID,
-		&i.Name,
 		&i.Ticket,
-		&i.Updated,
+		&i.Name,
 		&i.Url,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
 
 const getReaction = `-- name: GetReaction :one
 
-SELECT "action", actiondata, created, id, name, "trigger", triggerdata, updated
+SELECT id, name, "action", actiondata, "trigger", triggerdata, created, updated
 FROM reactions
 WHERE id = ?1
 `
@@ -172,13 +166,13 @@ func (q *ReadQueries) GetReaction(ctx context.Context, id string) (Reaction, err
 	row := q.db.QueryRowContext(ctx, getReaction, id)
 	var i Reaction
 	err := row.Scan(
-		&i.Action,
-		&i.Actiondata,
-		&i.Created,
 		&i.ID,
 		&i.Name,
+		&i.Action,
+		&i.Actiondata,
 		&i.Trigger,
 		&i.Triggerdata,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -220,7 +214,7 @@ func (q *ReadQueries) GetSidebar(ctx context.Context) ([]Sidebar, error) {
 
 const getTask = `-- name: GetTask :one
 
-SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
+SELECT tasks.id, tasks.ticket, tasks.owner, tasks.name, tasks.open, tasks.created, tasks.updated, users.name as owner_name, tickets.name as ticket_name, tickets.type as ticket_type
 FROM tasks
          LEFT JOIN users ON users.id = tasks.owner
          LEFT JOIN tickets ON tickets.id = tasks.ticket
@@ -228,16 +222,16 @@ WHERE tasks.id = ?1
 `
 
 type GetTaskRow struct {
-	Created    string         `json:"created"`
-	ID         string         `json:"id"`
-	Name       string         `json:"name"`
-	Open       bool           `json:"open"`
-	Owner      string         `json:"owner"`
-	Ticket     string         `json:"ticket"`
-	Updated    string         `json:"updated"`
-	OwnerName  sql.NullString `json:"owner_name"`
-	TicketName sql.NullString `json:"ticket_name"`
-	TicketType sql.NullString `json:"ticket_type"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Owner      *string   `json:"owner"`
+	Name       string    `json:"name"`
+	Open       bool      `json:"open"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	OwnerName  *string   `json:"owner_name"`
+	TicketName *string   `json:"ticket_name"`
+	TicketType *string   `json:"ticket_type"`
 }
 
 // ----------------------------------------------------------------
@@ -245,12 +239,12 @@ func (q *ReadQueries) GetTask(ctx context.Context, id string) (GetTaskRow, error
 	row := q.db.QueryRowContext(ctx, getTask, id)
 	var i GetTaskRow
 	err := row.Scan(
-		&i.Created,
 		&i.ID,
+		&i.Ticket,
+		&i.Owner,
 		&i.Name,
 		&i.Open,
-		&i.Owner,
-		&i.Ticket,
+		&i.Created,
 		&i.Updated,
 		&i.OwnerName,
 		&i.TicketName,
@@ -261,7 +255,7 @@ func (q *ReadQueries) GetTask(ctx context.Context, id string) (GetTaskRow, error
 
 const getTimeline = `-- name: GetTimeline :one
 
-SELECT created, id, message, ticket, time, updated
+SELECT id, ticket, message, time, created, updated
 FROM timeline
 WHERE id = ?1
 `
@@ -271,11 +265,11 @@ func (q *ReadQueries) GetTimeline(ctx context.Context, id string) (Timeline, err
 	row := q.db.QueryRowContext(ctx, getTimeline, id)
 	var i Timeline
 	err := row.Scan(
-		&i.Created,
 		&i.ID,
-		&i.Message,
 		&i.Ticket,
+		&i.Message,
 		&i.Time,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -283,7 +277,7 @@ func (q *ReadQueries) GetTimeline(ctx context.Context, id string) (Timeline, err
 
 const getType = `-- name: GetType :one
 
-SELECT created, icon, id, plural, schema, singular, updated
+SELECT id, icon, singular, plural, schema, created, updated
 FROM types
 WHERE id = ?1
 `
@@ -293,12 +287,12 @@ func (q *ReadQueries) GetType(ctx context.Context, id string) (Type, error) {
 	row := q.db.QueryRowContext(ctx, getType, id)
 	var i Type
 	err := row.Scan(
-		&i.Created,
-		&i.Icon,
 		&i.ID,
+		&i.Icon,
+		&i.Singular,
 		&i.Plural,
 		&i.Schema,
-		&i.Singular,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -306,7 +300,7 @@ func (q *ReadQueries) GetType(ctx context.Context, id string) (Type, error) {
 
 const getUser = `-- name: GetUser :one
 
-SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT id, username, passwordhash, tokenkey, active, name, email, avatar, lastresetsentat, lastverificationsentat, created, updated
 FROM users
 WHERE id = ?1
 `
@@ -316,25 +310,25 @@ func (q *ReadQueries) GetUser(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
-		&i.Avatar,
-		&i.Created,
-		&i.Email,
 		&i.ID,
-		&i.Lastresetsentat,
-		&i.Lastverificationsentat,
-		&i.Name,
+		&i.Username,
 		&i.Passwordhash,
 		&i.Tokenkey,
+		&i.Active,
+		&i.Name,
+		&i.Email,
+		&i.Avatar,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Created,
 		&i.Updated,
-		&i.Username,
-		&i.Verified,
 	)
 	return i, err
 }
 
 const getWebhook = `-- name: GetWebhook :one
 
-SELECT collection, created, destination, id, name, updated
+SELECT id, collection, destination, name, created, updated
 FROM webhooks
 WHERE id = ?1
 `
@@ -344,11 +338,11 @@ func (q *ReadQueries) GetWebhook(ctx context.Context, id string) (Webhook, error
 	row := q.db.QueryRowContext(ctx, getWebhook, id)
 	var i Webhook
 	err := row.Scan(
-		&i.Collection,
-		&i.Created,
-		&i.Destination,
 		&i.ID,
+		&i.Collection,
+		&i.Destination,
 		&i.Name,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
@@ -363,12 +357,12 @@ ORDER BY group_effective_groups.group_type
 `
 
 type ListChildGroupsRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	GroupType   string `json:"group_type"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions string    `json:"permissions"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	GroupType   string    `json:"group_type"`
 }
 
 func (q *ReadQueries) ListChildGroups(ctx context.Context, groupID string) ([]ListChildGroupsRow, error) {
@@ -402,7 +396,7 @@ func (q *ReadQueries) ListChildGroups(ctx context.Context, groupID string) ([]Li
 }
 
 const listComments = `-- name: ListComments :many
-SELECT comments.author, comments.created, comments.id, comments.message, comments.ticket, comments.updated, users.name as author_name, COUNT(*) OVER () as total_count
+SELECT comments.id, comments.ticket, comments.author, comments.message, comments.created, comments.updated, users.name as author_name, COUNT(*) OVER () as total_count
 FROM comments
          LEFT JOIN users ON users.id = comments.author
 WHERE ticket = ?1
@@ -418,14 +412,14 @@ type ListCommentsParams struct {
 }
 
 type ListCommentsRow struct {
-	Author     string         `json:"author"`
-	Created    string         `json:"created"`
-	ID         string         `json:"id"`
-	Message    string         `json:"message"`
-	Ticket     string         `json:"ticket"`
-	Updated    string         `json:"updated"`
-	AuthorName sql.NullString `json:"author_name"`
-	TotalCount int64          `json:"total_count"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Author     string    `json:"author"`
+	Message    string    `json:"message"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	AuthorName *string   `json:"author_name"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListComments(ctx context.Context, arg ListCommentsParams) ([]ListCommentsRow, error) {
@@ -438,11 +432,11 @@ func (q *ReadQueries) ListComments(ctx context.Context, arg ListCommentsParams) 
 	for rows.Next() {
 		var i ListCommentsRow
 		if err := rows.Scan(
-			&i.Author,
-			&i.Created,
 			&i.ID,
-			&i.Message,
 			&i.Ticket,
+			&i.Author,
+			&i.Message,
+			&i.Created,
 			&i.Updated,
 			&i.AuthorName,
 			&i.TotalCount,
@@ -461,9 +455,9 @@ func (q *ReadQueries) ListComments(ctx context.Context, arg ListCommentsParams) 
 }
 
 const listFeatures = `-- name: ListFeatures :many
-SELECT features.created, features.id, features.name, features.updated, COUNT(*) OVER () as total_count
+SELECT features."key", COUNT(*) OVER () as total_count
 FROM features
-ORDER BY features.created DESC
+ORDER BY features.key DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -473,10 +467,7 @@ type ListFeaturesParams struct {
 }
 
 type ListFeaturesRow struct {
-	Created    string `json:"created"`
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Updated    string `json:"updated"`
+	Key        string `json:"key"`
 	TotalCount int64  `json:"total_count"`
 }
 
@@ -489,13 +480,7 @@ func (q *ReadQueries) ListFeatures(ctx context.Context, arg ListFeaturesParams) 
 	var items []ListFeaturesRow
 	for rows.Next() {
 		var i ListFeaturesRow
-		if err := rows.Scan(
-			&i.Created,
-			&i.ID,
-			&i.Name,
-			&i.Updated,
-			&i.TotalCount,
-		); err != nil {
+		if err := rows.Scan(&i.Key, &i.TotalCount); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -510,7 +495,7 @@ func (q *ReadQueries) ListFeatures(ctx context.Context, arg ListFeaturesParams) 
 }
 
 const listFiles = `-- name: ListFiles :many
-SELECT files.blob, files.created, files.id, files.name, files.size, files.ticket, files.updated, COUNT(*) OVER () as total_count
+SELECT files.id, files.ticket, files.name, files.blob, files.size, files.created, files.updated, COUNT(*) OVER () as total_count
 FROM files
 WHERE ticket = ?1
    OR ?1 = ''
@@ -525,14 +510,14 @@ type ListFilesParams struct {
 }
 
 type ListFilesRow struct {
-	Blob       string  `json:"blob"`
-	Created    string  `json:"created"`
-	ID         string  `json:"id"`
-	Name       string  `json:"name"`
-	Size       float64 `json:"size"`
-	Ticket     string  `json:"ticket"`
-	Updated    string  `json:"updated"`
-	TotalCount int64   `json:"total_count"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Name       string    `json:"name"`
+	Blob       string    `json:"blob"`
+	Size       float64   `json:"size"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListFiles(ctx context.Context, arg ListFilesParams) ([]ListFilesRow, error) {
@@ -545,12 +530,12 @@ func (q *ReadQueries) ListFiles(ctx context.Context, arg ListFilesParams) ([]Lis
 	for rows.Next() {
 		var i ListFilesRow
 		if err := rows.Scan(
-			&i.Blob,
-			&i.Created,
 			&i.ID,
-			&i.Name,
-			&i.Size,
 			&i.Ticket,
+			&i.Name,
+			&i.Blob,
+			&i.Size,
+			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -568,7 +553,7 @@ func (q *ReadQueries) ListFiles(ctx context.Context, arg ListFilesParams) ([]Lis
 }
 
 const listGroupUsers = `-- name: ListGroupUsers :many
-SELECT users.avatar, users.created, users.email, users.id, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, uer.group_type
+SELECT users.id, users.username, users.passwordhash, users.tokenkey, users.active, users.name, users.email, users.avatar, users.lastresetsentat, users.lastverificationsentat, users.created, users.updated, uer.group_type
 FROM user_effective_groups uer
          JOIN users ON users.id = uer.user_id
 WHERE uer.group_id = ?1
@@ -576,19 +561,19 @@ ORDER BY users.name DESC
 `
 
 type ListGroupUsersRow struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	ID                     string `json:"id"`
-	Lastresetsentat        string `json:"lastresetsentat"`
-	Lastverificationsentat string `json:"lastverificationsentat"`
-	Name                   string `json:"name"`
-	Passwordhash           string `json:"passwordhash"`
-	Tokenkey               string `json:"tokenkey"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
-	GroupType              string `json:"group_type"`
+	ID                     string     `json:"id"`
+	Username               string     `json:"username"`
+	Passwordhash           string     `json:"passwordhash"`
+	Tokenkey               string     `json:"tokenkey"`
+	Active                 bool       `json:"active"`
+	Name                   *string    `json:"name"`
+	Email                  *string    `json:"email"`
+	Avatar                 *string    `json:"avatar"`
+	Lastresetsentat        *time.Time `json:"lastresetsentat"`
+	Lastverificationsentat *time.Time `json:"lastverificationsentat"`
+	Created                time.Time  `json:"created"`
+	Updated                time.Time  `json:"updated"`
+	GroupType              string     `json:"group_type"`
 }
 
 func (q *ReadQueries) ListGroupUsers(ctx context.Context, groupID string) ([]ListGroupUsersRow, error) {
@@ -601,18 +586,18 @@ func (q *ReadQueries) ListGroupUsers(ctx context.Context, groupID string) ([]Lis
 	for rows.Next() {
 		var i ListGroupUsersRow
 		if err := rows.Scan(
-			&i.Avatar,
-			&i.Created,
-			&i.Email,
 			&i.ID,
-			&i.Lastresetsentat,
-			&i.Lastverificationsentat,
-			&i.Name,
+			&i.Username,
 			&i.Passwordhash,
 			&i.Tokenkey,
+			&i.Active,
+			&i.Name,
+			&i.Email,
+			&i.Avatar,
+			&i.Lastresetsentat,
+			&i.Lastverificationsentat,
+			&i.Created,
 			&i.Updated,
-			&i.Username,
-			&i.Verified,
 			&i.GroupType,
 		); err != nil {
 			return nil, err
@@ -641,12 +626,12 @@ type ListGroupsParams struct {
 }
 
 type ListGroupsRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions string    `json:"permissions"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	TotalCount  int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListGroups(ctx context.Context, arg ListGroupsParams) ([]ListGroupsRow, error) {
@@ -680,7 +665,7 @@ func (q *ReadQueries) ListGroups(ctx context.Context, arg ListGroupsParams) ([]L
 }
 
 const listLinks = `-- name: ListLinks :many
-SELECT links.created, links.id, links.name, links.ticket, links.updated, links.url, COUNT(*) OVER () as total_count
+SELECT links.id, links.ticket, links.name, links.url, links.created, links.updated, COUNT(*) OVER () as total_count
 FROM links
 WHERE ticket = ?1
    OR ?1 = ''
@@ -695,13 +680,13 @@ type ListLinksParams struct {
 }
 
 type ListLinksRow struct {
-	Created    string `json:"created"`
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Ticket     string `json:"ticket"`
-	Updated    string `json:"updated"`
-	Url        string `json:"url"`
-	TotalCount int64  `json:"total_count"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Name       string    `json:"name"`
+	Url        string    `json:"url"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListLinks(ctx context.Context, arg ListLinksParams) ([]ListLinksRow, error) {
@@ -714,12 +699,12 @@ func (q *ReadQueries) ListLinks(ctx context.Context, arg ListLinksParams) ([]Lis
 	for rows.Next() {
 		var i ListLinksRow
 		if err := rows.Scan(
-			&i.Created,
 			&i.ID,
-			&i.Name,
 			&i.Ticket,
-			&i.Updated,
+			&i.Name,
 			&i.Url,
+			&i.Created,
+			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
 			return nil, err
@@ -744,12 +729,12 @@ ORDER BY group_effective_groups.group_type
 `
 
 type ListParentGroupsRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	GroupType   string `json:"group_type"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions string    `json:"permissions"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	GroupType   string    `json:"group_type"`
 }
 
 func (q *ReadQueries) ListParentGroups(ctx context.Context, groupID string) ([]ListParentGroupsRow, error) {
@@ -813,7 +798,7 @@ func (q *ReadQueries) ListParentPermissions(ctx context.Context, groupID string)
 }
 
 const listReactions = `-- name: ListReactions :many
-SELECT reactions."action", reactions.actiondata, reactions.created, reactions.id, reactions.name, reactions."trigger", reactions.triggerdata, reactions.updated, COUNT(*) OVER () as total_count
+SELECT reactions.id, reactions.name, reactions."action", reactions.actiondata, reactions."trigger", reactions.triggerdata, reactions.created, reactions.updated, COUNT(*) OVER () as total_count
 FROM reactions
 ORDER BY reactions.created DESC
 LIMIT ?2 OFFSET ?1
@@ -825,15 +810,15 @@ type ListReactionsParams struct {
 }
 
 type ListReactionsRow struct {
-	Action      string `json:"action"`
-	Actiondata  string `json:"actiondata"`
-	Created     string `json:"created"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Trigger     string `json:"trigger"`
-	Triggerdata string `json:"triggerdata"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Action      string    `json:"action"`
+	Actiondata  []byte    `json:"actiondata"`
+	Trigger     string    `json:"trigger"`
+	Triggerdata []byte    `json:"triggerdata"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	TotalCount  int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListReactions(ctx context.Context, arg ListReactionsParams) ([]ListReactionsRow, error) {
@@ -846,13 +831,13 @@ func (q *ReadQueries) ListReactions(ctx context.Context, arg ListReactionsParams
 	for rows.Next() {
 		var i ListReactionsRow
 		if err := rows.Scan(
-			&i.Action,
-			&i.Actiondata,
-			&i.Created,
 			&i.ID,
 			&i.Name,
+			&i.Action,
+			&i.Actiondata,
 			&i.Trigger,
 			&i.Triggerdata,
+			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -870,7 +855,7 @@ func (q *ReadQueries) ListReactions(ctx context.Context, arg ListReactionsParams
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT tasks.created, tasks.id, tasks.name, tasks.open, tasks.owner, tasks.ticket, tasks.updated,
+SELECT tasks.id, tasks.ticket, tasks.owner, tasks.name, tasks.open, tasks.created, tasks.updated,
        users.name       as owner_name,
        tickets.name     as ticket_name,
        tickets.type     as ticket_type,
@@ -891,17 +876,17 @@ type ListTasksParams struct {
 }
 
 type ListTasksRow struct {
-	Created    string         `json:"created"`
-	ID         string         `json:"id"`
-	Name       string         `json:"name"`
-	Open       bool           `json:"open"`
-	Owner      string         `json:"owner"`
-	Ticket     string         `json:"ticket"`
-	Updated    string         `json:"updated"`
-	OwnerName  sql.NullString `json:"owner_name"`
-	TicketName sql.NullString `json:"ticket_name"`
-	TicketType sql.NullString `json:"ticket_type"`
-	TotalCount int64          `json:"total_count"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Owner      *string   `json:"owner"`
+	Name       string    `json:"name"`
+	Open       bool      `json:"open"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	OwnerName  *string   `json:"owner_name"`
+	TicketName *string   `json:"ticket_name"`
+	TicketType *string   `json:"ticket_type"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListTasks(ctx context.Context, arg ListTasksParams) ([]ListTasksRow, error) {
@@ -914,12 +899,12 @@ func (q *ReadQueries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Lis
 	for rows.Next() {
 		var i ListTasksRow
 		if err := rows.Scan(
-			&i.Created,
 			&i.ID,
+			&i.Ticket,
+			&i.Owner,
 			&i.Name,
 			&i.Open,
-			&i.Owner,
-			&i.Ticket,
+			&i.Created,
 			&i.Updated,
 			&i.OwnerName,
 			&i.TicketName,
@@ -940,7 +925,7 @@ func (q *ReadQueries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Lis
 }
 
 const listTickets = `-- name: ListTickets :many
-SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated,
+SELECT tickets.id, tickets.type, tickets.owner, tickets.name, tickets.description, tickets.open, tickets.resolution, tickets.schema, tickets.state, tickets.created, tickets.updated,
        users.name       as owner_name,
        types.singular   as type_singular,
        types.plural     as type_plural,
@@ -958,21 +943,21 @@ type ListTicketsParams struct {
 }
 
 type ListTicketsRow struct {
-	Created      string         `json:"created"`
-	Description  string         `json:"description"`
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Open         bool           `json:"open"`
-	Owner        string         `json:"owner"`
-	Resolution   string         `json:"resolution"`
-	Schema       string         `json:"schema"`
-	State        string         `json:"state"`
-	Type         string         `json:"type"`
-	Updated      string         `json:"updated"`
-	OwnerName    sql.NullString `json:"owner_name"`
-	TypeSingular sql.NullString `json:"type_singular"`
-	TypePlural   sql.NullString `json:"type_plural"`
-	TotalCount   int64          `json:"total_count"`
+	ID           string    `json:"id"`
+	Type         string    `json:"type"`
+	Owner        *string   `json:"owner"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Open         bool      `json:"open"`
+	Resolution   *string   `json:"resolution"`
+	Schema       []byte    `json:"schema"`
+	State        []byte    `json:"state"`
+	Created      time.Time `json:"created"`
+	Updated      time.Time `json:"updated"`
+	OwnerName    *string   `json:"owner_name"`
+	TypeSingular *string   `json:"type_singular"`
+	TypePlural   *string   `json:"type_plural"`
+	TotalCount   int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]ListTicketsRow, error) {
@@ -985,16 +970,16 @@ func (q *ReadQueries) ListTickets(ctx context.Context, arg ListTicketsParams) ([
 	for rows.Next() {
 		var i ListTicketsRow
 		if err := rows.Scan(
-			&i.Created,
-			&i.Description,
 			&i.ID,
-			&i.Name,
-			&i.Open,
+			&i.Type,
 			&i.Owner,
+			&i.Name,
+			&i.Description,
+			&i.Open,
 			&i.Resolution,
 			&i.Schema,
 			&i.State,
-			&i.Type,
+			&i.Created,
 			&i.Updated,
 			&i.OwnerName,
 			&i.TypeSingular,
@@ -1015,7 +1000,7 @@ func (q *ReadQueries) ListTickets(ctx context.Context, arg ListTicketsParams) ([
 }
 
 const listTimeline = `-- name: ListTimeline :many
-SELECT timeline.created, timeline.id, timeline.message, timeline.ticket, timeline.time, timeline.updated, COUNT(*) OVER () as total_count
+SELECT timeline.id, timeline.ticket, timeline.message, timeline.time, timeline.created, timeline.updated, COUNT(*) OVER () as total_count
 FROM timeline
 WHERE ticket = ?1
    OR ?1 = ''
@@ -1030,13 +1015,13 @@ type ListTimelineParams struct {
 }
 
 type ListTimelineRow struct {
-	Created    string `json:"created"`
-	ID         string `json:"id"`
-	Message    string `json:"message"`
-	Ticket     string `json:"ticket"`
-	Time       string `json:"time"`
-	Updated    string `json:"updated"`
-	TotalCount int64  `json:"total_count"`
+	ID         string    `json:"id"`
+	Ticket     string    `json:"ticket"`
+	Message    string    `json:"message"`
+	Time       time.Time `json:"time"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListTimeline(ctx context.Context, arg ListTimelineParams) ([]ListTimelineRow, error) {
@@ -1049,11 +1034,11 @@ func (q *ReadQueries) ListTimeline(ctx context.Context, arg ListTimelineParams) 
 	for rows.Next() {
 		var i ListTimelineRow
 		if err := rows.Scan(
-			&i.Created,
 			&i.ID,
-			&i.Message,
 			&i.Ticket,
+			&i.Message,
 			&i.Time,
+			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -1071,7 +1056,7 @@ func (q *ReadQueries) ListTimeline(ctx context.Context, arg ListTimelineParams) 
 }
 
 const listTypes = `-- name: ListTypes :many
-SELECT types.created, types.icon, types.id, types.plural, types.schema, types.singular, types.updated, COUNT(*) OVER () as total_count
+SELECT types.id, types.icon, types.singular, types.plural, types.schema, types.created, types.updated, COUNT(*) OVER () as total_count
 FROM types
 ORDER BY created DESC
 LIMIT ?2 OFFSET ?1
@@ -1083,14 +1068,14 @@ type ListTypesParams struct {
 }
 
 type ListTypesRow struct {
-	Created    string `json:"created"`
-	Icon       string `json:"icon"`
-	ID         string `json:"id"`
-	Plural     string `json:"plural"`
-	Schema     string `json:"schema"`
-	Singular   string `json:"singular"`
-	Updated    string `json:"updated"`
-	TotalCount int64  `json:"total_count"`
+	ID         string    `json:"id"`
+	Icon       *string   `json:"icon"`
+	Singular   string    `json:"singular"`
+	Plural     string    `json:"plural"`
+	Schema     []byte    `json:"schema"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	TotalCount int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListTypes(ctx context.Context, arg ListTypesParams) ([]ListTypesRow, error) {
@@ -1103,12 +1088,12 @@ func (q *ReadQueries) ListTypes(ctx context.Context, arg ListTypesParams) ([]Lis
 	for rows.Next() {
 		var i ListTypesRow
 		if err := rows.Scan(
-			&i.Created,
-			&i.Icon,
 			&i.ID,
+			&i.Icon,
+			&i.Singular,
 			&i.Plural,
 			&i.Schema,
-			&i.Singular,
+			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -1134,13 +1119,13 @@ ORDER BY g.name DESC
 `
 
 type ListUserGroupsRow struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
-	GroupType   string `json:"group_type"`
-	TotalCount  int64  `json:"total_count"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions string    `json:"permissions"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	GroupType   string    `json:"group_type"`
+	TotalCount  int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListUserGroups(ctx context.Context, userID string) ([]ListUserGroupsRow, error) {
@@ -1205,7 +1190,7 @@ func (q *ReadQueries) ListUserPermissions(ctx context.Context, userID string) ([
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT users.avatar, users.created, users.email, users.id, users.lastresetsentat, users.lastverificationsentat, users.name, users.passwordhash, users.tokenkey, users.updated, users.username, users.verified, COUNT(*) OVER () as total_count
+SELECT users.id, users.username, users.passwordhash, users.tokenkey, users.active, users.name, users.email, users.avatar, users.lastresetsentat, users.lastverificationsentat, users.created, users.updated, COUNT(*) OVER () as total_count
 FROM users
 WHERE id != 'system'
 ORDER BY users.created DESC
@@ -1218,19 +1203,19 @@ type ListUsersParams struct {
 }
 
 type ListUsersRow struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	ID                     string `json:"id"`
-	Lastresetsentat        string `json:"lastresetsentat"`
-	Lastverificationsentat string `json:"lastverificationsentat"`
-	Name                   string `json:"name"`
-	Passwordhash           string `json:"passwordhash"`
-	Tokenkey               string `json:"tokenkey"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
-	TotalCount             int64  `json:"total_count"`
+	ID                     string     `json:"id"`
+	Username               string     `json:"username"`
+	Passwordhash           string     `json:"passwordhash"`
+	Tokenkey               string     `json:"tokenkey"`
+	Active                 bool       `json:"active"`
+	Name                   *string    `json:"name"`
+	Email                  *string    `json:"email"`
+	Avatar                 *string    `json:"avatar"`
+	Lastresetsentat        *time.Time `json:"lastresetsentat"`
+	Lastverificationsentat *time.Time `json:"lastverificationsentat"`
+	Created                time.Time  `json:"created"`
+	Updated                time.Time  `json:"updated"`
+	TotalCount             int64      `json:"total_count"`
 }
 
 func (q *ReadQueries) ListUsers(ctx context.Context, arg ListUsersParams) ([]ListUsersRow, error) {
@@ -1243,18 +1228,18 @@ func (q *ReadQueries) ListUsers(ctx context.Context, arg ListUsersParams) ([]Lis
 	for rows.Next() {
 		var i ListUsersRow
 		if err := rows.Scan(
-			&i.Avatar,
-			&i.Created,
-			&i.Email,
 			&i.ID,
-			&i.Lastresetsentat,
-			&i.Lastverificationsentat,
-			&i.Name,
+			&i.Username,
 			&i.Passwordhash,
 			&i.Tokenkey,
+			&i.Active,
+			&i.Name,
+			&i.Email,
+			&i.Avatar,
+			&i.Lastresetsentat,
+			&i.Lastverificationsentat,
+			&i.Created,
 			&i.Updated,
-			&i.Username,
-			&i.Verified,
 			&i.TotalCount,
 		); err != nil {
 			return nil, err
@@ -1271,7 +1256,7 @@ func (q *ReadQueries) ListUsers(ctx context.Context, arg ListUsersParams) ([]Lis
 }
 
 const listWebhooks = `-- name: ListWebhooks :many
-SELECT webhooks.collection, webhooks.created, webhooks.destination, webhooks.id, webhooks.name, webhooks.updated, COUNT(*) OVER () as total_count
+SELECT webhooks.id, webhooks.collection, webhooks.destination, webhooks.name, webhooks.created, webhooks.updated, COUNT(*) OVER () as total_count
 FROM webhooks
 ORDER BY created DESC
 LIMIT ?2 OFFSET ?1
@@ -1283,13 +1268,13 @@ type ListWebhooksParams struct {
 }
 
 type ListWebhooksRow struct {
-	Collection  string `json:"collection"`
-	Created     string `json:"created"`
-	Destination string `json:"destination"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Updated     string `json:"updated"`
-	TotalCount  int64  `json:"total_count"`
+	ID          string    `json:"id"`
+	Collection  string    `json:"collection"`
+	Destination string    `json:"destination"`
+	Name        string    `json:"name"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	TotalCount  int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) ([]ListWebhooksRow, error) {
@@ -1302,11 +1287,11 @@ func (q *ReadQueries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) 
 	for rows.Next() {
 		var i ListWebhooksRow
 		if err := rows.Scan(
-			&i.Collection,
-			&i.Created,
-			&i.Destination,
 			&i.ID,
+			&i.Collection,
+			&i.Destination,
 			&i.Name,
+			&i.Created,
 			&i.Updated,
 			&i.TotalCount,
 		); err != nil {
@@ -1324,7 +1309,7 @@ func (q *ReadQueries) ListWebhooks(ctx context.Context, arg ListWebhooksParams) 
 }
 
 const param = `-- name: Param :one
-SELECT id, "key", value, created, updated
+SELECT "key", value
 FROM _params
 WHERE _params.key = ?1
 `
@@ -1332,13 +1317,7 @@ WHERE _params.key = ?1
 func (q *ReadQueries) Param(ctx context.Context, key string) (Param, error) {
 	row := q.db.QueryRowContext(ctx, param, key)
 	var i Param
-	err := row.Scan(
-		&i.ID,
-		&i.Key,
-		&i.Value,
-		&i.Created,
-		&i.Updated,
-	)
+	err := row.Scan(&i.Key, &i.Value)
 	return i, err
 }
 
@@ -1376,15 +1355,15 @@ type SearchTicketsParams struct {
 }
 
 type SearchTicketsRow struct {
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Created     string         `json:"created"`
-	Description string         `json:"description"`
-	Open        bool           `json:"open"`
-	Type        string         `json:"type"`
-	State       string         `json:"state"`
-	OwnerName   sql.NullString `json:"owner_name"`
-	TotalCount  int64          `json:"total_count"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Created     time.Time `json:"created"`
+	Description string    `json:"description"`
+	Open        bool      `json:"open"`
+	Type        string    `json:"type"`
+	State       []byte    `json:"state"`
+	OwnerName   *string   `json:"owner_name"`
+	TotalCount  int64     `json:"total_count"`
 }
 
 func (q *ReadQueries) SearchTickets(ctx context.Context, arg SearchTicketsParams) ([]SearchTicketsRow, error) {
@@ -1427,7 +1406,7 @@ func (q *ReadQueries) SearchTickets(ctx context.Context, arg SearchTicketsParams
 }
 
 const systemUser = `-- name: SystemUser :one
-SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT id, username, passwordhash, tokenkey, active, name, email, avatar, lastresetsentat, lastverificationsentat, created, updated
 FROM users
 WHERE id = 'system'
 `
@@ -1436,25 +1415,25 @@ func (q *ReadQueries) SystemUser(ctx context.Context) (User, error) {
 	row := q.db.QueryRowContext(ctx, systemUser)
 	var i User
 	err := row.Scan(
-		&i.Avatar,
-		&i.Created,
-		&i.Email,
 		&i.ID,
-		&i.Lastresetsentat,
-		&i.Lastverificationsentat,
-		&i.Name,
+		&i.Username,
 		&i.Passwordhash,
 		&i.Tokenkey,
+		&i.Active,
+		&i.Name,
+		&i.Email,
+		&i.Avatar,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Created,
 		&i.Updated,
-		&i.Username,
-		&i.Verified,
 	)
 	return i, err
 }
 
 const ticket = `-- name: Ticket :one
 
-SELECT tickets.created, tickets.description, tickets.id, tickets.name, tickets.open, tickets.owner, tickets.resolution, tickets.schema, tickets.state, tickets.type, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
+SELECT tickets.id, tickets.type, tickets.owner, tickets.name, tickets.description, tickets.open, tickets.resolution, tickets.schema, tickets.state, tickets.created, tickets.updated, users.name as owner_name, types.singular as type_singular, types.plural as type_plural
 FROM tickets
          LEFT JOIN users ON users.id = tickets.owner
          LEFT JOIN types ON types.id = tickets.type
@@ -1462,20 +1441,20 @@ WHERE tickets.id = ?1
 `
 
 type TicketRow struct {
-	Created      string         `json:"created"`
-	Description  string         `json:"description"`
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Open         bool           `json:"open"`
-	Owner        string         `json:"owner"`
-	Resolution   string         `json:"resolution"`
-	Schema       string         `json:"schema"`
-	State        string         `json:"state"`
-	Type         string         `json:"type"`
-	Updated      string         `json:"updated"`
-	OwnerName    sql.NullString `json:"owner_name"`
-	TypeSingular sql.NullString `json:"type_singular"`
-	TypePlural   sql.NullString `json:"type_plural"`
+	ID           string    `json:"id"`
+	Type         string    `json:"type"`
+	Owner        *string   `json:"owner"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Open         bool      `json:"open"`
+	Resolution   *string   `json:"resolution"`
+	Schema       []byte    `json:"schema"`
+	State        []byte    `json:"state"`
+	Created      time.Time `json:"created"`
+	Updated      time.Time `json:"updated"`
+	OwnerName    *string   `json:"owner_name"`
+	TypeSingular *string   `json:"type_singular"`
+	TypePlural   *string   `json:"type_plural"`
 }
 
 // -----------------------------------------------------------------
@@ -1483,16 +1462,16 @@ func (q *ReadQueries) Ticket(ctx context.Context, id string) (TicketRow, error) 
 	row := q.db.QueryRowContext(ctx, ticket, id)
 	var i TicketRow
 	err := row.Scan(
-		&i.Created,
-		&i.Description,
 		&i.ID,
-		&i.Name,
-		&i.Open,
+		&i.Type,
 		&i.Owner,
+		&i.Name,
+		&i.Description,
+		&i.Open,
 		&i.Resolution,
 		&i.Schema,
 		&i.State,
-		&i.Type,
+		&i.Created,
 		&i.Updated,
 		&i.OwnerName,
 		&i.TypeSingular,
@@ -1502,33 +1481,33 @@ func (q *ReadQueries) Ticket(ctx context.Context, id string) (TicketRow, error) 
 }
 
 const userByEmail = `-- name: UserByEmail :one
-SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT id, username, passwordhash, tokenkey, active, name, email, avatar, lastresetsentat, lastverificationsentat, created, updated
 FROM users
 WHERE email = ?1
 `
 
-func (q *ReadQueries) UserByEmail(ctx context.Context, email string) (User, error) {
+func (q *ReadQueries) UserByEmail(ctx context.Context, email *string) (User, error) {
 	row := q.db.QueryRowContext(ctx, userByEmail, email)
 	var i User
 	err := row.Scan(
-		&i.Avatar,
-		&i.Created,
-		&i.Email,
 		&i.ID,
-		&i.Lastresetsentat,
-		&i.Lastverificationsentat,
-		&i.Name,
+		&i.Username,
 		&i.Passwordhash,
 		&i.Tokenkey,
+		&i.Active,
+		&i.Name,
+		&i.Email,
+		&i.Avatar,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Created,
 		&i.Updated,
-		&i.Username,
-		&i.Verified,
 	)
 	return i, err
 }
 
 const userByUserName = `-- name: UserByUserName :one
-SELECT avatar, created, email, id, lastresetsentat, lastverificationsentat, name, passwordhash, tokenkey, updated, username, verified
+SELECT id, username, passwordhash, tokenkey, active, name, email, avatar, lastresetsentat, lastverificationsentat, created, updated
 FROM users
 WHERE username = ?1
 `
@@ -1537,18 +1516,18 @@ func (q *ReadQueries) UserByUserName(ctx context.Context, username string) (User
 	row := q.db.QueryRowContext(ctx, userByUserName, username)
 	var i User
 	err := row.Scan(
-		&i.Avatar,
-		&i.Created,
-		&i.Email,
 		&i.ID,
-		&i.Lastresetsentat,
-		&i.Lastverificationsentat,
-		&i.Name,
+		&i.Username,
 		&i.Passwordhash,
 		&i.Tokenkey,
+		&i.Active,
+		&i.Name,
+		&i.Email,
+		&i.Avatar,
+		&i.Lastresetsentat,
+		&i.Lastverificationsentat,
+		&i.Created,
 		&i.Updated,
-		&i.Username,
-		&i.Verified,
 	)
 	return i, err
 }

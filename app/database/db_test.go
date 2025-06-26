@@ -1,6 +1,7 @@
 package database_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,6 +10,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
 
 func TestDBInitialization(t *testing.T) {
@@ -41,9 +43,9 @@ func TestNewTestDBDefaultData(t *testing.T) {
 
 	queries := data.NewTestDB(t, t.TempDir())
 
-	user, err := queries.UserByEmail(t.Context(), data.AdminEmail)
+	user, err := queries.UserByEmail(t.Context(), pointer.Pointer(data.AdminEmail))
 	require.NoError(t, err)
-	assert.Equal(t, data.AdminEmail, user.Email)
+	assert.Equal(t, data.AdminEmail, *user.Email)
 
 	ticket, err := queries.Ticket(t.Context(), "test-ticket")
 	require.NoError(t, err)
@@ -67,8 +69,8 @@ func TestReadWrite(t *testing.T) {
 		y, err := queries.CreateType(t.Context(), sqlc.CreateTypeParams{
 			Singular: "Foo",
 			Plural:   "Foos",
-			Icon:     "Bug",
-			Schema:   "{}",
+			Icon:     pointer.Pointer("Bug"),
+			Schema:   json.RawMessage("{}"),
 		})
 		require.NoError(t, err)
 

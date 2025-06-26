@@ -42,7 +42,7 @@ export interface Sidebar {
    * @type {string}
    * @memberof Sidebar
    */
-  icon: string
+  icon?: string
   /**
    *
    * @type {number}
@@ -58,7 +58,6 @@ export function instanceOfSidebar(value: object): value is Sidebar {
   if (!('id' in value) || value['id'] === undefined) return false
   if (!('singular' in value) || value['singular'] === undefined) return false
   if (!('plural' in value) || value['plural'] === undefined) return false
-  if (!('icon' in value) || value['icon'] === undefined) return false
   if (!('count' in value) || value['count'] === undefined) return false
   return true
 }
@@ -75,7 +74,7 @@ export function SidebarFromJSONTyped(json: any, ignoreDiscriminator: boolean): S
     id: json['id'],
     singular: json['singular'],
     plural: json['plural'],
-    icon: json['icon'],
+    icon: json['icon'] == null ? undefined : json['icon'],
     count: json['count']
   }
 }

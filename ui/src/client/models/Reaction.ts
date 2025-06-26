@@ -57,16 +57,16 @@ export interface Reaction {
   triggerdata: object
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Reaction
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Reaction
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -99,8 +99,8 @@ export function ReactionFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     actiondata: json['actiondata'],
     trigger: json['trigger'],
     triggerdata: json['triggerdata'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -123,7 +123,7 @@ export function ReactionToJSONTyped(
     actiondata: value['actiondata'],
     trigger: value['trigger'],
     triggerdata: value['triggerdata'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

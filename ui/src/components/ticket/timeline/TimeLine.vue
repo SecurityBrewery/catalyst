@@ -16,7 +16,7 @@ defineProps<{
       <!-- item -->
       <p class="text-muted-foreground col-start-3 col-end-4 mr-auto text-left text-sm">
         <!-- heading -->
-        {{ format(new Date(comment.created), 'PPpp') }}
+        {{ format(comment.created, 'PPpp') }}
       </p>
       <div
         class="col-start-2 col-end-3 row-start-1 row-end-1 flex size-4 items-center justify-center rounded-full border border-current *:hidden"

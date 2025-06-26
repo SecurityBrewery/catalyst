@@ -5,16 +5,16 @@
 package sqlc
 
 import (
-	"database/sql"
+	"time"
 )
 
 type Comment struct {
-	Author  string `json:"author"`
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Message string `json:"message"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	ID      string    `json:"id"`
+	Ticket  string    `json:"ticket"`
+	Author  string    `json:"author"`
+	Message string    `json:"message"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 type DashboardCount struct {
@@ -23,28 +23,25 @@ type DashboardCount struct {
 }
 
 type Feature struct {
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Updated string `json:"updated"`
+	Key string `json:"key"`
 }
 
 type File struct {
-	Blob    string  `json:"blob"`
-	Created string  `json:"created"`
-	ID      string  `json:"id"`
-	Name    string  `json:"name"`
-	Size    float64 `json:"size"`
-	Ticket  string  `json:"ticket"`
-	Updated string  `json:"updated"`
+	ID      string    `json:"id"`
+	Ticket  string    `json:"ticket"`
+	Name    string    `json:"name"`
+	Blob    string    `json:"blob"`
+	Size    float64   `json:"size"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 type Group struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Permissions string `json:"permissions"`
-	Created     string `json:"created"`
-	Updated     string `json:"updated"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions string    `json:"permissions"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }
 
 type GroupEffectiveGroup struct {
@@ -64,114 +61,111 @@ type GroupInheritance struct {
 }
 
 type Link struct {
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
-	Url     string `json:"url"`
+	ID      string    `json:"id"`
+	Ticket  string    `json:"ticket"`
+	Name    string    `json:"name"`
+	Url     string    `json:"url"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 type Param struct {
-	ID      string      `json:"id"`
-	Key     string      `json:"key"`
-	Value   string      `json:"value"`
-	Created interface{} `json:"created"`
-	Updated interface{} `json:"updated"`
+	Key   string `json:"key"`
+	Value []byte `json:"value"`
 }
 
 type Reaction struct {
-	Action      string `json:"action"`
-	Actiondata  string `json:"actiondata"`
-	Created     string `json:"created"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Trigger     string `json:"trigger"`
-	Triggerdata string `json:"triggerdata"`
-	Updated     string `json:"updated"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Action      string    `json:"action"`
+	Actiondata  []byte    `json:"actiondata"`
+	Trigger     string    `json:"trigger"`
+	Triggerdata []byte    `json:"triggerdata"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }
 
 type Sidebar struct {
-	ID       string `json:"id"`
-	Singular string `json:"singular"`
-	Plural   string `json:"plural"`
-	Icon     string `json:"icon"`
-	Count    int64  `json:"count"`
+	ID       string  `json:"id"`
+	Singular string  `json:"singular"`
+	Plural   string  `json:"plural"`
+	Icon     *string `json:"icon"`
+	Count    int64   `json:"count"`
 }
 
 type Task struct {
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Open    bool   `json:"open"`
-	Owner   string `json:"owner"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	ID      string    `json:"id"`
+	Ticket  string    `json:"ticket"`
+	Owner   *string   `json:"owner"`
+	Name    string    `json:"name"`
+	Open    bool      `json:"open"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 type Ticket struct {
-	Created     string `json:"created"`
-	Description string `json:"description"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Open        bool   `json:"open"`
-	Owner       string `json:"owner"`
-	Resolution  string `json:"resolution"`
-	Schema      string `json:"schema"`
-	State       string `json:"state"`
-	Type        string `json:"type"`
-	Updated     string `json:"updated"`
+	ID          string    `json:"id"`
+	Type        string    `json:"type"`
+	Owner       *string   `json:"owner"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Open        bool      `json:"open"`
+	Resolution  *string   `json:"resolution"`
+	Schema      []byte    `json:"schema"`
+	State       []byte    `json:"state"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }
 
 type TicketSearch struct {
-	ID               string         `json:"id"`
-	Name             string         `json:"name"`
-	Created          string         `json:"created"`
-	Description      string         `json:"description"`
-	Open             bool           `json:"open"`
-	Type             string         `json:"type"`
-	State            string         `json:"state"`
-	OwnerName        sql.NullString `json:"owner_name"`
-	CommentMessages  string         `json:"comment_messages"`
-	FileNames        string         `json:"file_names"`
-	LinkNames        string         `json:"link_names"`
-	LinkUrls         string         `json:"link_urls"`
-	TaskNames        string         `json:"task_names"`
-	TimelineMessages string         `json:"timeline_messages"`
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	Created          time.Time `json:"created"`
+	Description      string    `json:"description"`
+	Open             bool      `json:"open"`
+	Type             string    `json:"type"`
+	State            []byte    `json:"state"`
+	OwnerName        *string   `json:"owner_name"`
+	CommentMessages  string    `json:"comment_messages"`
+	FileNames        string    `json:"file_names"`
+	LinkNames        string    `json:"link_names"`
+	LinkUrls         string    `json:"link_urls"`
+	TaskNames        string    `json:"task_names"`
+	TimelineMessages string    `json:"timeline_messages"`
 }
 
 type Timeline struct {
-	Created string `json:"created"`
-	ID      string `json:"id"`
-	Message string `json:"message"`
-	Ticket  string `json:"ticket"`
-	Time    string `json:"time"`
-	Updated string `json:"updated"`
+	ID      string    `json:"id"`
+	Ticket  string    `json:"ticket"`
+	Message string    `json:"message"`
+	Time    time.Time `json:"time"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 type Type struct {
-	Created  string `json:"created"`
-	Icon     string `json:"icon"`
-	ID       string `json:"id"`
-	Plural   string `json:"plural"`
-	Schema   string `json:"schema"`
-	Singular string `json:"singular"`
-	Updated  string `json:"updated"`
+	ID       string    `json:"id"`
+	Icon     *string   `json:"icon"`
+	Singular string    `json:"singular"`
+	Plural   string    `json:"plural"`
+	Schema   []byte    `json:"schema"`
+	Created  time.Time `json:"created"`
+	Updated  time.Time `json:"updated"`
 }
 
 type User struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	ID                     string `json:"id"`
-	Lastresetsentat        string `json:"lastresetsentat"`
-	Lastverificationsentat string `json:"lastverificationsentat"`
-	Name                   string `json:"name"`
-	Passwordhash           string `json:"passwordhash"`
-	Tokenkey               string `json:"tokenkey"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
+	ID                     string     `json:"id"`
+	Username               string     `json:"username"`
+	Passwordhash           string     `json:"passwordhash"`
+	Tokenkey               string     `json:"tokenkey"`
+	Active                 bool       `json:"active"`
+	Name                   *string    `json:"name"`
+	Email                  *string    `json:"email"`
+	Avatar                 *string    `json:"avatar"`
+	Lastresetsentat        *time.Time `json:"lastresetsentat"`
+	Lastverificationsentat *time.Time `json:"lastverificationsentat"`
+	Created                time.Time  `json:"created"`
+	Updated                time.Time  `json:"updated"`
 }
 
 type UserEffectiveGroup struct {
@@ -191,10 +185,10 @@ type UserGroup struct {
 }
 
 type Webhook struct {
-	Collection  string `json:"collection"`
-	Created     string `json:"created"`
-	Destination string `json:"destination"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Updated     string `json:"updated"`
+	ID          string    `json:"id"`
+	Collection  string    `json:"collection"`
+	Destination string    `json:"destination"`
+	Name        string    `json:"name"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }

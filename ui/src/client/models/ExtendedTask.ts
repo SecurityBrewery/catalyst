@@ -48,13 +48,13 @@ export interface ExtendedTask {
    * @type {string}
    * @memberof ExtendedTask
    */
-  owner: string
+  owner?: string
   /**
    *
    * @type {string}
    * @memberof ExtendedTask
    */
-  ownerName: string
+  ownerName?: string
   /**
    *
    * @type {string}
@@ -69,16 +69,16 @@ export interface ExtendedTask {
   ticketType: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedTask
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedTask
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -89,8 +89,6 @@ export function instanceOfExtendedTask(value: object): value is ExtendedTask {
   if (!('ticket' in value) || value['ticket'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
-  if (!('ownerName' in value) || value['ownerName'] === undefined) return false
   if (!('ticketName' in value) || value['ticketName'] === undefined) return false
   if (!('ticketType' in value) || value['ticketType'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
@@ -111,12 +109,12 @@ export function ExtendedTaskFromJSONTyped(json: any, ignoreDiscriminator: boolea
     ticket: json['ticket'],
     name: json['name'],
     open: json['open'],
-    owner: json['owner'],
-    ownerName: json['owner_name'],
+    owner: json['owner'] == null ? undefined : json['owner'],
+    ownerName: json['owner_name'] == null ? undefined : json['owner_name'],
     ticketName: json['ticket_name'],
     ticketType: json['ticket_type'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -141,7 +139,7 @@ export function ExtendedTaskToJSONTyped(
     owner_name: value['ownerName'],
     ticket_name: value['ticketName'],
     ticket_type: value['ticketType'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

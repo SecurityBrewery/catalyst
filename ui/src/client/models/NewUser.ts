@@ -30,25 +30,25 @@ export interface NewUser {
    * @type {string}
    * @memberof NewUser
    */
-  avatar: string
+  avatar?: string
   /**
    *
    * @type {string}
    * @memberof NewUser
    */
-  email: string
+  email?: string
   /**
    *
    * @type {string}
    * @memberof NewUser
    */
-  name: string
+  name?: string
   /**
    *
    * @type {boolean}
    * @memberof NewUser
    */
-  verified: boolean
+  active: boolean
 }
 
 /**
@@ -56,10 +56,7 @@ export interface NewUser {
  */
 export function instanceOfNewUser(value: object): value is NewUser {
   if (!('username' in value) || value['username'] === undefined) return false
-  if (!('avatar' in value) || value['avatar'] === undefined) return false
-  if (!('email' in value) || value['email'] === undefined) return false
-  if (!('name' in value) || value['name'] === undefined) return false
-  if (!('verified' in value) || value['verified'] === undefined) return false
+  if (!('active' in value) || value['active'] === undefined) return false
   return true
 }
 
@@ -73,10 +70,10 @@ export function NewUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
   }
   return {
     username: json['username'],
-    avatar: json['avatar'],
-    email: json['email'],
-    name: json['name'],
-    verified: json['verified']
+    avatar: json['avatar'] == null ? undefined : json['avatar'],
+    email: json['email'] == null ? undefined : json['email'],
+    name: json['name'] == null ? undefined : json['name'],
+    active: json['active']
   }
 }
 
@@ -97,6 +94,6 @@ export function NewUserToJSONTyped(
     avatar: value['avatar'],
     email: value['email'],
     name: value['name'],
-    verified: value['verified']
+    active: value['active']
   }
 }

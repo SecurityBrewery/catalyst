@@ -27,7 +27,7 @@ func Test_marshal(t *testing.T) {
 func Test_unmarshal(t *testing.T) {
 	t.Parallel()
 
-	jsonStr := `{"c":3}`
+	jsonStr := json.RawMessage(`{"c":3}`)
 
 	m := unmarshal(jsonStr)
 
@@ -35,5 +35,5 @@ func Test_unmarshal(t *testing.T) {
 	assert.True(t, ok, "key 'c' not found or not float64")
 	assert.InEpsilon(t, float64(3), v, 0, "unexpected unmarshal result")
 
-	assert.Nil(t, unmarshal("invalid"), "expected nil for invalid json")
+	assert.Nil(t, unmarshal(json.RawMessage("invalid")), "expected nil for invalid json")
 }

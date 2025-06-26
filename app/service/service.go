@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/pointer"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 	"github.com/SecurityBrewery/catalyst/app/upload"
 )
@@ -60,7 +60,7 @@ func (s *Service) ListComments(ctx context.Context, request openapi.ListComments
 			Message:    comment.Message,
 			Ticket:     comment.Ticket,
 			Updated:    comment.Updated,
-			AuthorName: comment.AuthorName.String,
+			AuthorName: pointer.Dereference(comment.AuthorName),
 		})
 	}
 
@@ -126,7 +126,7 @@ func (s *Service) GetComment(ctx context.Context, request openapi.GetCommentRequ
 
 	response := openapi.ExtendedComment{
 		Author:     comment.Author,
-		AuthorName: comment.AuthorName.String,
+		AuthorName: pointer.Dereference(comment.AuthorName),
 		Created:    comment.Created,
 		Id:         comment.ID,
 		Message:    comment.Message,
@@ -143,7 +143,7 @@ func (s *Service) UpdateComment(ctx context.Context, request openapi.UpdateComme
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.CommentsTable.ID, request.Body)
 
 	comment, err := s.queries.UpdateComment(ctx, sqlc.UpdateCommentParams{
-		Message: toNullString(request.Body.Message),
+		Message: request.Body.Message,
 		ID:      request.Id,
 	})
 	if err != nil {
@@ -404,8 +404,8 @@ func (s *Service) UpdateLink(ctx context.Context, request openapi.UpdateLinkRequ
 
 	link, err := s.queries.UpdateLink(ctx, sqlc.UpdateLinkParams{
 		ID:   request.Id,
-		Name: toNullString(request.Body.Name),
-		Url:  toNullString(request.Body.Url),
+		Name: request.Body.Name,
+		Url:  request.Body.Url,
 	})
 	if err != nil {
 		return nil, err
@@ -539,9 +539,9 @@ func (s *Service) UpdateReaction(ctx context.Context, request openapi.UpdateReac
 
 	reaction, err := s.queries.UpdateReaction(ctx, sqlc.UpdateReactionParams{
 		ID:          request.Id,
-		Name:        toNullString(request.Body.Name),
-		Action:      toNullString(request.Body.Action),
-		Trigger:     toNullString(request.Body.Trigger),
+		Name:        request.Body.Name,
+		Action:      request.Body.Action,
+		Trigger:     request.Body.Trigger,
 		Actiondata:  marshalPointer(request.Body.Actiondata),
 		Triggerdata: marshalPointer(request.Body.Triggerdata),
 	})
@@ -613,9 +613,9 @@ func (s *Service) ListTasks(ctx context.Context, request openapi.ListTasksReques
 			Open:       task.Open,
 			Owner:      task.Owner,
 			Ticket:     task.Ticket,
-			OwnerName:  task.OwnerName.String,
-			TicketName: task.TicketName.String,
-			TicketType: task.TicketType.String,
+			OwnerName:  task.OwnerName,
+			TicketName: pointer.Dereference(task.TicketName),
+			TicketType: pointer.Dereference(task.TicketType),
 		})
 	}
 
@@ -689,9 +689,9 @@ func (s *Service) GetTask(ctx context.Context, request openapi.GetTaskRequestObj
 		Open:       task.Open,
 		Owner:      task.Owner,
 		Ticket:     task.Ticket,
-		OwnerName:  task.OwnerName.String,
-		TicketName: task.TicketName.String,
-		TicketType: task.TicketType.String,
+		OwnerName:  task.OwnerName,
+		TicketName: pointer.Dereference(task.TicketName),
+		TicketType: pointer.Dereference(task.TicketType),
 	}
 
 	s.hooks.OnRecordViewRequest.Publish(ctx, permission.TasksTable.ID, response)
@@ -704,9 +704,9 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 
 	task, err := s.queries.UpdateTask(ctx, sqlc.UpdateTaskParams{
 		ID:    request.Id,
-		Name:  toNullString(request.Body.Name),
-		Open:  toNullBool(request.Body.Open),
-		Owner: toNullString(request.Body.Owner),
+		Name:  request.Body.Name,
+		Open:  request.Body.Open,
+		Owner: request.Body.Owner,
 	})
 	if err != nil {
 		return nil, err
@@ -729,9 +729,9 @@ func (s *Service) UpdateTask(ctx context.Context, request openapi.UpdateTaskRequ
 
 func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicketsRequestObject) (openapi.SearchTicketsResponseObject, error) {
 	tickets, err := s.queries.SearchTickets(ctx, sqlc.SearchTicketsParams{
-		Query:  toNullString(request.Params.Query),
-		Type:   toNullString(request.Params.Type),
-		Open:   toNullBool(request.Params.Open),
+		Query:  request.Params.Query,
+		Type:   request.Params.Type,
+		Open:   request.Params.Open,
 		Offset: toInt64(request.Params.Offset, defaultOffset),
 		Limit:  toInt64(request.Params.Limit, defaultLimit),
 	})
@@ -748,7 +748,7 @@ func (s *Service) SearchTickets(ctx context.Context, request openapi.SearchTicke
 			Id:          ticket.ID,
 			Name:        ticket.Name,
 			Open:        ticket.Open,
-			OwnerName:   ticket.OwnerName.String,
+			OwnerName:   pointer.Dereference(ticket.OwnerName),
 			State:       unmarshal(ticket.State),
 			Type:        ticket.Type,
 		})
@@ -787,13 +787,13 @@ func (s *Service) ListTickets(ctx context.Context, request openapi.ListTicketsRe
 			Name:         ticket.Name,
 			Open:         ticket.Open,
 			Owner:        ticket.Owner,
-			OwnerName:    ticket.OwnerName.String,
+			OwnerName:    ticket.OwnerName,
 			Resolution:   ticket.Resolution,
 			Type:         ticket.Type,
 			Schema:       unmarshal(ticket.Schema),
 			State:        unmarshal(ticket.State),
-			TypePlural:   ticket.TypePlural.String,
-			TypeSingular: ticket.TypeSingular.String,
+			TypePlural:   pointer.Dereference(ticket.TypePlural),
+			TypeSingular: pointer.Dereference(ticket.TypeSingular),
 			Updated:      ticket.Updated,
 		})
 	}
@@ -874,13 +874,13 @@ func (s *Service) GetTicket(ctx context.Context, request openapi.GetTicketReques
 		Name:         ticket.Name,
 		Open:         ticket.Open,
 		Owner:        ticket.Owner,
-		OwnerName:    ticket.OwnerName.String,
+		OwnerName:    ticket.OwnerName,
 		Resolution:   ticket.Resolution,
 		Schema:       unmarshal(ticket.Schema),
 		State:        unmarshal(ticket.State),
 		Type:         ticket.Type,
-		TypePlural:   ticket.TypePlural.String,
-		TypeSingular: ticket.TypeSingular.String,
+		TypePlural:   pointer.Dereference(ticket.TypePlural),
+		TypeSingular: pointer.Dereference(ticket.TypeSingular),
 		Updated:      ticket.Updated,
 	}
 
@@ -893,14 +893,14 @@ func (s *Service) UpdateTicket(ctx context.Context, request openapi.UpdateTicket
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.TicketsTable.ID, request.Body)
 
 	ticket, err := s.queries.UpdateTicket(ctx, sqlc.UpdateTicketParams{
-		Name:        toNullString(request.Body.Name),
-		Description: toNullString(request.Body.Description),
-		Open:        toNullBool(request.Body.Open),
-		Owner:       toNullString(request.Body.Owner),
-		Resolution:  toNullString(request.Body.Resolution),
+		Name:        request.Body.Name,
+		Description: request.Body.Description,
+		Open:        request.Body.Open,
+		Owner:       request.Body.Owner,
+		Resolution:  request.Body.Resolution,
 		Schema:      marshalPointer(request.Body.Schema),
 		State:       marshalPointer(request.Body.State),
-		Type:        toNullString(request.Body.Type),
+		Type:        request.Body.Type,
 		ID:          request.Id,
 	})
 	if err != nil {
@@ -1027,8 +1027,8 @@ func (s *Service) UpdateTimeline(ctx context.Context, request openapi.UpdateTime
 
 	timeline, err := s.queries.UpdateTimeline(ctx, sqlc.UpdateTimelineParams{
 		ID:      request.Id,
-		Message: toNullString(request.Body.Message),
-		Time:    toNullString(request.Body.Time),
+		Message: request.Body.Message,
+		Time:    request.Body.Time,
 	})
 	if err != nil {
 		return nil, err
@@ -1151,9 +1151,9 @@ func (s *Service) UpdateType(ctx context.Context, request openapi.UpdateTypeRequ
 
 	t, err := s.queries.UpdateType(ctx, sqlc.UpdateTypeParams{
 		ID:       request.Id,
-		Icon:     toNullString(request.Body.Icon),
-		Plural:   toNullString(request.Body.Plural),
-		Singular: toNullString(request.Body.Singular),
+		Icon:     request.Body.Icon,
+		Plural:   request.Body.Plural,
+		Singular: request.Body.Singular,
 		Schema:   marshalPointer(request.Body.Schema),
 	})
 	if err != nil {
@@ -1196,7 +1196,7 @@ func (s *Service) ListUsers(ctx context.Context, request openapi.ListUsersReques
 			Name:                   user.Name,
 			Updated:                user.Updated,
 			Username:               user.Username,
-			Verified:               user.Verified,
+			Active:                 user.Active,
 		})
 	}
 
@@ -1230,7 +1230,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		PasswordHash: "",
 		TokenKey:     tokenKey,
 		Avatar:       request.Body.Avatar,
-		Verified:     request.Body.Verified,
+		Active:       request.Body.Active,
 	})
 	if err != nil {
 		return nil, err
@@ -1246,7 +1246,7 @@ func (s *Service) CreateUser(ctx context.Context, request openapi.CreateUserRequ
 		Name:                   user.Name,
 		Updated:                user.Updated,
 		Username:               user.Username,
-		Verified:               user.Verified,
+		Active:                 user.Active,
 	}
 
 	s.hooks.OnRecordAfterCreateRequest.Publish(ctx, permission.UsersTable.ID, response)
@@ -1283,7 +1283,7 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 		Name:                   user.Name,
 		Updated:                user.Updated,
 		Username:               user.Username,
-		Verified:               user.Verified,
+		Active:                 user.Active,
 	}
 
 	s.hooks.OnRecordViewRequest.Publish(ctx, permission.UsersTable.ID, response)
@@ -1294,7 +1294,7 @@ func (s *Service) GetUser(ctx context.Context, request openapi.GetUserRequestObj
 func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequestObject) (openapi.UpdateUserResponseObject, error) {
 	s.hooks.OnRecordBeforeUpdateRequest.Publish(ctx, permission.UsersTable.ID, request.Body)
 
-	var passwordHash, tokenHash sql.NullString
+	var passwordHash, tokenHash *string
 
 	switch {
 	case request.Body.Password == nil && request.Body.PasswordConfirm == nil:
@@ -1308,20 +1308,20 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 			return nil, fmt.Errorf("failed to hash password: %w", err)
 		}
 
-		passwordHash = sql.NullString{String: passwordHashS, Valid: true}
-		tokenHash = sql.NullString{String: tokenHashS, Valid: true}
+		passwordHash = &passwordHashS
+		tokenHash = &tokenHashS
 	default:
 		return nil, errors.New("password and password confirm must be provided together")
 	}
 
 	user, err := s.queries.UpdateUser(ctx, sqlc.UpdateUserParams{
-		Name:         toNullString(request.Body.Name),
-		Email:        toNullString(request.Body.Email),
-		Username:     toNullString(request.Body.Username),
+		Name:         request.Body.Name,
+		Email:        request.Body.Email,
+		Username:     request.Body.Username,
 		PasswordHash: passwordHash,
 		TokenKey:     tokenHash,
-		Avatar:       toNullString(request.Body.Avatar),
-		Verified:     toNullBool(request.Body.Verified),
+		Avatar:       request.Body.Avatar,
+		Active:       request.Body.Active,
 		ID:           request.Id,
 	})
 	if err != nil {
@@ -1338,7 +1338,7 @@ func (s *Service) UpdateUser(ctx context.Context, request openapi.UpdateUserRequ
 		Name:                   user.Name,
 		Updated:                user.Updated,
 		Username:               user.Username,
-		Verified:               user.Verified,
+		Active:                 user.Active,
 	}
 
 	s.hooks.OnRecordAfterUpdateRequest.Publish(ctx, "users", response)
@@ -1449,14 +1449,15 @@ func (s *Service) UpdateGroup(ctx context.Context, request openapi.UpdateGroupRe
 		return nil, errors.New("cannot update the admin group")
 	}
 
-	var permissions sql.NullString
+	var permissions *string
 
 	if request.Body.Permissions != nil {
-		permissions = sql.NullString{String: permission.ToJSONArray(ctx, *request.Body.Permissions), Valid: true}
+		p := permission.ToJSONArray(ctx, *request.Body.Permissions)
+		permissions = &p
 	}
 
 	group, err := s.queries.UpdateGroup(ctx, sqlc.UpdateGroupParams{
-		Name:        toNullString(request.Body.Name),
+		Name:        request.Body.Name,
 		Permissions: permissions,
 		ID:          request.Id,
 	})
@@ -1593,7 +1594,7 @@ func (s *Service) ListGroupUsers(ctx context.Context, request openapi.ListGroupU
 			Name:                   user.Name,
 			Updated:                user.Updated,
 			Username:               user.Username,
-			Verified:               user.Verified,
+			Active:                 user.Active,
 			Type:                   user.GroupType,
 		})
 	}
@@ -1756,9 +1757,9 @@ func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebho
 
 	webhook, err := s.queries.UpdateWebhook(ctx, sqlc.UpdateWebhookParams{
 		ID:          request.Id,
-		Name:        toNullString(request.Body.Name),
-		Destination: toNullString(request.Body.Destination),
-		Collection:  toNullString(request.Body.Collection),
+		Name:        request.Body.Name,
+		Destination: request.Body.Destination,
+		Collection:  request.Body.Collection,
 	})
 	if err != nil {
 		return nil, err
@@ -1790,7 +1791,7 @@ func (s *Service) GetConfig(ctx context.Context, _ openapi.GetConfigRequestObjec
 	}
 
 	for _, feature := range features {
-		flags = append(flags, feature.Name)
+		flags = append(flags, feature.Key)
 	}
 
 	tables := []openapi.Table{}
@@ -1885,14 +1886,6 @@ func toString(value *string, defaultValue string) string {
 	return *value
 }
 
-func toNullString(value *string) sql.NullString {
-	if value == nil {
-		return sql.NullString{}
-	}
-
-	return sql.NullString{String: *value, Valid: true}
-}
-
 func toInt64(value *int, defaultValue int64) int64 {
 	if value == nil {
 		return defaultValue
@@ -1901,31 +1894,23 @@ func toInt64(value *int, defaultValue int64) int64 {
 	return int64(*value)
 }
 
-func toNullBool(value *bool) sql.NullBool {
-	if value == nil {
-		return sql.NullBool{}
-	}
-
-	return sql.NullBool{Bool: *value, Valid: true}
-}
-
-func marshal(state map[string]any) string {
+func marshal(state map[string]any) json.RawMessage {
 	b, _ := json.Marshal(state) //nolint:errchkjson
 
-	return string(b)
+	return b
 }
 
-func marshalPointer(state *map[string]any) string {
+func marshalPointer(state *map[string]any) json.RawMessage {
 	if state == nil {
-		return "{}"
+		return json.RawMessage("{}")
 	}
 
 	b, _ := json.Marshal(*state) //nolint:errchkjson
 
-	return string(b)
+	return b
 }
 
-func unmarshal(data string) map[string]any {
+func unmarshal(data json.RawMessage) map[string]any {
 	var m map[string]any
 
 	if err := json.Unmarshal([]byte(data), &m); err != nil {

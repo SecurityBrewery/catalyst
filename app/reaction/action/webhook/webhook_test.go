@@ -70,7 +70,7 @@ func TestWebhook_Run(t *testing.T) {
 				Headers: tt.fields.Headers,
 				URL:     tt.fields.URL,
 			}
-			got, err := a.Run(t.Context(), tt.args.payload)
+			got, err := a.Run(t.Context(), json.RawMessage(tt.args.payload))
 			tt.wantErr(t, err)
 
 			want, err := json.Marshal(tt.want)

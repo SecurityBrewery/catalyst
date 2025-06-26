@@ -1,10 +1,10 @@
 package webhook
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
 )
 
 type Webhook struct {
@@ -12,8 +12,8 @@ type Webhook struct {
 	URL     string            `json:"url"`
 }
 
-func (a *Webhook) Run(ctx context.Context, payload string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.URL, strings.NewReader(payload))
+func (a *Webhook) Run(ctx context.Context, payload json.RawMessage) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.URL, bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}

@@ -35,7 +35,7 @@ func TestService_createResetToken(t *testing.T) {
 				verifyUser: &sqlc.User{
 					ID:       "testuser",
 					Tokenkey: "testtoken",
-					Updated:  "2025-06-02 19:18:06.292Z",
+					Updated:  mustParse(t, "2006-01-02 15:04:05Z", "2025-06-02 19:18:06.292Z"),
 				},
 			},
 			wantErr: assert.NoError,
@@ -49,7 +49,7 @@ func TestService_createResetToken(t *testing.T) {
 				verifyUser: &sqlc.User{
 					ID:       "testuser",
 					Tokenkey: "testtoken",
-					Updated:  "2025-06-02 19:18:06.292Z",
+					Updated:  mustParse(t, "2006-01-02 15:04:05Z", "2025-06-02 19:18:06.292Z"),
 				},
 			},
 			wantErr: assert.Error,
@@ -63,7 +63,7 @@ func TestService_createResetToken(t *testing.T) {
 				verifyUser: &sqlc.User{
 					ID:       "invaliduser",
 					Tokenkey: "invalidtoken",
-					Updated:  "2025-06-02 19:18:06.292Z",
+					Updated:  mustParse(t, "2006-01-02 15:04:05Z", "2025-06-02 19:18:06.292Z"),
 				},
 			},
 			wantErr: assert.Error,
@@ -88,4 +88,13 @@ func TestService_createResetToken(t *testing.T) {
 			tt.wantErr(t, err, "verifyResetToken()")
 		})
 	}
+}
+
+func mustParse(t *testing.T, layout, value string) time.Time {
+	t.Helper()
+
+	parsed, err := time.Parse(layout, value)
+	require.NoError(t, err, "mustParse()")
+
+	return parsed
 }

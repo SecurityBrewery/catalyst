@@ -86,7 +86,7 @@ const save = () => editCommentMutation.mutate()
           {{ comment.authorName }}
         </div>
         <div class="text-muted-foreground text-xs">
-          {{ format(new Date(comment.created), 'PPpp') }}
+          {{ format(comment.created, 'PPpp') }}
         </div>
       </div>
       <Dialog v-model:open="isOpen">

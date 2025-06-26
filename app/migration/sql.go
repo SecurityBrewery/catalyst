@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	sqlmigrations "github.com/SecurityBrewery/catalyst/app/database/migrations"
 )
@@ -39,9 +40,13 @@ func (m sqlMigration) name() string {
 }
 
 func (m sqlMigration) up(ctx context.Context, db *sql.DB) error {
-	_, err := db.ExecContext(ctx, m.upSQL)
-	if err != nil {
-		return fmt.Errorf("migration %s up failed: %w", m.sqlName, err)
+	parts := strings.Split(m.upSQL, ";")
+
+	for _, part := range parts {
+		_, err := db.ExecContext(ctx, part)
+		if err != nil {
+			return fmt.Errorf("migration %s up failed: %w", part, err)
+		}
 	}
 
 	return nil

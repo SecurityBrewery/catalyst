@@ -103,8 +103,8 @@ func (u *Uploader) Routes() (http.Handler, error) {
 				Blob:    path.Base(hook.Upload.Storage["Path"]),
 				Size:    float64(hook.Upload.Size),
 				Ticket:  hook.HTTPRequest.Header.Get("X-Ticket-ID"),
-				Created: time.Now().UTC().Format(time.RFC3339),
-				Updated: time.Now().UTC().Format(time.RFC3339),
+				Created: time.Now().UTC(),
+				Updated: time.Now().UTC(),
 			})
 
 			return tusd.HTTPResponse{}, err

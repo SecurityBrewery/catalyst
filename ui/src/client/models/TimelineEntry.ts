@@ -39,22 +39,22 @@ export interface TimelineEntry {
   message: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof TimelineEntry
    */
-  time: string
+  time: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof TimelineEntry
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof TimelineEntry
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -82,9 +82,9 @@ export function TimelineEntryFromJSONTyped(json: any, ignoreDiscriminator: boole
     id: json['id'],
     ticket: json['ticket'],
     message: json['message'],
-    time: json['time'],
-    created: json['created'],
-    updated: json['updated']
+    time: new Date(json['time']),
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -104,8 +104,8 @@ export function TimelineEntryToJSONTyped(
     id: value['id'],
     ticket: value['ticket'],
     message: value['message'],
-    time: value['time'],
-    created: value['created'],
-    updated: value['updated']
+    time: value['time'].toISOString(),
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
 
 func createTestUser(ctx context.Context, queries *sqlc.Queries) (sqlc.User, error) {
@@ -18,12 +19,12 @@ func createTestUser(ctx context.Context, queries *sqlc.Queries) (sqlc.User, erro
 	return queries.InsertUser(ctx, sqlc.InsertUserParams{
 		ID:           "u_test",
 		Username:     "u_test",
-		Name:         "Test User",
-		Email:        "user@catalyst-soar.com",
-		Verified:     true,
+		Name:         pointer.Pointer("Test User"),
+		Email:        pointer.Pointer("user@catalyst-soar.com"),
+		Active:       true,
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
-		Created:      dateTime(time.Now()),
-		Updated:      dateTime(time.Now()),
+		Created:      time.Now(),
+		Updated:      time.Now(),
 	})
 }

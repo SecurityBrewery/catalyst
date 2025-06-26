@@ -48,13 +48,13 @@ export interface NewTicket {
    * @type {string}
    * @memberof NewTicket
    */
-  owner: string
+  owner?: string
   /**
    *
    * @type {string}
    * @memberof NewTicket
    */
-  resolution: string
+  resolution?: string
   /**
    *
    * @type {object}
@@ -77,8 +77,6 @@ export function instanceOfNewTicket(value: object): value is NewTicket {
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('description' in value) || value['description'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
-  if (!('resolution' in value) || value['resolution'] === undefined) return false
   if (!('schema' in value) || value['schema'] === undefined) return false
   if (!('state' in value) || value['state'] === undefined) return false
   return true
@@ -97,8 +95,8 @@ export function NewTicketFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     name: json['name'],
     description: json['description'],
     open: json['open'],
-    owner: json['owner'],
-    resolution: json['resolution'],
+    owner: json['owner'] == null ? undefined : json['owner'],
+    resolution: json['resolution'] == null ? undefined : json['resolution'],
     schema: json['schema'],
     state: json['state']
   }

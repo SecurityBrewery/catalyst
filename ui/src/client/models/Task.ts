@@ -48,19 +48,19 @@ export interface Task {
    * @type {string}
    * @memberof Task
    */
-  owner: string
+  owner?: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Task
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Task
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -71,7 +71,6 @@ export function instanceOfTask(value: object): value is Task {
   if (!('ticket' in value) || value['ticket'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
   if (!('updated' in value) || value['updated'] === undefined) return false
   return true
@@ -90,9 +89,9 @@ export function TaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): Task
     ticket: json['ticket'],
     name: json['name'],
     open: json['open'],
-    owner: json['owner'],
-    created: json['created'],
-    updated: json['updated']
+    owner: json['owner'] == null ? undefined : json['owner'],
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -111,7 +110,7 @@ export function TaskToJSONTyped(value?: Task | null, ignoreDiscriminator: boolea
     name: value['name'],
     open: value['open'],
     owner: value['owner'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

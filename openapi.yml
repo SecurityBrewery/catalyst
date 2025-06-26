@@ -654,8 +654,8 @@ components:
         ticket: { "type": "string" }
         author: { "type": "string" }
         message: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "ticket", "author", "message", "created", "updated" ]
     ExtendedComment:
       type: object
@@ -665,8 +665,8 @@ components:
         author: { "type": "string" }
         message: { "type": "string" }
         author_name: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "ticket", "author", "message", "author_name", "created", "updated" ]
     NewFeature:
       type: object
@@ -678,8 +678,8 @@ components:
       properties:
         id: { "type": "string" }
         name: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "created", "updated" ]
     NewFile:
       type: object
@@ -700,8 +700,8 @@ components:
         ticket: { "type": "string" }
         name: { "type": "string" }
         size: { "type": "number", "format": "double" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "ticket", "name", "size", "created", "updated" ]
     NewLink:
       type: object
@@ -722,8 +722,8 @@ components:
         ticket: { "type": "string" }
         name: { "type": "string" }
         url: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "ticket", "name", "url", "created", "updated" ]
     NewReaction:
       type: object
@@ -751,8 +751,8 @@ components:
         actiondata: { "type": "object" }
         trigger: { "type": "string" }
         triggerdata: { "type": "object" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "action", "actiondata", "trigger", "triggerdata", "created", "updated" ]
     NewTask:
       type: object
@@ -761,7 +761,7 @@ components:
         name: { "type": "string" }
         open: { "type": "boolean" }
         owner: { "type": "string" }
-      required: [ "ticket", "name", "open", "owner" ]
+      required: [ "ticket", "name", "open" ]
     TaskUpdate:
       type: object
       properties:
@@ -776,9 +776,9 @@ components:
         name: { "type": "string" }
         open: { "type": "boolean" }
         owner: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "ticket", "name", "open", "owner", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "open", "created", "updated" ]
     ExtendedTask:
       type: object
       properties:
@@ -790,9 +790,9 @@ components:
         owner_name: { "type": "string" }
         ticket_name: { "type": "string" }
         ticket_type: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "ticket", "name", "open", "owner", "owner_name", "ticket_name", "ticket_type", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "open", "ticket_name", "ticket_type", "created", "updated" ]
     NewTicket:
       type: object
       properties:
@@ -804,7 +804,7 @@ components:
         resolution: { "type": "string" }
         schema: { "type": "object" }
         state: { "type": "object" }
-      required: [ "type", "name", "description", "open", "owner", "resolution", "schema", "state" ]
+      required: [ "type", "name", "description", "open", "schema", "state" ]
     TicketUpdate:
       type: object
       properties:
@@ -828,9 +828,9 @@ components:
         resolution: { "type": "string" }
         schema: { "type": "object" }
         state: { "type": "object" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "type", "name", "description", "open", "owner", "resolution", "schema", "state", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "type", "name", "description", "open", "schema", "state", "created", "updated" ]
     ExtendedTicket:
       type: object
       properties:
@@ -846,30 +846,30 @@ components:
         owner_name: { "type": "string" }
         type_singular: { "type": "string" }
         type_plural: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "type", "name", "description", "open", "owner", "resolution", "schema", "state", "owner_name", "type_singular", "type_plural", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "type", "name", "description", "open", "schema", "state", "type_singular", "type_plural", "created", "updated" ]
     NewTimelineEntry:
       type: object
       properties:
         ticket: { "type": "string" }
         message: { "type": "string" }
-        time: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
       required: [ "ticket", "message", "time" ]
     TimelineEntryUpdate:
       type: object
       properties:
         message: { "type": "string" }
-        time: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
     TimelineEntry:
       type: object
       properties:
         id: { "type": "string" }
         ticket: { "type": "string" }
         message: { "type": "string" }
-        time: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "ticket", "message", "time", "created", "updated" ]
     NewType:
       type: object
@@ -878,7 +878,7 @@ components:
         plural: { "type": "string" }
         schema: { "type": "object" }
         singular: { "type": "string" }
-      required: [ "singular", "plural", "schema", "icon" ]
+      required: [ "singular", "plural", "schema" ]
     TypeUpdate:
       type: object
       properties:
@@ -894,9 +894,9 @@ components:
         plural: { "type": "string" }
         schema: { "type": "object" }
         singular: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "icon", "plural", "schema", "singular", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "plural", "schema", "singular", "created", "updated" ]
     NewUser:
       type: object
       properties:
@@ -904,8 +904,8 @@ components:
         avatar: { "type": "string" }
         email: { "type": "string" }
         name: { "type": "string" }
-        verified: { "type": "boolean" }
-      required: [ "username", "avatar", "email", "name", "verified" ]
+        active: { "type": "boolean" }
+      required: [ "username", "active" ]
     UserUpdate:
       type: object
       properties:
@@ -915,7 +915,7 @@ components:
         name: { "type": "string" }
         password: { "type": "string" }
         passwordConfirm: { "type": "string" }
-        verified: { "type": "boolean" }
+        active: { "type": "boolean" }
     User:
       type: object
       properties:
@@ -923,14 +923,13 @@ components:
         username: { "type": "string" }
         avatar: { "type": "string" }
         email: { "type": "string" }
-        lastLoginAlertSentAt: { "type": "string" }
-        lastResetSentAt: { "type": "string" }
-        lastVerificationSentAt: { "type": "string" }
+        lastResetSentAt: { "type": "string", "format": "date-time" }
+        lastVerificationSentAt: { "type": "string", "format": "date-time" }
         name: { "type": "string" }
-        verified: { "type": "boolean" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "username", "avatar", "email", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "created", "updated" ]
+        active: { "type": "boolean" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "username", "active", "created", "updated" ]
     NewGroup:
       type: object
       properties:
@@ -948,8 +947,8 @@ components:
         id: { "type": "string" }
         name: { "type": "string" }
         permissions: { "type": "array", "items": { "type": "string" } }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "permissions", "created", "updated" ]
     UserGroup:
       type: object
@@ -958,8 +957,8 @@ components:
         name: { "type": "string" }
         permissions: { "type": "array", "items": { "type": "string" } }
         type: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "permissions", "type", "created", "updated" ]
     GroupUser:
       type: object
@@ -968,16 +967,14 @@ components:
         username: { "type": "string" }
         avatar: { "type": "string" }
         email: { "type": "string" }
-        emailVisibility: { "type": "boolean" }
-        lastLoginAlertSentAt: { "type": "string" }
-        lastResetSentAt: { "type": "string" }
-        lastVerificationSentAt: { "type": "string" }
+        lastResetSentAt: { "type": "string", "format": "date-time" }
+        lastVerificationSentAt: { "type": "string", "format": "date-time" }
         name: { "type": "string" }
-        verified: { "type": "boolean" }
+        active: { "type": "boolean" }
         type: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
-      required: [ "id", "username", "avatar", "email", "emailVisibility", "lastLoginAlertSentAt", "lastResetSentAt", "lastVerificationSentAt", "name", "verified", "type", "created", "updated" ]
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "username", "active", "type", "created", "updated" ]
     GroupRelation:
       type: object
       properties:
@@ -1003,8 +1000,8 @@ components:
         name: { "type": "string" }
         collection: { "type": "string" }
         destination: { "type": "string" }
-        created: { "type": "string" }
-        updated: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "collection", "destination", "created", "updated" ]
     DashboardCounts:
       type: object
@@ -1020,7 +1017,7 @@ components:
         plural: { "type": "string" }
         icon: { "type": "string" }
         count: { "type": "integer" }
-      required: [ "id", "singular", "plural", "icon", "count" ]
+      required: [ "id", "singular", "plural", "count" ]
     TicketSearch:
       type: object
       properties:
@@ -1031,7 +1028,7 @@ components:
         type: { "type": "string" }
         state: { "type": "object" }
         owner_name: { "type": "string" }
-        created: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
       required: [ "id", "name", "description", "open", "type", "state", "owner_name", "created" ]
     Config:
       type: object

@@ -1,6 +1,7 @@
 package python_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -94,7 +95,7 @@ func TestPython_Run(t *testing.T) {
 				Requirements: tt.fields.Requirements,
 				Script:       tt.fields.Script,
 			}
-			got, err := a.Run(ctx, tt.args.payload)
+			got, err := a.Run(ctx, json.RawMessage(tt.args.payload))
 			tt.wantErr(t, err)
 
 			assert.Equal(t, tt.want, got)

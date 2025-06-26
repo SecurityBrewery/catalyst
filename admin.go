@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -34,13 +33,12 @@ func adminCreate(ctx context.Context, command *cli.Command) error {
 	}
 
 	user, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
-		Name:         name,
-		Email:        email,
+		Name:         &name,
+		Email:        &email,
 		Username:     "admin",
 		PasswordHash: passwordHash,
 		TokenKey:     tokenKey,
-		Avatar:       "",
-		Verified:     true,
+		Active:       true,
 	})
 	if err != nil {
 		return err
@@ -70,7 +68,9 @@ func adminSetPassword(ctx context.Context, command *cli.Command) error {
 		return errors.New("usage: catalyst admin set-password <email> <password>")
 	}
 
-	user, err := catalyst.Queries.UserByEmail(ctx, command.Args().Get(0))
+	mail := command.Args().Get(0)
+
+	user, err := catalyst.Queries.UserByEmail(ctx, &mail)
 	if err != nil {
 		return err
 	}
@@ -82,8 +82,8 @@ func adminSetPassword(ctx context.Context, command *cli.Command) error {
 
 	if _, err := catalyst.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
 		ID:           user.ID,
-		PasswordHash: sql.NullString{String: passwordHash, Valid: true},
-		TokenKey:     sql.NullString{String: tokenKey, Valid: true},
+		PasswordHash: &passwordHash,
+		TokenKey:     &tokenKey,
 	}); err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func adminDelete(ctx context.Context, command *cli.Command) error {
 
 	mail := command.Args().Get(0)
 
-	user, err := catalyst.Queries.UserByEmail(ctx, mail)
+	user, err := catalyst.Queries.UserByEmail(ctx, &mail)
 	if err != nil {
 		return err
 	}

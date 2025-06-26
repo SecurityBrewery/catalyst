@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"io"
 	"testing"
 
@@ -37,16 +38,6 @@ func Test_toString(t *testing.T) {
 	assert.Equal(t, "default", toString(nil, "default"))
 }
 
-func Test_toNullString(t *testing.T) {
-	t.Parallel()
-
-	s := "value"
-	assert.True(t, toNullString(&s).Valid)
-	assert.Equal(t, "value", toNullString(&s).String)
-	assert.False(t, toNullString(nil).Valid)
-	assert.Empty(t, toNullString(nil).String)
-}
-
 func Test_toInt64(t *testing.T) {
 	t.Parallel()
 
@@ -55,36 +46,26 @@ func Test_toInt64(t *testing.T) {
 	assert.Equal(t, int64(7), toInt64(nil, 7))
 }
 
-func Test_toNullBool(t *testing.T) {
-	t.Parallel()
-
-	b := true
-	assert.True(t, toNullBool(&b).Valid)
-	assert.True(t, toNullBool(&b).Bool)
-	assert.False(t, toNullBool(nil).Valid)
-	assert.False(t, toNullBool(nil).Bool)
-}
-
 func Test_marshal_unmarshal(t *testing.T) {
 	t.Parallel()
 
 	m := map[string]any{"key": "value"}
-	json := marshal(m)
-	assert.JSONEq(t, `{"key":"value"}`, json)
+	j := marshal(m)
+	assert.JSONEq(t, `{"key":"value"}`, string(j))
 
-	decoded := unmarshal(json)
+	decoded := unmarshal(j)
 	require.NotNil(t, decoded)
 	assert.Equal(t, "value", decoded["key"])
 
-	assert.Nil(t, unmarshal("{invalid}"))
+	assert.Nil(t, unmarshal(json.RawMessage("{invalid}")))
 }
 
 func Test_marshalPointer(t *testing.T) {
 	t.Parallel()
 
 	m := map[string]any{"x": 1}
-	assert.Equal(t, `{"x":1}`, marshalPointer(&m))
-	assert.Equal(t, "{}", marshalPointer(nil))
+	assert.JSONEq(t, `{"x":1}`, string(marshalPointer(&m)))
+	assert.JSONEq(t, "{}", string(marshalPointer(nil)))
 }
 
 func Test_generateID(t *testing.T) {

@@ -49,12 +49,12 @@ const {
             :class="
               cn(
                 buttonVariants({ variant: 'outline', size: 'sm' }),
-                'h-8 w-full sm:ml-auto sm:w-auto'
+                'h-8 w-full md:ml-auto sm:w-auto'
               )
             "
           >
             <span class="flex flex-row items-center text-sm text-gray-500">
-              Go to {{ task.ticketName }}
+              Open
               <ChevronRight class="ml-2 h-4 w-4" />
             </span>
           </RouterLink>

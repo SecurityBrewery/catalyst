@@ -79,9 +79,8 @@ const { handleSubmit, validate, values } = useForm({
     username: '',
     avatar: '',
     email: '',
-    emailVisibility: true,
     name: '',
-    verified: false
+    active: false
   },
   validationSchema: {
     username: 'username',
@@ -98,7 +97,7 @@ const equalUser = (values: UserUpdate, user?: UserUpdate): boolean => {
     user.avatar === values.avatar &&
     user.email === values.email &&
     user.name === values.name &&
-    user.verified === values.verified
+    user.active === values.active
   )
 }
 
@@ -176,9 +175,9 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
       </FormItem>
     </FormField>
 
-    <FormField name="verified" v-slot="{ value, handleChange }">
+    <FormField name="active" v-slot="{ value, handleChange }">
       <FormItem class="w-full items-center gap-2">
-        <FormLabel>Verified</FormLabel>
+        <FormLabel>Active</FormLabel>
         <div class="flex flex-row items-center gap-2">
           <FormControl>
             <Switch :checked="value" @update:checked="handleChange" />

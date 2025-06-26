@@ -43,7 +43,7 @@ func handle(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		output, err := action.Run(r.Context(), settings.Meta.AppURL, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, string(payload))
+		output, err := action.Run(r.Context(), settings.Meta.AppURL, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, payload)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 
@@ -120,7 +120,7 @@ func findByWebhookTrigger(ctx context.Context, queries *sqlc.Queries, path strin
 		}
 
 		var webhook Webhook
-		if err := json.Unmarshal([]byte(reaction.Triggerdata), &webhook); err != nil {
+		if err := json.Unmarshal(reaction.Triggerdata, &webhook); err != nil {
 			return nil, nil, false, err
 		}
 

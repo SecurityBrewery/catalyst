@@ -30,7 +30,7 @@ export interface Type {
    * @type {string}
    * @memberof Type
    */
-  icon: string
+  icon?: string
   /**
    *
    * @type {string}
@@ -51,16 +51,16 @@ export interface Type {
   singular: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Type
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Type
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -68,7 +68,6 @@ export interface Type {
  */
 export function instanceOfType(value: object): value is Type {
   if (!('id' in value) || value['id'] === undefined) return false
-  if (!('icon' in value) || value['icon'] === undefined) return false
   if (!('plural' in value) || value['plural'] === undefined) return false
   if (!('schema' in value) || value['schema'] === undefined) return false
   if (!('singular' in value) || value['singular'] === undefined) return false
@@ -87,12 +86,12 @@ export function TypeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Type
   }
   return {
     id: json['id'],
-    icon: json['icon'],
+    icon: json['icon'] == null ? undefined : json['icon'],
     plural: json['plural'],
     schema: json['schema'],
     singular: json['singular'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -111,7 +110,7 @@ export function TypeToJSONTyped(value?: Type | null, ignoreDiscriminator: boolea
     plural: value['plural'],
     schema: value['schema'],
     singular: value['singular'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

@@ -26,7 +26,7 @@ const ticketsPerWeek = computed(() => {
 
   const weeks = tickets.value.reduce(
     (acc, ticket) => {
-      const week = getWeek(new Date(ticket.created))
+      const week = getWeek(ticket.created)
       acc[week] = (acc[week] || 0) + 1
       return acc
     },

@@ -1,6 +1,6 @@
 -- name: CreateParam :exec
-INSERT INTO _params (id, key, value)
-VALUES (@id, @key, @value)
+INSERT INTO _params (key, value)
+VALUES (@key, @value)
 RETURNING *;
 
 -- name: UpdateParam :exec
@@ -65,20 +65,14 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: CreateFeature :one
-INSERT INTO features (name)
-VALUES (@name)
-RETURNING *;
-
--- name: UpdateFeature :one
-UPDATE features
-SET name = coalesce(sqlc.narg('name'), name)
-WHERE id = @id
+INSERT INTO features (key)
+VALUES (@key)
 RETURNING *;
 
 -- name: DeleteFeature :exec
 DELETE
 FROM features
-WHERE id = @id;
+WHERE key = @key;
 
 ------------------------------------------------------------------
 
@@ -234,13 +228,13 @@ WHERE id = @id;
 ------------------------------------------------------------------
 
 -- name: InsertUser :one
-INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, verified, created, updated)
-VALUES (@id, @name, @email, @username, @passwordHash, @tokenKey, @avatar, @verified, @created, @updated)
+INSERT INTO users (id, name, email, username, passwordHash, tokenKey, avatar, active, created, updated)
+VALUES (@id, @name, @email, @username, @passwordHash, @tokenKey, @avatar, @active, @created, @updated)
 RETURNING *;
 
 -- name: CreateUser :one
-INSERT INTO users (name, email, username, passwordHash, tokenKey, avatar, verified)
-VALUES (@name, @email, @username, @passwordHash, @tokenKey, @avatar, @verified)
+INSERT INTO users (name, email, username, passwordHash, tokenKey, avatar, active)
+VALUES (@name, @email, @username, @passwordHash, @tokenKey, @avatar, @active)
 RETURNING *;
 
 -- name: UpdateUser :one
@@ -251,7 +245,7 @@ SET name                   = coalesce(sqlc.narg('name'), name),
     passwordHash           = coalesce(sqlc.narg('passwordHash'), passwordHash),
     tokenKey               = coalesce(sqlc.narg('tokenKey'), tokenKey),
     avatar                 = coalesce(sqlc.narg('avatar'), avatar),
-    verified               = coalesce(sqlc.narg('verified'), verified),
+    active                 = coalesce(sqlc.narg('active'), active),
     lastResetSentAt        = coalesce(sqlc.narg('lastResetSentAt'), lastResetSentAt),
     lastVerificationSentAt = coalesce(sqlc.narg('lastVerificationSentAt'), lastVerificationSentAt)
 WHERE id = @id

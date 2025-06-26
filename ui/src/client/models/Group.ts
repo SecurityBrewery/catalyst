@@ -39,16 +39,16 @@ export interface Group {
   permissions: Array<string>
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Group
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Group
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -75,8 +75,8 @@ export function GroupFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gro
     id: json['id'],
     name: json['name'],
     permissions: json['permissions'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -93,7 +93,7 @@ export function GroupToJSONTyped(value?: Group | null, ignoreDiscriminator: bool
     id: value['id'],
     name: value['name'],
     permissions: value['permissions'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

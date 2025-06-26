@@ -12,7 +12,7 @@ const createUser = async (page, username: string) => {
   const saveBtn = page.getByRole('button', { name: 'Save' }).last()
   await expect(saveBtn).toBeEnabled()
   await saveBtn.click()
-  await page.waitForURL('**/users/r*')
+  await page.waitForURL('**/users/u*')
 }
 
 test('users list shows existing users', async ({ page }) => {

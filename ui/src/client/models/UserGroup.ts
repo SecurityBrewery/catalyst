@@ -45,16 +45,16 @@ export interface UserGroup {
   type: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof UserGroup
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof UserGroup
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -83,8 +83,8 @@ export function UserGroupFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     name: json['name'],
     permissions: json['permissions'],
     type: json['type'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -105,7 +105,7 @@ export function UserGroupToJSONTyped(
     name: value['name'],
     permissions: value['permissions'],
     type: value['type'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

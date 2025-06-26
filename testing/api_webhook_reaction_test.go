@@ -86,6 +86,7 @@ func TestHookReactions(t *testing.T) {
 				RequestHeaders: map[string]string{"Content-Type": "application/json"},
 				URL:            "/api/tickets",
 				Body: s(map[string]any{
+					"type": "alert",
 					"name": "test",
 				}),
 			},

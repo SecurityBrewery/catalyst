@@ -170,17 +170,17 @@ func setFlags(ctx context.Context, newFlags []string, catalyst *app.App) error {
 	var existingFlags []string
 
 	for _, feature := range features {
-		if !slices.Contains(newFlags, feature.Name) {
-			if err := catalyst.Queries.DeleteFeature(ctx, feature.Name); err != nil {
+		if !slices.Contains(newFlags, feature.Key) {
+			if err := catalyst.Queries.DeleteFeature(ctx, feature.Key); err != nil {
 				return err
 			}
 
-			slog.InfoContext(ctx, "deleted feature", "name", feature.Name)
+			slog.InfoContext(ctx, "deleted feature", "name", feature.Key)
 
 			continue
 		}
 
-		existingFlags = append(existingFlags, feature.Name)
+		existingFlags = append(existingFlags, feature.Key)
 	}
 
 	for _, flag := range newFlags {

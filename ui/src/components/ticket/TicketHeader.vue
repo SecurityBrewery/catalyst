@@ -59,12 +59,12 @@ const updateName = (value: string) => {
   <div class="text-muted-foreground flex flex-col items-stretch gap-1 text-xs md:h-4 md:flex-row">
     <div>
       Created:
-      {{ format(new Date(ticket.created), 'PPpp') }}
+      {{ format(ticket.created, 'PPpp') }}
     </div>
     <Separator orientation="vertical" class="hidden md:block" />
     <div>
       Updated:
-      {{ format(new Date(ticket.updated), 'PPpp') }}
+      {{ format(ticket.updated, 'PPpp') }}
     </div>
   </div>
 </template>

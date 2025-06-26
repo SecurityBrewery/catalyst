@@ -45,16 +45,16 @@ export interface ModelFile {
   size: number
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ModelFile
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ModelFile
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -83,8 +83,8 @@ export function ModelFileFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     ticket: json['ticket'],
     name: json['name'],
     size: json['size'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -105,7 +105,7 @@ export function ModelFileToJSONTyped(
     ticket: value['ticket'],
     name: value['name'],
     size: value['size'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

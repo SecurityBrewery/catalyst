@@ -8,31 +8,13 @@ sql:
         package: "sqlc"
         out: "sqlc"
         emit_json_tags: true
+        emit_pointers_for_null_types: true
         overrides:
-          - column: "tickets.schema"
-            go_type:
-              type: "string"
-          - column: "tickets.state"
-            go_type:
-              type: "string"
-          - column: "ticket_search.schema"
-            go_type:
-              type: "string"
-          - column: "ticket_search.state"
-            go_type:
-              type: "string"
-          - column: "types.schema"
-            go_type:
-              type: "string"
-          - column: "reactions.actiondata"
-            go_type:
-              type: "string"
-          - column: "reactions.triggerdata"
-            go_type:
-              type: "string"
-          - column: "_params.value"
-            go_type:
-              type: "string"
+          - { "column": "*.schema", "go_type": { "type": "[]byte" } }
+          - { "column": "*.state", "go_type": { "type": "[]byte" } }
+          - { "column": "reactions.actiondata", "go_type": { "type": "[]byte" } }
+          - { "column": "reactions.triggerdata", "go_type": { "type": "[]byte" } }
+          - { "column": "_params.value", "go_type": { "type": "[]byte" } }
   - engine: "sqlite"
     queries: "write.sql"
     schema: "migrations"
@@ -41,28 +23,10 @@ sql:
         package: "sqlc"
         out: "sqlc"
         emit_json_tags: true
+        emit_pointers_for_null_types: true
         overrides:
-          - column: "tickets.schema"
-            go_type:
-              type: "string"
-          - column: "tickets.state"
-            go_type:
-              type: "string"
-          - column: "ticket_search.schema"
-            go_type:
-              type: "string"
-          - column: "ticket_search.state"
-            go_type:
-              type: "string"
-          - column: "types.schema"
-            go_type:
-              type: "string"
-          - column: "reactions.actiondata"
-            go_type:
-              type: "string"
-          - column: "reactions.triggerdata"
-            go_type:
-              type: "string"
-          - column: "_params.value"
-            go_type:
-              type: "string"
+          - { "column": "*.schema", "go_type": { "type": "[]byte" } }
+          - { "column": "*.state", "go_type": { "type": "[]byte" } }
+          - { "column": "reactions.actiondata", "go_type": { "type": "[]byte" } }
+          - { "column": "reactions.triggerdata", "go_type": { "type": "[]byte" } }
+          - { "column": "_params.value", "go_type": { "type": "[]byte" } }

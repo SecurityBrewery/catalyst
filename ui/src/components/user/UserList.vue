@@ -28,8 +28,8 @@ const {
 const description = (user: User): string => {
   var desc = user.email
 
-  if (!user.verified) {
-    desc += ' (unverified)'
+  if (!user.active) {
+    desc += ' (inactive)'
   }
 
   return desc
@@ -51,7 +51,7 @@ const openNew = () => {
       <ResourceListElement
         v-for="user in users"
         :key="user.id"
-        :title="user.name"
+        :title="user.name ? user.name : user.username"
         :created="user.created"
         :subtitle="user.username"
         :description="description(user)"

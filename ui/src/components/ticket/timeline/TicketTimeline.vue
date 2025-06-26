@@ -19,7 +19,7 @@ const commentsByDate: ComputedRef<Record<string, Array<TimelineEntry>>> = comput
   if (!props.timeline) return {}
   const commentsByDate = props.timeline.reduce(
     (acc: Record<string, Array<TimelineEntry>>, comment: TimelineEntry) => {
-      const date = format(new Date(comment.time), 'yyyy-MM-dd')
+      const date = format(comment.time, 'yyyy-MM-dd')
       if (!acc[date]) acc[date] = []
       acc[date].push(comment)
       return acc

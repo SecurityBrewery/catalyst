@@ -50,7 +50,7 @@ func isDemoMode(ctx context.Context, queries *sqlc.Queries) bool {
 	}
 
 	for _, feature := range features {
-		if feature.Name == "demo" {
+		if feature.Key == "demo" {
 			return true
 		}
 	}

@@ -35,7 +35,7 @@ const addCommentMutation = useMutation({
       newTimelineEntry: {
         ticket: props.ticket.id,
         message: message.value,
-        time: time.value.toISOString()
+        time: time.value
       }
     }),
   onSuccess: () => {

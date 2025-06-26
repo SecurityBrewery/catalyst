@@ -33,10 +33,10 @@ export interface NewTimelineEntry {
   message: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof NewTimelineEntry
    */
-  time: string
+  time: Date
 }
 
 /**
@@ -63,7 +63,7 @@ export function NewTimelineEntryFromJSONTyped(
   return {
     ticket: json['ticket'],
     message: json['message'],
-    time: json['time']
+    time: new Date(json['time'])
   }
 }
 
@@ -82,6 +82,6 @@ export function NewTimelineEntryToJSONTyped(
   return {
     ticket: value['ticket'],
     message: value['message'],
-    time: value['time']
+    time: value['time'].toISOString()
   }
 }

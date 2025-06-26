@@ -54,13 +54,13 @@ export interface ExtendedTicket {
    * @type {string}
    * @memberof ExtendedTicket
    */
-  owner: string
+  owner?: string
   /**
    *
    * @type {string}
    * @memberof ExtendedTicket
    */
-  resolution: string
+  resolution?: string
   /**
    *
    * @type {object}
@@ -78,7 +78,7 @@ export interface ExtendedTicket {
    * @type {string}
    * @memberof ExtendedTicket
    */
-  ownerName: string
+  ownerName?: string
   /**
    *
    * @type {string}
@@ -93,16 +93,16 @@ export interface ExtendedTicket {
   typePlural: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedTicket
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof ExtendedTicket
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -114,11 +114,8 @@ export function instanceOfExtendedTicket(value: object): value is ExtendedTicket
   if (!('name' in value) || value['name'] === undefined) return false
   if (!('description' in value) || value['description'] === undefined) return false
   if (!('open' in value) || value['open'] === undefined) return false
-  if (!('owner' in value) || value['owner'] === undefined) return false
-  if (!('resolution' in value) || value['resolution'] === undefined) return false
   if (!('schema' in value) || value['schema'] === undefined) return false
   if (!('state' in value) || value['state'] === undefined) return false
-  if (!('ownerName' in value) || value['ownerName'] === undefined) return false
   if (!('typeSingular' in value) || value['typeSingular'] === undefined) return false
   if (!('typePlural' in value) || value['typePlural'] === undefined) return false
   if (!('created' in value) || value['created'] === undefined) return false
@@ -143,15 +140,15 @@ export function ExtendedTicketFromJSONTyped(
     name: json['name'],
     description: json['description'],
     open: json['open'],
-    owner: json['owner'],
-    resolution: json['resolution'],
+    owner: json['owner'] == null ? undefined : json['owner'],
+    resolution: json['resolution'] == null ? undefined : json['resolution'],
     schema: json['schema'],
     state: json['state'],
-    ownerName: json['owner_name'],
+    ownerName: json['owner_name'] == null ? undefined : json['owner_name'],
     typeSingular: json['type_singular'],
     typePlural: json['type_plural'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -180,7 +177,7 @@ export function ExtendedTicketToJSONTyped(
     owner_name: value['ownerName'],
     type_singular: value['typeSingular'],
     type_plural: value['typePlural'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

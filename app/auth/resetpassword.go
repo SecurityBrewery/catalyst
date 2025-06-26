@@ -34,7 +34,7 @@ func (s *Service) handleResetPasswordMail(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	user, err := s.queries.UserByEmail(r.Context(), data.Email)
+	user, err := s.queries.UserByEmail(r.Context(), &data.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// Do not reveal whether the user exists or not
@@ -63,7 +63,7 @@ func (s *Service) handleResetPasswordMail(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	link := settings.Meta.AppURL + "/ui/password-reset?mail=" + user.Email + "&token=" + resetToken
+	link := settings.Meta.AppURL + "/ui/password-reset?mail=" + data.Email + "&token=" + resetToken
 
 	subject := settings.Meta.ResetPasswordTemplate.Subject
 	subject = strings.ReplaceAll(subject, "{APP_NAME}", settings.Meta.AppName)
@@ -82,7 +82,7 @@ Thanks, {APP_NAME} team`
 	htmlBody = strings.ReplaceAll(htmlBody, "{ACTION_URL}", link)
 	htmlBody = strings.ReplaceAll(htmlBody, "{APP_NAME}", settings.Meta.AppName)
 
-	if err := s.mailer.Send(r.Context(), user.Email, subject, plainTextBody, htmlBody); err != nil {
+	if err := s.mailer.Send(r.Context(), data.Email, subject, plainTextBody, htmlBody); err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to send password reset email: "+err.Error())
 
 		return
@@ -113,7 +113,7 @@ func (s *Service) handlePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := s.queries.UserByEmail(r.Context(), data.Email)
+	user, err := s.queries.UserByEmail(r.Context(), &data.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			errorJSON(w, http.StatusBadRequest, "Invalid or expired reset token")
@@ -146,11 +146,13 @@ func (s *Service) handlePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	now := time.Now().UTC()
+
 	if _, err := s.queries.UpdateUser(r.Context(), sqlc.UpdateUserParams{
 		ID:              user.ID,
-		PasswordHash:    sql.NullString{String: passwordHash, Valid: true},
-		TokenKey:        sql.NullString{String: tokenKey, Valid: true},
-		LastResetSentAt: sql.NullString{String: time.Now().UTC().Format(time.RFC3339), Valid: true},
+		PasswordHash:    &passwordHash,
+		TokenKey:        &tokenKey,
+		LastResetSentAt: &now,
 	}); err != nil {
 		errorJSON(w, http.StatusInternalServerError, "Failed to update password: "+err.Error())
 

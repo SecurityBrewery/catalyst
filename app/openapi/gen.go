@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
@@ -21,12 +22,12 @@ const (
 
 // Comment defines model for Comment.
 type Comment struct {
-	Author  string `json:"author"`
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Message string `json:"message"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	Author  string    `json:"author"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Message string    `json:"message"`
+	Ticket  string    `json:"ticket"`
+	Updated time.Time `json:"updated"`
 }
 
 // CommentUpdate defines model for CommentUpdate.
@@ -63,63 +64,63 @@ type Error struct {
 
 // ExtendedComment defines model for ExtendedComment.
 type ExtendedComment struct {
-	Author     string `json:"author"`
-	AuthorName string `json:"author_name"`
-	Created    string `json:"created"`
-	Id         string `json:"id"`
-	Message    string `json:"message"`
-	Ticket     string `json:"ticket"`
-	Updated    string `json:"updated"`
+	Author     string    `json:"author"`
+	AuthorName string    `json:"author_name"`
+	Created    time.Time `json:"created"`
+	Id         string    `json:"id"`
+	Message    string    `json:"message"`
+	Ticket     string    `json:"ticket"`
+	Updated    time.Time `json:"updated"`
 }
 
 // ExtendedTask defines model for ExtendedTask.
 type ExtendedTask struct {
-	Created    string `json:"created"`
-	Id         string `json:"id"`
-	Name       string `json:"name"`
-	Open       bool   `json:"open"`
-	Owner      string `json:"owner"`
-	OwnerName  string `json:"owner_name"`
-	Ticket     string `json:"ticket"`
-	TicketName string `json:"ticket_name"`
-	TicketType string `json:"ticket_type"`
-	Updated    string `json:"updated"`
+	Created    time.Time `json:"created"`
+	Id         string    `json:"id"`
+	Name       string    `json:"name"`
+	Open       bool      `json:"open"`
+	Owner      *string   `json:"owner,omitempty"`
+	OwnerName  *string   `json:"owner_name,omitempty"`
+	Ticket     string    `json:"ticket"`
+	TicketName string    `json:"ticket_name"`
+	TicketType string    `json:"ticket_type"`
+	Updated    time.Time `json:"updated"`
 }
 
 // ExtendedTicket defines model for ExtendedTicket.
 type ExtendedTicket struct {
-	Created      string                 `json:"created"`
+	Created      time.Time              `json:"created"`
 	Description  string                 `json:"description"`
 	Id           string                 `json:"id"`
 	Name         string                 `json:"name"`
 	Open         bool                   `json:"open"`
-	Owner        string                 `json:"owner"`
-	OwnerName    string                 `json:"owner_name"`
-	Resolution   string                 `json:"resolution"`
+	Owner        *string                `json:"owner,omitempty"`
+	OwnerName    *string                `json:"owner_name,omitempty"`
+	Resolution   *string                `json:"resolution,omitempty"`
 	Schema       map[string]interface{} `json:"schema"`
 	State        map[string]interface{} `json:"state"`
 	Type         string                 `json:"type"`
 	TypePlural   string                 `json:"type_plural"`
 	TypeSingular string                 `json:"type_singular"`
-	Updated      string                 `json:"updated"`
+	Updated      time.Time              `json:"updated"`
 }
 
 // Feature defines model for Feature.
 type Feature struct {
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Updated string `json:"updated"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	Updated time.Time `json:"updated"`
 }
 
 // File defines model for File.
 type File struct {
-	Created string  `json:"created"`
-	Id      string  `json:"id"`
-	Name    string  `json:"name"`
-	Size    float64 `json:"size"`
-	Ticket  string  `json:"ticket"`
-	Updated string  `json:"updated"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	Size    float64   `json:"size"`
+	Ticket  string    `json:"ticket"`
+	Updated time.Time `json:"updated"`
 }
 
 // FileUpdate defines model for FileUpdate.
@@ -129,11 +130,11 @@ type FileUpdate struct {
 
 // Group defines model for Group.
 type Group struct {
-	Created     string   `json:"created"`
-	Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	Permissions []string `json:"permissions"`
-	Updated     string   `json:"updated"`
+	Created     time.Time `json:"created"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions []string  `json:"permissions"`
+	Updated     time.Time `json:"updated"`
 }
 
 // GroupRelation defines model for GroupRelation.
@@ -149,29 +150,27 @@ type GroupUpdate struct {
 
 // GroupUser defines model for GroupUser.
 type GroupUser struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	EmailVisibility        bool   `json:"emailVisibility"`
-	Id                     string `json:"id"`
-	LastLoginAlertSentAt   string `json:"lastLoginAlertSentAt"`
-	LastResetSentAt        string `json:"lastResetSentAt"`
-	LastVerificationSentAt string `json:"lastVerificationSentAt"`
-	Name                   string `json:"name"`
-	Type                   string `json:"type"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
+	Active                 bool       `json:"active"`
+	Avatar                 *string    `json:"avatar,omitempty"`
+	Created                time.Time  `json:"created"`
+	Email                  *string    `json:"email,omitempty"`
+	Id                     string     `json:"id"`
+	LastResetSentAt        *time.Time `json:"lastResetSentAt,omitempty"`
+	LastVerificationSentAt *time.Time `json:"lastVerificationSentAt,omitempty"`
+	Name                   *string    `json:"name,omitempty"`
+	Type                   string     `json:"type"`
+	Updated                time.Time  `json:"updated"`
+	Username               string     `json:"username"`
 }
 
 // Link defines model for Link.
 type Link struct {
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
-	Url     string `json:"url"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	Ticket  string    `json:"ticket"`
+	Updated time.Time `json:"updated"`
+	Url     string    `json:"url"`
 }
 
 // LinkUpdate defines model for LinkUpdate.
@@ -224,10 +223,10 @@ type NewReaction struct {
 
 // NewTask defines model for NewTask.
 type NewTask struct {
-	Name   string `json:"name"`
-	Open   bool   `json:"open"`
-	Owner  string `json:"owner"`
-	Ticket string `json:"ticket"`
+	Name   string  `json:"name"`
+	Open   bool    `json:"open"`
+	Owner  *string `json:"owner,omitempty"`
+	Ticket string  `json:"ticket"`
 }
 
 // NewTicket defines model for NewTicket.
@@ -235,8 +234,8 @@ type NewTicket struct {
 	Description string                 `json:"description"`
 	Name        string                 `json:"name"`
 	Open        bool                   `json:"open"`
-	Owner       string                 `json:"owner"`
-	Resolution  string                 `json:"resolution"`
+	Owner       *string                `json:"owner,omitempty"`
+	Resolution  *string                `json:"resolution,omitempty"`
 	Schema      map[string]interface{} `json:"schema"`
 	State       map[string]interface{} `json:"state"`
 	Type        string                 `json:"type"`
@@ -244,14 +243,14 @@ type NewTicket struct {
 
 // NewTimelineEntry defines model for NewTimelineEntry.
 type NewTimelineEntry struct {
-	Message string `json:"message"`
-	Ticket  string `json:"ticket"`
-	Time    string `json:"time"`
+	Message string    `json:"message"`
+	Ticket  string    `json:"ticket"`
+	Time    time.Time `json:"time"`
 }
 
 // NewType defines model for NewType.
 type NewType struct {
-	Icon     string                 `json:"icon"`
+	Icon     *string                `json:"icon,omitempty"`
 	Plural   string                 `json:"plural"`
 	Schema   map[string]interface{} `json:"schema"`
 	Singular string                 `json:"singular"`
@@ -259,11 +258,11 @@ type NewType struct {
 
 // NewUser defines model for NewUser.
 type NewUser struct {
-	Avatar   string `json:"avatar"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Verified bool   `json:"verified"`
+	Active   bool    `json:"active"`
+	Avatar   *string `json:"avatar,omitempty"`
+	Email    *string `json:"email,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Username string  `json:"username"`
 }
 
 // NewWebhook defines model for NewWebhook.
@@ -277,12 +276,12 @@ type NewWebhook struct {
 type Reaction struct {
 	Action      string                 `json:"action"`
 	Actiondata  map[string]interface{} `json:"actiondata"`
-	Created     string                 `json:"created"`
+	Created     time.Time              `json:"created"`
 	Id          string                 `json:"id"`
 	Name        string                 `json:"name"`
 	Trigger     string                 `json:"trigger"`
 	Triggerdata map[string]interface{} `json:"triggerdata"`
-	Updated     string                 `json:"updated"`
+	Updated     time.Time              `json:"updated"`
 }
 
 // ReactionUpdate defines model for ReactionUpdate.
@@ -323,11 +322,11 @@ type SettingsSmtp struct {
 
 // Sidebar defines model for Sidebar.
 type Sidebar struct {
-	Count    int    `json:"count"`
-	Icon     string `json:"icon"`
-	Id       string `json:"id"`
-	Plural   string `json:"plural"`
-	Singular string `json:"singular"`
+	Count    int     `json:"count"`
+	Icon     *string `json:"icon,omitempty"`
+	Id       string  `json:"id"`
+	Plural   string  `json:"plural"`
+	Singular string  `json:"singular"`
 }
 
 // Table defines model for Table.
@@ -338,13 +337,13 @@ type Table struct {
 
 // Task defines model for Task.
 type Task struct {
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Open    bool   `json:"open"`
-	Owner   string `json:"owner"`
-	Ticket  string `json:"ticket"`
-	Updated string `json:"updated"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	Open    bool      `json:"open"`
+	Owner   *string   `json:"owner,omitempty"`
+	Ticket  string    `json:"ticket"`
+	Updated time.Time `json:"updated"`
 }
 
 // TaskUpdate defines model for TaskUpdate.
@@ -356,22 +355,22 @@ type TaskUpdate struct {
 
 // Ticket defines model for Ticket.
 type Ticket struct {
-	Created     string                 `json:"created"`
+	Created     time.Time              `json:"created"`
 	Description string                 `json:"description"`
 	Id          string                 `json:"id"`
 	Name        string                 `json:"name"`
 	Open        bool                   `json:"open"`
-	Owner       string                 `json:"owner"`
-	Resolution  string                 `json:"resolution"`
+	Owner       *string                `json:"owner,omitempty"`
+	Resolution  *string                `json:"resolution,omitempty"`
 	Schema      map[string]interface{} `json:"schema"`
 	State       map[string]interface{} `json:"state"`
 	Type        string                 `json:"type"`
-	Updated     string                 `json:"updated"`
+	Updated     time.Time              `json:"updated"`
 }
 
 // TicketSearch defines model for TicketSearch.
 type TicketSearch struct {
-	Created     string                 `json:"created"`
+	Created     time.Time              `json:"created"`
 	Description string                 `json:"description"`
 	Id          string                 `json:"id"`
 	Name        string                 `json:"name"`
@@ -395,29 +394,29 @@ type TicketUpdate struct {
 
 // TimelineEntry defines model for TimelineEntry.
 type TimelineEntry struct {
-	Created string `json:"created"`
-	Id      string `json:"id"`
-	Message string `json:"message"`
-	Ticket  string `json:"ticket"`
-	Time    string `json:"time"`
-	Updated string `json:"updated"`
+	Created time.Time `json:"created"`
+	Id      string    `json:"id"`
+	Message string    `json:"message"`
+	Ticket  string    `json:"ticket"`
+	Time    time.Time `json:"time"`
+	Updated time.Time `json:"updated"`
 }
 
 // TimelineEntryUpdate defines model for TimelineEntryUpdate.
 type TimelineEntryUpdate struct {
-	Message *string `json:"message,omitempty"`
-	Time    *string `json:"time,omitempty"`
+	Message *string    `json:"message,omitempty"`
+	Time    *time.Time `json:"time,omitempty"`
 }
 
 // Type defines model for Type.
 type Type struct {
-	Created  string                 `json:"created"`
-	Icon     string                 `json:"icon"`
+	Created  time.Time              `json:"created"`
+	Icon     *string                `json:"icon,omitempty"`
 	Id       string                 `json:"id"`
 	Plural   string                 `json:"plural"`
 	Schema   map[string]interface{} `json:"schema"`
 	Singular string                 `json:"singular"`
-	Updated  string                 `json:"updated"`
+	Updated  time.Time              `json:"updated"`
 }
 
 // TypeUpdate defines model for TypeUpdate.
@@ -430,48 +429,47 @@ type TypeUpdate struct {
 
 // User defines model for User.
 type User struct {
-	Avatar                 string `json:"avatar"`
-	Created                string `json:"created"`
-	Email                  string `json:"email"`
-	Id                     string `json:"id"`
-	LastLoginAlertSentAt   string `json:"lastLoginAlertSentAt"`
-	LastResetSentAt        string `json:"lastResetSentAt"`
-	LastVerificationSentAt string `json:"lastVerificationSentAt"`
-	Name                   string `json:"name"`
-	Updated                string `json:"updated"`
-	Username               string `json:"username"`
-	Verified               bool   `json:"verified"`
+	Active                 bool       `json:"active"`
+	Avatar                 *string    `json:"avatar,omitempty"`
+	Created                time.Time  `json:"created"`
+	Email                  *string    `json:"email,omitempty"`
+	Id                     string     `json:"id"`
+	LastResetSentAt        *time.Time `json:"lastResetSentAt,omitempty"`
+	LastVerificationSentAt *time.Time `json:"lastVerificationSentAt,omitempty"`
+	Name                   *string    `json:"name,omitempty"`
+	Updated                time.Time  `json:"updated"`
+	Username               string     `json:"username"`
 }
 
 // UserGroup defines model for UserGroup.
 type UserGroup struct {
-	Created     string   `json:"created"`
-	Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	Permissions []string `json:"permissions"`
-	Type        string   `json:"type"`
-	Updated     string   `json:"updated"`
+	Created     time.Time `json:"created"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	Permissions []string  `json:"permissions"`
+	Type        string    `json:"type"`
+	Updated     time.Time `json:"updated"`
 }
 
 // UserUpdate defines model for UserUpdate.
 type UserUpdate struct {
+	Active          *bool   `json:"active,omitempty"`
 	Avatar          *string `json:"avatar,omitempty"`
 	Email           *string `json:"email,omitempty"`
 	Name            *string `json:"name,omitempty"`
 	Password        *string `json:"password,omitempty"`
 	PasswordConfirm *string `json:"passwordConfirm,omitempty"`
 	Username        *string `json:"username,omitempty"`
-	Verified        *bool   `json:"verified,omitempty"`
 }
 
 // Webhook defines model for Webhook.
 type Webhook struct {
-	Collection  string `json:"collection"`
-	Created     string `json:"created"`
-	Destination string `json:"destination"`
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Updated     string `json:"updated"`
+	Collection  string    `json:"collection"`
+	Created     time.Time `json:"created"`
+	Destination string    `json:"destination"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	Updated     time.Time `json:"updated"`
 }
 
 // WebhookUpdate defines model for WebhookUpdate.

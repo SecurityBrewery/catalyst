@@ -144,7 +144,7 @@ const count = (id: string) => {
             <TicketOverTime />
           </CardContent>
         </Card>
-        <Card class="xl:col-span-2">
+        <Card class="md:col-span-2 xl:col-span-4">
           <CardHeader>
             <CardTitle>Your Open Tickets</CardTitle>
           </CardHeader>
@@ -152,7 +152,7 @@ const count = (id: string) => {
             <OpenTickets />
           </CardContent>
         </Card>
-        <Card class="xl:col-span-2">
+        <Card class="md:col-span-2 xl:col-span-4">
           <CardHeader>
             <CardTitle>Your Open Tasks</CardTitle>
           </CardHeader>

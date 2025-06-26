@@ -62,7 +62,16 @@ const { handleSubmit, validate, values } = useForm({
 const equalGroup = (values: NewGroup, group?: NewGroup): boolean => {
   if (!group) return false
 
-  return group.name === values.name && group.permissions === values.permissions
+  return group.name === values.name && equalElements(group.permissions, values.permissions)
+}
+
+const equalElements = (a: string[], b: string[]): boolean => {
+  if (a.length !== b.length) return false
+
+  const sortedA = [...a].sort()
+  const sortedB = [...b].sort()
+
+  return sortedA.every((value, index) => value === sortedB[index])
 }
 
 const updateSubmitDisabledReason = () => {
@@ -125,7 +134,12 @@ const permissionItems = computed(() => config.value?.permissions || [])
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
         <FormLabel for="name" class="text-right">Name</FormLabel>
-        <Input id="name" class="col-span-3" v-bind="componentField" />
+        <Input
+          id="name"
+          class="col-span-3"
+          v-bind="componentField"
+          :disabled="group && group.name === 'Admin'"
+        />
         <FormMessage />
       </FormItem>
     </FormField>
@@ -145,6 +159,7 @@ const permissionItems = computed(() => config.value?.permissions || [])
             v-bind="componentField"
             :items="permissionItems"
             placeholder="Select permissions..."
+            :disabled="values.name === 'Admin'"
           />
         </FormControl>
         <FormMessage />
@@ -155,7 +170,11 @@ const permissionItems = computed(() => config.value?.permissions || [])
       <AlertTitle>Cannot save</AlertTitle>
       <AlertDescription>{{ submitDisabledReason }}</AlertDescription>
     </Alert>
-    <div class="flex gap-4">
+    <Alert v-if="values.name === 'Admin'">
+      <AlertTitle>Cannot save</AlertTitle>
+      <AlertDescription>{{ submitDisabledReason }}</AlertDescription>
+    </Alert>
+    <div v-if="values.name !== 'Admin'" class="flex gap-4">
       <TooltipProvider :delay-duration="0">
         <Tooltip>
           <TooltipTrigger class="cursor-default">

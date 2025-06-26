@@ -60,7 +60,7 @@ export interface UserUpdate {
    * @type {boolean}
    * @memberof UserUpdate
    */
-  verified?: boolean
+  active?: boolean
 }
 
 /**
@@ -85,7 +85,7 @@ export function UserUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     name: json['name'] == null ? undefined : json['name'],
     password: json['password'] == null ? undefined : json['password'],
     passwordConfirm: json['passwordConfirm'] == null ? undefined : json['passwordConfirm'],
-    verified: json['verified'] == null ? undefined : json['verified']
+    active: json['active'] == null ? undefined : json['active']
   }
 }
 
@@ -108,6 +108,6 @@ export function UserUpdateToJSONTyped(
     name: value['name'],
     password: value['password'],
     passwordConfirm: value['passwordConfirm'],
-    verified: value['verified']
+    active: value['active']
   }
 }

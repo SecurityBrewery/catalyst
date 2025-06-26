@@ -45,16 +45,16 @@ export interface Comment {
   message: string
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Comment
    */
-  created: string
+  created: Date
   /**
    *
-   * @type {string}
+   * @type {Date}
    * @memberof Comment
    */
-  updated: string
+  updated: Date
 }
 
 /**
@@ -83,8 +83,8 @@ export function CommentFromJSONTyped(json: any, ignoreDiscriminator: boolean): C
     ticket: json['ticket'],
     author: json['author'],
     message: json['message'],
-    created: json['created'],
-    updated: json['updated']
+    created: new Date(json['created']),
+    updated: new Date(json['updated'])
   }
 }
 
@@ -105,7 +105,7 @@ export function CommentToJSONTyped(
     ticket: value['ticket'],
     author: value['author'],
     message: value['message'],
-    created: value['created'],
-    updated: value['updated']
+    created: value['created'].toISOString(),
+    updated: value['updated'].toISOString()
   }
 }

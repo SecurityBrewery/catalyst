@@ -80,12 +80,12 @@ func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) loginWithMail(ctx context.Context, mail, password string) (*sqlc.User, error) {
-	user, err := s.queries.UserByEmail(ctx, mail)
+	user, err := s.queries.UserByEmail(ctx, &mail)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by email %q: %w", mail, err)
 	}
 
-	if !user.Verified {
+	if !user.Active {
 		return nil, ErrUserInactive
 	}
 
