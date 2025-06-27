@@ -80,6 +80,10 @@ test-short: test-go test-ui
 .PHONY: test-playwright
 test-playwright:
 	cd ui && bun test:e2e
+.PHONY: test-demo-playwright
+
+test-demo-playwright:
+	cd ui && bun test:e2e:demo
 
 .PHONY: test-playwright-ui
 test-playwright-ui:
@@ -159,6 +163,11 @@ dev-10000-proxy-ui: reset_data
 dev-upgrade: copy_existing_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . serve --app-url http://localhost:8090 --flags dev
+.PHONY: dev-demo
+dev-demo: copy_existing_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . serve --app-url http://localhost:8090 --flags demo
+
 
 .PHONY: dev-10000
 dev-10000: reset_data

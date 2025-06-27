@@ -15,6 +15,7 @@
     "install:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --timeout=5000",
     "test:e2e:ui": "playwright test --ui --timeout=10000",
+    "test:e2e:demo": "playwright test --config=playwright.demo.config.ts --timeout=10000",
     "screenshots": "playwright test --config=screenshots.playwright.config.ts --timeout=15000"
   },
   "dependencies": {
