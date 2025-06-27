@@ -476,12 +476,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/groups/{id}/parents`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}/parents`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -530,12 +530,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/users/{id}/groups`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}/groups`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -577,9 +577,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/comments`
+
     const response = await this.request(
       {
-        path: `/comments`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -622,9 +624,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/files`
+
     const response = await this.request(
       {
-        path: `/files`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -671,9 +675,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/groups`
+
     const response = await this.request(
       {
-        path: `/groups`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -716,9 +722,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/links`
+
     const response = await this.request(
       {
-        path: `/links`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -761,9 +769,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/reactions`
+
     const response = await this.request(
       {
-        path: `/reactions`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -806,9 +816,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/tasks`
+
     const response = await this.request(
       {
-        path: `/tasks`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -851,9 +863,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/tickets`
+
     const response = await this.request(
       {
-        path: `/tickets`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -896,9 +910,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/timeline`
+
     const response = await this.request(
       {
-        path: `/timeline`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -941,9 +957,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/types`
+
     const response = await this.request(
       {
-        path: `/types`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -986,9 +1004,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/users`
+
     const response = await this.request(
       {
-        path: `/users`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -1031,9 +1051,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/webhooks`
+
     const response = await this.request(
       {
-        path: `/webhooks`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -1074,12 +1096,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/comments/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/comments/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1118,12 +1140,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/files/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/files/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1162,12 +1184,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1206,12 +1228,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/links/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/links/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1250,12 +1272,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/reactions/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/reactions/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1294,12 +1316,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tasks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tasks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1338,12 +1360,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tickets/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tickets/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1382,12 +1404,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/timeline/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/timeline/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1426,12 +1448,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/types/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/types/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1470,12 +1492,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1514,12 +1536,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/webhooks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/webhooks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -1558,12 +1580,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/files/{id}/download`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/files/{id}/download`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1602,12 +1624,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/comments/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/comments/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1639,9 +1661,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/config`
+
     const response = await this.request(
       {
-        path: `/config`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1670,9 +1694,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/dashboard_counts`
+
     const response = await this.request(
       {
-        path: `/dashboard_counts`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1713,12 +1739,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/files/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/files/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1762,12 +1788,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1807,12 +1833,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/links/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/links/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1852,12 +1878,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/reactions/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/reactions/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1889,9 +1915,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/settings`
+
     const response = await this.request(
       {
-        path: `/settings`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1920,9 +1948,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/sidebar`
+
     const response = await this.request(
       {
-        path: `/sidebar`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -1961,12 +1991,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tasks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tasks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2006,12 +2036,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tickets/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tickets/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2051,12 +2081,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/timeline/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/timeline/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2096,12 +2126,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/types/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/types/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2141,12 +2171,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2186,12 +2216,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/webhooks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/webhooks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2231,12 +2261,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}/children`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}/children`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2281,9 +2311,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/comments`
+
     const response = await this.request(
       {
-        path: `/comments`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2330,9 +2362,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/files`
+
     const response = await this.request(
       {
-        path: `/files`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2372,12 +2406,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}/users`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}/users`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2418,9 +2452,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups`
+
     const response = await this.request(
       {
-        path: `/groups`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2465,9 +2501,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/links`
+
     const response = await this.request(
       {
-        path: `/links`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2507,12 +2545,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}/parents`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}/parents`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2552,12 +2590,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}/permissions`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}/permissions`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2598,9 +2636,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/reactions`
+
     const response = await this.request(
       {
-        path: `/reactions`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2645,9 +2685,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tasks`
+
     const response = await this.request(
       {
-        path: `/tasks`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2688,9 +2730,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/tickets`
+
     const response = await this.request(
       {
-        path: `/tickets`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2737,9 +2781,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/timeline`
+
     const response = await this.request(
       {
-        path: `/timeline`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2782,9 +2828,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/types`
+
     const response = await this.request(
       {
-        path: `/types`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2824,12 +2872,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users/{id}/groups`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}/groups`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2869,12 +2917,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users/{id}/permissions`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}/permissions`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2915,9 +2963,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users`
+
     const response = await this.request(
       {
-        path: `/users`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -2958,9 +3008,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/webhooks`
+
     const response = await this.request(
       {
-        path: `/webhooks`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -3007,14 +3059,16 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/groups/{id}/groups/{parentGroupId}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+    urlPath = urlPath.replace(
+      `{${'parentGroupId'}}`,
+      encodeURIComponent(String(requestParameters['parentGroupId']))
+    )
+
     const response = await this.request(
       {
-        path: `/groups/{id}/groups/{parentGroupId}`
-          .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
-          .replace(
-            `{${'parentGroupId'}}`,
-            encodeURIComponent(String(requestParameters['parentGroupId']))
-          ),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -3060,11 +3114,16 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/users/{id}/groups/{groupId}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+    urlPath = urlPath.replace(
+      `{${'groupId'}}`,
+      encodeURIComponent(String(requestParameters['groupId']))
+    )
+
     const response = await this.request(
       {
-        path: `/users/{id}/groups/{groupId}`
-          .replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
-          .replace(`{${'groupId'}}`, encodeURIComponent(String(requestParameters['groupId']))),
+        path: urlPath,
         method: 'DELETE',
         headers: headerParameters,
         query: queryParameters
@@ -3116,9 +3175,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    let urlPath = `/ticket_search`
+
     const response = await this.request(
       {
-        path: `/ticket_search`,
+        path: urlPath,
         method: 'GET',
         headers: headerParameters,
         query: queryParameters
@@ -3167,12 +3228,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/comments/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/comments/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3222,12 +3283,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/groups/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/groups/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3277,12 +3338,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/links/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/links/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3332,12 +3393,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/reactions/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/reactions/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3380,9 +3441,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/settings`
+
     const response = await this.request(
       {
-        path: `/settings`,
+        path: urlPath,
         method: 'POST',
         headers: headerParameters,
         query: queryParameters,
@@ -3432,12 +3495,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/tasks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tasks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3487,12 +3550,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/tickets/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/tickets/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3542,12 +3605,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/timeline/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/timeline/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3597,12 +3660,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/types/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/types/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3652,12 +3715,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/users/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/users/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
@@ -3707,12 +3770,12 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    let urlPath = `/webhooks/{id}`
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
+
     const response = await this.request(
       {
-        path: `/webhooks/{id}`.replace(
-          `{${'id'}}`,
-          encodeURIComponent(String(requestParameters['id']))
-        ),
+        path: urlPath,
         method: 'PATCH',
         headers: headerParameters,
         query: queryParameters,
