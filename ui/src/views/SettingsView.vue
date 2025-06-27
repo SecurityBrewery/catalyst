@@ -8,7 +8,7 @@ import SettingsForm from '@/components/settings/SettingsForm.vue'
 
 <template>
   <TwoColumn>
-    <ColumnHeader title="Settings" />
+    <ColumnHeader title="Settings" show-sidebar-trigger />
     <ColumnBody>
       <ColumnBodyContainer small>
         <SettingsForm />

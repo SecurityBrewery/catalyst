@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
 
-import {
-  DropdownMenuSubTrigger,
-  type DropdownMenuSubTriggerProps,
-  useForwardProps
-} from 'radix-vue'
-import { type HTMLAttributes, computed } from 'vue'
+import type { DropdownMenuSubTriggerProps } from 'radix-vue'
+import { DropdownMenuSubTrigger, useForwardProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 
 import { cn } from '@/lib/utils'
 
@@ -26,7 +24,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     v-bind="forwardedProps"
     :class="
       cn(
-        'focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none',
+        'flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent',
         props.class
       )
     "

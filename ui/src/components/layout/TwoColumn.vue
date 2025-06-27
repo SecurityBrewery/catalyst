@@ -5,11 +5,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 <template>
   <TooltipProvider :delay-duration="0">
-    <div class="bg-muted/40 flex h-full flex-row items-stretch">
-      <SideBar />
-      <div class="flex h-full w-full flex-col">
-        <slot />
-      </div>
-    </div>
+    <SideBar>
+      <slot />
+    </SideBar>
   </TooltipProvider>
 </template>

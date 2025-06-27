@@ -1,128 +1,205 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue'
 import CatalystLogo from '@/components/common/CatalystLogo.vue'
-import IncidentNav from '@/components/sidebar/IncidentNav.vue'
-import NavList from '@/components/sidebar/NavList.vue'
-import UserDropDown from '@/components/sidebar/UserDropDown.vue'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail
+} from '@/components/ui/sidebar'
 
-import { Menu } from 'lucide-vue-next'
+import { ChevronsUpDown, LogOut, Settings, Tag, User, Users, Zap } from 'lucide-vue-next'
 
-import { cn } from '@/lib/utils'
+import { useQuery } from '@tanstack/vue-query'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { useAPI } from '@/api.ts'
+import type { Sidebar as SidebarModel } from '@/client/models'
 import { useAuthStore } from '@/store/auth'
-import { useCatalystStore } from '@/store/catalyst'
 
-const catalystStore = useCatalystStore()
 const authStore = useAuthStore()
+
+const links = [
+  {
+    name: 'Reactions',
+    url: '/reactions',
+    icon: Zap,
+    permission: 'reaction:write'
+  },
+  {
+    name: 'Users',
+    url: '/users',
+    icon: User,
+    permission: 'group:write'
+  },
+  {
+    name: 'Groups',
+    url: '/groups',
+    icon: Users,
+    permission: 'group:write'
+  },
+  {
+    name: 'Types',
+    url: '/types',
+    icon: Tag,
+    permission: 'type:write'
+  },
+  {
+    name: 'Settings',
+    url: '/settings',
+    icon: Settings,
+    permission: 'settings:write'
+  }
+]
+
+const userLinks = computed(() => {
+  return links.filter((link) => authStore.hasPermission(link.permission))
+})
+
+const api = useAPI()
+const router = useRouter()
+
+const { data: sidebar } = useQuery({
+  queryKey: ['sidebar'],
+  queryFn: (): Promise<Array<SidebarModel>> => api.getSidebar()
+})
+
+const logout = () => {
+  authStore.setToken('')
+  router.push({ name: 'login' })
+}
+
+const initials = (user: { name?: string } | undefined) => {
+  if (!user || !user.name) return ''
+  const names = user.name.split(' ')
+  return names.length > 1 ? `${names[0][0]}${names[1][0]}` : names[0][0]
+}
 </script>
 
 <template>
-  <div
-    :class="
-      cn(
-        'bg-popover flex min-w-48 shrink-0 flex-col border-r', // transition-all duration-300 ease-in-out',
-        catalystStore.sidebarCollapsed && 'min-w-[50px]'
-      )
-    "
-  >
-    <div class="bg-background flex h-[57px] items-center border-b">
-      <CatalystLogo :size="8" />
-      <h1 class="text-xl font-bold" v-if="!catalystStore.sidebarCollapsed">Catalyst</h1>
-    </div>
-    <div
-      v-if="!catalystStore.sidebarCollapsed && !authStore.hasPermission('ticket:read')"
-      class="mt-4 w-full px-2"
-    >
-      <Alert class="w-full">
-        <AlertTitle>Info</AlertTitle>
-        <AlertDescription>No permission to read tickets</AlertDescription>
-      </Alert>
-    </div>
-    <NavList
-      :is-collapsed="catalystStore.sidebarCollapsed"
-      :links="[
-        {
-          title: 'Dashboard',
-          icon: 'PanelsTopLeft',
-          variant: 'ghost',
-          to: '/dashboard',
-          permission: 'ticket:read'
-        }
-      ]"
-    />
-    <Separator v-if="authStore.hasPermission('ticket:read')" />
-    <IncidentNav :is-collapsed="catalystStore.sidebarCollapsed" />
-
-    <div class="flex-1" />
-
-    <Separator
-      v-if="
-        authStore.hasPermission('reaction:write') ||
-        authStore.hasPermission('group:write') ||
-        authStore.hasPermission('group:write') ||
-        authStore.hasPermission('type:write')
-      "
-    />
-    <NavList
-      :is-collapsed="catalystStore.sidebarCollapsed"
-      :links="[
-        {
-          title: 'Reactions',
-          icon: 'Zap',
-          variant: 'ghost',
-          to: '/reactions',
-          permission: 'reaction:write'
-        },
-        {
-          title: 'Users',
-          icon: 'User',
-          variant: 'ghost',
-          to: '/users',
-          permission: 'group:write'
-        },
-        {
-          title: 'Groups',
-          icon: 'Users',
-          variant: 'ghost',
-          to: '/groups',
-          permission: 'group:write'
-        },
-        {
-          title: 'Types',
-          icon: 'Tag',
-          variant: 'ghost',
-          to: '/types',
-          permission: 'type:write'
-        },
-        {
-          title: 'Settings',
-          icon: 'Settings',
-          variant: 'ghost',
-          to: '/settings',
-          permission: 'settings:write'
-        }
-      ]"
-    />
-    <Separator />
-    <UserDropDown :is-collapsed="catalystStore.sidebarCollapsed" />
-    <Separator />
-    <div :class="cn('flex h-14 items-center px-3', !catalystStore.sidebarCollapsed && 'px-2')">
-      <Button
-        variant="ghost"
-        @click="catalystStore.toggleSidebar()"
-        size="default"
-        :class="
-          cn(
-            'p-0',
-            catalystStore.sidebarCollapsed && 'w-9',
-            !catalystStore.sidebarCollapsed && 'w-full justify-start px-3'
-          )
-        "
-      >
-        <Menu class="size-4" />
-        <span v-if="!catalystStore.sidebarCollapsed" class="ml-2">Toggle Sidebar</span>
-      </Button>
-    </div>
-  </div>
+  <SidebarProvider class="h-full w-full" style="--sidebar-width: 12rem;">
+    <Sidebar collapsible="icon" >
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem class="flex items-center gap-2 p-2">
+            <CatalystLogo :size="5" />
+            <div class="grid flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Catalyst</span>
+              <span class="truncate text-xs">Incident Management</span>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Tickets</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem v-for="(typ, index) of sidebar" :key="index">
+              <SidebarMenuButton :tooltip="typ.plural" as-child>
+                <RouterLink :to="`/tickets/${typ.id}`">
+                  <Icon :name="typ.icon" class="size-4" />
+                  <span>{{ typ.plural }}</span>
+                  <span class="ml-auto">{{ typ.count }}</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        <div class="flex-1" />
+        <SidebarGroup v-if="userLinks.length > 0" class="group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel>Administration</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem v-for="item in userLinks" :key="item.name">
+              <SidebarMenuButton as-child>
+                <RouterLink :to="item.url">
+                  <component :is="item.icon" />
+                  <span>{{ item.name }}</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar class="h-8 w-8 rounded-lg">
+                    <AvatarImage
+                      :src="authStore.user?.avatar ? authStore.user.avatar : ''"
+                      :alt="authStore.user?.name"
+                    />
+                    <AvatarFallback class="rounded-lg"
+                      >{{ initials(authStore.user) }}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">{{ authStore.user?.name }}</span>
+                    <span class="truncate text-xs">{{ authStore.user?.email }}</span>
+                  </div>
+                  <ChevronsUpDown class="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="bottom"
+                align="end"
+                :side-offset="4"
+              >
+                <DropdownMenuLabel class="p-0 font-normal">
+                  <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar class="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        :src="authStore.user?.avatar ? authStore.user.avatar : ''"
+                        :alt="authStore.user?.name"
+                      />
+                      <AvatarFallback class="rounded-lg"
+                        >{{ initials(authStore.user) }}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div class="grid flex-1 text-left text-sm leading-tight">
+                      <span class="truncate font-semibold">{{ authStore.user?.name }}</span>
+                      <span class="truncate text-xs">{{ authStore.user?.email }}</span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem @click="logout">
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+    <SidebarInset class="flex h-full w-full">
+      <slot />
+    </SidebarInset>
+  </SidebarProvider>
 </template>

@@ -103,34 +103,6 @@ const { handleSubmit, validate, values, setValues } = useForm({
   }
 })
 
-watch(
-  () => settings.value,
-  () => {
-    if (!settings.value) return
-    setValues({
-      meta: {
-        appName: settings.value.meta.appName,
-        appUrl: settings.value.meta.appUrl,
-        senderName: settings.value.meta.senderName,
-        senderAddress: settings.value.meta.senderAddress
-      },
-      smtp: {
-        enabled: settings.value.smtp.enabled,
-        host: settings.value.smtp.host,
-        port: settings.value.smtp.port,
-        username: settings.value.smtp.username,
-        password: settings.value.smtp.password,
-        authMethod: settings.value.smtp.authMethod,
-        tls: settings.value.smtp.tls,
-        localName: settings.value.smtp.localName
-      }
-    })
-
-    updateSubmitDisabledReason()
-  },
-  { immediate: true }
-)
-
 const updateSettingsMutation = useMutation({
   mutationFn: (vals: Settings): Promise<Settings> => api.updateSettings({ settings: vals }),
   onSuccess: () => {
@@ -183,6 +155,34 @@ const updateSubmitDisabledReason = () => {
     }
   })
 }
+
+watch(
+  () => settings.value,
+  () => {
+    if (!settings.value) return
+    setValues({
+      meta: {
+        appName: settings.value.meta.appName,
+        appUrl: settings.value.meta.appUrl,
+        senderName: settings.value.meta.senderName,
+        senderAddress: settings.value.meta.senderAddress
+      },
+      smtp: {
+        enabled: settings.value.smtp.enabled,
+        host: settings.value.smtp.host,
+        port: settings.value.smtp.port,
+        username: settings.value.smtp.username,
+        password: settings.value.smtp.password,
+        authMethod: settings.value.smtp.authMethod,
+        tls: settings.value.smtp.tls,
+        localName: settings.value.smtp.localName
+      }
+    })
+
+    updateSubmitDisabledReason()
+  },
+  { immediate: true }
+)
 
 watch(
   () => values,

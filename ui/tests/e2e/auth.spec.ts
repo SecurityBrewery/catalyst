@@ -24,7 +24,7 @@ test('logout denies api access', async ({ page }) => {
   await login(page)
   const button = page.getByRole('button', { name: /admin/i })
   await button.click()
-  await page.getByRole('menuitem', { name: 'Logout' }).click()
+  await page.getByRole('menuitem', { name: 'Log out' }).click()
   await page.waitForURL('**/login')
 
   const token = await page.evaluate(() => localStorage.getItem('token'))

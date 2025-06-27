@@ -82,7 +82,7 @@ const vCalendarSlots = computed(() => {
 
 <template>
   <div class="relative">
-    <div v-if="$attrs.mode !== 'time'" class="absolute top-3 z-1 flex w-full justify-between px-4">
+    <div v-if="$attrs.mode !== 'time'" class="z-1 absolute top-3 flex w-full justify-between px-4">
       <button
         :class="
           cn(
@@ -133,8 +133,6 @@ const vCalendarSlots = computed(() => {
 </template>
 
 <style lang="css">
-@reference "../../../assets/main.css";
-
 .calendar {
   @apply p-3 text-center;
 }
@@ -145,7 +143,7 @@ const vCalendarSlots = computed(() => {
   @apply relative z-20 text-sm font-medium;
 }
 .vc-popover-content-wrapper .vc-popover-content {
-  @apply bg-background mt-3 max-w-xs rounded-md border;
+  @apply mt-3 max-w-xs rounded-md border bg-background;
 }
 .vc-popover-content-wrapper .vc-nav-header {
   @apply flex items-center justify-between p-2;
@@ -172,7 +170,7 @@ const vCalendarSlots = computed(() => {
   @apply justify-items-center;
 }
 .calendar .vc-weekday {
-  @apply text-muted-foreground rounded-md text-[0.8rem] font-normal;
+  @apply rounded-md text-[0.8rem] font-normal text-muted-foreground;
 }
 .calendar .vc-weeks {
   @apply flex w-full flex-col space-y-2 [&>_div]:grid [&>_div]:grid-cols-7;
@@ -181,7 +179,7 @@ const vCalendarSlots = computed(() => {
   @apply first:rounded-l-md last:rounded-r-md;
 }
 .calendar .vc-day.is-today:not(:has(.vc-day-layer)) .vc-day-content {
-  @apply bg-secondary text-primary rounded-md;
+  @apply rounded-md bg-secondary text-primary;
 }
 .calendar .vc-day:has(.vc-highlight-base-start) {
   @apply rounded-l-md;
@@ -196,7 +194,7 @@ const vCalendarSlots = computed(() => {
   @apply rounded-md;
 }
 .calendar .vc-day-content {
-  @apply ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring relative inline-flex h-9 w-9 items-center justify-center p-0 text-center text-sm font-normal select-none focus-within:relative focus-within:z-20 hover:transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden aria-selected:opacity-100;
+  @apply relative inline-flex h-9 w-9 select-none items-center justify-center p-0 text-center text-sm font-normal ring-offset-background focus-within:relative focus-within:z-20 hover:bg-accent hover:text-accent-foreground hover:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-selected:opacity-100;
 }
 .calendar .vc-day-content:not(.vc-highlight-content-light) {
   @apply rounded-md;
@@ -322,34 +320,34 @@ const vCalendarSlots = computed(() => {
   @apply pointer-events-none opacity-50;
 }
 .vc-time-picker.vc-attached {
-  @apply border-secondary mt-2 border-t border-solid;
+  @apply mt-2 border-t border-solid border-secondary;
 }
 .vc-time-picker > * + * {
   @apply mt-1;
 }
 .vc-time-header {
-  @apply mt-1 flex items-center px-1 text-sm leading-6 font-semibold uppercase;
+  @apply mt-1 flex items-center px-1 text-sm font-semibold uppercase leading-6;
 }
 .vc-time-select-group {
-  @apply border-secondary bg-primary-foreground inline-flex items-center rounded-md border border-solid px-1;
+  @apply inline-flex items-center rounded-md border border-solid border-secondary bg-primary-foreground px-1;
 }
 .vc-time-select-group .vc-base-icon {
-  @apply stroke-primary text-primary mr-1;
+  @apply mr-1 stroke-primary text-primary;
 }
 .vc-time-select-group select {
-  @apply bg-primary-foreground appearance-none p-1 text-center outline-none;
+  @apply appearance-none bg-primary-foreground p-1 text-center outline-none;
 }
 .vc-time-weekday {
-  @apply text-muted-foreground tracking-wide;
+  @apply tracking-wide text-muted-foreground;
 }
 .vc-time-month {
-  @apply text-primary ml-2;
+  @apply ml-2 text-primary;
 }
 .vc-time-day {
-  @apply text-primary ml-1;
+  @apply ml-1 text-primary;
 }
 .vc-time-year {
-  @apply text-muted-foreground ml-2;
+  @apply ml-2 text-muted-foreground;
 }
 .vc-time-colon {
   @apply mb-0.5;

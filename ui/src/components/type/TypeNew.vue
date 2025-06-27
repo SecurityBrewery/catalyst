@@ -37,7 +37,7 @@ const addTypeMutation = useMutation({
 
 <template>
   <ColumnHeader>
-    <Button @click="router.push({ name: 'types' })" variant="outline" class="sm:hidden">
+    <Button @click="router.push({ name: 'types' })" variant="outline" class="md:hidden">
       <ChevronLeft class="mr-2 size-4" />
       Back
     </Button>

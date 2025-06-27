@@ -36,12 +36,12 @@ const openNew = () => {
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Groups">
+    <ColumnHeader title="Groups" show-sidebar-trigger>
       <div class="ml-auto">
         <Button variant="ghost" @click="openNew">New Group</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-auto p-2 pt-0">
       <ResourceListElement
         v-for="group in groups"
         :key="group.id"

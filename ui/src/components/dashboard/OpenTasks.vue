@@ -49,7 +49,7 @@ const {
             :class="
               cn(
                 buttonVariants({ variant: 'outline', size: 'sm' }),
-                'h-8 w-full md:ml-auto sm:w-auto'
+                'h-8 w-full sm:w-auto md:ml-auto'
               )
             "
           >

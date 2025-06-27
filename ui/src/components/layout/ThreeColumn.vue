@@ -11,30 +11,15 @@ defineProps<{
 
 <template>
   <TooltipProvider :delay-duration="0">
-    <div class="bg-muted/40 flex h-full flex-row items-stretch">
-      <SideBar />
-      <div
-        :class="
-          cn(
-            'w-full flex-initial border-r sm:w-72',
-            !showDetails && 'flex',
-            showDetails && 'hidden sm:flex'
-          )
-        "
-      >
-        <div class="flex h-full w-full flex-col">
+    <SideBar>
+      <div class="flex h-full w-full flex-col overflow-auto md:flex-row">
+        <div :class="cn('flex h-full w-full flex-col border-r md:w-72', showDetails ? 'hidden md:flex' : '')">
           <slot name="list" />
         </div>
-      </div>
-      <div
-        :class="
-          cn('flex-1 overflow-hidden', !showDetails && 'hidden sm:flex', showDetails && 'flex')
-        "
-      >
-        <div class="flex h-full w-full flex-1 flex-col">
+        <div :class="cn('flex h-full w-full flex-1 flex-col', showDetails ? '' : 'hidden md:flex')">
           <slot name="single" />
         </div>
       </div>
-    </div>
+    </SideBar>
   </TooltipProvider>
 </template>

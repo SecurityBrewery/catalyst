@@ -99,7 +99,7 @@ const deleteMutation = useMutation({
     <Button
       @click="router.push({ name: 'tickets', params: { type: ticket.type } })"
       variant="outline"
-      class="sm:hidden"
+      class="md:hidden"
     >
       <ChevronLeft class="mr-2 size-4" />
       Back

@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
   <div
     :class="
-      cn('flex flex-1 items-start justify-start overflow-x-hidden overflow-y-auto', props.class)
+      cn('flex flex-1 items-start justify-start overflow-y-auto overflow-x-hidden', props.class)
     "
   >
     <slot />

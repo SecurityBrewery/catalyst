@@ -87,7 +87,7 @@ const deleteMutation = useMutation({
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
     <ColumnHeader>
-      <Button @click="router.push({ name: 'users' })" variant="outline" class="sm:hidden">
+      <Button @click="router.push({ name: 'users' })" variant="outline" class="md:hidden">
         <ChevronLeft class="mr-2 size-4" />
         Back
       </Button>

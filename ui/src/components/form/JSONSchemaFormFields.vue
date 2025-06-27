@@ -101,7 +101,7 @@ watch(
       type="checkbox"
       v-model="formdata[key]"
     >
-      <FormItem class="flex flex-row items-start space-y-0 gap-x-3 py-4">
+      <FormItem class="flex flex-row items-start gap-x-3 space-y-0 py-4">
         <FormControl>
           <Checkbox :checked="value" @update:checked="handleChange" />
         </FormControl>

@@ -42,12 +42,12 @@ const openNew = () => {
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Users">
+    <ColumnHeader title="Users" show-sidebar-trigger>
       <div class="ml-auto">
         <Button variant="ghost" @click="openNew">New User</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-auto p-2 pt-0">
       <ResourceListElement
         v-for="user in users"
         :key="user.id"

@@ -14,7 +14,7 @@ defineProps<{
   <ul class="mb-4 [&>li]:grid-cols-[0_min-content_1fr]">
     <li v-for="comment in comments" :key="comment.id" class="grid items-center gap-x-2">
       <!-- item -->
-      <p class="text-muted-foreground col-start-3 col-end-4 mr-auto text-left text-sm">
+      <p class="col-start-3 col-end-4 mr-auto text-left text-sm text-muted-foreground">
         <!-- heading -->
         {{ format(comment.created, 'PPpp') }}
       </p>
@@ -26,7 +26,7 @@ defineProps<{
       </div>
       <Separator
         orientation="vertical"
-        class="bg-muted col-start-2 col-end-3 row-start-2 row-end-2 mx-auto flex h-full min-h-16 w-0.5 justify-center rounded-full"
+        class="col-start-2 col-end-3 row-start-2 row-end-2 mx-auto flex h-full min-h-16 w-0.5 justify-center rounded-full bg-muted"
       />
       <div class="col-start-3 col-end-4 py-4 text-left">
         <!-- content -->
@@ -35,7 +35,7 @@ defineProps<{
     </li>
     <li class="grid items-center gap-x-2">
       <!-- item -->
-      <p class="text-muted-foreground col-start-3 col-end-4 mr-auto text-left text-sm">
+      <p class="col-start-3 col-end-4 mr-auto text-left text-sm text-muted-foreground">
         <!-- heading -->
         End
       </p>

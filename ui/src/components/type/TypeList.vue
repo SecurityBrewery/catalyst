@@ -32,12 +32,12 @@ const openNew = () => {
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Types">
+    <ColumnHeader title="Types" show-sidebar-trigger>
       <div class="ml-auto">
         <Button variant="ghost" @click="openNew">New Type</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-scroll p-2 pt-0">
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-auto p-2 pt-0">
       <ResourceListElement
         v-for="type in types"
         :key="type.id"
