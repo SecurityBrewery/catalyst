@@ -123,6 +123,7 @@ watch(
       >
         <Button variant="ghost" size="icon" class="size-8">
           <Trash2 class="size-4" />
+          <span class="sr-only">Delete File</span>
         </Button>
       </DeleteDialog>
     </div>

@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test'
 import { test as baseTest } from 'playwright/test'
+import path from 'path'
 
 export const test = baseTest.extend({
   page: async ({ page }, use) => {
@@ -70,4 +71,13 @@ export const createLink = async (page, name: string, url: string) => {
   await page.locator('#url').fill(url)
   await page.getByRole('button', { name: 'Save' }).click()
   await expect(page.getByText(name)).toBeVisible()
+}
+
+export const uploadFile = async (page, filePath: string) => {
+  await page.getByRole('button', { name: 'Add item' }).last().click()
+  await page.setInputFiles('input[type="file"]', filePath)
+  await page.getByRole('button', { name: 'Upload 1 file' }).first().click()
+  await page.getByRole('button', { name: 'Close' }).first().click()
+  const name = path.basename(filePath)
+  await expect(page.getByText(name, { exact: true })).toBeVisible()
 }
