@@ -37,12 +37,6 @@ export interface NewFile {
    * @memberof NewFile
    */
   name: string
-  /**
-   *
-   * @type {number}
-   * @memberof NewFile
-   */
-  size: number
 }
 
 /**
@@ -52,7 +46,6 @@ export function instanceOfNewFile(value: object): value is NewFile {
   if (!('ticket' in value) || value['ticket'] === undefined) return false
   if (!('blob' in value) || value['blob'] === undefined) return false
   if (!('name' in value) || value['name'] === undefined) return false
-  if (!('size' in value) || value['size'] === undefined) return false
   return true
 }
 
@@ -67,8 +60,7 @@ export function NewFileFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
   return {
     ticket: json['ticket'],
     blob: json['blob'],
-    name: json['name'],
-    size: json['size']
+    name: json['name']
   }
 }
 
@@ -87,7 +79,6 @@ export function NewFileToJSONTyped(
   return {
     ticket: value['ticket'],
     blob: value['blob'],
-    name: value['name'],
-    size: value['size']
+    name: value['name']
   }
 }

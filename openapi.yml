@@ -687,8 +687,7 @@ components:
         ticket: { "type": "string" }
         blob: { "type": "string" }
         name: { "type": "string" }
-        size: { "type": "number", "format": "double" }
-      required: [ "ticket", "blob", "name", "size" ]
+      required: [ "ticket", "blob", "name" ]
     FileUpdate:
       type: object
       properties:

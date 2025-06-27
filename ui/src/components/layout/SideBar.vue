@@ -95,8 +95,8 @@ const initials = (user: { name?: string } | undefined) => {
 </script>
 
 <template>
-  <SidebarProvider class="h-full w-full" style="--sidebar-width: 12rem;">
-    <Sidebar collapsible="icon" >
+  <SidebarProvider class="h-full w-full" style="--sidebar-width: 12rem">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem class="flex items-center gap-2 p-2">

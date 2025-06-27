@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database"
@@ -223,11 +224,21 @@ func (s *Service) ListFiles(ctx context.Context, request openapi.ListFilesReques
 func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequestObject) (openapi.CreateFileResponseObject, error) {
 	s.hooks.OnRecordBeforeCreateRequest.Publish(ctx, permission.FilesTable.ID, request.Body)
 
-	file, err := s.queries.CreateFile(ctx, sqlc.CreateFileParams{
-		Name:   request.Body.Name,
-		Blob:   request.Body.Blob,
-		Size:   request.Body.Size,
-		Ticket: request.Body.Ticket,
+	id := database.GenerateID("b")
+
+	uniqName, err := s.uploader.CreateFile(id, request.Body.Name, []byte(request.Body.Blob))
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := s.queries.InsertFile(ctx, sqlc.InsertFileParams{
+		ID:      id,
+		Name:    request.Body.Name,
+		Blob:    uniqName,
+		Size:    float64(len(request.Body.Blob)),
+		Ticket:  request.Body.Ticket,
+		Created: time.Now().UTC(),
+		Updated: time.Now().UTC(),
 	})
 	if err != nil {
 		return nil, err

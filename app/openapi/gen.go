@@ -193,10 +193,9 @@ type NewFeature struct {
 
 // NewFile defines model for NewFile.
 type NewFile struct {
-	Blob   string  `json:"blob"`
-	Name   string  `json:"name"`
-	Size   float64 `json:"size"`
-	Ticket string  `json:"ticket"`
+	Blob   string `json:"blob"`
+	Name   string `json:"name"`
+	Ticket string `json:"ticket"`
 }
 
 // NewGroup defines model for NewGroup.

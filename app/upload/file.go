@@ -80,11 +80,9 @@ func (u *Uploader) Routes() (http.Handler, error) {
 				filename = id
 			}
 
-			ext := path.Ext(filename)
-			prefix := strings.TrimSuffix(filename, ext)
-			uniq := database.GenerateID("")
+			_, filePath := u.paths(id, filename)
 
-			hook.Upload.Storage["Path"] = path.Join(id, fmt.Sprintf("%s_%s%s", prefix, uniq, ext))
+			hook.Upload.Storage["Path"] = filePath
 
 			return tusd.HTTPResponse{}, tusd.FileInfoChanges{
 				ID:      id,
@@ -127,26 +125,83 @@ func (u *Uploader) Routes() (http.Handler, error) {
 	return chi.Chain(u.auth.Middleware, auth.ValidateFileScopes).Handler(handler), nil
 }
 
+type InfoFileMetaData struct {
+	Filename     string `json:"filename"`
+	Filetype     string `json:"filetype"`
+	Name         string `json:"name"`
+	RelativePath string `json:"relativePath"`
+	Type         string `json:"type"`
+}
+
+type InfoFileStorage struct {
+	InfoPath string `json:"InfoPath"`
+	Path     string `json:"Path"`
+	Type     string `json:"Type"`
+}
 type InfoFile struct {
-	ID             string `json:"ID"`
-	Size           int    `json:"Size"`
-	SizeIsDeferred bool   `json:"SizeIsDeferred"`
-	Offset         int    `json:"Offset"`
-	MetaData       struct {
-		Filename     string `json:"filename"`
-		Filetype     string `json:"filetype"`
-		Name         string `json:"name"`
-		RelativePath string `json:"relativePath"`
-		Type         string `json:"type"`
-	} `json:"MetaData"`
-	IsPartial      bool        `json:"IsPartial"`
-	IsFinal        bool        `json:"IsFinal"`
-	PartialUploads interface{} `json:"PartialUploads"`
-	Storage        struct {
-		InfoPath string `json:"InfoPath"`
-		Path     string `json:"Path"`
-		Type     string `json:"Type"`
-	} `json:"Storage"`
+	ID             string           `json:"ID"`
+	Size           int              `json:"Size"`
+	SizeIsDeferred bool             `json:"SizeIsDeferred"`
+	Offset         int              `json:"Offset"`
+	MetaData       InfoFileMetaData `json:"MetaData"`
+	IsPartial      bool             `json:"IsPartial"`
+	IsFinal        bool             `json:"IsFinal"`
+	PartialUploads interface{}      `json:"PartialUploads"`
+	Storage        InfoFileStorage  `json:"Storage"`
+}
+
+func (u *Uploader) CreateFile(id string, filename string, blob []byte) (string, error) {
+	infoFilePath, filePath := u.paths(id, filename)
+
+	fileType := http.DetectContentType(blob)
+
+	infoFileData := InfoFile{
+		ID:             id,
+		Size:           len(blob),
+		SizeIsDeferred: true,
+		Offset:         0,
+		MetaData: InfoFileMetaData{
+			Filename:     filename,
+			Filetype:     fileType,
+			Name:         filename,
+			RelativePath: "null",
+			Type:         fileType,
+		},
+		IsPartial:      false,
+		IsFinal:        false,
+		PartialUploads: nil,
+		Storage: InfoFileStorage{
+			InfoPath: infoFilePath,
+			Path:     filePath,
+			Type:     "filestore",
+		},
+	}
+
+	if err := os.MkdirAll(path.Join(u.path, id), 0o755); err != nil {
+		return "", fmt.Errorf("failed to create directory for file %s: %w", id, err)
+	}
+
+	file, err := os.Create(infoFilePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to create file info %s: %w", infoFilePath, err)
+	}
+	defer file.Close()
+
+	if err := json.NewEncoder(file).Encode(infoFileData); err != nil {
+		return "", fmt.Errorf("failed to encode file info %s: %w", infoFilePath, err)
+	}
+
+	file, err = os.Create(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to create file %s: %w", filePath, err)
+	}
+	defer file.Close()
+
+	if _, err := file.Write(blob); err != nil {
+		return "", fmt.Errorf("failed to write blob to file %s: %w", filePath, err)
+	}
+
+	return path.Base(filePath), nil
 }
 
 func (u *Uploader) File(id string, blob string) (*os.File, string, int64, error) {
@@ -187,4 +242,14 @@ func (u *Uploader) DeleteFile(id string) error {
 		os.RemoveAll(path.Join(u.path, id)),
 		os.RemoveAll(id+".info"),
 	)
+}
+
+func (u *Uploader) paths(id string, filename string) (infoFilePath, filePath string) {
+	infoFilePath = path.Join(u.path, id+".info")
+	ext := path.Ext(filename)
+	prefix := strings.TrimSuffix(filename, ext)
+	uniq := database.GenerateID("")
+	filePath = path.Join(u.path, id, fmt.Sprintf("%s_%s%s", prefix, uniq, ext))
+
+	return infoFilePath, filePath
 }
