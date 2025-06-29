@@ -16,7 +16,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/permission"
 	"github.com/SecurityBrewery/catalyst/app/pointer"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
-	"github.com/SecurityBrewery/catalyst/app/upload"
+	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
 
 const (
@@ -29,11 +29,11 @@ var _ openapi.StrictServerInterface = (*Service)(nil)
 type Service struct {
 	queries   *sqlc.Queries
 	hooks     *hook.Hooks
-	uploader  *upload.Uploader
+	uploader  *uploader.Uploader
 	scheduler *schedule.Scheduler
 }
 
-func New(queries *sqlc.Queries, hooks *hook.Hooks, uploader *upload.Uploader, scheduler *schedule.Scheduler) *Service {
+func New(queries *sqlc.Queries, hooks *hook.Hooks, uploader *uploader.Uploader, scheduler *schedule.Scheduler) *Service {
 	return &Service{
 		queries:   queries,
 		hooks:     hooks,

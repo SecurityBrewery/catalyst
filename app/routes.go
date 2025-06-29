@@ -16,6 +16,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 	"github.com/SecurityBrewery/catalyst/ui"
 )
 
@@ -49,7 +50,7 @@ func (a *App) setupRoutes() error {
 	}))
 	a.Router.With(a.Auth.Middleware).Mount("/api", http.StripPrefix("/api", apiHandler))
 
-	uploadHandler, err := a.Uploader.Routes()
+	uploadHandler, err := upload.Routes(a.Queries, a.Auth, a.Uploader)
 	if err != nil {
 		return err
 	}

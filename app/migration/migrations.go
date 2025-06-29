@@ -7,6 +7,7 @@ var migrationGenerators = []func() (migration, error){
 	newSQLMigration("001_create_tables"),
 	newSQLMigration("002_create_defaultdata"),
 	newSQLMigration("003_create_groups"),
+	newFilesMigration(),
 }
 
 func migrations(version int) ([]migration, error) {

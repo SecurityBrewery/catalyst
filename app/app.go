@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 
@@ -14,7 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/mail"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 	"github.com/SecurityBrewery/catalyst/app/service"
-	"github.com/SecurityBrewery/catalyst/app/upload"
+	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
 
 type App struct {
@@ -24,11 +23,16 @@ type App struct {
 	Auth      *auth.Service
 	Hooks     *hook.Hooks
 	Scheduler *schedule.Scheduler
-	Uploader  *upload.Uploader
+	Uploader  *uploader.Uploader
 }
 
 func New(ctx context.Context, dir string) (*App, func(), error) {
-	queries, cleanup, err := database.DB(ctx, filepath.Join(dir, "data.db"))
+	uploader, err := uploader.New(dir)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
+	}
+
+	queries, cleanup, err := database.DB(ctx, dir, uploader)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -43,11 +47,6 @@ func New(ctx context.Context, dir string) (*App, func(), error) {
 	}
 
 	hooks := hook.NewHooks()
-
-	uploader, err := upload.NewUploader(dir, authService, queries)
-	if err != nil {
-		return nil, cleanup, fmt.Errorf("failed to create uploader: %w", err)
-	}
 
 	app := &App{
 		Hooks:     hooks,

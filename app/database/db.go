@@ -17,11 +17,14 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/migration"
+	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
 
 const sqliteDriver = "sqlite3"
 
-func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
+func DB(ctx context.Context, dir string, uploader *uploader.Uploader) (*sqlc.Queries, func(), error) {
+	filename := filepath.Join(dir, "data.db")
+
 	slog.InfoContext(ctx, "Connecting to database", "path", filename)
 
 	// see https://briandouglas.ie/sqlite-defaults/ for more details
@@ -70,11 +73,13 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 	read.SetMaxOpenConns(100)
 	read.SetConnMaxIdleTime(time.Minute)
 
-	if err := migration.Apply(ctx, write); err != nil {
+	queries := sqlc.New(read, write)
+
+	if err := migration.Apply(ctx, write, queries, dir, uploader); err != nil {
 		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
-	return sqlc.New(read, write), func() {
+	return queries, func() {
 		if err := read.Close(); err != nil {
 			slog.Error("failed to close read connection", "error", err)
 		}
@@ -86,7 +91,7 @@ func DB(ctx context.Context, filename string) (*sqlc.Queries, func(), error) {
 }
 
 func TestDB(t *testing.T, dir string) *sqlc.Queries {
-	queries, cleanup, err := DB(t.Context(), filepath.Join(dir, "data.db"))
+	queries, cleanup, err := DB(t.Context(), filepath.Join(dir, "data.db"), nil)
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 

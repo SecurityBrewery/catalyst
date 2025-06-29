@@ -8,13 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
-	"github.com/SecurityBrewery/catalyst/app/upload"
+	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
 
 func newTestService(t *testing.T) *Service {
@@ -23,8 +22,7 @@ func newTestService(t *testing.T) *Service {
 	dir := t.TempDir()
 	queries := data.NewTestDB(t, dir)
 	hooks := hook.NewHooks()
-	auth := auth.New(queries, nil)
-	uploader, err := upload.NewUploader(dir, auth, queries)
+	uploader, err := uploader.New(dir)
 	require.NoError(t, err)
 
 	return New(queries, hooks, uploader, nil)
