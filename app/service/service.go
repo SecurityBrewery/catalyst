@@ -259,12 +259,16 @@ func (s *Service) CreateFile(ctx context.Context, request openapi.CreateFileRequ
 func (s *Service) DeleteFile(ctx context.Context, request openapi.DeleteFileRequestObject) (openapi.DeleteFileResponseObject, error) {
 	s.hooks.OnRecordBeforeDeleteRequest.Publish(ctx, permission.FilesTable.ID, request.Id)
 
-	if err := s.uploader.DeleteFile(request.Id); err != nil {
+	f, err := s.queries.GetFile(ctx, request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.uploader.DeleteFile(f.ID, f.Blob); err != nil {
 		return nil, fmt.Errorf("failed to delete file from uploader: %w", err)
 	}
 
-	err := s.queries.DeleteFile(ctx, request.Id)
-	if err != nil {
+	if err := s.queries.DeleteFile(ctx, request.Id); err != nil {
 		return nil, err
 	}
 

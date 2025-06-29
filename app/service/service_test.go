@@ -24,7 +24,8 @@ func newTestService(t *testing.T) *Service {
 	queries := data.NewTestDB(t, dir)
 	hooks := hook.NewHooks()
 	auth := auth.New(queries, nil)
-	uploader := upload.NewUploader(dir, auth, queries)
+	uploader, err := upload.NewUploader(dir, auth, queries)
+	require.NoError(t, err)
 
 	return New(queries, hooks, uploader, nil)
 }

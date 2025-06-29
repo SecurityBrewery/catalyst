@@ -44,7 +44,10 @@ func New(ctx context.Context, dir string) (*App, func(), error) {
 
 	hooks := hook.NewHooks()
 
-	uploader := upload.NewUploader(dir, authService, queries)
+	uploader, err := upload.NewUploader(dir, authService, queries)
+	if err != nil {
+		return nil, cleanup, fmt.Errorf("failed to create uploader: %w", err)
+	}
 
 	app := &App{
 		Hooks:     hooks,

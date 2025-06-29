@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/tus/tusd/v2/pkg/filelocker"
-	"github.com/tus/tusd/v2/pkg/filestore"
 	tusd "github.com/tus/tusd/v2/pkg/handler"
+	"github.com/tus/tusd/v2/pkg/rootstore"
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
@@ -22,39 +23,33 @@ import (
 )
 
 type Uploader struct {
-	path    string
 	queries *sqlc.Queries
 	auth    *auth.Service
+	root    *os.Root
 }
 
-func NewUploader(p string, auth *auth.Service, queries *sqlc.Queries) *Uploader {
+func NewUploader(dir string, auth *auth.Service, queries *sqlc.Queries) (*Uploader, error) {
+	uploadsDir := path.Join(dir, "uploads")
+
+	if err := os.MkdirAll(uploadsDir, 0o755); err != nil {
+		return nil, fmt.Errorf("failed to create uploads directory: %w", err)
+	}
+
+	root, err := os.OpenRoot(uploadsDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open uploads directory: %w", err)
+	}
+
 	return &Uploader{
 		queries: queries,
-		path:    path.Join(p, "uploads"),
+		root:    root,
 		auth:    auth,
-	}
+	}, nil
 }
 
 func (u *Uploader) Routes() (http.Handler, error) {
-	// Create a new FileStore instance which is responsible for
-	// storing the uploaded file on disk in the specified directory.
-	// This path _must_ exist before tusd will store uploads in it.
-	// If you want to save them on a different medium, for example
-	// a remote FTP server, you can implement your own storage backend
-	// by implementing the tusd.DataStore interface.
-	store := filestore.New(u.path)
-
-	// A locking mechanism helps preventing data loss or corruption from
-	// parallel requests to a upload resource. A good match for the disk-based
-	// storage is the filelocker package which uses disk-based file lock for
-	// coordinating access.
-	// More information is available at https://tus.github.io/tusd/advanced-topics/locks/.
-	locker := filelocker.New(u.path)
-
-	// A storage backend for tusd may consist of multiple different parts which
-	// handle upload creation, locking, termination and so on. The composer is a
-	// place where all those separated pieces are joined together. In this example
-	// we only use the file store but you may plug in multiple.
+	store := rootstore.New(u.root)
+	locker := filelocker.New(u.root.Name())
 	composer := tusd.NewStoreComposer()
 	store.UseIn(composer)
 	locker.UseIn(composer)
@@ -80,7 +75,7 @@ func (u *Uploader) Routes() (http.Handler, error) {
 				filename = id
 			}
 
-			_, filePath := u.paths(id, filename)
+			_, filePath := u.paths(id, filepath.Base(filename))
 
 			hook.Upload.Storage["Path"] = filePath
 
@@ -151,6 +146,8 @@ type InfoFile struct {
 }
 
 func (u *Uploader) CreateFile(id string, filename string, blob []byte) (string, error) {
+	filename = filepath.Base(filename)
+
 	infoFilePath, filePath := u.paths(id, filename)
 
 	fileType := http.DetectContentType(blob)
@@ -177,11 +174,11 @@ func (u *Uploader) CreateFile(id string, filename string, blob []byte) (string, 
 		},
 	}
 
-	if err := os.MkdirAll(path.Join(u.path, id), 0o755); err != nil {
+	if err := u.root.Mkdir(id, 0o755); err != nil {
 		return "", fmt.Errorf("failed to create directory for file %s: %w", id, err)
 	}
 
-	file, err := os.Create(infoFilePath)
+	file, err := u.root.Create(infoFilePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to create file info %s: %w", infoFilePath, err)
 	}
@@ -191,7 +188,7 @@ func (u *Uploader) CreateFile(id string, filename string, blob []byte) (string, 
 		return "", fmt.Errorf("failed to encode file info %s: %w", infoFilePath, err)
 	}
 
-	file, err = os.Create(filePath)
+	file, err = u.root.Create(filePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to create file %s: %w", filePath, err)
 	}
@@ -204,10 +201,10 @@ func (u *Uploader) CreateFile(id string, filename string, blob []byte) (string, 
 	return path.Base(filePath), nil
 }
 
-func (u *Uploader) File(id string, blob string) (*os.File, string, int64, error) {
-	infoFilePath := path.Join(u.path, id+".info")
+func (u *Uploader) File(id, name string) (*os.File, string, int64, error) {
+	infoFilePath := id + ".info"
 
-	infoFile, err := os.Open(infoFilePath)
+	infoFile, err := u.root.Open(infoFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, "", 0, fmt.Errorf("file info %s does not exist", infoFilePath)
@@ -222,14 +219,14 @@ func (u *Uploader) File(id string, blob string) (*os.File, string, int64, error)
 		return nil, "", 0, fmt.Errorf("failed to decode file info %s: %w", infoFilePath, err)
 	}
 
-	filePath := path.Join(u.path, id, blob)
+	filePath := path.Join(id, name)
 
-	info, err := os.Stat(filePath)
+	info, err := u.root.Stat(filePath)
 	if os.IsNotExist(err) {
 		return nil, "", 0, fmt.Errorf("file %s does not exist", filePath)
 	}
 
-	f, err := os.Open(filePath)
+	f, err := u.root.Open(filePath)
 	if err != nil {
 		return nil, "", 0, fmt.Errorf("failed to open file %s: %w", filePath, err)
 	}
@@ -237,19 +234,20 @@ func (u *Uploader) File(id string, blob string) (*os.File, string, int64, error)
 	return f, infoFileData.MetaData.Filetype, info.Size(), nil
 }
 
-func (u *Uploader) DeleteFile(id string) error {
+func (u *Uploader) DeleteFile(id, name string) error {
 	return errors.Join(
-		os.RemoveAll(path.Join(u.path, id)),
-		os.RemoveAll(id+".info"),
+		u.root.Remove(path.Join(id, name)),
+		u.root.Remove(id),
+		u.root.Remove(id+".info"),
 	)
 }
 
 func (u *Uploader) paths(id string, filename string) (infoFilePath, filePath string) {
-	infoFilePath = path.Join(u.path, id+".info")
+	infoFilePath = id + ".info"
 	ext := path.Ext(filename)
 	prefix := strings.TrimSuffix(filename, ext)
 	uniq := database.GenerateID("")
-	filePath = path.Join(u.path, id, fmt.Sprintf("%s_%s%s", prefix, uniq, ext))
+	filePath = path.Join(id, fmt.Sprintf("%s_%s%s", prefix, uniq, ext))
 
 	return infoFilePath, filePath
 }
