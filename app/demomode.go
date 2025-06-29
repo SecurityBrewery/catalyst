@@ -26,7 +26,14 @@ func demoMode(queries *sqlc.Queries) func(http.Handler) http.Handler {
 
 func isCriticalPath(r *http.Request) bool {
 	// Define critical paths that should not be accessed in demo mode
-	criticalPaths := []string{"/api/reactions", "/api/files"}
+	criticalPaths := []string{
+		"/api/files",
+		"/api/groups",
+		"/api/reactions",
+		"/api/settings",
+		"/api/users",
+		"/api/webhooks",
+	}
 
 	for _, path := range criticalPaths {
 		if strings.Contains(r.URL.Path, path) {
