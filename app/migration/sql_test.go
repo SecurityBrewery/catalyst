@@ -1,29 +1,33 @@
 package migration
 
 import (
-	"database/sql"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
+
+	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
 
 func TestSQLMigration_UpAndDown(t *testing.T) {
 	t.Parallel()
-
-	db, err := sql.Open("sqlite3", ":memory:")
-	require.NoError(t, err)
-	defer db.Close()
 
 	m := sqlMigration{
 		sqlName: "test_migration",
 		upSQL:   "CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT);",
 	}
 
+	dir := t.TempDir()
+	queries := database.TestDB(t, dir)
+	uploader, err := uploader.New(dir)
+	require.NoError(t, err)
+
 	// Test up
-	require.NoError(t, m.up(t.Context(), nil, db, "", nil))
+	require.NoError(t, m.up(t.Context(), queries, dir, uploader))
+
 	// Table should exist
-	_, err = db.Exec("INSERT INTO test_table (name) VALUES ('foo')")
+	_, err = queries.WriteDB.Exec("INSERT INTO test_table (name) VALUES ('foo')")
 	require.NoError(t, err)
 }
 

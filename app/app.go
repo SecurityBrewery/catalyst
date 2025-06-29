@@ -11,6 +11,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/mail"
+	"github.com/SecurityBrewery/catalyst/app/migration"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
 	"github.com/SecurityBrewery/catalyst/app/service"
 	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
@@ -32,9 +33,13 @@ func New(ctx context.Context, dir string) (*App, func(), error) {
 		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
 
-	queries, cleanup, err := database.DB(ctx, dir, uploader)
+	queries, cleanup, err := database.DB(ctx, dir)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	if err := migration.Apply(ctx, queries, dir, uploader); err != nil {
+		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
 	mailer := mail.New(queries)

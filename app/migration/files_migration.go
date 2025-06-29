@@ -2,7 +2,6 @@ package migration
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"io/fs"
 	"os"
@@ -22,7 +21,7 @@ func newFilesMigration() func() (migration, error) {
 
 func (filesMigration) name() string { return "005_pocketbase_files_to_tusd" }
 
-func (filesMigration) up(ctx context.Context, queries *sqlc.Queries, _ *sql.DB, dir string, uploader *uploader.Uploader) error {
+func (filesMigration) up(ctx context.Context, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error {
 	oldUploadDir := filepath.Join(dir, "storage")
 	if _, err := os.Stat(oldUploadDir); os.IsNotExist(err) {
 		// If the old upload directory does not exist, we assume no migration is needed.

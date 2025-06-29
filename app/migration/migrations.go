@@ -5,9 +5,9 @@ import "fmt"
 var migrationGenerators = []func() (migration, error){
 	newSQLMigration("000_create_pocketbase_tables"),
 	newSQLMigration("001_create_tables"),
+	newFilesMigration(),
 	newSQLMigration("002_create_defaultdata"),
 	newSQLMigration("003_create_groups"),
-	newFilesMigration(),
 }
 
 func migrations(version int) ([]migration, error) {

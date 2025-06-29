@@ -2,7 +2,6 @@ package migration
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	sqlmigrations "github.com/SecurityBrewery/catalyst/app/database/migrations"
@@ -33,8 +32,8 @@ func (m sqlMigration) name() string {
 	return m.sqlName
 }
 
-func (m sqlMigration) up(ctx context.Context, _ *sqlc.Queries, db *sql.DB, _ string, _ *uploader.Uploader) error {
-	_, err := db.ExecContext(ctx, m.upSQL)
+func (m sqlMigration) up(ctx context.Context, queries *sqlc.Queries, _ string, _ *uploader.Uploader) error {
+	_, err := queries.WriteDB.ExecContext(ctx, m.upSQL)
 	if err != nil {
 		return fmt.Errorf("migration %s up failed: %w", m.sqlName, err)
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
+	"github.com/SecurityBrewery/catalyst/app/migration"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
@@ -23,6 +24,9 @@ func newTestService(t *testing.T) *Service {
 	queries := data.NewTestDB(t, dir)
 	hooks := hook.NewHooks()
 	uploader, err := uploader.New(dir)
+	require.NoError(t, err)
+
+	err = migration.Apply(t.Context(), queries, dir, uploader)
 	require.NoError(t, err)
 
 	return New(queries, hooks, uploader, nil)

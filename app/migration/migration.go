@@ -2,7 +2,6 @@ package migration
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log/slog"
 
@@ -12,11 +11,11 @@ import (
 
 type migration interface {
 	name() string
-	up(ctx context.Context, queries *sqlc.Queries, db *sql.DB, dir string, uploader *uploader.Uploader) error
+	up(ctx context.Context, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error
 }
 
-func Apply(ctx context.Context, db *sql.DB, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error {
-	currentVersion, err := version(ctx, db)
+func Apply(ctx context.Context, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error {
+	currentVersion, err := version(ctx, queries.WriteDB)
 	if err != nil {
 		return err
 	}
@@ -37,12 +36,12 @@ func Apply(ctx context.Context, db *sql.DB, queries *sqlc.Queries, dir string, u
 	for _, m := range migrations {
 		slog.InfoContext(ctx, "Applying migration", "name", m.name())
 
-		if err := m.up(ctx, queries, db, dir, uploader); err != nil {
+		if err := m.up(ctx, queries, dir, uploader); err != nil {
 			return fmt.Errorf("migration %s failed: %w", m.name(), err)
 		}
 	}
 
-	if err := setVersion(ctx, db, currentVersion+len(migrations)); err != nil {
+	if err := setVersion(ctx, queries.WriteDB, currentVersion+len(migrations)); err != nil {
 		return err
 	}
 
