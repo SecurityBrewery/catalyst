@@ -1797,9 +1797,8 @@ func (s *Service) UpdateWebhook(ctx context.Context, request openapi.UpdateWebho
 func (s *Service) GetConfig(ctx context.Context, _ openapi.GetConfigRequestObject) (openapi.GetConfigResponseObject, error) {
 	flags := []string{}
 
-	features, err := s.queries.ListFeatures(ctx, sqlc.ListFeaturesParams{
-		Offset: 0,
-		Limit:  1000,
+	features, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListFeaturesRow, error) {
+		return s.queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return nil, err

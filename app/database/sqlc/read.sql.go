@@ -854,6 +854,65 @@ func (q *ReadQueries) ListReactions(ctx context.Context, arg ListReactionsParams
 	return items, nil
 }
 
+const listReactionsByTrigger = `-- name: ListReactionsByTrigger :many
+SELECT reactions.id, reactions.name, reactions."action", reactions.actiondata, reactions."trigger", reactions.triggerdata, reactions.created, reactions.updated, COUNT(*) OVER () as total_count
+FROM reactions
+WHERE trigger = ?1
+ORDER BY reactions.created DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListReactionsByTriggerParams struct {
+	Trigger string `json:"trigger"`
+	Offset  int64  `json:"offset"`
+	Limit   int64  `json:"limit"`
+}
+
+type ListReactionsByTriggerRow struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Action      string    `json:"action"`
+	Actiondata  []byte    `json:"actiondata"`
+	Trigger     string    `json:"trigger"`
+	Triggerdata []byte    `json:"triggerdata"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
+	TotalCount  int64     `json:"total_count"`
+}
+
+func (q *ReadQueries) ListReactionsByTrigger(ctx context.Context, arg ListReactionsByTriggerParams) ([]ListReactionsByTriggerRow, error) {
+	rows, err := q.db.QueryContext(ctx, listReactionsByTrigger, arg.Trigger, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListReactionsByTriggerRow
+	for rows.Next() {
+		var i ListReactionsByTriggerRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Action,
+			&i.Actiondata,
+			&i.Trigger,
+			&i.Triggerdata,
+			&i.Created,
+			&i.Updated,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTasks = `-- name: ListTasks :many
 SELECT tasks.id, tasks.ticket, tasks.owner, tasks.name, tasks.open, tasks.created, tasks.updated,
        users.name       as owner_name,

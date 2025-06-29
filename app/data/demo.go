@@ -38,9 +38,8 @@ func GenerateDemoData(ctx context.Context, queries *sqlc.Queries, userCount, tic
 		ticketCount = minimumTicketCount
 	}
 
-	types, err := queries.ListTypes(ctx, sqlc.ListTypesParams{
-		Limit:  100,
-		Offset: 0,
+	types, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListTypesRow, error) {
+		return queries.ListTypes(ctx, sqlc.ListTypesParams{Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return fmt.Errorf("failed to list types: %w", err)

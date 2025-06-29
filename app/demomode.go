@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -49,18 +50,28 @@ func isCriticalMethod(r *http.Request) bool {
 }
 
 func isDemoMode(ctx context.Context, queries *sqlc.Queries) bool {
-	features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Offset: 0, Limit: 100})
-	if err != nil {
-		slog.ErrorContext(ctx, "Failed to get flags", "error", err)
+	var demoMode bool
+
+	if err := database.Paginate(ctx, func(ctx context.Context, offset, limit int64) (nextPage bool, err error) {
+		features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Offset: offset, Limit: limit})
+		if err != nil {
+			return false, err
+		}
+
+		for _, feature := range features {
+			if feature.Key == "demo" {
+				demoMode = true
+
+				return false, nil // Stop pagination if demo mode is found
+			}
+		}
+
+		return true, nil
+	}); err != nil {
+		slog.ErrorContext(ctx, "Failed to check demo mode", "error", err)
 
 		return false
 	}
 
-	for _, feature := range features {
-		if feature.Key == "demo" {
-			return true
-		}
-	}
-
-	return false
+	return demoMode
 }

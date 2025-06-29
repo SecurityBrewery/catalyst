@@ -11,6 +11,7 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/permission"
 )
@@ -50,9 +51,8 @@ func event(ctx context.Context, app *app.App, event, collection string, record a
 		return
 	}
 
-	webhooks, err := app.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{
-		Offset: 0,
-		Limit:  100,
+	webhooks, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListWebhooksRow, error) {
+		return app.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to list webhooks", "error", err.Error())

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
 )
@@ -33,9 +34,8 @@ func (filesMigration) up(ctx context.Context, queries *sqlc.Queries, dir string,
 		return fmt.Errorf("open old uploads root: %w", err)
 	}
 
-	files, err := queries.ListFiles(ctx, sqlc.ListFilesParams{
-		Limit:  1000,
-		Offset: 0,
+	files, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListFilesRow, error) {
+		return queries.ListFiles(ctx, sqlc.ListFilesParams{Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return fmt.Errorf("list files: %w", err)

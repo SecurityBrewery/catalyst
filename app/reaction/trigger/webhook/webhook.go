@@ -56,7 +56,7 @@ func handle(app *app.App) http.HandlerFunc {
 	}
 }
 
-func parseRequest(queries *sqlc.Queries, r *http.Request) (*sqlc.ListReactionsRow, []byte, int, error) {
+func parseRequest(queries *sqlc.Queries, r *http.Request) (*sqlc.ListReactionsByTriggerRow, []byte, int, error) {
 	if !strings.HasPrefix(r.URL.Path, prefix) {
 		return nil, nil, http.StatusNotFound, fmt.Errorf("wrong prefix")
 	}
@@ -101,10 +101,9 @@ func parseRequest(queries *sqlc.Queries, r *http.Request) (*sqlc.ListReactionsRo
 	return reaction, payload, http.StatusOK, nil
 }
 
-func findByWebhookTrigger(ctx context.Context, queries *sqlc.Queries, path string) (*sqlc.ListReactionsRow, *Webhook, bool, error) {
-	reactions, err := queries.ListReactions(ctx, sqlc.ListReactionsParams{
-		Offset: 0,
-		Limit:  100,
+func findByWebhookTrigger(ctx context.Context, queries *sqlc.Queries, path string) (*sqlc.ListReactionsByTriggerRow, *Webhook, bool, error) {
+	reactions, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListReactionsByTriggerRow, error) {
+		return queries.ListReactionsByTrigger(ctx, sqlc.ListReactionsByTriggerParams{Trigger: "webhook", Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return nil, nil, false, err
@@ -115,10 +114,6 @@ func findByWebhookTrigger(ctx context.Context, queries *sqlc.Queries, path strin
 	}
 
 	for _, reaction := range reactions {
-		if reaction.Trigger != "webhook" {
-			continue
-		}
-
 		var webhook Webhook
 		if err := json.Unmarshal(reaction.Triggerdata, &webhook); err != nil {
 			return nil, nil, false, err

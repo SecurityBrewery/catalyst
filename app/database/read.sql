@@ -97,6 +97,13 @@ FROM reactions
 ORDER BY reactions.created DESC
 LIMIT @limit OFFSET @offset;
 
+-- name: ListReactionsByTrigger :many
+SELECT reactions.*, COUNT(*) OVER () as total_count
+FROM reactions
+WHERE trigger = @trigger
+ORDER BY reactions.created DESC
+LIMIT @limit OFFSET @offset;
+
 ------------------------------------------------------------------
 
 -- name: GetTask :one

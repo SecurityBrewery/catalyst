@@ -94,10 +94,9 @@ func runHook(ctx context.Context, app *app.App, collection, event string, record
 	return errs
 }
 
-func findByHookTrigger(ctx context.Context, queries *sqlc.Queries, collection, event string) ([]*sqlc.ListReactionsRow, error) {
-	reactions, err := queries.ListReactions(ctx, sqlc.ListReactionsParams{
-		Offset: 0,
-		Limit:  100,
+func findByHookTrigger(ctx context.Context, queries *sqlc.Queries, collection, event string) ([]*sqlc.ListReactionsByTriggerRow, error) {
+	reactions, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListReactionsByTriggerRow, error) {
+		return queries.ListReactionsByTrigger(ctx, sqlc.ListReactionsByTriggerParams{Trigger: "hook", Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find hook reaction: %w", err)
@@ -107,13 +106,9 @@ func findByHookTrigger(ctx context.Context, queries *sqlc.Queries, collection, e
 		return nil, nil
 	}
 
-	var matchedRecords []*sqlc.ListReactionsRow
+	var matchedRecords []*sqlc.ListReactionsByTriggerRow
 
 	for _, reaction := range reactions {
-		if reaction.Trigger != "hook" {
-			continue
-		}
-
 		var hook Hook
 		if err := json.Unmarshal(reaction.Triggerdata, &hook); err != nil {
 			return nil, err

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"encoding/json"
 	"log/slog"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
@@ -205,8 +207,8 @@ func DefaultTestData(t *testing.T, dir string, queries *sqlc.Queries) {
 	})
 	require.NoError(t, err, "failed to assign admin group to user")
 
-	files, err := queries.ListFiles(t.Context(), sqlc.ListFilesParams{
-		Limit: 1000, // TODO
+	files, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListFilesRow, error) {
+		return queries.ListFiles(ctx, sqlc.ListFilesParams{Limit: limit, Offset: offset})
 	})
 	require.NoError(t, err, "failed to list files")
 

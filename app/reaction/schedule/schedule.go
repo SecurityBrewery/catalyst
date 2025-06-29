@@ -83,9 +83,8 @@ func (s *Scheduler) RemoveReaction(id string) {
 }
 
 func (s *Scheduler) loadJobs(ctx context.Context) error {
-	reactions, err := s.queries.ListReactions(ctx, sqlc.ListReactionsParams{
-		Offset: 0,
-		Limit:  1000,
+	reactions, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListReactionsByTriggerRow, error) {
+		return s.queries.ListReactionsByTrigger(ctx, sqlc.ListReactionsByTriggerParams{Trigger: "schedule", Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		return fmt.Errorf("failed to find schedule reaction: %w", err)
@@ -98,10 +97,6 @@ func (s *Scheduler) loadJobs(ctx context.Context) error {
 	var errs []error
 
 	for _, reaction := range reactions {
-		if reaction.Trigger != "schedule" {
-			continue
-		}
-
 		if err := s.AddReaction(&sqlc.Reaction{
 			Action:      reaction.Action,
 			Actiondata:  reaction.Actiondata,
