@@ -19,7 +19,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
-func git tusRoutes(queries *sqlc.Queries, u *upload.Uploader) (http.Handler, error) {
+func tusRoutes(queries *sqlc.Queries, u *upload.Uploader) (http.Handler, error) {
 	store := rootstore.New(u.Root)
 	locker := filelocker.New(u.Root.Name())
 	composer := tusd.NewStoreComposer()
