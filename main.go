@@ -13,8 +13,8 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/data"
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 func main() {
@@ -85,7 +85,7 @@ func setup(ctx context.Context, command *cli.Command) (*app.App, func(), error) 
 	}
 
 	if appURL := command.String("app-url"); appURL != "" {
-		err := database.UpdateSettings(ctx, catalyst.Queries, func(settings *database.Settings) {
+		_, err := settings.Update(ctx, catalyst.Queries, func(settings *settings.Settings) {
 			settings.Meta.AppURL = appURL
 		})
 		if err != nil {

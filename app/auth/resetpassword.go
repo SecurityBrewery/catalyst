@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/mail"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 func handleResetPasswordMail(queries *sqlc.Queries, mailer *mail.Mailer) func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,7 @@ func handleResetPasswordMail(queries *sqlc.Queries, mailer *mail.Mailer) func(w 
 			return
 		}
 
-		settings, err := database.LoadSettings(r.Context(), queries)
+		settings, err := settings.Load(r.Context(), queries)
 		if err != nil {
 			errorJSON(w, http.StatusInternalServerError, "Failed to load settings: "+err.Error())
 
@@ -130,7 +130,7 @@ func handlePassword(queries *sqlc.Queries) func(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		settings, err := database.LoadSettings(r.Context(), queries)
+		settings, err := settings.Load(r.Context(), queries)
 		if err != nil {
 			errorJSON(w, http.StatusInternalServerError, "Failed to load settings: "+err.Error())
 

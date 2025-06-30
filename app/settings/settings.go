@@ -1,4 +1,4 @@
-package database
+package settings
 
 import (
 	"context"
@@ -48,7 +48,7 @@ type TokenConfig struct {
 	Duration int    `json:"duration"`
 }
 
-func LoadSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error) {
+func Load(ctx context.Context, queries *sqlc.Queries) (*Settings, error) {
 	param, err := queries.Param(ctx, "settings")
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -135,33 +135,25 @@ func initSettings(ctx context.Context, queries *sqlc.Queries) (*Settings, error)
 	return s, nil
 }
 
-func UpdateSettings(ctx context.Context, queries *sqlc.Queries, update func(settings *Settings)) error {
-	settings, err := LoadSettings(ctx, queries)
+func Update(ctx context.Context, queries *sqlc.Queries, update func(settings *Settings)) (*Settings, error) {
+	settings, err := Load(ctx, queries)
 	if err != nil {
-		return fmt.Errorf("failed to load settings: %w", err)
+		return nil, fmt.Errorf("failed to load settings: %w", err)
 	}
 
 	update(settings)
 
-	if err := SaveSettings(ctx, queries, settings); err != nil {
-		return fmt.Errorf("failed to save updated settings: %w", err)
-	}
-
-	return nil
-}
-
-func SaveSettings(ctx context.Context, queries *sqlc.Queries, settings *Settings) error {
 	data, err := json.Marshal(settings)
 	if err != nil {
-		return fmt.Errorf("failed to marshal settings: %w", err)
+		return nil, fmt.Errorf("failed to marshal settings: %w", err)
 	}
 
 	if err := queries.UpdateParam(ctx, sqlc.UpdateParamParams{
 		Key:   "settings",
 		Value: data,
 	}); err != nil {
-		return fmt.Errorf("failed to set settings: %w", err)
+		return nil, fmt.Errorf("failed to set settings: %w", err)
 	}
 
-	return nil
+	return settings, nil
 }

@@ -133,28 +133,28 @@ func generateDemoTickets(ctx context.Context, queries *sqlc.Queries, users []sql
 			return fmt.Errorf("failed to create ticket: %w", err)
 		}
 
-		for range gofakeit.IntN(5) {
+		for range gofakeit.IntRange(1, 5) {
 			_, err := createDemoComment(ctx, queries, newTicket.ID, random(users).ID, fakeTicketComment(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create comment for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
-		for range gofakeit.IntN(5) {
+		for range gofakeit.IntRange(1, 5) {
 			_, err := createDemoTimeline(ctx, queries, newTicket.ID, fakeTicketTimelineMessage(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create timeline for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
-		for range gofakeit.IntN(5) {
+		for range gofakeit.IntRange(1, 5) {
 			_, err := createDemoTask(ctx, queries, newTicket.ID, random(users).ID, fakeTicketTask(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create task for ticket %s: %w", newTicket.ID, err)
 			}
 		}
 
-		for range gofakeit.IntN(5) {
+		for range gofakeit.IntRange(1, 5) {
 			_, err := createDemoLink(ctx, queries, newTicket.ID, random([]string{"Blog", "Forum", "Wiki", "Documentation"}), gofakeit.URL(), count)
 			if err != nil {
 				return fmt.Errorf("failed to create link for ticket %s: %w", newTicket.ID, err)

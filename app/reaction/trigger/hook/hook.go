@@ -13,6 +13,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
@@ -75,7 +76,7 @@ func runHook(ctx context.Context, queries *sqlc.Queries, collection, event strin
 		return nil
 	}
 
-	settings, err := database.LoadSettings(ctx, queries)
+	settings, err := settings.Load(ctx, queries)
 	if err != nil {
 		return fmt.Errorf("failed to load settings: %w", err)
 	}

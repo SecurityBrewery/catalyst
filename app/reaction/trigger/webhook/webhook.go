@@ -15,6 +15,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 type Webhook struct {
@@ -37,7 +38,7 @@ func handle(queries *sqlc.Queries) http.HandlerFunc {
 			return
 		}
 
-		settings, err := database.LoadSettings(r.Context(), queries)
+		settings, err := settings.Load(r.Context(), queries)
 		if err != nil {
 			http.Error(w, "failed to load settings: "+err.Error(), http.StatusInternalServerError)
 

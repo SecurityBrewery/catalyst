@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 )
 
 func CreateAccessToken(ctx context.Context, user *sqlc.User, permissions []string, duration time.Duration, queries *sqlc.Queries) (string, error) {
-	settings, err := database.LoadSettings(ctx, queries)
+	settings, err := settings.Load(ctx, queries)
 	if err != nil {
 		return "", fmt.Errorf("failed to load settings: %w", err)
 	}
@@ -26,7 +26,7 @@ func CreateAccessToken(ctx context.Context, user *sqlc.User, permissions []strin
 	return createToken(user, duration, purposeAccess, permissions, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
 }
 
-func createResetToken(user *sqlc.User, settings *database.Settings) (string, error) {
+func createResetToken(user *sqlc.User, settings *settings.Settings) (string, error) {
 	duration := time.Duration(settings.RecordPasswordResetToken.Duration) * time.Second
 
 	return createResetTokenWithDuration(user, settings.Meta.AppURL, settings.RecordPasswordResetToken.Secret, duration)
@@ -131,7 +131,7 @@ func verifyAccessToken(ctx context.Context, bearerToken string, queries *sqlc.Qu
 		return nil, nil, fmt.Errorf("failed to retrieve user for subject %s: %w", sub, err)
 	}
 
-	settings, err := database.LoadSettings(ctx, queries)
+	settings, err := settings.Load(ctx, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load settings: %w", err)
 	}

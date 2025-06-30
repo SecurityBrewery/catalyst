@@ -8,8 +8,8 @@ import (
 
 	"github.com/wneessen/go-mail"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 type Mailer struct {
@@ -23,7 +23,7 @@ func New(queries *sqlc.Queries) *Mailer {
 }
 
 func (m *Mailer) Send(ctx context.Context, to, subject, plainTextBody, htmlBody string) error {
-	settings, err := database.LoadSettings(ctx, m.queries)
+	settings, err := settings.Load(ctx, m.queries)
 	if err != nil {
 		return fmt.Errorf("failed to load settings: %w", err)
 	}
@@ -55,7 +55,7 @@ func (m *Mailer) Send(ctx context.Context, to, subject, plainTextBody, htmlBody 
 	return nil
 }
 
-func createMessage(settings *database.Settings, to string, subject string, plainTextBody, htmlBody string) (*mail.Msg, error) {
+func createMessage(settings *settings.Settings, to string, subject string, plainTextBody, htmlBody string) (*mail.Msg, error) {
 	message := mail.NewMsg()
 
 	if err := message.FromFormat(settings.Meta.SenderName, settings.Meta.SenderAddress); err != nil {
@@ -76,7 +76,7 @@ func createMessage(settings *database.Settings, to string, subject string, plain
 	return message, nil
 }
 
-func mailClient(settings *database.Settings) (*mail.Client, error) {
+func mailClient(settings *settings.Settings) (*mail.Client, error) {
 	var authType mail.SMTPAuthType
 	if err := authType.UnmarshalString(cmp.Or(settings.SMTP.AuthMethod, "plain")); err != nil {
 		return nil, fmt.Errorf("failed to parse SMTP auth method: %w", err)

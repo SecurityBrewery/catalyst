@@ -53,6 +53,8 @@ func isDemoMode(ctx context.Context, queries *sqlc.Queries) bool {
 	var demoMode bool
 
 	if err := database.Paginate(ctx, func(ctx context.Context, offset, limit int64) (nextPage bool, err error) {
+		slog.InfoContext(ctx, "Checking for demo mode", "offset", offset, "limit", limit)
+
 		features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{Offset: offset, Limit: limit})
 		if err != nil {
 			return false, err

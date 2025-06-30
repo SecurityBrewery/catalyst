@@ -12,6 +12,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 type Scheduler struct {
@@ -53,7 +54,7 @@ func (s *Scheduler) AddReaction(reaction *sqlc.Reaction) error {
 		gocron.CronJob(schedule.Expression, false),
 		gocron.NewTask(
 			func(ctx context.Context) {
-				settings, err := database.LoadSettings(ctx, s.queries)
+				settings, err := settings.Load(ctx, s.queries)
 				if err != nil {
 					slog.ErrorContext(ctx, "Failed to load settings", "error", err)
 

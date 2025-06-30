@@ -37,9 +37,13 @@ func PaginateItems[T any](ctx context.Context, f func(ctx context.Context, offse
 			return false, err
 		}
 
+		if len(items) == 0 {
+			return false, nil
+		}
+
 		allItems = append(allItems, items...)
 
-		return len(items) == int(limit), nil
+		return true, nil
 	}); err != nil {
 		return nil, err
 	}

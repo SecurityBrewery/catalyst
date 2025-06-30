@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/settings"
 )
 
 var ErrUserInactive = errors.New("user is inactive")
@@ -50,7 +50,7 @@ func handleLogin(queries *sqlc.Queries) func(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		settings, err := database.LoadSettings(r.Context(), queries)
+		settings, err := settings.Load(r.Context(), queries)
 		if err != nil {
 			errorJSON(w, http.StatusInternalServerError, "Failed to load settings")
 

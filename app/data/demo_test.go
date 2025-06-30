@@ -21,6 +21,6 @@ func TestGenerate(t *testing.T) {
 	_ = app.Queries.DeleteGroup(t.Context(), "g_admin")
 	_ = app.Queries.DeleteGroup(t.Context(), "g_analyst")
 
-	err := data.GenerateDemoData(t.Context(), app.Queries, 0, 0)
+	err := data.GenerateDemoData(t.Context(), app.Queries, 4, 4)
 	require.NoError(t, err, "failed to generate fake data")
 }
