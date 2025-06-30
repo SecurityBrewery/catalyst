@@ -89,8 +89,8 @@ func DefaultTestData(t *testing.T, dir string, queries *sqlc.Queries) {
 		Name:        "Test Ticket",
 		Open:        true,
 		Owner:       pointer.Pointer("u_bob_analyst"),
-		Schema:      json.RawMessage([]byte(`{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`)),
-		State:       json.RawMessage([]byte(`{"tlp":"AMBER"}`)),
+		Schema:      json.RawMessage(`{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}`),
+		State:       json.RawMessage(`{"tlp":"AMBER"}`),
 		Type:        "incident",
 		Updated:     parseTime("2025-06-21T22:21:26.271Z"),
 	})
@@ -188,7 +188,7 @@ func DefaultTestData(t *testing.T, dir string, queries *sqlc.Queries) {
 		Action:      "python",
 		Actiondata:  []byte(`{"requirements":"requests","script":"import requests\nrequests.post('http://127.0.0.1:12346/test', json={'test':True})"}`),
 		Trigger:     "hook",
-		Triggerdata: json.RawMessage([]byte(`{"collections":["tickets"],"events":["create"]}`)),
+		Triggerdata: json.RawMessage(`{"collections":["tickets"],"events":["create"]}`),
 		Created:     parseTime("2025-06-21T22:21:26.271Z"),
 		Updated:     parseTime("2025-06-21T22:21:26.271Z"),
 	})

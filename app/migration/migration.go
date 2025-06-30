@@ -6,15 +6,15 @@ import (
 	"log/slog"
 
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 type migration interface {
 	name() string
-	up(ctx context.Context, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error
+	up(ctx context.Context, queries *sqlc.Queries, dir string, uploader *upload.Uploader) error
 }
 
-func Apply(ctx context.Context, queries *sqlc.Queries, dir string, uploader *uploader.Uploader) error {
+func Apply(ctx context.Context, queries *sqlc.Queries, dir string, uploader *upload.Uploader) error {
 	currentVersion, err := version(ctx, queries.WriteDB)
 	if err != nil {
 		return err

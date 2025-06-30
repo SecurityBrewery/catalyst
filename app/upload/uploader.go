@@ -1,4 +1,4 @@
-package uploader
+package upload
 
 import (
 	"crypto/rand"

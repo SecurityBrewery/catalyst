@@ -8,10 +8,10 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 
+	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/auth/password"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/permission"
 	"github.com/SecurityBrewery/catalyst/app/pointer"
 )
 
@@ -330,7 +330,7 @@ func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc
 	_, err := queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-ir",
 		Name:        "IR Team",
-		Permissions: permission.ToJSONArray(ctx, []string{}),
+		Permissions: auth.ToJSONArray(ctx, []string{}),
 		Created:     created,
 		Updated:     updated,
 	})
@@ -343,7 +343,7 @@ func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-seceng",
 		Name:        "Security Engineering Team",
-		Permissions: permission.ToJSONArray(ctx, []string{}),
+		Permissions: auth.ToJSONArray(ctx, []string{}),
 		Created:     created,
 		Updated:     updated,
 	})
@@ -356,7 +356,7 @@ func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "team-security",
 		Name:        "Security Team",
-		Permissions: permission.ToJSONArray(ctx, []string{}),
+		Permissions: auth.ToJSONArray(ctx, []string{}),
 		Created:     created,
 		Updated:     updated,
 	})
@@ -369,7 +369,7 @@ func generateDemoGroups(ctx context.Context, queries *sqlc.Queries, users []sqlc
 	_, err = queries.InsertGroup(ctx, sqlc.InsertGroupParams{
 		ID:          "g-engineer",
 		Name:        "Engineer",
-		Permissions: permission.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
+		Permissions: auth.ToJSONArray(ctx, []string{"reaction:read", "reaction:write"}),
 		Created:     created,
 		Updated:     updated,
 	})

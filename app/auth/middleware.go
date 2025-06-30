@@ -12,46 +12,49 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
 
 const bearerPrefix = "Bearer "
 
-func (s *Service) Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/api/config" {
+func Middleware(queries *sqlc.Queries) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/api/config" {
+				next.ServeHTTP(w, r)
+
+				return
+			}
+
+			authorizationHeader := r.Header.Get("Authorization")
+			bearerToken := strings.TrimPrefix(authorizationHeader, bearerPrefix)
+
+			user, claims, err := verifyAccessToken(r.Context(), bearerToken, queries)
+			if err != nil {
+				slog.ErrorContext(r.Context(), "invalid bearer token", "error", err)
+
+				unauthorizedJSON(w, "invalid bearer token")
+
+				return
+			}
+
+			scopes, err := scopes(claims)
+			if err != nil {
+				slog.ErrorContext(r.Context(), "failed to get scopes from token", "error", err)
+
+				unauthorizedJSON(w, "failed to get scopes")
+
+				return
+			}
+
+			// Set the user in the context
+			r = usercontext.UserRequest(r, user)
+			r = usercontext.PermissionRequest(r, scopes)
+
 			next.ServeHTTP(w, r)
-
-			return
-		}
-
-		authorizationHeader := r.Header.Get("Authorization")
-		bearerToken := strings.TrimPrefix(authorizationHeader, bearerPrefix)
-
-		user, claims, err := s.verifyAccessToken(r.Context(), bearerToken)
-		if err != nil {
-			slog.ErrorContext(r.Context(), "invalid bearer token", "error", err)
-
-			unauthorizedJSON(w, "invalid bearer token")
-
-			return
-		}
-
-		scopes, err := scopes(claims)
-		if err != nil {
-			slog.ErrorContext(r.Context(), "failed to get scopes from token", "error", err)
-
-			unauthorizedJSON(w, "failed to get scopes")
-
-			return
-		}
-
-		// Set the user in the context
-		r = usercontext.UserRequest(r, user)
-		r = usercontext.PermissionRequest(r, scopes)
-
-		next.ServeHTTP(w, r)
-	})
+		})
+	}
 }
 
 func ValidateFileScopes(next http.Handler) http.Handler {

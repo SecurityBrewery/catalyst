@@ -115,7 +115,7 @@ func TestAPI(t *testing.T) { //nolint:cyclop
 
 				w := httptest.NewRecorder()
 
-				app.Router.ServeHTTP(w, r)
+				app.ServeHTTP(w, r)
 
 				assert.Equal(t, 200, w.Code, "expected status code 200: %s for %s %s", w.Body.String(), req.Method, url)
 

@@ -14,7 +14,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/migration"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 func newTestService(t *testing.T) *Service {
@@ -23,7 +23,7 @@ func newTestService(t *testing.T) *Service {
 	dir := t.TempDir()
 	queries := data.NewTestDB(t, dir)
 	hooks := hook.NewHooks()
-	uploader, err := uploader.New(dir)
+	uploader, err := upload.New(dir)
 	require.NoError(t, err)
 
 	err = migration.Apply(t.Context(), queries, dir, uploader)

@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SecurityBrewery/catalyst/app"
+	"github.com/go-chi/chi/v5"
+
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action"
@@ -23,27 +24,27 @@ type Webhook struct {
 
 const prefix = "/reaction/"
 
-func BindHooks(app *app.App) {
-	app.Router.HandleFunc(prefix+"*", handle(app))
+func BindHooks(router chi.Router, queries *sqlc.Queries) {
+	router.HandleFunc(prefix+"*", handle(queries))
 }
 
-func handle(app *app.App) http.HandlerFunc {
+func handle(queries *sqlc.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		reaction, payload, status, err := parseRequest(app.Queries, r)
+		reaction, payload, status, err := parseRequest(queries, r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
 
 			return
 		}
 
-		settings, err := database.LoadSettings(r.Context(), app.Queries)
+		settings, err := database.LoadSettings(r.Context(), queries)
 		if err != nil {
 			http.Error(w, "failed to load settings: "+err.Error(), http.StatusInternalServerError)
 
 			return
 		}
 
-		output, err := action.Run(r.Context(), settings.Meta.AppURL, app.Auth, app.Queries, reaction.Action, reaction.Actiondata, payload)
+		output, err := action.Run(r.Context(), settings.Meta.AppURL, queries, reaction.Action, reaction.Actiondata, payload)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 

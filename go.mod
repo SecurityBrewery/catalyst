@@ -23,7 +23,6 @@ require (
 	github.com/tus/tusd/v2 v2.8.0
 	github.com/urfave/cli/v3 v3.3.8
 	github.com/wneessen/go-mail v0.6.2
-	go.uber.org/multierr v1.11.0
 	golang.org/x/crypto v0.39.0
 )
 
@@ -82,6 +81,7 @@ require (
 	github.com/wasilibs/go-pgquery v0.0.0-20250409022910-10ac41983c07 // indirect
 	github.com/wasilibs/wazero-helpers v0.0.0-20250123031827-cd30c44769bb // indirect
 	go.uber.org/atomic v1.11.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
 	golang.org/x/mod v0.25.0 // indirect

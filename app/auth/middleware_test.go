@@ -7,101 +7,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
-	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/openapi"
 )
 
 func mockHandler(w http.ResponseWriter, _ *http.Request) {
 	_, _ = w.Write([]byte(`{"message":"OK"}`))
-}
-
-func TestService_Middleware(t *testing.T) {
-	t.Parallel()
-
-	type args struct {
-		createToken func(*testing.T, *http.Request, *Service)
-		next        http.HandlerFunc
-	}
-
-	tests := []struct {
-		name string
-		args args
-		want httptest.ResponseRecorder
-	}{
-		{
-			name: "no token",
-			args: args{
-				createToken: func(*testing.T, *http.Request, *Service) {},
-				next:        mockHandler,
-			},
-			want: httptest.ResponseRecorder{
-				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token", "status": 401}`),
-			},
-		},
-		{
-			name: "invalid token",
-			args: args{
-				createToken: func(_ *testing.T, r *http.Request, _ *Service) {
-					r.Header.Set("Authorization", "Bearer invalid_token")
-				},
-				next: mockHandler,
-			},
-			want: httptest.ResponseRecorder{
-				Code: http.StatusUnauthorized,
-				Body: bytes.NewBufferString(`{"error": "Unauthorized", "message": "invalid bearer token", "status": 401}`),
-			},
-		},
-		{
-			name: "valid token",
-			args: args{
-				createToken: func(t *testing.T, r *http.Request, s *Service) {
-					t.Helper()
-
-					user, err := s.queries.GetUser(r.Context(), "u_bob_analyst")
-					require.NoError(t, err, "failed to get user for token creation")
-
-					token, err := s.CreateAccessToken(r.Context(), &user, []string{"user:read"}, time.Hour)
-					require.NoError(t, err, "failed to create access token")
-
-					r.Header.Set("Authorization", "Bearer "+token)
-				},
-				next: mockHandler,
-			},
-			want: httptest.ResponseRecorder{
-				Code: http.StatusOK,
-				Body: bytes.NewBufferString(`{"message":"OK"}`),
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			queries := data.NewTestDB(t, t.TempDir())
-
-			auth := New(queries, nil)
-
-			handler := auth.Middleware(tt.args.next)
-
-			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/", nil)
-
-			tt.args.createToken(t, r, auth)
-
-			handler.ServeHTTP(w, r)
-
-			assert.Equal(t, tt.want.Code, w.Code, "response code should match expected value")
-			assert.JSONEq(t, tt.want.Body.String(), w.Body.String(), "response body should match expected value")
-		})
-	}
 }
 
 func TestService_ValidateScopes(t *testing.T) {

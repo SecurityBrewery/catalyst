@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 )
 
@@ -74,17 +73,12 @@ func TestService_createResetToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			queries := database.TestDB(t, t.TempDir())
-
-			s := &Service{
-				queries: queries,
-			}
-			got, err := s.createResetToken(tt.args.createUser, "", "", tt.args.tokenDuration)
+			got, err := createResetTokenWithDuration(tt.args.createUser, "", "", tt.args.tokenDuration)
 			require.NoError(t, err, "createResetToken()")
 
 			time.Sleep(tt.args.waitDuration)
 
-			err = s.verifyResetToken(got, tt.args.verifyUser, "", "")
+			err = verifyResetToken(got, tt.args.verifyUser, "", "")
 			tt.wantErr(t, err, "verifyResetToken()")
 		})
 	}

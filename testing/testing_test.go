@@ -9,6 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/SecurityBrewery/catalyst/app/auth"
 )
 
 type baseTest struct {
@@ -57,7 +59,7 @@ func runMatrixTest(t *testing.T, baseTest baseTest, userTest userTest) {
 		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)
 		require.NoError(t, err)
 
-		loginToken, err := baseApp.Auth.CreateAccessToken(t.Context(), &user, permissions, time.Hour)
+		loginToken, err := auth.CreateAccessToken(t.Context(), &user, permissions, time.Hour, baseApp.Queries)
 		require.NoError(t, err)
 
 		req.Header.Set("Authorization", "Bearer "+loginToken)
@@ -70,13 +72,13 @@ func runMatrixTest(t *testing.T, baseTest baseTest, userTest userTest) {
 		permissions, err := baseApp.Queries.ListUserPermissions(t.Context(), user.ID)
 		require.NoError(t, err)
 
-		loginToken, err := baseApp.Auth.CreateAccessToken(t.Context(), &user, permissions, time.Hour)
+		loginToken, err := auth.CreateAccessToken(t.Context(), &user, permissions, time.Hour, baseApp.Queries)
 		require.NoError(t, err)
 
 		req.Header.Set("Authorization", "Bearer "+loginToken)
 	}
 
-	baseApp.Router.ServeHTTP(recorder, req)
+	baseApp.ServeHTTP(recorder, req)
 
 	res := recorder.Result()
 	defer res.Body.Close()

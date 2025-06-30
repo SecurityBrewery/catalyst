@@ -8,19 +8,18 @@ import (
 
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/permission"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/python"
 	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
 )
 
-func Run(ctx context.Context, url string, auth *auth.Service, queries *sqlc.Queries, actionName string, actionData, payload json.RawMessage) ([]byte, error) {
+func Run(ctx context.Context, url string, queries *sqlc.Queries, actionName string, actionData, payload json.RawMessage) ([]byte, error) {
 	action, err := decode(actionName, actionData)
 	if err != nil {
 		return nil, err
 	}
 
 	if a, ok := action.(authenticatedAction); ok {
-		token, err := systemToken(ctx, auth, queries)
+		token, err := systemToken(ctx, queries)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get system token: %w", err)
 		}
@@ -63,11 +62,11 @@ func decode(actionName string, actionData json.RawMessage) (action, error) {
 	}
 }
 
-func systemToken(ctx context.Context, auth *auth.Service, queries *sqlc.Queries) (string, error) {
+func systemToken(ctx context.Context, queries *sqlc.Queries) (string, error) {
 	user, err := queries.SystemUser(ctx)
 	if err != nil {
 		return "", fmt.Errorf("failed to find system auth record: %w", err)
 	}
 
-	return auth.CreateAccessToken(ctx, &user, permission.All(), time.Hour)
+	return auth.CreateAccessToken(ctx, &user, auth.All(), time.Hour, queries)
 }

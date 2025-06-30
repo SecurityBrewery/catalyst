@@ -1,4 +1,4 @@
-package app
+package router
 
 import (
 	"net/http"
@@ -104,13 +104,12 @@ func Test_handlers(t *testing.T) {
 	t.Parallel()
 
 	queries := data.NewTestDB(t, t.TempDir())
-	a := &App{Queries: queries}
 
 	// healthHandler
 	healthRR := httptest.NewRecorder()
 
 	healthReq := httptest.NewRequest(http.MethodGet, "/health", nil).WithContext(t.Context())
-	a.healthHandler(healthRR, healthReq)
+	healthHandler(queries)(healthRR, healthReq)
 	assert.Equal(t, http.StatusOK, healthRR.Code)
 	assert.Equal(t, "OK", healthRR.Body.String())
 }

@@ -3,32 +3,29 @@ package app
 import (
 	"context"
 	"fmt"
+	"net/http"
 
-	"github.com/go-chi/chi/v5"
-
-	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
 	"github.com/SecurityBrewery/catalyst/app/hook"
 	"github.com/SecurityBrewery/catalyst/app/mail"
 	"github.com/SecurityBrewery/catalyst/app/migration"
+	"github.com/SecurityBrewery/catalyst/app/reaction"
 	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
+	"github.com/SecurityBrewery/catalyst/app/router"
 	"github.com/SecurityBrewery/catalyst/app/service"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
+	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
 type App struct {
-	Queries   *sqlc.Queries
-	Router    *chi.Mux
-	Service   *service.Service
-	Auth      *auth.Service
-	Hooks     *hook.Hooks
-	Scheduler *schedule.Scheduler
-	Uploader  *uploader.Uploader
+	Queries *sqlc.Queries
+	Hooks   *hook.Hooks
+	router  http.Handler
 }
 
 func New(ctx context.Context, dir string) (*App, func(), error) {
-	uploader, err := uploader.New(dir)
+	uploader, err := upload.New(dir)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
@@ -44,28 +41,35 @@ func New(ctx context.Context, dir string) (*App, func(), error) {
 
 	mailer := mail.New(queries)
 
-	authService := auth.New(queries, mailer)
-
-	scheduler, err := schedule.New(ctx, authService, queries)
+	scheduler, err := schedule.New(ctx, queries)
 	if err != nil {
 		return nil, cleanup, fmt.Errorf("failed to create scheduler: %w", err)
 	}
 
 	hooks := hook.NewHooks()
 
-	app := &App{
-		Hooks:     hooks,
-		Queries:   queries,
-		Router:    chi.NewRouter(),
-		Service:   service.New(queries, hooks, uploader, scheduler),
-		Auth:      authService,
-		Uploader:  uploader,
-		Scheduler: scheduler,
+	service := service.New(queries, hooks, uploader, scheduler)
+
+	router, err := router.New(service, queries, uploader, mailer)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create router: %w", err)
 	}
 
-	if err := app.setupRoutes(); err != nil {
-		return nil, cleanup, fmt.Errorf("failed to setup routes: %w", err)
+	if err := reaction.BindHooks(hooks, router, queries, false); err != nil {
+		return nil, nil, err
+	}
+
+	webhook.BindHooks(hooks, queries)
+
+	app := &App{
+		Queries: queries,
+		Hooks:   hooks,
+		router:  router,
 	}
 
 	return app, cleanup, nil
+}
+
+func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	a.router.ServeHTTP(w, r)
 }

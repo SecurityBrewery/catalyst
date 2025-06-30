@@ -15,8 +15,6 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/data"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/reaction"
-	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
 func main() {
@@ -95,7 +93,7 @@ func setup(ctx context.Context, command *cli.Command) (*app.App, func(), error) 
 		}
 	}
 
-	if err := setFlags(ctx, command.StringSlice("flags"), catalyst); err != nil {
+	if err := setFlags(ctx, command.StringSlice("flags"), catalyst.Queries); err != nil {
 		return nil, nil, fmt.Errorf("failed to set flags: %w", err)
 	}
 
@@ -110,15 +108,9 @@ func serve(ctx context.Context, command *cli.Command) error {
 
 	defer cleanup()
 
-	if err := reaction.BindHooks(catalyst, false); err != nil {
-		return err
-	}
-
-	webhook.BindHooks(catalyst)
-
 	server := &http.Server{
 		Addr:        ":8090",
-		Handler:     catalyst.Router,
+		Handler:     catalyst,
 		ReadTimeout: 10 * time.Minute,
 	}
 
@@ -161,8 +153,8 @@ func defaultData(ctx context.Context, command *cli.Command) error {
 	return nil
 }
 
-func setFlags(ctx context.Context, newFlags []string, catalyst *app.App) error {
-	features, err := catalyst.Queries.ListFeatures(ctx, sqlc.ListFeaturesParams{})
+func setFlags(ctx context.Context, newFlags []string, queries *sqlc.Queries) error {
+	features, err := queries.ListFeatures(ctx, sqlc.ListFeaturesParams{})
 	if err != nil {
 		return err
 	}
@@ -171,7 +163,7 @@ func setFlags(ctx context.Context, newFlags []string, catalyst *app.App) error {
 
 	for _, feature := range features {
 		if !slices.Contains(newFlags, feature.Key) {
-			if err := catalyst.Queries.DeleteFeature(ctx, feature.Key); err != nil {
+			if err := queries.DeleteFeature(ctx, feature.Key); err != nil {
 				return err
 			}
 
@@ -188,7 +180,7 @@ func setFlags(ctx context.Context, newFlags []string, catalyst *app.App) error {
 			continue
 		}
 
-		if _, err := catalyst.Queries.CreateFeature(ctx, flag); err != nil {
+		if _, err := queries.CreateFeature(ctx, flag); err != nil {
 			return err
 		}
 	}

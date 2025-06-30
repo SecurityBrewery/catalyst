@@ -16,71 +16,73 @@ import (
 
 var ErrUserInactive = errors.New("user is inactive")
 
-func (s *Service) handleLogin(w http.ResponseWriter, r *http.Request) {
-	type loginData struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+func handleLogin(queries *sqlc.Queries) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type loginData struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
 
-	var data loginData
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		unauthorizedJSON(w, "Invalid request")
-
-		return
-	}
-
-	user, err := s.loginWithMail(r.Context(), data.Email, data.Password)
-	if err != nil {
-		if errors.Is(err, ErrUserInactive) {
-			unauthorizedJSON(w, "User is inactive")
+		var data loginData
+		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+			unauthorizedJSON(w, "Invalid request")
 
 			return
 		}
 
-		unauthorizedJSON(w, "Login failed")
+		user, err := loginWithMail(r.Context(), data.Email, data.Password, queries)
+		if err != nil {
+			if errors.Is(err, ErrUserInactive) {
+				unauthorizedJSON(w, "User is inactive")
 
-		return
-	}
+				return
+			}
 
-	permissions, err := s.queries.ListUserPermissions(r.Context(), user.ID)
-	if err != nil {
-		errorJSON(w, http.StatusInternalServerError, "Failed to get user permissions")
+			unauthorizedJSON(w, "Login failed")
 
-		return
-	}
+			return
+		}
 
-	settings, err := database.LoadSettings(r.Context(), s.queries)
-	if err != nil {
-		errorJSON(w, http.StatusInternalServerError, "Failed to load settings")
+		permissions, err := queries.ListUserPermissions(r.Context(), user.ID)
+		if err != nil {
+			errorJSON(w, http.StatusInternalServerError, "Failed to get user permissions")
 
-		return
-	}
+			return
+		}
 
-	duration := time.Duration(settings.RecordAuthToken.Duration) * time.Second
+		settings, err := database.LoadSettings(r.Context(), queries)
+		if err != nil {
+			errorJSON(w, http.StatusInternalServerError, "Failed to load settings")
 
-	token, err := s.CreateAccessToken(r.Context(), user, permissions, duration)
-	if err != nil {
-		errorJSON(w, http.StatusInternalServerError, "Failed to create login token")
+			return
+		}
 
-		return
-	}
+		duration := time.Duration(settings.RecordAuthToken.Duration) * time.Second
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+		token, err := CreateAccessToken(r.Context(), user, permissions, duration, queries)
+		if err != nil {
+			errorJSON(w, http.StatusInternalServerError, "Failed to create login token")
 
-	response := map[string]string{
-		"token": token,
-	}
+			return
+		}
 
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		errorJSON(w, http.StatusInternalServerError, "Failed to encode response")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 
-		return
+		response := map[string]string{
+			"token": token,
+		}
+
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			errorJSON(w, http.StatusInternalServerError, "Failed to encode response")
+
+			return
+		}
 	}
 }
 
-func (s *Service) loginWithMail(ctx context.Context, mail, password string) (*sqlc.User, error) {
-	user, err := s.queries.UserByEmail(ctx, &mail)
+func loginWithMail(ctx context.Context, mail, password string, queries *sqlc.Queries) (*sqlc.User, error) {
+	user, err := queries.UserByEmail(ctx, &mail)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by email %q: %w", mail, err)
 	}

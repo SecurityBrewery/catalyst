@@ -6,7 +6,7 @@ import (
 
 	sqlmigrations "github.com/SecurityBrewery/catalyst/app/database/migrations"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 type sqlMigration struct {
@@ -32,7 +32,7 @@ func (m sqlMigration) name() string {
 	return m.sqlName
 }
 
-func (m sqlMigration) up(ctx context.Context, queries *sqlc.Queries, _ string, _ *uploader.Uploader) error {
+func (m sqlMigration) up(ctx context.Context, queries *sqlc.Queries, _ string, _ *upload.Uploader) error {
 	_, err := queries.WriteDB.ExecContext(ctx, m.upSQL)
 	if err != nil {
 		return fmt.Errorf("migration %s up failed: %w", m.sqlName, err)

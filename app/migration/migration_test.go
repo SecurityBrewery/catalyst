@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/SecurityBrewery/catalyst/app/database"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
 func TestApply(t *testing.T) {
@@ -15,7 +15,7 @@ func TestApply(t *testing.T) {
 
 	dir := t.TempDir()
 	queries := database.TestDB(t, dir)
-	uploader, err := uploader.New(dir)
+	uploader, err := upload.New(dir)
 	require.NoError(t, err)
 
 	require.NoError(t, Apply(t.Context(), queries, dir, uploader))

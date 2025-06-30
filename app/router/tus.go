@@ -1,4 +1,4 @@
-package upload
+package router
 
 import (
 	"fmt"
@@ -16,10 +16,10 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/upload/uploader"
+	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 
-func Routes(queries *sqlc.Queries, authService *auth.Service, u *uploader.Uploader) (http.Handler, error) {
+func git tusRoutes(queries *sqlc.Queries, u *upload.Uploader) (http.Handler, error) {
 	store := rootstore.New(u.Root)
 	locker := filelocker.New(u.Root.Name())
 	composer := tusd.NewStoreComposer()
@@ -89,5 +89,5 @@ func Routes(queries *sqlc.Queries, authService *auth.Service, u *uploader.Upload
 		}
 	}()
 
-	return chi.Chain(authService.Middleware, auth.ValidateFileScopes).Handler(handler), nil
+	return chi.Chain(auth.Middleware(queries), auth.ValidateFileScopes).Handler(handler), nil
 }

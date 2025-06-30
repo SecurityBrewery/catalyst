@@ -12,31 +12,31 @@ import (
 )
 
 const (
-	PurposeAccess = "access"
-	PurposeReset  = "reset"
-	ScopeReset    = "reset"
+	purposeAccess = "access"
+	purposeReset  = "reset"
+	scopeReset    = "reset"
 )
 
-func (s *Service) CreateAccessToken(ctx context.Context, user *sqlc.User, permissions []string, duration time.Duration) (string, error) {
-	settings, err := database.LoadSettings(ctx, s.queries)
+func CreateAccessToken(ctx context.Context, user *sqlc.User, permissions []string, duration time.Duration, queries *sqlc.Queries) (string, error) {
+	settings, err := database.LoadSettings(ctx, queries)
 	if err != nil {
 		return "", fmt.Errorf("failed to load settings: %w", err)
 	}
 
-	return s.createToken(user, duration, PurposeAccess, permissions, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
+	return createToken(user, duration, purposeAccess, permissions, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
 }
 
-func (s *Service) CreateResetToken(user *sqlc.User, settings *database.Settings) (string, error) {
+func createResetToken(user *sqlc.User, settings *database.Settings) (string, error) {
 	duration := time.Duration(settings.RecordPasswordResetToken.Duration) * time.Second
 
-	return s.createResetToken(user, settings.Meta.AppURL, settings.RecordPasswordResetToken.Secret, duration)
+	return createResetTokenWithDuration(user, settings.Meta.AppURL, settings.RecordPasswordResetToken.Secret, duration)
 }
 
-func (s *Service) createResetToken(user *sqlc.User, url, appToken string, duration time.Duration) (string, error) {
-	return s.createToken(user, duration, PurposeReset, []string{ScopeReset}, url, appToken)
+func createResetTokenWithDuration(user *sqlc.User, url, appToken string, duration time.Duration) (string, error) {
+	return createToken(user, duration, purposeReset, []string{scopeReset}, url, appToken)
 }
 
-func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string, url, appToken string) (string, error) {
+func createToken(user *sqlc.User, duration time.Duration, purpose string, scopes []string, url, appToken string) (string, error) {
 	if scopes == nil {
 		scopes = []string{}
 	}
@@ -57,7 +57,7 @@ func (s *Service) createToken(user *sqlc.User, duration time.Duration, purpose s
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *Service) verifyToken(tokenStr string, user *sqlc.User, url, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
+func verifyToken(tokenStr string, user *sqlc.User, url, appToken string) (jwt.MapClaims, error) { //nolint:cyclop
 	signingKey := user.Tokenkey + appToken
 
 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (any, error) {
@@ -110,7 +110,7 @@ func (s *Service) verifyToken(tokenStr string, user *sqlc.User, url, appToken st
 	return claims, nil
 }
 
-func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*sqlc.User, jwt.MapClaims, error) {
+func verifyAccessToken(ctx context.Context, bearerToken string, queries *sqlc.Queries) (*sqlc.User, jwt.MapClaims, error) {
 	token, _, err := jwt.NewParser().ParseUnverified(bearerToken, jwt.MapClaims{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to parse token: %w", err)
@@ -126,30 +126,30 @@ func (s *Service) verifyAccessToken(ctx context.Context, bearerToken string) (*s
 		return nil, nil, fmt.Errorf("token invalid: %w", err)
 	}
 
-	user, err := s.queries.GetUser(ctx, sub)
+	user, err := queries.GetUser(ctx, sub)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to retrieve user for subject %s: %w", sub, err)
 	}
 
-	settings, err := database.LoadSettings(ctx, s.queries)
+	settings, err := database.LoadSettings(ctx, queries)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to load settings: %w", err)
 	}
 
-	claims, err = s.verifyToken(bearerToken, &user, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
+	claims, err = verifyToken(bearerToken, &user, settings.Meta.AppURL, settings.RecordAuthToken.Secret)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to verify token: %w", err)
 	}
 
-	if err := hasPurpose(claims, PurposeAccess); err != nil {
+	if err := hasPurpose(claims, purposeAccess); err != nil {
 		return nil, nil, fmt.Errorf("failed to check scopes: %w", err)
 	}
 
 	return &user, claims, nil
 }
 
-func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User, url, appToken string) error {
-	claims, err := s.verifyToken(tokenStr, user, url, appToken)
+func verifyResetToken(tokenStr string, user *sqlc.User, url, appToken string) error {
+	claims, err := verifyToken(tokenStr, user, url, appToken)
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func (s *Service) verifyResetToken(tokenStr string, user *sqlc.User, url, appTok
 		return fmt.Errorf("token already used")
 	}
 
-	if err := hasPurpose(claims, PurposeReset); err != nil {
+	if err := hasPurpose(claims, purposeReset); err != nil {
 		return fmt.Errorf("failed to check scopes: %w", err)
 	}
 

@@ -9,11 +9,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/SecurityBrewery/catalyst/app"
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
-	"github.com/SecurityBrewery/catalyst/app/permission"
+	"github.com/SecurityBrewery/catalyst/app/hook"
 )
 
 type Webhook struct {
@@ -23,15 +22,15 @@ type Webhook struct {
 	Destination string `db:"destination" json:"destination"`
 }
 
-func BindHooks(app *app.App) {
-	app.Hooks.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		event(ctx, app, permission.CreateAction, table, record)
+func BindHooks(hooks *hook.Hooks, queries *sqlc.Queries) {
+	hooks.OnRecordAfterCreateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, queries, database.CreateAction, table, record)
 	})
-	app.Hooks.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		event(ctx, app, permission.UpdateAction, table, record)
+	hooks.OnRecordAfterUpdateRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, queries, database.UpdateAction, table, record)
 	})
-	app.Hooks.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
-		event(ctx, app, permission.DeleteAction, table, record)
+	hooks.OnRecordAfterDeleteRequest.Subscribe(func(ctx context.Context, table string, record any) {
+		event(ctx, queries, database.DeleteAction, table, record)
 	})
 }
 
@@ -43,7 +42,7 @@ type Payload struct {
 	Admin      *sqlc.User `json:"admin,omitempty"`
 }
 
-func event(ctx context.Context, app *app.App, event, collection string, record any) {
+func event(ctx context.Context, queries *sqlc.Queries, event, collection string, record any) {
 	user, ok := usercontext.UserFromContext(ctx)
 	if !ok {
 		slog.ErrorContext(ctx, "failed to get auth session")
@@ -52,7 +51,7 @@ func event(ctx context.Context, app *app.App, event, collection string, record a
 	}
 
 	webhooks, err := database.PaginateItems(ctx, func(ctx context.Context, offset, limit int64) ([]sqlc.ListWebhooksRow, error) {
-		return app.Queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{Limit: limit, Offset: offset})
+		return queries.ListWebhooks(ctx, sqlc.ListWebhooksParams{Limit: limit, Offset: offset})
 	})
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to list webhooks", "error", err.Error())
