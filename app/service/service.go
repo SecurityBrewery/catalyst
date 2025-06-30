@@ -1839,24 +1839,8 @@ func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSett
 	se, err := settings.Update(ctx, s.queries, func(settings *settings.Settings) {
 		settings.Meta.AppName = request.Body.Meta.AppName
 		settings.Meta.AppURL = request.Body.Meta.AppUrl
-		// settings.Meta.HideControls = request.Body.Meta.HideControls
 		settings.Meta.SenderAddress = request.Body.Meta.SenderAddress
 		settings.Meta.SenderName = request.Body.Meta.SenderName
-		// settings.Meta.ConfirmEmailChangeTemplate.ActionURL = request.Body.Meta.ConfirmEmailChangeTemplate.ActionUrl
-		// settings.Meta.ConfirmEmailChangeTemplate.Body = request.Body.Meta.ConfirmEmailChangeTemplate.Body
-		// settings.Meta.ConfirmEmailChangeTemplate.Hidden = request.Body.Meta.ConfirmEmailChangeTemplate.Hidden
-		// settings.Meta.ConfirmEmailChangeTemplate.Subject = request.Body.Meta.ConfirmEmailChangeTemplate.Subject
-		// settings.Meta.ResetPasswordTemplate.ActionURL = request.Body.Meta.ResetPasswordTemplate.ActionUrl
-		// settings.Meta.ResetPasswordTemplate.Body = request.Body.Meta.ResetPasswordTemplate.Body
-		// settings.Meta.ResetPasswordTemplate.Hidden = request.Body.Meta.ResetPasswordTemplate.Hidden
-		// settings.Meta.ResetPasswordTemplate.Subject = request.Body.Meta.ResetPasswordTemplate.Subject
-		// settings.Meta.VerificationTemplate.ActionURL = request.Body.Meta.VerificationTemplate.ActionUrl
-		// settings.Meta.VerificationTemplate.Body = request.Body.Meta.VerificationTemplate.Body
-		// settings.Meta.VerificationTemplate.Hidden = request.Body.Meta.VerificationTemplate.Hidden
-		// settings.Meta.VerificationTemplate.Subject = request.Body.Meta.VerificationTemplate.Subject
-		// settings.Logs.LogIP = request.Body.Logs.LogIp
-		// settings.Logs.MaxDays = request.Body.Logs.MaxDays
-		// settings.Logs.MinLevel = request.Body.Logs.MinLevel
 		settings.SMTP.Enabled = request.Body.Smtp.Enabled
 		settings.SMTP.Host = request.Body.Smtp.Host
 		settings.SMTP.Port = request.Body.Smtp.Port
@@ -1865,22 +1849,6 @@ func (s *Service) UpdateSettings(ctx context.Context, request openapi.UpdateSett
 		settings.SMTP.AuthMethod = request.Body.Smtp.AuthMethod
 		settings.SMTP.TLS = request.Body.Smtp.Tls
 		settings.SMTP.LocalName = request.Body.Smtp.LocalName
-		// settings.S3.Enabled = request.Body.S3.Enabled
-		// settings.S3.Bucket = request.Body.S3.Bucket
-		// settings.S3.Endpoint = request.Body.S3.Endpoint
-		// settings.S3.ForcePathStyle = request.Body.S3.ForcePathStyle
-		// settings.S3.Region = request.Body.S3.Region
-		// settings.S3.Secret = request.Body.S3.Secret
-		// settings.S3.AccessKey = request.Body.S3.AccessKey
-		// settings.Backups.CronMaxKeep = request.Body.Backups.CronMaxKeep
-		// settings.Backups.Cron = request.Body.Backups.Cron
-		// settings.Backups.S3.Enabled = request.Body.Backups.S3.Enabled
-		// settings.Backups.S3.Bucket = request.Body.Backups.S3.Bucket
-		// settings.Backups.S3.Endpoint = request.Body.Backups.S3.Endpoint
-		// settings.Backups.S3.ForcePathStyle = request.Body.Backups.S3.ForcePathStyle
-		// settings.Backups.S3.Region = request.Body.Backups.S3.Region
-		// settings.Backups.S3.AccessKey = request.Body.Backups.S3.AccessKey
-		// settings.Backups.S3.Secret = request.Body.Backups.S3.Secret
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to save settings: %w", err)
