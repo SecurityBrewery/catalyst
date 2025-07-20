@@ -25,14 +25,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTicket" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     post:
       summary: Create a new ticket
       operationId: createTicket
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTicket" } } } }
       responses:
         "200": { "description": "Ticket created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { "OAuth2": [ "ticket:write" ] } ]
   /tickets/{id}:
     get:
       summary: Get a single ticket by ID
@@ -41,7 +41,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTicket" } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     patch:
       summary: Update a ticket by ID
       operationId: updateTicket
@@ -50,7 +50,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TicketUpdate" } } } }
       responses:
         "200": { "description": "Tickets updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
     delete:
       summary: Delete a ticket by ID
       operationId: deleteTicket
@@ -58,7 +58,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Tickets deleted" }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /comments:
     get:
       summary: List all comments
@@ -69,14 +69,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedComment" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of comments" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { "OAuth2": [ "ticket:read" ] } ]
     post:
       summary: Create a new comment
       operationId: createComment
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewComment" } } } }
       responses:
         "200": { "description": "Comment created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /comments/{id}:
     get:
       summary: Get a single comment by ID
@@ -85,7 +85,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedComment" } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     patch:
       summary: Update a comment by ID
       operationId: updateComment
@@ -94,7 +94,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommentUpdate" } } } }
       responses:
         "200": { "description": "Comment updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
     delete:
       summary: Delete a comment by ID
       operationId: deleteComment
@@ -102,7 +102,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Comment deleted" }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /files:
     get:
       summary: List all files
@@ -113,14 +113,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of files", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/File" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of files" } } }
-      security: [ OAuth2: [ "file:read" ] ]
+      security: [ { OAuth2: [ "file:read" ] } ]
     post:
       summary: Create a new file
       operationId: createFile
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFile" } } } }
       responses:
         "200": { "description": "File created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
-      security: [ OAuth2: [ "file:write" ] ]
+      security: [ { OAuth2: [ "file:write" ] } ]
   /files/{id}:
     get:
       summary: Get a single file by ID
@@ -129,7 +129,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single file", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
-      security: [ OAuth2: [ "file:read" ] ]
+      security: [ { OAuth2: [ "file:read" ] } ]
     delete:
       summary: Delete a file by ID
       operationId: deleteFile
@@ -137,7 +137,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "File deleted" }
-      security: [ OAuth2: [ "file:write" ] ]
+      security: [ { OAuth2: [ "file:write" ] } ]
   /files/{id}/download:
     get:
       summary: Download a file by ID
@@ -146,7 +146,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "File content", "content": { "application/octet-stream": { } }, "headers": { "Content-Disposition": { "schema": { "type": "string" } }, "Content-Type": { "schema": { "type": "string" } } } }
-      security: [ OAuth2: [ "file:read" ] ]
+      security: [ { OAuth2: [ "file:read" ] } ]
   /links:
     get:
       summary: List all links
@@ -157,14 +157,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of links", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of links" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     post:
       summary: Create a new link
       operationId: createLink
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewLink" } } } }
       responses:
         "200": { "description": "Link created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /links/{id}:
     get:
       summary: Get a single link by ID
@@ -173,7 +173,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single link", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     patch:
       summary: Update a link by ID
       operationId: updateLink
@@ -182,7 +182,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LinkUpdate" } } } }
       responses:
         "200": { "description": "Link updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
     delete:
       summary: Delete a link by ID
       operationId: deleteLink
@@ -190,7 +190,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Link deleted" }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /tasks:
     get:
       summary: List all tasks
@@ -201,14 +201,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTask" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tasks" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     post:
       summary: Create a new task
       operationId: createTask
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTask" } } } }
       responses:
         "200": { "description": "Task created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /tasks/{id}:
     get:
       summary: Get a single task by ID
@@ -217,7 +217,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTask" } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     patch:
       summary: Update a task by ID
       operationId: updateTask
@@ -226,7 +226,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskUpdate" } } } }
       responses:
         "200": { "description": "Task updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
     delete:
       summary: Delete a task by ID
       operationId: deleteTask
@@ -234,7 +234,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Task deleted" }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /timeline:
     get:
       summary: List all timeline items
@@ -245,14 +245,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of timeline items", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEntry" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of timeline items" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     post:
       summary: Create a new timeline item
       operationId: createTimeline
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTimelineEntry" } } } }
       responses:
         "200": { "description": "Timeline item created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /timeline/{id}:
     get:
       summary: Get a single timeline item by ID
@@ -261,7 +261,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single timeline item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
     patch:
       summary: Update a timeline item by ID
       operationId: updateTimeline
@@ -270,7 +270,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntryUpdate" } } } }
       responses:
         "200": { "description": "Timeline item updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
     delete:
       summary: Delete a timeline item by ID
       operationId: deleteTimeline
@@ -278,7 +278,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Timeline item deleted" }
-      security: [ OAuth2: [ "ticket:write" ] ]
+      security: [ { OAuth2: [ "ticket:write" ] } ]
   /reactions:
     get:
       summary: List all reactions
@@ -288,14 +288,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of reactions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Reaction" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of reactions" } } }
-      security: [ OAuth2: [ "reaction:read" ] ]
+      security: [ { OAuth2: [ "reaction:read" ] } ]
     post:
       summary: Create a new reaction
       operationId: createReaction
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewReaction" } } } }
       responses:
         "200": { "description": "Reactions created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
-      security: [ OAuth2: [ "reaction:write" ] ]
+      security: [ { OAuth2: [ "reaction:write" ] } ]
   /reactions/{id}:
     get:
       summary: Get a single reaction by ID
@@ -304,7 +304,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single reaction", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
-      security: [ OAuth2: [ "reaction:read" ] ]
+      security: [ { OAuth2: [ "reaction:read" ] } ]
     patch:
       summary: Update a reaction by ID
       operationId: updateReaction
@@ -313,7 +313,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReactionUpdate" } } } }
       responses:
         "200": { "description": "Reactions updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
-      security: [ OAuth2: [ "reaction:write" ] ]
+      security: [ { OAuth2: [ "reaction:write" ] } ]
     delete:
       summary: Delete a reaction by ID
       operationId: deleteReaction
@@ -321,7 +321,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Reactions deleted" }
-      security: [ OAuth2: [ "reaction:write" ] ]
+      security: [ { OAuth2: [ "reaction:write" ] } ]
   /types:
     get:
       summary: List all types
@@ -331,14 +331,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of types", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Type" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of types" } } }
-      security: [ OAuth2: [ "type:read" ] ]
+      security: [ { OAuth2: [ "type:read" ] } ]
     post:
       summary: Create a new type
       operationId: createType
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewType" } } } }
       responses:
         "200": { "description": "Types created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
-      security: [ OAuth2: [ "type:write" ] ]
+      security: [ { OAuth2: [ "type:write" ] } ]
   /types/{id}:
     get:
       summary: Get a single type by ID
@@ -347,7 +347,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
-      security: [ OAuth2: [ "type:read" ] ]
+      security: [ { OAuth2: [ "type:read" ] } ]
     patch:
       summary: Update a type by ID
       operationId: updateType
@@ -356,7 +356,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TypeUpdate" } } } }
       responses:
         "200": { "description": "Types updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
-      security: [ OAuth2: [ "type:write" ] ]
+      security: [ { OAuth2: [ "type:write" ] } ]
     delete:
       summary: Delete a type by ID
       operationId: deleteType
@@ -364,7 +364,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Types deleted" }
-      security: [ OAuth2: [ "type:write" ] ]
+      security: [ { OAuth2: [ "type:write" ] } ]
   /users:
     get:
       summary: List all users
@@ -374,14 +374,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of users" } } }
-      security: [ OAuth2: [ "user:read" ] ]
+      security: [ { OAuth2: [ "user:read" ] } ]
     post:
       summary: Create a new user
       operationId: createUser
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewUser" } } } }
       responses:
         "200": { "description": "Users created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
-      security: [ OAuth2: [ "user:write" ] ]
+      security: [ { OAuth2: [ "user:write" ] } ]
   /users/{id}:
     get:
       summary: Get a single user by ID
@@ -390,7 +390,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
-      security: [ OAuth2: [ "user:read" ] ]
+      security: [ { OAuth2: [ "user:read" ] } ]
     patch:
       summary: Update a user by ID
       operationId: updateUser
@@ -399,7 +399,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } } } }
       responses:
         "200": { "description": "Users updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
-      security: [ OAuth2: [ "user:write" ] ]
+      security: [ { OAuth2: [ "user:write" ] } ]
     delete:
       summary: Delete a user by ID
       operationId: deleteUser
@@ -407,7 +407,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Users deleted" }
-      security: [ OAuth2: [ "user:write" ] ]
+      security: [ { OAuth2: [ "user:write" ] } ]
   /users/{id}/groups:
     get:
       summary: List all groups for a user
@@ -416,7 +416,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of user groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
-      security: [ OAuth2: [ "user:read" ] ]
+      security: [ { OAuth2: [ "user:read" ] } ]
     post:
       summary: Add a group to a user
       operationId: addUserGroup
@@ -425,7 +425,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
       responses:
         "201": { "description": "Group added to user" }
-      security: [ OAuth2: [ "user:write" ] ]
+      security: [ { OAuth2: [ "user:write" ] } ]
   /users/{id}/permissions:
     get:
       summary: List all permissions for a user
@@ -434,7 +434,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of user permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
-      security: [ OAuth2: [ "user:read" ] ]
+      security: [ { OAuth2: [ "user:read" ] } ]
   /users/{id}/groups/{groupId}:
     delete:
       summary: Remove a group from a user
@@ -444,7 +444,7 @@ paths:
         - { "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Group removed from user" }
-      security: [ OAuth2: [ "user:write" ] ]
+      security: [ { OAuth2: [ "user:write" ] } ]
   /groups:
     get:
       summary: List all groups
@@ -454,14 +454,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Group" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of groups" } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
     post:
       summary: Create a new group
       operationId: createGroup
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewGroup" } } } }
       responses:
         "200": { "description": "Groups created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
-      security: [ OAuth2: [ "group:write" ] ]
+      security: [ { OAuth2: [ "group:write" ] } ]
   /groups/{id}:
     get:
       summary: Get a single group by ID
@@ -470,7 +470,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single group", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
     patch:
       summary: Update a group by ID
       operationId: updateGroup
@@ -479,7 +479,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupUpdate" } } } }
       responses:
         "200": { "description": "Groups updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
-      security: [ OAuth2: [ "group:write" ] ]
+      security: [ { OAuth2: [ "group:write" ] } ]
     delete:
       summary: Delete a group by ID
       operationId: deleteGroup
@@ -487,7 +487,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Groups deleted" }
-      security: [ OAuth2: [ "group:write" ] ]
+      security: [ { OAuth2: [ "group:write" ] } ]
   /groups/{id}/parents:
     get:
       summary: List all parent groups for a group
@@ -496,7 +496,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
     post:
       summary: Add a parent group to another group
       operationId: addGroupParent
@@ -505,7 +505,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
       responses:
         "201": { "description": "Group added to group" }
-      security: [ OAuth2: [ "group:write" ] ]
+      security: [ { OAuth2: [ "group:write" ] } ]
   /groups/{id}/children:
     get:
       summary: List all child groups for a group
@@ -514,7 +514,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
   /groups/{id}/users:
     get:
       summary: List all users for a group
@@ -523,7 +523,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of group users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/GroupUser" } } } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
   /groups/{id}/permissions:
     get:
       summary: List all permissions for a group
@@ -532,7 +532,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A list of group permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
-      security: [ OAuth2: [ "group:read" ] ]
+      security: [ { OAuth2: [ "group:read" ] } ]
   /groups/{id}/groups/{parentGroupId}:
     delete:
       summary: Remove a parent group from another group
@@ -542,7 +542,7 @@ paths:
         - { "name": "parentGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Group removed from group" }
-      security: [ OAuth2: [ "group:write" ] ]
+      security: [ { OAuth2: [ "group:write" ] } ]
   /webhooks:
     get:
       summary: List all webhooks
@@ -552,14 +552,14 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "A list of webhooks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Webhook" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of webhooks" } } }
-      security: [ OAuth2: [ "webhook:read" ] ]
+      security: [ { OAuth2: [ "webhook:read" ] } ]
     post:
       summary: Create a new webhook
       operationId: createWebhook
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewWebhook" } } } }
       responses:
         "200": { "description": "Webhooks created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
-      security: [ OAuth2: [ "webhook:write" ] ]
+      security: [ { OAuth2: [ "webhook:write" ] } ]
   /webhooks/{id}:
     get:
       summary: Get a single webhook by ID
@@ -568,7 +568,7 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "200": { "description": "A single webhook", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
-      security: [ OAuth2: [ "webhook:read" ] ]
+      security: [ { OAuth2: [ "webhook:read" ] } ]
     patch:
       summary: Update a webhook by ID
       operationId: updateWebhook
@@ -577,7 +577,7 @@ paths:
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookUpdate" } } } }
       responses:
         "200": { "description": "Webhooks updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
-      security: [ OAuth2: [ "webhook:write" ] ]
+      security: [ { OAuth2: [ "webhook:write" ] } ]
     delete:
       summary: Delete a webhook by ID
       operationId: deleteWebhook
@@ -585,21 +585,21 @@ paths:
         - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
       responses:
         "204": { "description": "Webhooks deleted" }
-      security: [ OAuth2: [ "webhook:write" ] ]
+      security: [ { OAuth2: [ "webhook:write" ] } ]
   /dashboard_counts:
     get:
       summary: Get dashboard summary counts
       operationId: getDashboardCounts
       responses:
         "200": { "description": "Dashboard count data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/DashboardCounts" } } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
   /sidebar:
     get:
       summary: Get sidebar data
       operationId: getSidebar
       responses:
         "200": { "description": "Sidebar content", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Sidebar" } } } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
   /ticket_search:
     get:
       summary: Search tickets with full join data
@@ -612,21 +612,21 @@ paths:
         - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
       responses:
         "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
-      security: [ OAuth2: [ "ticket:read" ] ]
+      security: [ { OAuth2: [ "ticket:read" ] } ]
   /settings:
     get:
       summary: Get system settings
       operationId: getSettings
       responses:
         "200": { "description": "System settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
-      security: [ OAuth2: [ "settings:read" ] ]
+      security: [ { OAuth2: [ "settings:read" ] } ]
     post:
       summary: Update system settings
       operationId: updateSettings
       requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
       responses:
         "200": { "description": "Settings updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
-      security: [ OAuth2: [ "settings:write" ] ]
+      security: [ { OAuth2: [ "settings:write" ] } ]
   /config:
     get:
       summary: Get the configuration
@@ -1099,3 +1099,33 @@ components:
         error: { "type": "string" }
         message: { "type": "string" }
       required: [ "status", "error", "message" ]
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth/authorize
+          tokenUrl: /oauth/token
+          scopes:
+            user:read: Read user data
+            user:write: Write user data
+            group:read: Read group data
+            group:write: Write group data
+            ticket:read: Read ticket data
+            ticket:write: Write ticket data
+            comment:read: Read comment data
+            comment:write: Write comment data
+            file:read: Read file data
+            file:write: Write file data
+            link:read: Read link data
+            link:write: Write link data
+            reaction:read: Read reaction data
+            reaction:write: Write reaction data
+            task:read: Read task data
+            task:write: Write task data
+            feature:read: Read feature data
+            feature:write: Write feature data
+            webhook:read: Read webhook data
+            webhook:write: Write webhook data
+            settings:read: Read settings data
+            settings:write: Write settings data
