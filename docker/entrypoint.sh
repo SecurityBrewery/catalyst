@@ -12,4 +12,4 @@ if [ -n "$CATALYST_APP_URL" ]; then
     APP_URL="$CATALYST_APP_URL"
 fi
 
-/usr/local/bin/catalyst serve --http 0.0.0.0:8080 --flags "$FLAGS" --app-url "$APP_URL"
+/usr/local/bin/catalyst serve --flags "$FLAGS" --app-url "$APP_URL"
