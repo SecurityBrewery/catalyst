@@ -4,17 +4,39 @@ import PanelListElement from '@/components/layout/PanelListElement.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import LinkAddDialog from '@/components/ticket/link/LinkAddDialog.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Trash2 } from 'lucide-vue-next'
 
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-import type { Link, Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Link, Ticket } from '@/client/models'
+import { handleError } from '@/lib/utils'
 
-defineProps<{
+const api = useAPI()
+
+const queryClient = useQueryClient()
+const { toast } = useToast()
+
+const props = defineProps<{
   ticket: Ticket
   links: Array<Link> | undefined
 }>()
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string) => api.deleteLink({ id }),
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['links', id] })
+    queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
+    toast({
+      title: 'Link deleted',
+      description: 'The link has been deleted successfully'
+    })
+  },
+  onError: handleError('Failed to delete link')
+})
 
 const dialogOpen = ref(false)
 </script>
@@ -39,23 +61,20 @@ const dialogOpen = ref(false)
           {{ link.name }}
         </span>
 
-        <div
-          class="flex-1 overflow-hidden overflow-ellipsis text-nowrap text-sm text-muted-foreground"
-        >
+        <div class="flex-1 overflow-hidden text-ellipsis text-nowrap text-sm text-muted-foreground">
           {{ link.url }}
         </div>
       </a>
 
       <DeleteDialog
         v-if="link"
-        collection="links"
-        :id="link.id"
         :name="link.name"
         singular="Link"
-        :queryKey="['tickets', ticket.id]"
+        @delete="deleteMutation.mutate(link.id)"
       >
         <Button variant="ghost" size="icon" class="h-8 w-8">
           <Trash2 class="size-4" />
+          <span class="sr-only">Delete Link</span>
         </Button>
       </DeleteDialog>
     </PanelListElement>

@@ -6,14 +6,15 @@ import TicketDisplay from '@/components/ticket/TicketDisplay.vue'
 import TicketList from '@/components/ticket/TicketList.vue'
 
 import { useQuery } from '@tanstack/vue-query'
-import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Type } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Type } from '@/client/models'
+
+const api = useAPI()
 
 const route = useRoute()
-const router = useRouter()
 
 const id = computed(() => route.params.id as string)
 const type = computed(() => route.params.type as string)
@@ -26,19 +27,15 @@ const {
   refetch
 } = useQuery({
   queryKey: ['types', type.value],
-  queryFn: (): Promise<Type> => pb.collection('types').getOne(type.value)
+  queryFn: (): Promise<Type> => {
+    return api.getType({ id: type.value })
+  }
 })
 
 watch(
   () => type.value,
   () => refetch()
 )
-
-onMounted(() => {
-  if (!pb.authStore.model) {
-    router.push({ name: 'login' })
-  }
-})
 </script>
 
 <template>

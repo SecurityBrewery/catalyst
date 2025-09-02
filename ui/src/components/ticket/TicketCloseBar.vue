@@ -2,6 +2,7 @@
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Check, Repeat } from 'lucide-vue-next'
 
@@ -9,30 +10,39 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { ExtendedTicket, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const props = defineProps<{
-  ticket: Ticket
+  ticket: ExtendedTicket
 }>()
 
 const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      open: !props.ticket.open,
-      resolution: resolution.value
+    api.updateTicket({
+      id: props.ticket.id,
+      ticketUpdate: { open: !props.ticket.open, resolution: resolution.value }
     }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
-    router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+    toast({
+      title: props.ticket.open ? 'Ticket closed' : 'Ticket reopened',
+      description: props.ticket.open
+        ? 'The ticket has been closed successfully'
+        : 'The ticket has been reopened successfully'
+    })
+    router.push({ name: 'tickets', params: { type: props.ticket.type } })
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket status')
 })
 
 const closeButtonDisabled = false // computed(() => !props.ticket.open || message.value == '')
@@ -52,9 +62,7 @@ const closeButtonDisabled = false // computed(() => !props.ticket.open || messag
       <Check v-if="ticket.open" class="mr-2 h-4 w-4" />
       <Repeat v-else class="mr-2 h-4 w-4" />
       {{
-        ticket?.open
-          ? 'Close ' + props.ticket.expand.type.singular
-          : 'Reopen ' + props.ticket.expand.type.singular
+        ticket?.open ? 'Close ' + props.ticket.typeSingular : 'Reopen ' + props.ticket.typeSingular
       }}
     </Button>
   </ColumnHeader>

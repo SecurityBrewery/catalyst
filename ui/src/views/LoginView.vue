@@ -7,9 +7,16 @@ import { Input } from '@/components/ui/input'
 
 import { useQuery } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
+import { useAPI } from '@/api'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
+
+const authStore = useAuthStore()
+const router = useRouter()
 
 const mail = ref('')
 const password = ref('')
@@ -17,10 +24,23 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const login = () => {
-  pb.collection('users')
-    .authWithPassword(mail.value, password.value)
-    .then(() => {
-      window.location.href = '/ui/'
+  fetch('/auth/local/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email: mail.value, password: password.value })
+  })
+    .then((response) => {
+      if (response.ok) {
+        response.json().then((data) => {
+          authStore.setToken(data.token)
+          router.push({ name: 'dashboard' })
+        })
+      } else {
+        errorTitle.value = 'Login failed'
+        errorMessage.value = 'Invalid username or password'
+      }
     })
     .catch((error) => {
       errorTitle.value = 'Login failed'
@@ -30,14 +50,14 @@ const login = () => {
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: () => api.getConfig()
 })
 
 watch(
   () => config.value,
   () => {
     if (!config.value) return
-    if (config.value['flags'].includes('demo') || config.value['flags'].includes('dev')) {
+    if (config.value.flags.includes('demo') || config.value.flags.includes('dev')) {
       mail.value = 'user@catalyst-soar.com'
       password.value = '1234567890'
     }
@@ -51,7 +71,7 @@ watch(
     <Card class="m-auto w-96">
       <CardHeader class="flex flex-row justify-between">
         <CardTitle class="flex flex-row">
-          <CatalystLogo class="size-12" />
+          <CatalystLogo :size="12" />
           <div>
             <h1 class="text-lg font-bold">Catalyst</h1>
             <div class="text-muted-foreground">Login</div>

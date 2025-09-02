@@ -1,0 +1,1131 @@
+openapi: 3.0.3
+info:
+  title: Ticketing System API
+  version: 1.0.0
+servers:
+  - description: Ticketing System API
+    url: '{scheme}://{address}:{port}'
+    variables:
+      address:
+        default: localhost
+      port:
+        default: "8081"
+      scheme:
+        default: http
+        enum:
+          - https
+          - http
+paths:
+  /tickets:
+    get:
+      summary: List all tickets
+      operationId: listTickets
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of tickets", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTicket" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    post:
+      summary: Create a new ticket
+      operationId: createTicket
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTicket" } } } }
+      responses:
+        "200": { "description": "Ticket created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+      security: [ { "OAuth2": [ "ticket:write" ] } ]
+  /tickets/{id}:
+    get:
+      summary: Get a single ticket by ID
+      operationId: getTicket
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single ticket", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTicket" } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    patch:
+      summary: Update a ticket by ID
+      operationId: updateTicket
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TicketUpdate" } } } }
+      responses:
+        "200": { "description": "Tickets updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+    delete:
+      summary: Delete a ticket by ID
+      operationId: deleteTicket
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Tickets deleted" }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /comments:
+    get:
+      summary: List all comments
+      operationId: listComments
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of comments", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedComment" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of comments" } } }
+      security: [ { "OAuth2": [ "ticket:read" ] } ]
+    post:
+      summary: Create a new comment
+      operationId: createComment
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewComment" } } } }
+      responses:
+        "200": { "description": "Comment created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /comments/{id}:
+    get:
+      summary: Get a single comment by ID
+      operationId: getComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single comment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedComment" } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    patch:
+      summary: Update a comment by ID
+      operationId: updateComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommentUpdate" } } } }
+      responses:
+        "200": { "description": "Comment updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Comment" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+    delete:
+      summary: Delete a comment by ID
+      operationId: deleteComment
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Comment deleted" }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /files:
+    get:
+      summary: List all files
+      operationId: listFiles
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of files", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/File" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of files" } } }
+      security: [ { OAuth2: [ "file:read" ] } ]
+    post:
+      summary: Create a new file
+      operationId: createFile
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewFile" } } } }
+      responses:
+        "200": { "description": "File created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      security: [ { OAuth2: [ "file:write" ] } ]
+  /files/{id}:
+    get:
+      summary: Get a single file by ID
+      operationId: getFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single file", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/File" } } } }
+      security: [ { OAuth2: [ "file:read" ] } ]
+    delete:
+      summary: Delete a file by ID
+      operationId: deleteFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "File deleted" }
+      security: [ { OAuth2: [ "file:write" ] } ]
+  /files/{id}/download:
+    get:
+      summary: Download a file by ID
+      operationId: downloadFile
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "File content", "content": { "application/octet-stream": { } }, "headers": { "Content-Disposition": { "schema": { "type": "string" } }, "Content-Type": { "schema": { "type": "string" } } } }
+      security: [ { OAuth2: [ "file:read" ] } ]
+  /links:
+    get:
+      summary: List all links
+      operationId: listLinks
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of links", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of links" } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    post:
+      summary: Create a new link
+      operationId: createLink
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewLink" } } } }
+      responses:
+        "200": { "description": "Link created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /links/{id}:
+    get:
+      summary: Get a single link by ID
+      operationId: getLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single link", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    patch:
+      summary: Update a link by ID
+      operationId: updateLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LinkUpdate" } } } }
+      responses:
+        "200": { "description": "Link updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Link" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+    delete:
+      summary: Delete a link by ID
+      operationId: deleteLink
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Link deleted" }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /tasks:
+    get:
+      summary: List all tasks
+      operationId: listTasks
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of tasks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExtendedTask" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tasks" } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    post:
+      summary: Create a new task
+      operationId: createTask
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTask" } } } }
+      responses:
+        "200": { "description": "Task created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /tasks/{id}:
+    get:
+      summary: Get a single task by ID
+      operationId: getTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single task", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExtendedTask" } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    patch:
+      summary: Update a task by ID
+      operationId: updateTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskUpdate" } } } }
+      responses:
+        "200": { "description": "Task updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Task" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+    delete:
+      summary: Delete a task by ID
+      operationId: deleteTask
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Task deleted" }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /timeline:
+    get:
+      summary: List all timeline items
+      operationId: listTimeline
+      parameters:
+        - { "name": "ticket", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of timeline items", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEntry" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of timeline items" } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    post:
+      summary: Create a new timeline item
+      operationId: createTimeline
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewTimelineEntry" } } } }
+      responses:
+        "200": { "description": "Timeline item created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /timeline/{id}:
+    get:
+      summary: Get a single timeline item by ID
+      operationId: getTimeline
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single timeline item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+    patch:
+      summary: Update a timeline item by ID
+      operationId: updateTimeline
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntryUpdate" } } } }
+      responses:
+        "200": { "description": "Timeline item updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TimelineEntry" } } } }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+    delete:
+      summary: Delete a timeline item by ID
+      operationId: deleteTimeline
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Timeline item deleted" }
+      security: [ { OAuth2: [ "ticket:write" ] } ]
+  /reactions:
+    get:
+      summary: List all reactions
+      operationId: listReactions
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of reactions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Reaction" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of reactions" } } }
+      security: [ { OAuth2: [ "reaction:read" ] } ]
+    post:
+      summary: Create a new reaction
+      operationId: createReaction
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewReaction" } } } }
+      responses:
+        "200": { "description": "Reactions created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      security: [ { OAuth2: [ "reaction:write" ] } ]
+  /reactions/{id}:
+    get:
+      summary: Get a single reaction by ID
+      operationId: getReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single reaction", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      security: [ { OAuth2: [ "reaction:read" ] } ]
+    patch:
+      summary: Update a reaction by ID
+      operationId: updateReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReactionUpdate" } } } }
+      responses:
+        "200": { "description": "Reactions updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reaction" } } } }
+      security: [ { OAuth2: [ "reaction:write" ] } ]
+    delete:
+      summary: Delete a reaction by ID
+      operationId: deleteReaction
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Reactions deleted" }
+      security: [ { OAuth2: [ "reaction:write" ] } ]
+  /types:
+    get:
+      summary: List all types
+      operationId: listTypes
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of types", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Type" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of types" } } }
+      security: [ { OAuth2: [ "type:read" ] } ]
+    post:
+      summary: Create a new type
+      operationId: createType
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewType" } } } }
+      responses:
+        "200": { "description": "Types created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
+      security: [ { OAuth2: [ "type:write" ] } ]
+  /types/{id}:
+    get:
+      summary: Get a single type by ID
+      operationId: getType
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
+      security: [ { OAuth2: [ "type:read" ] } ]
+    patch:
+      summary: Update a type by ID
+      operationId: updateType
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TypeUpdate" } } } }
+      responses:
+        "200": { "description": "Types updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Type" } } } }
+      security: [ { OAuth2: [ "type:write" ] } ]
+    delete:
+      summary: Delete a type by ID
+      operationId: deleteType
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Types deleted" }
+      security: [ { OAuth2: [ "type:write" ] } ]
+  /users:
+    get:
+      summary: List all users
+      operationId: listUsers
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of users" } } }
+      security: [ { OAuth2: [ "user:read" ] } ]
+    post:
+      summary: Create a new user
+      operationId: createUser
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewUser" } } } }
+      responses:
+        "200": { "description": "Users created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+      security: [ { OAuth2: [ "user:write" ] } ]
+  /users/{id}:
+    get:
+      summary: Get a single user by ID
+      operationId: getUser
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+      security: [ { OAuth2: [ "user:read" ] } ]
+    patch:
+      summary: Update a user by ID
+      operationId: updateUser
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } } } }
+      responses:
+        "200": { "description": "Users updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+      security: [ { OAuth2: [ "user:write" ] } ]
+    delete:
+      summary: Delete a user by ID
+      operationId: deleteUser
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Users deleted" }
+      security: [ { OAuth2: [ "user:write" ] } ]
+  /users/{id}/groups:
+    get:
+      summary: List all groups for a user
+      operationId: listUserGroups
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of user groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
+      security: [ { OAuth2: [ "user:read" ] } ]
+    post:
+      summary: Add a group to a user
+      operationId: addUserGroup
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
+      responses:
+        "201": { "description": "Group added to user" }
+      security: [ { OAuth2: [ "user:write" ] } ]
+  /users/{id}/permissions:
+    get:
+      summary: List all permissions for a user
+      operationId: listUserPermissions
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of user permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
+      security: [ { OAuth2: [ "user:read" ] } ]
+  /users/{id}/groups/{groupId}:
+    delete:
+      summary: Remove a group from a user
+      operationId: removeUserGroup
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Group removed from user" }
+      security: [ { OAuth2: [ "user:write" ] } ]
+  /groups:
+    get:
+      summary: List all groups
+      operationId: listGroups
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Group" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of groups" } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+    post:
+      summary: Create a new group
+      operationId: createGroup
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewGroup" } } } }
+      responses:
+        "200": { "description": "Groups created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ { OAuth2: [ "group:write" ] } ]
+  /groups/{id}:
+    get:
+      summary: Get a single group by ID
+      operationId: getGroup
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single group", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+    patch:
+      summary: Update a group by ID
+      operationId: updateGroup
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupUpdate" } } } }
+      responses:
+        "200": { "description": "Groups updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Group" } } } }
+      security: [ { OAuth2: [ "group:write" ] } ]
+    delete:
+      summary: Delete a group by ID
+      operationId: deleteGroup
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Groups deleted" }
+      security: [ { OAuth2: [ "group:write" ] } ]
+  /groups/{id}/parents:
+    get:
+      summary: List all parent groups for a group
+      operationId: listParentGroups
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+    post:
+      summary: Add a parent group to another group
+      operationId: addGroupParent
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRelation" } } } }
+      responses:
+        "201": { "description": "Group added to group" }
+      security: [ { OAuth2: [ "group:write" ] } ]
+  /groups/{id}/children:
+    get:
+      summary: List all child groups for a group
+      operationId: listChildGroups
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of group groups", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/UserGroup" } } } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+  /groups/{id}/users:
+    get:
+      summary: List all users for a group
+      operationId: listGroupUsers
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of group users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/GroupUser" } } } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+  /groups/{id}/permissions:
+    get:
+      summary: List all permissions for a group
+      operationId: listParentPermissions
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A list of group permissions", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "string" } } } } }
+      security: [ { OAuth2: [ "group:read" ] } ]
+  /groups/{id}/groups/{parentGroupId}:
+    delete:
+      summary: Remove a parent group from another group
+      operationId: removeGroupParent
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        - { "name": "parentGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Group removed from group" }
+      security: [ { OAuth2: [ "group:write" ] } ]
+  /webhooks:
+    get:
+      summary: List all webhooks
+      operationId: listWebhooks
+      parameters:
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "A list of webhooks", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Webhook" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of webhooks" } } }
+      security: [ { OAuth2: [ "webhook:read" ] } ]
+    post:
+      summary: Create a new webhook
+      operationId: createWebhook
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewWebhook" } } } }
+      responses:
+        "200": { "description": "Webhooks created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
+      security: [ { OAuth2: [ "webhook:write" ] } ]
+  /webhooks/{id}:
+    get:
+      summary: Get a single webhook by ID
+      operationId: getWebhook
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "200": { "description": "A single webhook", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
+      security: [ { OAuth2: [ "webhook:read" ] } ]
+    patch:
+      summary: Update a webhook by ID
+      operationId: updateWebhook
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookUpdate" } } } }
+      responses:
+        "200": { "description": "Webhooks updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Webhook" } } } }
+      security: [ { OAuth2: [ "webhook:write" ] } ]
+    delete:
+      summary: Delete a webhook by ID
+      operationId: deleteWebhook
+      parameters:
+        - { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      responses:
+        "204": { "description": "Webhooks deleted" }
+      security: [ { OAuth2: [ "webhook:write" ] } ]
+  /dashboard_counts:
+    get:
+      summary: Get dashboard summary counts
+      operationId: getDashboardCounts
+      responses:
+        "200": { "description": "Dashboard count data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/DashboardCounts" } } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+  /sidebar:
+    get:
+      summary: Get sidebar data
+      operationId: getSidebar
+      responses:
+        "200": { "description": "Sidebar content", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Sidebar" } } } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+  /ticket_search:
+    get:
+      summary: Search tickets with full join data
+      operationId: searchTickets
+      parameters:
+        - { "name": "query", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "type", "in": "query", "required": false, "schema": { "type": "string" } }
+        - { "name": "open", "in": "query", "required": false, "schema": { "type": "boolean" } }
+        - { "name": "offset", "in": "query", "required": false, "schema": { "type": "integer", "default": 0 } }
+        - { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "default": 10 } }
+      responses:
+        "200": { "description": "Search results with aggregated data", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TicketSearch" } } } }, "headers": { "X-Total-Count": { "schema": { "type": "integer" }, "description": "Total number of tickets" } } }
+      security: [ { OAuth2: [ "ticket:read" ] } ]
+  /settings:
+    get:
+      summary: Get system settings
+      operationId: getSettings
+      responses:
+        "200": { "description": "System settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      security: [ { OAuth2: [ "settings:read" ] } ]
+    post:
+      summary: Update system settings
+      operationId: updateSettings
+      requestBody: { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      responses:
+        "200": { "description": "Settings updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+      security: [ { OAuth2: [ "settings:write" ] } ]
+  /config:
+    get:
+      summary: Get the configuration
+      operationId: getConfig
+      responses:
+        "200": { "description": "The configuration", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Config" } } } }
+components:
+  schemas:
+    NewComment:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+      required: [ "ticket", "author", "message" ]
+    CommentUpdate:
+      type: object
+      properties:
+        author: { "type": "string" }
+        message: { "type": "string" }
+    Comment:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "author", "message", "created", "updated" ]
+    ExtendedComment:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        author: { "type": "string" }
+        message: { "type": "string" }
+        author_name: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "author", "message", "author_name", "created", "updated" ]
+    NewFeature:
+      type: object
+      properties:
+        name: { "type": "string" }
+      required: [ "name" ]
+    Feature:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "created", "updated" ]
+    NewFile:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        blob: { "type": "string" }
+        name: { "type": "string" }
+      required: [ "ticket", "blob", "name" ]
+    FileUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+    File:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        size: { "type": "number", "format": "double" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "size", "created", "updated" ]
+    NewLink:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        url: { "type": "string" }
+      required: [ "ticket", "name", "url" ]
+    LinkUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        url: { "type": "string" }
+    Link:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        url: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "url", "created", "updated" ]
+    NewReaction:
+      type: object
+      properties:
+        name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
+      required: [ "name", "action", "actiondata", "trigger", "triggerdata" ]
+    ReactionUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
+    Reaction:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        action: { "type": "string" }
+        actiondata: { "type": "object" }
+        trigger: { "type": "string" }
+        triggerdata: { "type": "object" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "action", "actiondata", "trigger", "triggerdata", "created", "updated" ]
+    NewTask:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+      required: [ "ticket", "name", "open" ]
+    TaskUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+    Task:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "open", "created", "updated" ]
+    ExtendedTask:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        name: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        owner_name: { "type": "string" }
+        ticket_name: { "type": "string" }
+        ticket_type: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "name", "open", "ticket_name", "ticket_type", "created", "updated" ]
+    NewTicket:
+      type: object
+      properties:
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+      required: [ "type", "name", "description", "open", "schema", "state" ]
+    TicketUpdate:
+      type: object
+      properties:
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+    Ticket:
+      type: object
+      properties:
+        id: { "type": "string" }
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "type", "name", "description", "open", "schema", "state", "created", "updated" ]
+    ExtendedTicket:
+      type: object
+      properties:
+        id: { "type": "string" }
+        type: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        owner: { "type": "string" }
+        resolution: { "type": "string" }
+        schema: { "type": "object" }
+        state: { "type": "object" }
+        owner_name: { "type": "string" }
+        type_singular: { "type": "string" }
+        type_plural: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "type", "name", "description", "open", "schema", "state", "type_singular", "type_plural", "created", "updated" ]
+    NewTimelineEntry:
+      type: object
+      properties:
+        ticket: { "type": "string" }
+        message: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
+      required: [ "ticket", "message", "time" ]
+    TimelineEntryUpdate:
+      type: object
+      properties:
+        message: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
+    TimelineEntry:
+      type: object
+      properties:
+        id: { "type": "string" }
+        ticket: { "type": "string" }
+        message: { "type": "string" }
+        time: { "type": "string", "format": "date-time" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "ticket", "message", "time", "created", "updated" ]
+    NewType:
+      type: object
+      properties:
+        icon: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+      required: [ "singular", "plural", "schema" ]
+    TypeUpdate:
+      type: object
+      properties:
+        icon: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+    Type:
+      type: object
+      properties:
+        id: { "type": "string" }
+        icon: { "type": "string" }
+        plural: { "type": "string" }
+        schema: { "type": "object" }
+        singular: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "plural", "schema", "singular", "created", "updated" ]
+    NewUser:
+      type: object
+      properties:
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        name: { "type": "string" }
+        active: { "type": "boolean" }
+      required: [ "username", "active" ]
+    UserUpdate:
+      type: object
+      properties:
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        name: { "type": "string" }
+        password: { "type": "string" }
+        passwordConfirm: { "type": "string" }
+        active: { "type": "boolean" }
+    User:
+      type: object
+      properties:
+        id: { "type": "string" }
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        lastResetSentAt: { "type": "string", "format": "date-time" }
+        lastVerificationSentAt: { "type": "string", "format": "date-time" }
+        name: { "type": "string" }
+        active: { "type": "boolean" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "username", "active", "created", "updated" ]
+    NewGroup:
+      type: object
+      properties:
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+      required: [ "name", "permissions" ]
+    GroupUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+    Group:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "permissions", "created", "updated" ]
+    UserGroup:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        type: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "permissions", "type", "created", "updated" ]
+    GroupUser:
+      type: object
+      properties:
+        id: { "type": "string" }
+        username: { "type": "string" }
+        avatar: { "type": "string" }
+        email: { "type": "string" }
+        lastResetSentAt: { "type": "string", "format": "date-time" }
+        lastVerificationSentAt: { "type": "string", "format": "date-time" }
+        name: { "type": "string" }
+        active: { "type": "boolean" }
+        type: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "username", "active", "type", "created", "updated" ]
+    GroupRelation:
+      type: object
+      properties:
+        group_id: { "type": "string" }
+      required: [ "group_id" ]
+    NewWebhook:
+      type: object
+      properties:
+        name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
+      required: [ "name", "collection", "destination" ]
+    WebhookUpdate:
+      type: object
+      properties:
+        name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
+    Webhook:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        collection: { "type": "string" }
+        destination: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+        updated: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "collection", "destination", "created", "updated" ]
+    DashboardCounts:
+      type: object
+      properties:
+        id: { "type": "string" }
+        count: { "type": "integer" }
+      required: [ "id", "count" ]
+    Sidebar:
+      type: object
+      properties:
+        id: { "type": "string" }
+        singular: { "type": "string" }
+        plural: { "type": "string" }
+        icon: { "type": "string" }
+        count: { "type": "integer" }
+      required: [ "id", "singular", "plural", "count" ]
+    TicketSearch:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+        description: { "type": "string" }
+        open: { "type": "boolean" }
+        type: { "type": "string" }
+        state: { "type": "object" }
+        owner_name: { "type": "string" }
+        created: { "type": "string", "format": "date-time" }
+      required: [ "id", "name", "description", "open", "type", "state", "owner_name", "created" ]
+    Config:
+      type: object
+      properties:
+        flags: { "type": "array", "items": { "type": "string" } }
+        permissions: { "type": "array", "items": { "type": "string" } }
+        tables: { "type": "array", "items": { "$ref": "#/components/schemas/Table" } }
+      required: [ "flags", "permissions", "tables" ]
+    Table:
+      type: object
+      properties:
+        id: { "type": "string" }
+        name: { "type": "string" }
+      required: [ "id", "name" ]
+    Settings:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/SettingsMeta'
+        smtp:
+          $ref: '#/components/schemas/SettingsSmtp'
+      required: [ "meta", "smtp" ]
+    SettingsMeta:
+      type: object
+      properties:
+        app_name:
+          type: string
+        app_url:
+          type: string
+        sender_name:
+          type: string
+        sender_address:
+          type: string
+        reset_password_template:
+          $ref: '#/components/schemas/EmailTemplate'
+      required: [ "app_name", "app_url", "sender_name", "sender_address", "reset_password_template" ]
+    SettingsSmtp:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        host:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        auth_method:
+          type: string
+        tls:
+          type: boolean
+        local_name:
+          type: string
+      required: [ "enabled", "host", "port", "username", "password", "auth_method", "tls", "local_name" ]
+    EmailTemplate:
+      type: object
+      properties:
+        body:
+          type: string
+        subject:
+          type: string
+      required: [ "body", "subject" ]
+    Error:
+      type: object
+      properties:
+        status: { "type": "integer" }
+        error: { "type": "string" }
+        message: { "type": "string" }
+      required: [ "status", "error", "message" ]
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth/authorize
+          tokenUrl: /oauth/token
+          scopes:
+            user:read: Read user data
+            user:write: Write user data
+            group:read: Read group data
+            group:write: Write group data
+            ticket:read: Read ticket data
+            ticket:write: Write ticket data
+            comment:read: Read comment data
+            comment:write: Write comment data
+            file:read: Read file data
+            file:write: Write file data
+            link:read: Read link data
+            link:write: Write link data
+            reaction:read: Read reaction data
+            reaction:write: Write reaction data
+            task:read: Read task data
+            task:write: Write task data
+            feature:read: Read feature data
+            feature:write: Write feature data
+            webhook:read: Read webhook data
+            webhook:write: Write webhook data
+            settings:read: Read settings data
+            settings:write: Write settings data

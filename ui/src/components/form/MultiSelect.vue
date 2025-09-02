@@ -16,11 +16,13 @@ const props = withDefaults(
     modelValue?: string[]
     items: string[]
     placeholder?: string
+    disabled?: boolean
   }>(),
   {
     modelValue: () => [],
     items: () => [],
-    placeholder: ''
+    placeholder: '',
+    disabled: false
   }
 )
 
@@ -40,18 +42,26 @@ const filteredItems = computed(() => {
   if (!selectedItems.value) return props.items
   return props.items.filter((i) => !selectedItems.value.includes(i))
 })
+
+const removeItem = (item: string) => {
+  const index = selectedItems.value.indexOf(item)
+  if (index > -1) {
+    selectedItems.value.splice(index, 1)
+  }
+}
 </script>
 
 <template>
-  <TagsInput class="flex items-center gap-2 px-0" :modelValue="selectedItems">
-    <div class="flex flex-wrap items-center">
-      <TagsInputItem v-for="item in selectedItems" :key="item" :value="item" class="ml-2">
+  <TagsInput class="flex items-center gap-2 px-2" :modelValue="selectedItems">
+    <div class="flex flex-wrap items-center gap-2">
+      <TagsInputItem v-for="item in selectedItems" :key="item" :value="item">
         <TagsInputItemText />
-        <TagsInputItemDelete />
+        <TagsInputItemDelete v-if="!disabled" @click="removeItem(item)" />
       </TagsInputItem>
     </div>
 
     <ComboboxRoot
+      v-if="!disabled"
       v-model="selectedItems"
       v-model:open="open"
       v-model:searchTerm="searchTerm"
@@ -71,7 +81,7 @@ const filteredItems = computed(() => {
         <CommandList
           v-if="selectedItems.length < items.length"
           position="popper"
-          class="mt-2 w-[--radix-popper-anchor-width] rounded-md border bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          class="w-(--radix-popper-anchor-width) mt-2 rounded-md border bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         >
           <CommandEmpty />
           <CommandGroup>

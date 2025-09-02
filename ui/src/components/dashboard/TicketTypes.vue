@@ -5,7 +5,10 @@ import { DonutChart } from '@/components/ui/chart-donut'
 import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
+import { useAPI } from '@/api'
+import type { Sidebar } from '@/client/models'
+
+const api = useAPI()
 
 const {
   isPending,
@@ -14,7 +17,7 @@ const {
   error
 } = useQuery({
   queryKey: ['sidebar'],
-  queryFn: (): Promise<Array<any>> => pb.collection('sidebar').getFullList()
+  queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 
 const namedTypes = computed(() => {

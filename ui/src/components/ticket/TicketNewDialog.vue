@@ -13,18 +13,25 @@ import {
 } from '@/components/ui/dialog'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Ticket, Type } from '@/client/models'
 import { handleError } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
+
+const authStore = useAuthStore()
 
 const props = defineProps<{
   selectedType: Type
@@ -34,24 +41,31 @@ const isOpen = ref(false)
 
 const addTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> => {
-    if (!pb.authStore.model) return Promise.reject('Not logged in')
+    if (!authStore.user) return Promise.reject('Not logged in')
 
-    return pb.collection('tickets').create({
-      name: name.value,
-      description: description.value,
-      open: true,
-      type: props.selectedType.id,
-      schema: props.selectedType.schema,
-      state: state.value,
-      owner: pb.authStore.model.id
+    return api.createTicket({
+      newTicket: {
+        name: name.value,
+        description: description.value,
+        open: true,
+        type: props.selectedType.id,
+        schema: props.selectedType.schema,
+        state: state.value,
+        owner: authStore.user.id,
+        resolution: ''
+      }
     })
   },
   onSuccess: (data: Ticket) => {
-    router.push(`/tickets/${props.selectedType.id}/${data.id}`)
-    queryClient.invalidateQueries({ queryKey: ['tickets'] })
     isOpen.value = false
+    router.push(`/tickets/${props.selectedType.id}/${data.id}`)
+    toast({
+      title: 'Ticket created',
+      description: 'The ticket has been created successfully'
+    })
+    queryClient.invalidateQueries({ queryKey: ['tickets'] })
   },
-  onError: handleError
+  onError: handleError('Failed to create ticket')
 })
 
 defineRule('required', (value: string) => {
@@ -67,6 +81,7 @@ const validationSchema = computed(() => {
     name: 'required'
   }
 
+  /*
   Object.keys(props.selectedType.schema.properties).forEach((key) => {
     const property = props.selectedType.schema.properties[key]
     if (property.type === 'string') {
@@ -78,6 +93,7 @@ const validationSchema = computed(() => {
       fields[key] = ''
     }
   })
+    */
 
   return fields
 })

@@ -5,68 +5,125 @@ on:
   release: { types: [ published ] }
 
 jobs:
-  fmt:
-    name: Fmt
+  generate-go:
+    name: Generate Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
-      - uses: oven-sh/setup-bun@v1
-
-      - run: |
-          bun install
-          mkdir -p dist
-          touch dist/index.html
-        working-directory: ui
-
-      - run: make install
-      - run: make fmt
-
+      - run: make install-golangci-lint generate-go
       - run: git diff --exit-code
 
-  lint:
-    name: Lint
+  generate-ui:
+    name: Generate UI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.22' }
-
-      - run: |
-          mkdir -p ui/dist
-          touch ui/dist/index.html
-
-      - uses: golangci/golangci-lint-action@v6
-        with: { version: 'v1.59' }
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.22' }
       - uses: oven-sh/setup-bun@v1
+      - run: make install-ui generate-ui
+      - run: git diff --exit-code
 
-      - run: make build-ui
-
-  test:
-    name: Test
+  fmt-go:
+    name: Fmt Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: '1.22' }
+      - run: make install-golangci-lint fmt-go
+      - run: git diff --exit-code
+
+  fmt-ui:
+    name: Fmt UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
+      - run: make install-ui fmt-ui
 
-      - run: |
-          mkdir -p ui/dist
-          touch ui/dist/index.html
+  lint-go:
+    name: Lint Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - run: make install-golangci-lint lint-go
 
+  lint-ui:
+    name: Lint UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: make install-ui lint-ui
+
+  build-ui:
+    name: Build UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: make install-ui build-ui
+
+  test-go:
+    name: Test Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
       - run: make test-coverage
-
       - uses: codecov/codecov-action@v4
         with:
           files: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-ui:
+    name: Test UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+      - run: make install-ui test-ui
+
+  test-playwright:
+    name: Test Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+      - run: make install-ui build-ui install-playwright test-playwright
+
+  list-upgrade-test-folders:
+    name: List Upgrade Test Folders
+    runs-on: ubuntu-latest
+    outputs:
+      folders: ${{ steps.set-dirs.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-dirs
+        run: |
+          FOLDERS=$(ls -d ./testing/data/*/ | xargs -n 1 basename | jq -R . | jq -c -s .)
+          echo "matrix=$FOLDERS" >> $GITHUB_OUTPUT
+
+  test-upgrade-playwright:
+    name: Test Playwright Upgrade
+    needs: list-upgrade-test-folders
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.list-upgrade-test-folders.outputs.folders) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - uses: oven-sh/setup-bun@v1
+      - run: mkdir -p catalyst_data
+      - run: cp testing/data/${{ matrix.folder }}/data.db catalyst_data/data.db
+      - run: make install-ui build-ui install-playwright test-playwright

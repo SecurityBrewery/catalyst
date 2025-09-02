@@ -9,50 +9,41 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { ref } from 'vue'
+import { useQueryClient } from '@tanstack/vue-query'
+import Uppy from '@uppy/core'
+import Tus from '@uppy/tus'
+import { Dashboard } from '@uppy/vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { File as CFile, Ticket } from '@/lib/types'
-import { handleError } from '@/lib/utils'
+import type { Ticket } from '@/client/models'
+import { useAuthStore } from '@/store/auth'
 
 const queryClient = useQueryClient()
+const { toast } = useToast()
+
+const authStore = useAuthStore()
 
 const props = defineProps<{
   ticket: Ticket
 }>()
 
 const isOpen = defineModel<boolean>()
-const file = ref<File | null>(null)
 
-const addFileMutation = useMutation({
-  mutationFn: (): Promise<CFile> => {
-    if (!file.value) return Promise.reject('No file selected')
-
-    return pb.collection('files').create({
-      ticket: props.ticket.id,
-      name: file.value.name,
-      blob: file.value,
-      size: file.value.size
+const uppy = new Uppy().use(Tus, {
+  endpoint: '/files/',
+  headers: {
+    'X-Ticket-ID': props.ticket.id,
+    authorization: `Bearer ${authStore.token}`
+  },
+  onSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
+    toast({
+      title: 'File uploaded',
+      description: 'The file has been uploaded successfully'
     })
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
-    isOpen.value = false
-  },
-  onError: handleError
-})
-
-const save = () => addFileMutation.mutate()
-
-function handleFileUpload($event: Event) {
-  const target = $event.target as HTMLInputElement
-  if (target && target.files) {
-    file.value = target.files[0]
   }
-}
+})
 </script>
 
 <template>
@@ -63,12 +54,11 @@ function handleFileUpload($event: Event) {
         <DialogDescription> Upload a new file to this ticket.</DialogDescription>
       </DialogHeader>
 
-      <Input id="file" type="file" class="mt-2" @change="handleFileUpload($event)" />
+      <Dashboard :uppy="uppy" :props="{ width: '100%', height: '350px' }" />
 
-      <DialogFooter class="mt-2 sm:justify-start">
-        <Button @click="save">Upload</Button>
+      <DialogFooter class="mt-2">
         <DialogClose as-child>
-          <Button type="button" variant="secondary">Cancel</Button>
+          <Button type="button" variant="secondary">Close</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>

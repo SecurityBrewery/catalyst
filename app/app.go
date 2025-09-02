@@ -1,52 +1,75 @@
 package app
 
 import (
-	"os"
-	"strings"
+	"context"
+	"fmt"
+	"net/http"
 
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
-
-	"github.com/SecurityBrewery/catalyst/migrations"
-	"github.com/SecurityBrewery/catalyst/reaction"
-	"github.com/SecurityBrewery/catalyst/webhook"
+	"github.com/SecurityBrewery/catalyst/app/database"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/hook"
+	"github.com/SecurityBrewery/catalyst/app/mail"
+	"github.com/SecurityBrewery/catalyst/app/migration"
+	"github.com/SecurityBrewery/catalyst/app/reaction"
+	"github.com/SecurityBrewery/catalyst/app/reaction/schedule"
+	"github.com/SecurityBrewery/catalyst/app/router"
+	"github.com/SecurityBrewery/catalyst/app/service"
+	"github.com/SecurityBrewery/catalyst/app/upload"
+	"github.com/SecurityBrewery/catalyst/app/webhook"
 )
 
-func init() { //nolint:gochecknoinits
-	migrations.Register()
+type App struct {
+	Queries *sqlc.Queries
+	Hooks   *hook.Hooks
+	router  http.Handler
 }
 
-func App(dir string, test bool) (*pocketbase.PocketBase, error) {
-	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDev:     test || dev(),
-		DefaultDataDir: dir,
-	})
+func New(ctx context.Context, dir string) (*App, func(), error) {
+	uploader, err := upload.New(dir)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
+	}
 
-	var appURL string
+	queries, cleanup, err := database.DB(ctx, dir)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
 
-	app.RootCmd.PersistentFlags().StringVar(&appURL, "app-url", "", "the app's URL")
+	if err := migration.Apply(ctx, queries, dir, uploader); err != nil {
+		return nil, nil, fmt.Errorf("failed to migrate database: %w", err)
+	}
 
-	var flags []string
+	mailer := mail.New(queries)
 
-	app.RootCmd.PersistentFlags().StringSliceVar(&flags, "flags", nil, "feature flags")
+	scheduler, err := schedule.New(ctx, queries)
+	if err != nil {
+		return nil, cleanup, fmt.Errorf("failed to create scheduler: %w", err)
+	}
 
-	_ = app.RootCmd.ParseFlags(os.Args[1:])
+	hooks := hook.NewHooks()
 
-	app.RootCmd.AddCommand(fakeDataCmd(app))
-	app.RootCmd.AddCommand(defaultDataCmd(app))
+	service := service.New(queries, hooks, uploader, scheduler)
 
-	webhook.BindHooks(app)
-	reaction.BindHooks(app, test)
+	router, err := router.New(service, queries, uploader, mailer)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create router: %w", err)
+	}
 
-	app.OnAfterBootstrap().Add(func(e *core.BootstrapEvent) error {
-		return MigrateDBs(e.App)
-	})
+	if err := reaction.BindHooks(hooks, router, queries, false); err != nil {
+		return nil, nil, err
+	}
 
-	app.OnBeforeServe().Add(setupServer(appURL, flags))
+	webhook.BindHooks(hooks, queries)
 
-	return app, nil
+	app := &App{
+		Queries: queries,
+		Hooks:   hooks,
+		router:  router,
+	}
+
+	return app, cleanup, nil
 }
 
-func dev() bool {
-	return strings.HasPrefix(os.Args[0], os.TempDir())
+func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	a.router.ServeHTTP(w, r)
 }

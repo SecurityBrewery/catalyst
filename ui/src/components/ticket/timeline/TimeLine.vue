@@ -3,7 +3,7 @@ import { Circle } from 'lucide-vue-next'
 
 import format from 'date-fns/format'
 
-import type { Comment } from '@/lib/types'
+import type { Comment } from '@/client/models'
 
 defineProps<{
   comments: Array<Comment>
@@ -16,10 +16,10 @@ defineProps<{
       <!-- item -->
       <p class="col-start-3 col-end-4 mr-auto text-left text-sm text-muted-foreground">
         <!-- heading -->
-        {{ format(new Date(comment.created), 'PPpp') }}
+        {{ format(comment.created, 'PPpp') }}
       </p>
       <div
-        class="col-start-2 col-end-3 row-start-1 row-end-1 flex size-4 items-center justify-center rounded-full border border-current [&>*]:hidden"
+        class="col-start-2 col-end-3 row-start-1 row-end-1 flex size-4 items-center justify-center rounded-full border border-current *:hidden"
       >
         <!-- dot -->
         <Circle className="size-2.5" />
@@ -40,7 +40,7 @@ defineProps<{
         End
       </p>
       <div
-        class="col-start-2 col-end-3 row-start-1 row-end-1 flex size-4 items-center justify-center rounded-full border border-current [&>*]:hidden"
+        class="col-start-2 col-end-3 row-start-1 row-end-1 flex size-4 items-center justify-center rounded-full border border-current *:hidden"
       >
         <!-- dot -->
         <Circle className="size-2.5" />

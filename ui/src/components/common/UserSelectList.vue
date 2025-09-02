@@ -14,13 +14,16 @@ import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { User } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { User } from '@/client'
 import { cn } from '@/lib/utils'
 
-const user = defineModel<User>()
+const api = useAPI()
 
-const open = ref(false)
+defineProps<{
+  userID: string | undefined
+}>()
+
 const searchTerm = ref('')
 
 const {
@@ -32,11 +35,16 @@ const {
 } = useQuery({
   queryKey: ['users', 'search', searchTerm.value],
   queryFn: () =>
-    pb.collection('users').getFullList({
-      sort: 'name',
-      perPage: 5,
-      filter: pb.filter(`name ~ {:search}`, { search: searchTerm.value })
-    })
+    api
+      .listUsers()
+      .then((users) =>
+        users.filter(
+          (user) =>
+            user.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+            user.username.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.value.toLowerCase())
+        )
+      )
 })
 
 const searchUserDebounced = debounce(() => refetch(), 300)
@@ -45,10 +53,14 @@ watch(
   () => searchTerm.value,
   () => searchUserDebounced()
 )
+
+const emit = defineEmits<{
+  (e: 'select', value: User): void
+}>()
 </script>
 
 <template>
-  <Command v-model="user" v-model:search-term="searchTerm">
+  <Command v-model:search-term="searchTerm">
     <CommandInput placeholder="Search user..." />
     <CommandEmpty>
       <span v-if="usersIsPending"> Loading... </span>
@@ -61,11 +73,11 @@ watch(
           v-for="u in users"
           :key="u.id"
           :value="u"
-          @select="open = false"
+          @select="emit('select', u)"
           class="cursor-pointer"
         >
           <Check
-            :class="cn('mr-2 h-4 w-4', user && user.id === u.id ? 'opacity-100' : 'opacity-0')"
+            :class="cn('mr-2 h-4 w-4', userID && userID === u.id ? 'opacity-100' : 'opacity-0')"
           />
           {{ u.name }}
         </CommandItem>

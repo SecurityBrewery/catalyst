@@ -1,0 +1,122 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+
+	"github.com/urfave/cli/v3"
+
+	"github.com/SecurityBrewery/catalyst/app/auth/password"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+)
+
+func adminCreate(ctx context.Context, command *cli.Command) error {
+	catalyst, cleanup, err := setup(ctx, command)
+	if err != nil {
+		return fmt.Errorf("failed to setup catalyst: %w", err)
+	}
+
+	defer cleanup()
+
+	if command.Args().Len() != 2 {
+		return errors.New("usage: catalyst admin create <email> <password>")
+	}
+
+	name, email := command.Args().Get(0), command.Args().Get(0)
+	pw := command.Args().Get(1)
+
+	passwordHash, tokenKey, err := password.Hash(pw)
+	if err != nil {
+		return errors.New("failed to hash password: " + err.Error())
+	}
+
+	user, err := catalyst.Queries.CreateUser(ctx, sqlc.CreateUserParams{
+		Name:         &name,
+		Email:        &email,
+		Username:     "admin",
+		PasswordHash: passwordHash,
+		TokenKey:     tokenKey,
+		Active:       true,
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := catalyst.Queries.AssignGroupToUser(ctx, sqlc.AssignGroupToUserParams{
+		UserID:  user.ID,
+		GroupID: "admin",
+	}); err != nil {
+		return err
+	}
+
+	slog.InfoContext(ctx, "Creating admin", "id", user.ID, "email", user.Email)
+
+	return nil
+}
+
+func adminSetPassword(ctx context.Context, command *cli.Command) error {
+	catalyst, cleanup, err := setup(ctx, command)
+	if err != nil {
+		return fmt.Errorf("failed to setup catalyst: %w", err)
+	}
+
+	defer cleanup()
+
+	if command.Args().Len() != 2 {
+		return errors.New("usage: catalyst admin set-password <email> <password>")
+	}
+
+	mail := command.Args().Get(0)
+
+	user, err := catalyst.Queries.UserByEmail(ctx, &mail)
+	if err != nil {
+		return err
+	}
+
+	passwordHash, tokenKey, err := password.Hash(command.Args().Get(1))
+	if err != nil {
+		return errors.New("failed to hash password: " + err.Error())
+	}
+
+	if _, err := catalyst.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+		ID:           user.ID,
+		PasswordHash: &passwordHash,
+		TokenKey:     &tokenKey,
+	}); err != nil {
+		return err
+	}
+
+	slog.InfoContext(ctx, "Setting password for admin", "id", user.ID, "email", user.Email)
+
+	return nil
+}
+
+func adminDelete(ctx context.Context, command *cli.Command) error {
+	catalyst, cleanup, err := setup(ctx, command)
+	if err != nil {
+		return fmt.Errorf("failed to setup catalyst: %w", err)
+	}
+
+	defer cleanup()
+
+	if command.Args().Len() != 1 {
+		return errors.New("usage: catalyst admin delete <email>")
+	}
+
+	mail := command.Args().Get(0)
+
+	user, err := catalyst.Queries.UserByEmail(ctx, &mail)
+	if err != nil {
+		return err
+	}
+
+	if err := catalyst.Queries.DeleteUser(ctx, user.ID); err != nil {
+		return err
+	}
+
+	slog.InfoContext(ctx, "Deleted admin", "id", user.ID, "email", mail)
+
+	return nil
+}

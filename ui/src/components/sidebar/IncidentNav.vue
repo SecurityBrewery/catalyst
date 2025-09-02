@@ -9,9 +9,11 @@ import { LoaderCircle } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Type } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Sidebar } from '@/client/models'
 import { cn } from '@/lib/utils'
+
+const api = useAPI()
 
 const route = useRoute()
 
@@ -26,10 +28,11 @@ const {
   error
 } = useQuery({
   queryKey: ['sidebar'],
-  queryFn: (): Promise<Array<any>> => pb.collection('sidebar').getFullList()
+  queryFn: (): Promise<Array<Sidebar>> => api.getSidebar()
 })
 
-const variant = (t: Type): 'default' | 'ghost' => (route.params.type === t.id ? 'default' : 'ghost')
+const variant = (t: Sidebar): 'default' | 'ghost' =>
+  route.params.type === t.id ? 'default' : 'ghost'
 </script>
 
 <template>
@@ -37,16 +40,16 @@ const variant = (t: Type): 'default' | 'ghost' => (route.params.type === t.id ? 
     :data-collapsed="isCollapsed"
     class="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
   >
-    <div v-if="isPending" class="flex h-screen w-screen items-center justify-center">
+    <div v-if="isPending" class="flex items-center justify-center">
       <LoaderCircle class="h-16 w-16 animate-spin text-primary" />
     </div>
-    <Alert v-else-if="isError" variant="destructive" class="mb-4 h-screen w-screen">
+    <Alert v-else-if="isError" variant="destructive" class="mb-4">
       <AlertTitle>Error</AlertTitle>
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>
     <nav
       v-else-if="sidebar"
-      class="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2"
+      class="grid gap-1 px-2 group-data-[collapsed=true]:justify-center group-data-[collapsed=true]:px-2"
     >
       <template v-for="(typ, index) of sidebar">
         <Tooltip v-if="isCollapsed" :key="`1-${index}`" :delay-duration="0">

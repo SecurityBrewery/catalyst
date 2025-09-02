@@ -7,51 +7,95 @@ import TaskAddDialog from '@/components/ticket/task/TaskAddDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useToast } from '@/components/ui/toast/use-toast'
 
-import { Trash2, User2 } from 'lucide-vue-next'
+import { Trash2 } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task, Ticket, User } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { ExtendedTask, Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
+const api = useAPI()
+
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
-  tasks?: Array<Task>
+  tasks?: Array<ExtendedTask>
 }>()
 
 const setTaskOwnerMutation = useMutation({
-  mutationFn: (update: { id: string; user: User }): Promise<Task> =>
-    pb.collection('tasks').update(update.id, {
-      owner: update.user.id
+  mutationFn: (update: { id: string; owner: string }): Promise<Task> =>
+    api.updateTask({
+      id: update.id,
+      taskUpdate: {
+        owner: update.owner
+      }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: handleError
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Owner updated',
+      description: 'The task owner has been updated'
+    })
+  },
+  onError: handleError('Failed to update task owner')
 })
 
-const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, user })
+const update = (id: string, user: User) => setTaskOwnerMutation.mutate({ id, owner: user.id })
 
 const checkMutation = useMutation({
   mutationFn: (task: Task): Promise<Task> =>
-    pb.collection('tasks').update(task.id, {
-      open: !task.open
+    api.updateTask({
+      id: task.id,
+      taskUpdate: {
+        open: !task.open
+      }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: handleError
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task updated',
+      description: 'The task status has been updated'
+    })
+  },
+  onError: handleError('Failed to update task status')
 })
 
 const check = (task: Task) => checkMutation.mutate(task)
 
 const updateTaskNameMutation = useMutation({
   mutationFn: (update: { id: string; name: string }): Promise<Task> =>
-    pb.collection('tasks').update(update.id, {
-      name: update.name
+    api.updateTask({
+      id: update.id,
+      taskUpdate: {
+        name: update.name
+      }
     }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] }),
-  onError: handleError
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task updated',
+      description: 'The task name has been updated'
+    })
+  },
+  onError: handleError('Failed to update task name')
+})
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string) => api.deleteTask({ id }),
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['tasks', id] })
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task deleted',
+      description: 'The task has been deleted successfully'
+    })
+  },
+  onError: handleError('Failed to delete task')
 })
 
 const updateTaskName = (id: string, name: string) => updateTaskNameMutation.mutate({ id, name })
@@ -75,33 +119,21 @@ const updateTaskName = (id: string, name: string) => updateTaskNameMutation.muta
             class="mr-2 flex-1"
           />
         </div>
-        <div class="ml-auto flex items-center">
-          <UserSelect v-if="!task.expand.owner" @update:modelValue="update(task.id, $event)">
-            <Button variant="outline" role="combobox" class="h-8">
-              <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              Unassigned
-            </Button>
-          </UserSelect>
+        <div class="ml-auto flex items-center gap-1">
           <UserSelect
-            v-else
-            :modelValue="task.expand.owner"
-            @update:modelValue="update(task.id, $event)"
-          >
-            <Button variant="outline" role="combobox" class="mr-2 h-8">
-              <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-              {{ task.expand.owner.name }}
-            </Button>
-          </UserSelect>
+            :userID="task.owner"
+            :userName="task.ownerName"
+            @select="update(task.id, $event)"
+          />
           <DeleteDialog
             v-if="task"
-            collection="tasks"
-            :id="task.id"
             :name="task.name"
-            :singular="'Task'"
-            :queryKey="['tickets', ticket.id]"
+            singular="Task"
+            @delete="deleteMutation.mutate(task.id)"
           >
-            <Button variant="ghost" size="icon" class="h-8 w-8">
+            <Button variant="ghost" size="icon" class="size-10">
               <Trash2 class="size-4" />
+              <span class="sr-only">Delete Task</span>
             </Button>
           </DeleteDialog>
         </div>

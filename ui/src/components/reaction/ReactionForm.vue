@@ -31,8 +31,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Reaction } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Reaction } from '@/client/models'
+
+const api = useAPI()
 
 const submitDisabledReason = ref<string>('')
 
@@ -46,14 +48,14 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: () => api.getConfig()
 })
 
 watch(
   () => config.value,
   () => {
     if (!config.value) return
-    if (config.value['flags'].includes('demo')) {
+    if (config.value.flags.includes('demo')) {
       isDemo.value = true
     }
   },
@@ -87,7 +89,7 @@ defineRule('triggerdata.expression', (value: string) => {
   return 'Invalid cron expression'
 })
 
-defineRule('triggerdata.token', (value: string) => {
+defineRule('triggerdata.token', () => {
   return true
 })
 
@@ -251,8 +253,10 @@ const curlExample = computed(() => {
     cmd += ` -H "Authorization: Bearer ${values.triggerdata.token}"`
   }
 
+  const url = `${location.protocol}//${location.hostname}:${location.port}`
+
   if (values.triggerdata.path) {
-    cmd += ` https://${location.hostname}/reaction/${values.triggerdata.path}`
+    cmd += ` -d '{"foo":"bar"}' ${url}/reaction/${values.triggerdata.path}`
   }
 
   return cmd
@@ -304,8 +308,8 @@ const curlExample = computed(() => {
         <TriggerHookFormFields v-else-if="values.trigger === 'hook'" />
 
         <div v-if="values.trigger === 'webhook'">
-          <Label for="url">Usage</Label>
-          <Input id="url" readonly :modelValue="curlExample" class="bg-accent" />
+          <Label for="usage">Usage</Label>
+          <Input id="usage" readonly :modelValue="curlExample" class="bg-accent" />
         </div>
       </CardContent>
     </Card>

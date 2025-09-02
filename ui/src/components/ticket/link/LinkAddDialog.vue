@@ -11,16 +11,20 @@ import {
 } from '@/components/ui/dialog'
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { defineRule, useForm } from 'vee-validate'
 import { onMounted, ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Link, Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Link, Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
 
+const api = useAPI()
+
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
@@ -30,16 +34,22 @@ const isOpen = defineModel<boolean>()
 
 const addLinkMutation = useMutation({
   mutationFn: (values: any): Promise<Link> =>
-    pb.collection('links').create({
-      ticket: props.ticket.id,
-      name: values.name,
-      url: values.url
+    api.createLink({
+      newLink: {
+        ticket: props.ticket.id,
+        name: values.name,
+        url: values.url
+      }
     }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['links', props.ticket.id] })
+    toast({
+      title: 'Link added',
+      description: 'The link has been added successfully'
+    })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to add link')
 })
 
 defineRule('required', (value: string) => {

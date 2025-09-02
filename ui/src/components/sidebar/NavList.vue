@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import NavItem from '@/components/sidebar/NavItem.vue'
 
+import { computed } from 'vue'
+
+import { useAuthStore } from '@/store/auth'
+
+const authStore = useAuthStore()
+
 export interface LinkProp {
   title: string
   label?: string
@@ -8,12 +14,22 @@ export interface LinkProp {
   to: string
   variant: 'default' | 'ghost'
   disabled?: boolean
+  permission?: string
 }
 
-defineProps<{
+const props = defineProps<{
   isCollapsed: boolean
   links: LinkProp[]
 }>()
+
+const filteredLinks = computed(() => {
+  return props.links.filter((link) => {
+    if (link.permission) {
+      return authStore.hasPermission(link.permission)
+    }
+    return true
+  })
+})
 </script>
 
 <template>
@@ -22,9 +38,9 @@ defineProps<{
     class="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
   >
     <nav
-      class="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2"
+      class="grid gap-1 px-2 group-data-[collapsed=true]:justify-center group-data-[collapsed=true]:px-2"
     >
-      <template v-for="(link, index) of links" :key="index">
+      <template v-for="(link, index) of filteredLinks" :key="index">
         <NavItem :index="index" :link="link" :is-collapsed="isCollapsed" />
       </template>
     </nav>

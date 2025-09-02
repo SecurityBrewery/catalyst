@@ -1,74 +1,178 @@
-.PHONY: install
-install:
-	@echo "Installing..."
-	go install github.com/bombsimon/wsl/v4/cmd...@v4.4.1
-	go install mvdan.cc/gofumpt@v0.6.0
-	go install github.com/daixiang0/gci@v0.13.4
+#########
+## install
+#########
 
-.PHONY: fmt
-fmt:
-	@echo "Formatting..."
+.PHONY: install-golangci-lint
+install-golangci-lint:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.1.6
+
+.PHONY: install-ui
+install-ui:
+	cd ui && bun install
+
+.PHONY: install-playwright
+install-playwright:
+	cd ui && bun install && bun install:e2e
+
+#########
+## fmt
+#########
+
+.PHONY: fmt-go
+fmt-go:
 	go mod tidy
-	go fmt ./...
-	gci write -s standard -s default -s "prefix(github.com/SecurityBrewery/catalyst)" .
-	gofumpt -l -w .
-	wsl -fix ./... || true
+	gofmt -r 'interface{} -> any' -w **/*.go
+	golangci-lint fmt ./...
+
+.PHONY: fmt-ui
+fmt-ui:
 	cd ui && bun format
 
-.PHONY: lint
-lint:
+.PHONY: fmt
+fmt: fmt-go fmt-ui
+
+#########
+## fix
+#########
+
+.PHONY: fix-go
+fix-go:
+	golangci-lint run --fix ./...
+
+.PHONY: fix-ui
+fix-ui:
+	cd ui && bun lint --fix
+
+.PHONY: fix
+fix: fix-go fix-ui
+
+#########
+## lint
+#########
+
+.PHONY: lint-go
+lint-go:
 	golangci-lint version
-	golangci-lint run  ./...
+	golangci-lint run ./...
+
+.PHONY: lint-ui
+lint-ui:
+	cd ui && bun lint --max-warnings 0
+
+.PHONY: lint
+lint: lint-go lint-ui
+
+#########
+## test
+#########
+
+.PHONY: test-go
+test-go:
+	go test ./...
+
+.PHONY: test-ui
+test-ui:
+	cd ui && bun test src
+
+.PHONY: test-short
+test-short: test-go test-ui
+
+.PHONY: test-playwright
+test-playwright:
+	cd ui && bun test:e2e
+.PHONY: test-demo-playwright
+
+test-demo-playwright:
+	cd ui && bun test:e2e:demo
+
+.PHONY: test-playwright-ui
+test-playwright-ui:
+	cd ui && bun test:e2e:ui
+
+.PHONY: test-upgrade-playwright
+test-upgrade-playwright:
+	./testing/test_all.sh
 
 .PHONY: test
-test:
-	@echo "Testing..."
-	go test -v ./...
-	cd ui && bun test
+test: test-short test-playwright test-upgrade-playwright
 
 .PHONY: test-coverage
 test-coverage:
-	@echo "Testing with coverage..."
 	go test -coverpkg=./... -coverprofile=coverage.out -count 1 ./...
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
+##########
+## build
+##########
+
 .PHONY: build-ui
 build-ui:
-	@echo "Building..."
-	cd ui && bun install
 	cd ui && bun build-only
+	touch ui/dist/.keep
 
 .PHONY: build
 build: build-ui
-	@echo "Building..."
 	go build -o catalyst .
-
 
 .PHONY: build-linux
 build-linux: build-ui
-	@echo "Building..."
 	GOOS=linux GOARCH=amd64 go build -o catalyst .
 
 .PHONY: docker
 docker: build-linux
-	@echo "Building Docker image..."
 	docker build -f docker/Dockerfile -t catalyst .
 
-.PHONY: dev
-dev:
-	@echo "Running..."
+############
+## run
+############
+
+.PHONY: reset_data
+reset_data:
 	rm -rf catalyst_data
+
+.PHONY: copy_existing_data
+copy_existing_data: reset_data
+	mkdir -p catalyst_data
+	cp testing/data/v0.14.1/data.db catalyst_data/data.db
+
+.PHONY: dev
+dev: reset_data
 	go run . admin create admin@catalyst-soar.com 1234567890
 	go run . fake-data
 	go run . serve --app-url http://localhost:8090 --flags dev
 
-.PHONY: dev-10000
-dev-10000:
-	@echo "Running..."
-	rm -rf catalyst_data
+.PHONY: dev-proxy-ui
+dev-proxy-ui: reset_data
 	go run . admin create admin@catalyst-soar.com 1234567890
-	go run . fake-data --users 100 --tickets 10000
+	go run . fake-data
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev --flags demo
+
+.PHONY: dev-upgrade-proxy-ui
+dev-upgrade-proxy-ui: copy_existing_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
+
+.PHONY: dev-10000-proxy-ui
+dev-10000-proxy-ui: reset_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . fake-data --users 87 --tickets 12425
+	UI_DEVSERVER=http://localhost:3000 go run . serve --app-url http://localhost:8090 --flags dev
+
+.PHONY: dev-upgrade
+dev-upgrade: copy_existing_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . serve --app-url http://localhost:8090 --flags dev
+.PHONY: dev-demo
+dev-demo: copy_existing_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . serve --app-url http://localhost:8090 --flags demo
+
+
+.PHONY: dev-10000
+dev-10000: reset_data
+	go run . admin create admin@catalyst-soar.com 1234567890
+	go run . fake-data --users 87 --tickets 12425
 	go run . serve --app-url http://localhost:8090 --flags dev
 
 .PHONY: default-data
@@ -79,3 +183,46 @@ default-data:
 .PHONY: serve-ui
 serve-ui:
 	cd ui && bun dev --port 3000
+
+#########
+## generate
+#########
+
+.PHONY: sqlc
+sqlc:
+	rm -rf app/database/sqlc
+	cd app/database && go tool sqlc generate
+	sed -i.bak 's/Queries/ReadQueries/g' app/database/sqlc/read.sql.go
+	rm -f app/database/sqlc/read.sql.go.bak
+	sed -i.bak 's/Queries/WriteQueries/g' app/database/sqlc/write.sql.go
+	rm -f app/database/sqlc/write.sql.go.bak
+	cp app/database/sqlc.db.go.tmpl app/database/sqlc/db.go
+
+.PHONY: openapi-go
+openapi-go:
+	go tool oapi-codegen --config=app/openapi/config.yml openapi.yml
+
+.PHONY: openapi-ui
+openapi-ui:
+	rm -rf ui/src/client
+	cd ui && bun generate
+
+.PHONY: openapi
+openapi: openapi-go openapi-ui
+
+.PHONY: generate-go
+generate-go: openapi-go sqlc fmt-go
+
+.PHONY: generate-ui
+generate-ui: openapi-ui fmt-ui
+
+.PHONY: generate
+generate: generate-go generate-ui
+
+#########
+## screenshots
+#########
+
+.PHONY: screenshots
+screenshots:
+	bash ui/screenshot.sh

@@ -1,44 +1,82 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import DashboardView from '@/views/DashboardView.vue'
+import { useAuthStore } from '@/store/auth'
 import LoginView from '@/views/LoginView.vue'
 import PasswordResetView from '@/views/PasswordResetView.vue'
-import ReactionView from '@/views/ReactionView.vue'
-import TicketView from '@/views/TicketView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      redirect: '/dashboard',
+      meta: { requiresAuth: true }
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: () => import('@/views/DashboardView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/tickets/:type/:id?',
       name: 'tickets',
-      component: TicketView
+      component: () => import('@/views/TicketView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/reactions/:id?',
       name: 'reactions',
-      component: ReactionView
+      component: () => import('@/views/ReactionView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/users/:id?',
+      name: 'users',
+      component: () => import('@/views/UserView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/groups/:id?',
+      name: 'groups',
+      component: () => import('@/views/GroupView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/types/:id?',
+      name: 'types',
+      component: () => import('@/views/TypeView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/views/SettingsView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: { requiresAuth: false }
     },
     {
       path: '/password-reset',
       name: 'password-reset',
-      component: PasswordResetView
+      component: PasswordResetView,
+      meta: { requiresAuth: false }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router

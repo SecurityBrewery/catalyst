@@ -1,23 +1,36 @@
 <script setup lang="ts">
 import UserSelectList from '@/components/common/UserSelectList.vue'
+import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
-import { ref } from 'vue'
+import { User2 } from 'lucide-vue-next'
 
-import type { User } from '@/lib/types'
+import type { User } from '@/client'
 
-const user = defineModel<User>()
+defineProps<{
+  userID?: string
+  userName?: string
+}>()
 
-const open = ref(false)
+const select = (user: User) => {
+  emit('select', user)
+}
+
+const emit = defineEmits<{
+  (e: 'select', value: User): void
+}>()
 </script>
 
 <template>
-  <Popover v-model:open="open">
+  <Popover>
     <PopoverTrigger as-child>
-      <slot />
+      <Button variant="outline" role="combobox">
+        <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
+        {{ userName ? userName : 'Unassigned' }}
+      </Button>
     </PopoverTrigger>
     <PopoverContent class="w-[150px] p-0">
-      <UserSelectList v-model="user" :key="user ? user.id : 'unassigned'" :user="user" />
+      <UserSelectList :userID="userID" @select="select" />
     </PopoverContent>
   </Popover>
 </template>

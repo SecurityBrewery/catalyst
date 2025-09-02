@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { SelectScrollDownButton, SelectScrollUpButton } from '.'
-import {
-  SelectContent,
-  type SelectContentEmits,
-  type SelectContentProps,
-  SelectPortal,
-  SelectViewport,
-  useForwardPropsEmits
-} from 'radix-vue'
-import { type HTMLAttributes, computed } from 'vue'
+import type { SelectContentEmits, SelectContentProps } from 'radix-vue'
+import { SelectContent, SelectPortal, SelectViewport, useForwardPropsEmits } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 
 import { cn } from '@/lib/utils'
 
@@ -52,7 +47,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
           cn(
             'p-1',
             position === 'popper' &&
-              'h-[--radix-select-trigger-height] w-full min-w-[--radix-select-trigger-width]'
+              'h-(--radix-select-trigger-height) min-w-(--radix-select-trigger-width) w-full'
           )
         "
       >

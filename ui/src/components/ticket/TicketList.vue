@@ -22,12 +22,14 @@ import { LoaderCircle, Search } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 import debounce from 'lodash.debounce'
-import type { ListResult } from 'pocketbase'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { SearchTicket, Type } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { TicketSearch } from '@/client/models'
+import type { Type } from '@/client/models/Type'
+
+const api = useAPI()
 
 const router = useRouter()
 const route = useRoute()
@@ -39,51 +41,26 @@ const props = defineProps<{
 const searchValue = ref('')
 const tab = ref('open')
 
-const filter = computed(() => {
-  let raw = ''
-  const params: Record<string, string> = {}
-
-  if (searchValue.value && searchValue.value !== '') {
-    let raws: Array<string> = [
-      'name ~ {:search}',
-      'description ~ {:search}',
-      'owner_name ~ {:search}',
-      'comment_messages ~ {:search}',
-      'file_names ~ {:search}',
-      'link_names ~ {:search}',
-      'link_urls ~ {:search}',
-      'task_names ~ {:search}',
-      'timeline_messages ~ {:search}'
-    ]
-
-    Object.keys(props.selectedType.schema.properties).forEach((key) => {
-      const property = props.selectedType.schema.properties[key]
-      if (property.type === 'bool') return
-      raws.push(`state.${key} ~ {:search}`)
-    })
-    raw += '(' + raws.join(' || ') + `)`
-    params['search'] = searchValue.value
-  }
-
-  if (tab.value === 'open') {
-    if (raw !== '') raw += ' && '
-    raw += 'open = true'
-  } else if (tab.value === 'closed') {
-    if (raw !== '') raw += ' && '
-    raw += 'open = false'
-  }
-
-  if (raw !== '') raw += ' && '
-  raw += 'type = {:type}'
-  params['type'] = props.selectedType.id
-
-  if (raw === '') return ''
-
-  return pb.filter(raw, params)
-})
-
 const page = ref(1)
 const perPage = ref(10)
+
+const totalItems = ref(0)
+const offset = computed(() => (page.value - 1) * perPage.value)
+const paginationHuman = computed(() => {
+  if (totalItems.value === 0) {
+    return '0 tickets'
+  }
+
+  if (offset.value + 1 === totalItems.value) {
+    return `${offset.value + 1} of ${totalItems.value} tickets`
+  }
+
+  if (offset.value + perPage.value >= totalItems.value) {
+    return `${offset.value + 1} - ${totalItems.value} of ${totalItems.value} tickets`
+  }
+
+  return `${offset.value + 1} - ${offset.value + perPage.value} of ${totalItems.value} tickets`
+})
 
 const {
   isPending,
@@ -92,18 +69,32 @@ const {
   error,
   refetch
 } = useQuery({
-  queryKey: ['tickets', filter.value],
-  queryFn: (): Promise<ListResult<SearchTicket>> =>
-    pb.collection('ticket_search').getList(page.value, perPage.value, {
-      sort: '-created',
-      filter: filter.value
+  queryKey: [
+    'tickets',
+    searchValue.value,
+    tab.value,
+    props.selectedType.id,
+    page.value,
+    perPage.value
+  ],
+  queryFn: async (): Promise<Array<TicketSearch>> => {
+    const response = await api.searchTicketsRaw({
+      type: props.selectedType.id,
+      query: searchValue.value,
+      open: tab.value === 'open' ? true : tab.value === 'closed' ? false : undefined,
+      offset: offset.value,
+      limit: perPage.value
     })
+    totalItems.value = parseInt(response.raw.headers.get('X-Total-Count') ?? '0')
+
+    return response.value()
+  }
 })
 
 watch(
   () => ticketItems.value,
   () => {
-    if (!route.params.id && ticketItems.value && ticketItems.value.items.length > 0) {
+    if (!route.params.id && ticketItems.value && ticketItems.value.length > 0) {
       router.push({
         name: 'tickets',
         params: { type: props.selectedType.id }
@@ -121,7 +112,7 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
 </script>
 
 <template>
-  <ColumnHeader :title="selectedType?.plural">
+  <ColumnHeader :title="selectedType?.plural" show-sidebar-trigger>
     <div class="ml-auto">
       <TicketNewDialog :selectedType="selectedType" />
     </div>
@@ -157,19 +148,18 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
       <AlertDescription>{{ error }}</AlertDescription>
     </Alert>
     <div v-else-if="ticketItems" class="flex-1 overflow-y-auto overflow-x-hidden">
-      <TicketListList :tickets="ticketItems.items" />
+      <TicketListList :tickets="ticketItems" />
     </div>
     <Separator />
     <div class="my-2 flex items-center justify-center">
       <span class="text-xs text-muted-foreground">
-        {{ ticketItems ? ticketItems.items.length : '?' }} of
-        {{ ticketItems ? ticketItems.totalItems : '?' }} tickets
+        {{ paginationHuman }}
       </span>
     </div>
     <div class="mb-2 flex items-center justify-center">
       <Pagination
         v-slot="{ page }"
-        :total="ticketItems ? ticketItems.totalItems : 0"
+        :total="totalItems"
         :itemsPerPage="perPage"
         :sibling-count="0"
         :default-page="1"
@@ -186,7 +176,10 @@ watch([tab, props.selectedType, page, perPage], () => refetch())
               :value="item.value"
               as-child
             >
-              <Button class="h-10 w-10 p-0" :variant="item.value === page ? 'default' : 'outline'">
+              <Button
+                class="h-10 w-10 p-0"
+                :variant="item.value === page ? 'default' : 'outline-solid'"
+              >
                 {{ item.value }}
               </Button>
             </PaginationListItem>

@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue'
+
 import { formatDistanceToNow } from 'date-fns'
 
 import { cn } from '@/lib/utils'
 
 defineProps<{
+  icon?: string
   title: string
   subtitle: string
   description: string
-  created: string
+  created: Date
 
   open: boolean
   active: boolean
@@ -27,14 +30,15 @@ defineProps<{
   >
     <div class="flex w-full flex-col gap-1">
       <div class="flex items-center">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1">
+          <Icon v-if="icon" :name="icon" class="mr-2 size-4" />
           <div class="font-semibold">
             {{ title }}
           </div>
-          <span v-if="open" class="flex h-2 w-2 rounded-full bg-blue-600" />
+          <span v-if="open" class="ml-1 flex h-2 w-2 rounded-full bg-blue-600" />
         </div>
         <div :class="cn('ml-auto text-xs', active ? 'text-foreground' : 'text-muted-foreground')">
-          {{ formatDistanceToNow(new Date(created), { addSuffix: true }) }}
+          {{ formatDistanceToNow(created, { addSuffix: true }) }}
         </div>
       </div>
 

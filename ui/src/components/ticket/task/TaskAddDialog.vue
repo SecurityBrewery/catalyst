@@ -4,46 +4,63 @@ import UserSelect from '@/components/common/UserSelect.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 
-import { Plus, User2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task, Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Task, Ticket, User } from '@/client/models'
 import { handleError } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
+const authStore = useAuthStore()
+const { toast } = useToast()
 
 const props = defineProps<{
   ticket: Ticket
 }>()
 
 const name = ref('')
-const owner = ref(pb.authStore.model)
+const ownerID = ref<string | undefined>(authStore.user?.id)
+const ownerName = ref<string | undefined>(authStore.user?.name)
 const isOpen = ref(false)
 
 const addTaskMutation = useMutation({
   mutationFn: (): Promise<Task> => {
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('tasks').create({
-      ticket: props.ticket.id,
-      name: name.value,
-      open: true,
-      owner: owner.value ? owner.value.id : pb.authStore.model.id
+    if (!authStore.user) return Promise.reject('Not authenticated')
+    return api.createTask({
+      newTask: {
+        ticket: props.ticket.id,
+        name: name.value,
+        open: true,
+        owner: ownerID.value ? ownerID.value : ''
+      }
     })
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.ticket.id] })
+    queryClient.invalidateQueries({ queryKey: ['tasks', props.ticket.id] })
+    toast({
+      title: 'Task created',
+      description: 'The task has been created successfully'
+    })
     name.value = ''
-    owner.value = pb.authStore.model
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to create task')
 })
 
-const submitDisabled = computed(() => !name.value || !owner.value)
+const submitDisabled = computed(() => !name.value || !ownerID.value)
+
+const select = (user: User) => {
+  ownerID.value = user.id
+  ownerName.value = user.name
+}
 </script>
 
 <template>
@@ -60,12 +77,7 @@ const submitDisabled = computed(() => !name.value || !owner.value)
       @keydown.meta.enter="addTaskMutation.mutate"
       @keydown.ctrl.enter="addTaskMutation.mutate"
     />
-    <UserSelect v-model="owner as any">
-      <Button variant="outline" role="combobox">
-        <User2 class="mr-2 size-4 h-4 w-4 shrink-0 opacity-50" />
-        {{ owner?.name }}
-      </Button>
-    </UserSelect>
+    <UserSelect :userID="ownerID" :userName="ownerName" @select="select" />
     <Button variant="outline" @click="isOpen = false"> Cancel</Button>
     <Button :disabled="submitDisabled" @click="addTaskMutation.mutate">
       Save

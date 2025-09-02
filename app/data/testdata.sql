@@ -1,0 +1,16 @@
+INSERT INTO users VALUES('2025-06-21 22:21:26.271Z','2025-06-21 22:21:26.271Z','analyst@catalyst-soar.com','u_bob_analyst','','','Bob Analyst','$2a$10$ZEHNh9ZKJ81N717wovDnMuLwZOLa6.g22IRzRr4goG6zGN.57UzJG','z3Jj8bbzcq_cSZs07XKoGlB0UtvmQiphHgwNkE4akoY=','2025-06-21 22:21:26.271Z','u_bob_analyst',1);
+INSERT INTO users VALUES('2025-06-21 22:21:26.271Z','2025-06-21 22:21:26.271Z','admin@catalyst-soar.com','u_admin','','','Admin User','$2a$10$Z3/0HHWau6oi1t1aRPiI0uiVOWI.IosTAYEL0DJ2XJaalP9kesgBa','5BWDKLIAn3SQkpQlBUGrS_XEbFf91DsDpuh_Xmt4Nwg=','2025-06-21 22:21:26.271Z','u_admin',1);
+INSERT INTO webhooks VALUES('tickets','2025-06-21 22:21:26.271Z','https://example.com','w_test_webhook','Test Webhook','2025-06-21 22:21:26.271Z');
+INSERT INTO types VALUES('2025-06-21 22:21:26.271Z','Bug','test-type','Tests','{}','Test','2025-06-21 22:21:26.271Z');
+INSERT INTO tickets VALUES('2025-06-21 22:21:26.271Z','This is a test ticket.','test-ticket','Test Ticket',1,'u_bob_analyst','','{"type":"object","properties":{"tlp":{"title":"TLP","type":"string"}}}','{"tlp":"AMBER"}','incident','2025-06-21 22:21:26.271Z');
+INSERT INTO tasks VALUES('2025-06-21 22:21:26.271Z','k_test_task','Test Task',1,'u_bob_analyst','test-ticket','2025-06-21 22:21:26.271Z');
+INSERT INTO comments VALUES('u_bob_analyst','2025-06-21 22:21:26.271Z','c_test_comment','Initial comment on the test ticket.','test-ticket','2025-06-21 22:21:26.271Z');
+INSERT INTO timeline VALUES('2025-06-21 22:21:26.271Z','h_test_timeline','Initial timeline entry.','test-ticket','2023-01-01T00:00:00Z','2025-06-21 22:21:26.271Z');
+INSERT INTO links VALUES('2025-06-21 22:21:26.271Z','l_test_link','Catalyst','test-ticket','2025-06-21 22:21:26.271Z','https://example.com');
+INSERT INTO files VALUES('hello_a20DUE9c77rj.txt','2025-06-21 22:21:26.271Z','b_test_file','hello.txt',5,'test-ticket','2025-06-21 22:21:26.271Z');
+INSERT INTO features VALUES('2025-06-21 22:21:26.271Z','rce91818107f46a','dev','2025-06-21 22:21:26.271Z');
+INSERT INTO reactions VALUES('python','{"requirements":"requests","script":"print(''Hello, World!'')"}','','r-test-webhook','Reaction','webhook','{"token":"1234567890","path":"test"}','2025-06-21 22:21:26.271Z');
+INSERT INTO reactions VALUES('webhook','{"headers":{"Content-Type":"application/json"},"url":"http://127.0.0.1:12345/webhook"}','','r-test-proxy','Reaction','webhook','{"path":"test2"}','2025-06-21 22:21:26.271Z');
+INSERT INTO reactions VALUES('python','{"requirements":"requests","script":"import requests\nrequests.post(''http://127.0.0.1:12346/test'', json={''test'':True})"}','','r-test-hook','Hook','hook','{"collections":["tickets"],"events":["create"]}','2025-06-21 22:21:26.271Z');
+INSERT INTO user_groups VALUES('u_bob_analyst','analyst');
+INSERT INTO user_groups VALUES('u_admin','admin');

@@ -9,29 +9,28 @@ import { ChevronRight } from 'lucide-vue-next'
 import { useQuery } from '@tanstack/vue-query'
 import { intervalToDuration } from 'date-fns'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { ExtendedTicket } from '@/client/models'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
-const {
-  isPending,
-  isError,
-  data: tickets,
-  error
-} = useQuery({
+const api = useAPI()
+
+const authStore = useAuthStore()
+
+const { data: tickets } = useQuery({
   queryKey: ['tickets', 'dashboard'],
-  queryFn: (): Promise<Array<Ticket>> => {
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('tickets').getFullList({
-      sort: '-created',
-      filter: pb.filter(`open = true && owner = {:owner}`, { owner: pb.authStore.model.id }),
-      expand: 'owner,type'
-    })
+  queryFn: (): Promise<Array<ExtendedTicket>> => {
+    return api
+      .listTickets()
+      .then((tickets) =>
+        tickets.filter((ticket) => ticket.open && ticket.owner === authStore.user?.id)
+      )
   }
 })
 
-const age = (ticket: Ticket) => {
-  const days = intervalToDuration({ start: new Date(ticket.created), end: new Date() }).days
+const age = (ticket: ExtendedTicket) => {
+  const days = intervalToDuration({ start: ticket.created, end: new Date() }).days
 
   if (!days) return 'today'
   if (days === 1) return 'yesterday'
@@ -48,9 +47,9 @@ const age = (ticket: Ticket) => {
       </div>
       <PanelListElement v-else v-for="ticket in tickets" :key="ticket.id" class="gap-2 pr-1">
         <span>{{ ticket.name }}</span>
-        <Separator orientation="vertical" class="hidden h-4 sm:block" />
-        <span class="text-sm text-muted-foreground">{{ ticket.expand.type.singular }}</span>
-        <Separator orientation="vertical" class="hidden h-4 sm:block" />
+        <Separator orientation="vertical" class="hidden h-4 md:block" />
+        <span class="text-sm text-muted-foreground">{{ ticket.typeSingular }}</span>
+        <Separator orientation="vertical" class="hidden h-4 md:block" />
         <span class="text-sm text-muted-foreground">Open since {{ age(ticket) }}</span>
         <RouterLink
           :to="{
@@ -60,12 +59,12 @@ const age = (ticket: Ticket) => {
           :class="
             cn(
               buttonVariants({ variant: 'outline', size: 'sm' }),
-              'h-8 w-full sm:ml-auto sm:w-auto'
+              'h-8 w-full sm:w-auto md:ml-auto'
             )
           "
         >
           <span class="flex flex-row items-center text-sm text-gray-500">
-            Go to {{ ticket.name }}
+            Open
             <ChevronRight class="ml-2 h-4 w-4" />
           </span>
         </RouterLink>

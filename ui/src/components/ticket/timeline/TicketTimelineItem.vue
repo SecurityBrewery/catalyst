@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { Calendar } from '@/components/ui/v-calendar'
 
 import { Edit, MoreVertical, Trash } from 'lucide-vue-next'
@@ -27,14 +28,17 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import format from 'date-fns/format'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { TimelineItem } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { TimelineEntry } from '@/client/models'
 import { cn, handleError } from '@/lib/utils'
 
+const api = useAPI()
+
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
-  timelineItem: TimelineItem
+  timelineItem: TimelineEntry
 }>()
 
 const isOpen = ref(false)
@@ -43,13 +47,24 @@ const editMode = ref(false)
 const message = ref(props.timelineItem.message)
 
 const updateTimelineMutation = useMutation({
-  mutationFn: (update: { time?: string; message?: string }): Promise<TimelineItem> =>
-    pb.collection('timeline').update(props.timelineItem.id, update),
+  mutationFn: (update: { time?: Date; message?: string }): Promise<TimelineEntry> =>
+    api.updateTimeline({
+      id: props.timelineItem.id,
+      timelineEntryUpdate: {
+        time: update.time,
+        message: update.message
+      }
+    }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    queryClient.invalidateQueries({ queryKey: ['timeline', props.timelineItem.ticket] })
+    toast({
+      title: 'Timeline updated',
+      description: 'The item has been updated successfully'
+    })
     editMode.value = false
+    isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to update timeline item')
 })
 
 watch(
@@ -62,12 +77,17 @@ watch(
 )
 
 const deleteTimelineItemMutation = useMutation({
-  mutationFn: () => pb.collection('timeline').delete(props.timelineItem.id),
+  mutationFn: () => api.deleteTimeline({ id: props.timelineItem.id }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['tickets', props.timelineItem.ticket] })
+    queryClient.removeQueries({ queryKey: ['timeline', props.timelineItem.id] })
+    queryClient.invalidateQueries({ queryKey: ['timeline', props.timelineItem.ticket] })
+    toast({
+      title: 'Timeline item deleted',
+      description: 'The item has been deleted successfully'
+    })
     isOpen.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to delete timeline item')
 })
 
 const edit = () => (editMode.value = true)
@@ -120,8 +140,8 @@ const save = () =>
           <DialogHeader>
             <DialogTitle>Delete timeline item</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this timeline item?</DialogDescription
-            >
+              Are you sure you want to delete this timeline item?
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter class="sm:justify-start">
             <Button @click="deleteTimelineItemMutation.mutate" variant="destructive">

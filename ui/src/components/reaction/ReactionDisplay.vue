@@ -6,20 +6,22 @@ import ColumnBodyContainer from '@/components/layout/ColumnBodyContainer.vue'
 import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ReactionForm from '@/components/reaction/ReactionForm.vue'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { ChevronLeft } from 'lucide-vue-next'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Reaction } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Reaction } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const router = useRouter()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 const props = defineProps<{
   id: string
@@ -32,65 +34,49 @@ const {
   error
 } = useQuery({
   queryKey: ['reactions', props.id],
-  queryFn: (): Promise<Reaction> => pb.collection('reactions').getOne(props.id)
+  queryFn: (): Promise<Reaction> => api.getReaction({ id: props.id })
 })
 
 const updateReactionMutation = useMutation({
-  mutationFn: (update: any) => pb.collection('reactions').update(props.id, update),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reactions'] }),
-  onError: handleError
-})
-
-onMounted(() => {
-  if (props.id) {
-    pb.collection('reactions').subscribe(props.id, (data) => {
-      if (data.action === 'delete') {
-        toast({
-          title: 'Reaction deleted',
-          description: 'The reaction has been deleted.',
-          variant: 'destructive'
-        })
-
-        router.push({ name: 'reactions' })
-
-        return
-      }
-
-      if (data.action === 'update') {
-        toast({
-          title: 'Reaction updated',
-          description: 'The reaction has been updated.'
-        })
-
-        queryClient.invalidateQueries({ queryKey: ['reactions', props.id] })
-      }
+  mutationFn: (update: any) => api.updateReaction({ id: props.id, reactionUpdate: update }),
+  onSuccess: () => {
+    toast({
+      title: 'Reaction updated',
+      description: 'The reaction has been updated successfully'
     })
-  }
+    queryClient.invalidateQueries({ queryKey: ['reactions'] })
+  },
+  onError: handleError('Failed to update reaction')
 })
 
-onUnmounted(() => {
-  if (props.id) {
-    pb.collection('reactions').unsubscribe(props.id)
-  }
+const deleteMutation = useMutation({
+  mutationFn: () => api.deleteReaction({ id: props.id }),
+  onSuccess: () => {
+    queryClient.removeQueries({ queryKey: ['reactions', props.id] })
+    queryClient.invalidateQueries({ queryKey: ['reactions'] })
+    toast({
+      title: 'Reaction deleted',
+      description: 'The reaction has been deleted successfully'
+    })
+    router.push({ name: 'reactions' })
+  },
+  onError: handleError('Failed to delete reaction')
 })
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
     <ColumnHeader>
-      <Button @click="router.push({ name: 'reactions' })" variant="outline" class="sm:hidden">
+      <Button @click="router.push({ name: 'reactions' })" variant="outline" class="md:hidden">
         <ChevronLeft class="mr-2 size-4" />
         Back
       </Button>
       <div class="ml-auto">
         <DeleteDialog
           v-if="reaction"
-          collection="reactions"
-          :id="reaction.id"
           :name="reaction.name"
-          :singular="'Reaction'"
-          :to="{ name: 'reactions' }"
-          :queryKey="['reactions']"
+          singular="Reaction"
+          @delete="deleteMutation.mutate"
         />
       </div>
     </ColumnHeader>

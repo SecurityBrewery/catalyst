@@ -5,21 +5,12 @@ import ReactionDisplay from '@/components/reaction/ReactionDisplay.vue'
 import ReactionList from '@/components/reaction/ReactionList.vue'
 import ReactionNew from '@/components/reaction/ReactionNew.vue'
 
-import { computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-
-import { pb } from '@/lib/pocketbase'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const router = useRouter()
 
 const id = computed(() => route.params.id as string)
-
-onMounted(() => {
-  if (!pb.authStore.model) {
-    router.push({ name: 'login' })
-  }
-})
 </script>
 
 <template>

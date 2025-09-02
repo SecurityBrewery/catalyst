@@ -82,10 +82,7 @@ const vCalendarSlots = computed(() => {
 
 <template>
   <div class="relative">
-    <div
-      v-if="$attrs.mode !== 'time'"
-      class="absolute top-3 z-[1] flex w-full justify-between px-4"
-    >
+    <div v-if="$attrs.mode !== 'time'" class="z-1 absolute top-3 flex w-full justify-between px-4">
       <button
         :class="
           cn(

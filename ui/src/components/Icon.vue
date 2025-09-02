@@ -4,31 +4,32 @@ import * as icons from 'lucide-vue-next'
 import { computed } from 'vue'
 
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  },
+  name: String,
   size: Number,
   color: String,
   strokeWidth: Number,
   defaultClass: String
 })
 
-const icon = computed((): string => {
-  if (!icons[props.name]) {
-    return 'Flame'
+const IconComponent = computed(() => {
+  if (!props.name) {
+    return icons.HelpCircle
   }
 
-  return icons[props.name]
+  const component = icons[props.name]
+  if (!component) {
+    return icons.HelpCircle
+  }
+  return component
 })
 </script>
 
 <template>
   <component
-    :is="icon"
+    :is="IconComponent"
     :size="size"
     :color="color"
     :stroke-width="strokeWidth"
-    :default-class="defaultClass"
+    :class="defaultClass"
   />
 </template>

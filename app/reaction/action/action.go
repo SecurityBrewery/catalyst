@@ -1,0 +1,72 @@
+package action
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"time"
+
+	"github.com/SecurityBrewery/catalyst/app/auth"
+	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/python"
+	"github.com/SecurityBrewery/catalyst/app/reaction/action/webhook"
+)
+
+func Run(ctx context.Context, url string, queries *sqlc.Queries, actionName string, actionData, payload json.RawMessage) ([]byte, error) {
+	action, err := decode(actionName, actionData)
+	if err != nil {
+		return nil, err
+	}
+
+	if a, ok := action.(authenticatedAction); ok {
+		token, err := systemToken(ctx, queries)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get system token: %w", err)
+		}
+
+		a.SetEnv([]string{
+			"CATALYST_APP_URL=" + url,
+			"CATALYST_TOKEN=" + token,
+		})
+	}
+
+	return action.Run(ctx, payload)
+}
+
+type action interface {
+	Run(ctx context.Context, payload json.RawMessage) ([]byte, error)
+}
+
+type authenticatedAction interface {
+	SetEnv(env []string)
+}
+
+func decode(actionName string, actionData json.RawMessage) (action, error) {
+	switch actionName {
+	case "python":
+		var reaction python.Python
+		if err := json.Unmarshal(actionData, &reaction); err != nil {
+			return nil, err
+		}
+
+		return &reaction, nil
+	case "webhook":
+		var reaction webhook.Webhook
+		if err := json.Unmarshal(actionData, &reaction); err != nil {
+			return nil, err
+		}
+
+		return &reaction, nil
+	default:
+		return nil, fmt.Errorf("action %q not found", actionName)
+	}
+}
+
+func systemToken(ctx context.Context, queries *sqlc.Queries) (string, error) {
+	user, err := queries.SystemUser(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to find system auth record: %w", err)
+	}
+
+	return auth.CreateAccessToken(ctx, &user, auth.All(), time.Hour, queries)
+}

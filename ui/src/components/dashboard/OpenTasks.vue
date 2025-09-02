@@ -8,9 +8,14 @@ import { ChevronRight } from 'lucide-vue-next'
 
 import { useQuery } from '@tanstack/vue-query'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { ExtendedTask } from '@/client/models'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
+
+const api = useAPI()
+
+const authStore = useAuthStore()
 
 const {
   isPending,
@@ -19,13 +24,10 @@ const {
   error
 } = useQuery({
   queryKey: ['tasks'],
-  queryFn: (): Promise<Array<Task>> => {
-    if (!pb.authStore.model) return Promise.reject('Not authenticated')
-    return pb.collection('tasks').getFullList({
-      sort: '-created',
-      filter: pb.filter(`open = true && owner = {:owner}`, { owner: pb.authStore.model.id }),
-      expand: 'owner,ticket'
-    })
+  queryFn: (): Promise<Array<ExtendedTask>> => {
+    return api
+      .listTasks()
+      .then((tasks) => tasks.filter((task) => task.open && task.owner === authStore.user?.id))
   }
 })
 </script>
@@ -42,17 +44,17 @@ const {
           <RouterLink
             :to="{
               name: 'tickets',
-              params: { type: task.expand.ticket.type, id: task.expand.ticket.id }
+              params: { type: task.ticketType, id: task.ticket }
             }"
             :class="
               cn(
                 buttonVariants({ variant: 'outline', size: 'sm' }),
-                'h-8 w-full sm:ml-auto sm:w-auto'
+                'h-8 w-full sm:w-auto md:ml-auto'
               )
             "
           >
             <span class="flex flex-row items-center text-sm text-gray-500">
-              Go to {{ task.expand.ticket.name }}
+              Open
               <ChevronRight class="ml-2 h-4 w-4" />
             </span>
           </RouterLink>

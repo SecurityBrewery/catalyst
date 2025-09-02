@@ -10,17 +10,21 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Ticket } from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const { toast } = useToast()
 
 const model = defineModel<boolean>()
 
@@ -32,17 +36,26 @@ const resolution = ref(props.ticket.resolution)
 
 const closeTicketMutation = useMutation({
   mutationFn: (): Promise<Ticket> =>
-    pb.collection('tickets').update(props.ticket.id, {
-      open: !props.ticket.open,
-      resolution: resolution.value
+    api.updateTicket({
+      id: props.ticket.id,
+      ticketUpdate: {
+        open: !props.ticket.open,
+        resolution: resolution.value
+      }
     }),
   onSuccess: (data: Ticket) => {
     queryClient.invalidateQueries({ queryKey: ['tickets'] })
+    toast({
+      title: data.open ? 'Ticket reopened' : 'Ticket closed',
+      description: data.open
+        ? 'The ticket has been reopened successfully'
+        : 'The ticket has been closed successfully'
+    })
     if (!data.open) {
-      router.push({ name: 'tickets', params: { type: props.ticket.expand.type.id } })
+      router.push({ name: 'tickets', params: { type: props.ticket.type } })
     }
   },
-  onError: handleError
+  onError: handleError('Failed to update ticket status')
 })
 </script>
 

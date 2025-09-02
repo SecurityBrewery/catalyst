@@ -4,16 +4,16 @@ import ColumnHeader from '@/components/layout/ColumnHeader.vue'
 import ResourceListElement from '@/components/layout/ResourceListElement.vue'
 import { Button } from '@/components/ui/button'
 
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { onMounted } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
 import { useRoute, useRouter } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Reaction } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Reaction } from '@/client/models'
+
+const api = useAPI()
 
 const route = useRoute()
 const router = useRouter()
-const queryClient = useQueryClient()
 
 const {
   isPending,
@@ -22,10 +22,7 @@ const {
   error
 } = useQuery({
   queryKey: ['reactions'],
-  queryFn: (): Promise<Array<Reaction>> =>
-    pb.collection('reactions').getFullList({
-      sort: '-created'
-    })
+  queryFn: (): Promise<Array<Reaction>> => api.listReactions()
 })
 
 const subtitle = (reaction: Reaction) =>
@@ -56,37 +53,29 @@ const reactionNiceName = (reaction: Reaction) => {
 const openNew = () => {
   router.push({ name: 'reactions', params: { id: 'new' } })
 }
-
-onMounted(() => {
-  pb.collection('reactions').subscribe('*', () => {
-    queryClient.invalidateQueries({ queryKey: ['reactions'] })
-  })
-})
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
-    <ColumnHeader title="Reactions">
+    <ColumnHeader title="Reactions" show-sidebar-trigger>
       <div class="ml-auto">
         <Button variant="ghost" @click="openNew">New Reaction</Button>
       </div>
     </ColumnHeader>
-    <div class="mt-2 flex flex-1 flex-col gap-2 p-2 pt-0">
-      <TransitionGroup name="list" appear>
-        <ResourceListElement
-          v-for="reaction in reactions"
-          :key="reaction.id"
-          :title="reaction.name"
-          :created="reaction.created"
-          :subtitle="subtitle(reaction)"
-          description=""
-          :active="route.params.id === reaction.id"
-          :to="{ name: 'reactions', params: { id: reaction.id } }"
-          :open="false"
-        >
-          {{ reaction.name }}
-        </ResourceListElement>
-      </TransitionGroup>
+    <div class="mt-2 flex flex-1 flex-col gap-2 overflow-auto p-2 pt-0">
+      <ResourceListElement
+        v-for="reaction in reactions"
+        :key="reaction.id"
+        :title="reaction.name"
+        :created="reaction.created"
+        :subtitle="subtitle(reaction)"
+        description=""
+        :active="route.params.id === reaction.id"
+        :to="{ name: 'reactions', params: { id: reaction.id } }"
+        :open="false"
+      >
+        {{ reaction.name }}
+      </ResourceListElement>
     </div>
   </TanView>
 </template>

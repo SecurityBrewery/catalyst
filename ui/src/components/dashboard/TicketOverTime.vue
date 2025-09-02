@@ -6,8 +6,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { getWeek } from 'date-fns'
 import { computed } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { Task } from '@/lib/types'
+import { useAPI } from '@/api'
+import type { Ticket } from '@/client/models'
+
+const api = useAPI()
 
 const {
   isPending,
@@ -16,11 +18,7 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets'],
-  queryFn: (): Promise<Array<Task>> =>
-    pb.collection('tickets').getFullList({
-      sort: '-created',
-      expand: 'owner,type'
-    })
+  queryFn: (): Promise<Array<Ticket>> => api.listTickets()
 })
 
 const ticketsPerWeek = computed(() => {

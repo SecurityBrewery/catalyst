@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Edit } from 'lucide-vue-next'
 
@@ -26,12 +27,24 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { pb } from '@/lib/pocketbase'
-import type { Ticket, Type } from '@/lib/types'
+import { useAPI } from '@/api'
+import type {
+  ExtendedComment,
+  ExtendedTask,
+  ExtendedTicket,
+  Link,
+  ModelFile,
+  Ticket,
+  TimelineEntry,
+  Type
+} from '@/client/models'
 import { handleError } from '@/lib/utils'
+
+const api = useAPI()
 
 const route = useRoute()
 const queryClient = useQueryClient()
+const { toast } = useToast()
 
 defineProps<{
   selectedType: Type
@@ -49,34 +62,61 @@ const {
   error
 } = useQuery({
   queryKey: ['tickets', id.value],
-  queryFn: (): Promise<Ticket> =>
-    pb.collection('tickets').getOne(id.value, {
-      expand:
-        'type,owner,comments_via_ticket.author,files_via_ticket,timeline_via_ticket,links_via_ticket,tasks_via_ticket.owner'
-    })
+  queryFn: (): Promise<ExtendedTicket> => api.getTicket({ id: id.value })
+})
+
+const { data: timeline } = useQuery({
+  queryKey: ['timeline', id.value],
+  queryFn: (): Promise<Array<TimelineEntry>> => api.listTimeline({ ticket: id.value })
+})
+
+const { data: tasks } = useQuery({
+  queryKey: ['tasks', id.value],
+  queryFn: (): Promise<Array<ExtendedTask>> => api.listTasks({ ticket: id.value })
+})
+
+const { data: comments } = useQuery({
+  queryKey: ['comments', id.value],
+  queryFn: (): Promise<Array<ExtendedComment>> => api.listComments({ ticket: id.value })
+})
+
+const { data: files } = useQuery({
+  queryKey: ['files', id.value],
+  queryFn: (): Promise<Array<ModelFile>> => api.listFiles({ ticket: id.value })
+})
+
+const { data: links } = useQuery({
+  queryKey: ['links', id.value],
+  queryFn: (): Promise<Array<Link>> => api.listLinks({ ticket: id.value })
 })
 
 const editDescriptionMutation = useMutation({
   mutationFn: () =>
-    pb.collection('tickets').update(id.value, {
-      description: message.value
-    }),
+    api.updateTicket({ id: id.value, ticketUpdate: { description: message.value } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
+    toast({
+      title: 'Ticket updated',
+      description: 'The ticket description has been updated'
+    })
     editMode.value = false
   },
-  onError: handleError
+  onError: handleError('Failed to update description')
 })
 
 const edit = () => (editMode.value = true)
 
 const editStateMutation = useMutation({
   mutationFn: (state: Record<string, any>): Promise<Ticket> =>
-    pb.collection('tickets').update(id.value, {
-      state: state
-    }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tickets', id.value] }),
-  onError: handleError
+    api.updateTicket({ id: id.value, ticketUpdate: { state } }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets', id.value] })
+    toast({
+      title: 'Ticket updated',
+      description: 'The ticket state has been updated'
+    })
+  },
+  onError: handleError('Failed to update state')
 })
 
 const taskStatus = computed(() => {
@@ -84,26 +124,24 @@ const taskStatus = computed(() => {
     return 'pending'
   }
 
-  const tasks = ticket.value.expand.tasks_via_ticket
-
-  if (tasks.every((task) => !task.open)) {
+  if (tasks.value && tasks.value.every((task) => !task.open)) {
     return 'completed'
   }
 
-  if (tasks.every((task) => task.open)) {
+  if (tasks.value && tasks.value.every((task) => task.open)) {
     return 'open'
   }
 
   return 'pending'
 })
 
-const updateDescription = (value: string) => (message.value = value)
+const updateDescription = (value: string | undefined) => (message.value = value ?? '')
 </script>
 
 <template>
   <TanView :isError="isError" :isPending="isPending" :error="error">
     <template v-if="ticket">
-      <TicketActionBar :ticket="ticket" class="shrink-0" />
+      <TicketActionBar :ticket="ticket" />
       <ColumnBody>
         <ColumnBodyContainer class="flex-col gap-4 xl:flex-row">
           <div class="flex flex-1 flex-col gap-4">
@@ -134,67 +172,51 @@ const updateDescription = (value: string) => (message.value = value)
                 <TabsTrigger value="timeline">
                   Timeline
                   <Badge
-                    v-if="
-                      ticket.expand.timeline_via_ticket &&
-                      ticket.expand.timeline_via_ticket.length > 0
-                    "
+                    v-if="timeline && timeline.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{
-                      ticket.expand.timeline_via_ticket
-                        ? ticket.expand.timeline_via_ticket.length
-                        : 0
-                    }}
+                    {{ timeline.length }}
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="tasks">
                   Tasks
                   <Badge
-                    v-if="
-                      ticket.expand.tasks_via_ticket && ticket.expand.tasks_via_ticket.length > 0
-                    "
+                    v-if="tasks && tasks.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{ ticket.expand.tasks_via_ticket ? ticket.expand.tasks_via_ticket.length : 0 }}
+                    {{ tasks.length }}
                     <StatusIcon :status="taskStatus" class="size-6" />
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="comments">
                   Comments
                   <Badge
-                    v-if="
-                      ticket.expand.comments_via_ticket &&
-                      ticket.expand.comments_via_ticket.length > 0
-                    "
+                    v-if="comments && comments.length > 0"
                     variant="outline"
                     class="ml-2 hidden sm:inline-flex"
                   >
-                    {{
-                      ticket.expand.comments_via_ticket
-                        ? ticket.expand.comments_via_ticket.length
-                        : 0
-                    }}
+                    {{ comments.length }}
                   </Badge>
                 </TabsTrigger>
               </TabsList>
               <TicketTab value="timeline">
-                <TicketTimeline :ticket="ticket" :timeline="ticket.expand.timeline_via_ticket" />
+                <TicketTimeline :ticket="ticket" :timeline="timeline" />
               </TicketTab>
               <TicketTab value="tasks">
-                <TicketTasks :ticket="ticket" :tasks="ticket.expand.tasks_via_ticket" />
+                <TicketTasks :ticket="ticket" :tasks="tasks" />
               </TicketTab>
               <TicketTab value="comments">
-                <TicketComments :ticket="ticket" :comments="ticket.expand.comments_via_ticket" />
+                <TicketComments :ticket="ticket" :comments="comments" />
               </TicketTab>
             </Tabs>
             <Separator class="xl:hidden" />
           </div>
           <div class="flex flex-col gap-4 xl:w-96 xl:flex-initial">
             <div>
-              <div class="flex h-10 flex-row items-center justify-between text-muted-foreground">
-                <span class="text-sm font-semibold"> Details </span>
+              <div class="flex h-10 flex-row items-center justify-between">
+                <span class="text-sm font-medium"> Details </span>
               </div>
               <JSONSchemaFormFields
                 :modelValue="ticket.state"
@@ -203,14 +225,14 @@ const updateDescription = (value: string) => (message.value = value)
               />
             </div>
             <Separator />
-            <TicketLinks :ticket="ticket" :links="ticket.expand.links_via_ticket" />
+            <TicketLinks :ticket="ticket" :links="links" />
             <Separator />
-            <TicketFiles :ticket="ticket" :files="ticket.expand.files_via_ticket" />
+            <TicketFiles :ticket="ticket" :files="files" />
           </div>
         </ColumnBodyContainer>
       </ColumnBody>
       <Separator />
-      <TicketCloseBar :ticket="ticket" class="shrink-0" />
+      <TicketCloseBar :ticket="ticket" />
     </template>
   </TanView>
 </template>

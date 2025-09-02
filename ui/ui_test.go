@@ -20,7 +20,7 @@ func TestUI(t *testing.T) {
 		{
 			name: "TestUI",
 			wantFiles: []string{
-				"index.html",
+				".keep",
 			},
 		},
 	}

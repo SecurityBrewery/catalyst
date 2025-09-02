@@ -1,25 +1,53 @@
 <script setup lang="ts">
+import '@uppy/core/dist/style.min.css'
+import '@uppy/dashboard/dist/style.min.css'
+
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Download, Trash2 } from 'lucide-vue-next'
 
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
-import { pb } from '@/lib/pocketbase'
-import type { File, Ticket } from '@/lib/types'
-import { human } from '@/lib/utils'
+import { useAPI } from '@/api'
+import type { ModelFile, Ticket } from '@/client/models'
+import { handleError, human } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
-defineProps<{
+const api = useAPI()
+
+const queryClient = useQueryClient()
+const { toast } = useToast()
+
+const authStore = useAuthStore()
+
+const props = defineProps<{
   ticket: Ticket
-  files: Array<File> | undefined
+  files: Array<ModelFile> | undefined
 }>()
 
 const downloadFile = (file: any) => {
-  window.open(`/api/files/files/${file.id}/${file.blob}?download=1`, '_blank')
+  fetch(`/api/files/${file.id}/download`, {
+    headers: { Authorization: `Bearer ${authStore.token}` }
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      var _url = window.URL.createObjectURL(blob)
+
+      // Create a link element, set its href to the blob URL, and trigger a download
+      const link = document.createElement('a')
+      link.href = _url
+      link.download = file.name
+      document.body.appendChild(link)
+      link.click()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const dialogOpen = ref(false)
@@ -28,14 +56,27 @@ const isDemo = ref(false)
 
 const { data: config } = useQuery({
   queryKey: ['config'],
-  queryFn: (): Promise<Record<string, Array<String>>> => pb.send('/api/config', {})
+  queryFn: () => api.getConfig()
+})
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string) => api.deleteFile({ id }),
+  onSuccess: (data, id) => {
+    queryClient.removeQueries({ queryKey: ['files', id] })
+    queryClient.invalidateQueries({ queryKey: ['files', props.ticket.id] })
+    toast({
+      title: 'File deleted',
+      description: 'The file has been deleted successfully'
+    })
+  },
+  onError: handleError('Failed to delete file')
 })
 
 watch(
   () => config.value,
   (newConfig) => {
     if (!newConfig) return
-    if (newConfig['flags'].includes('demo')) {
+    if (newConfig.flags.includes('demo')) {
       isDemo.value = true
     }
   },
@@ -56,9 +97,9 @@ watch(
       v-for="file in files"
       :key="file.id"
       :title="file.name"
-      class="flex w-full items-center border-t first:rounded-t first:border-none last:rounded-b"
+      class="flex w-full items-center border-t py-1 pl-2 pr-1 first:rounded-t first:border-none last:rounded-b"
     >
-      <div class="flex flex-1 items-center overflow-hidden py-2 pl-4 pr-2">
+      <div class="flex flex-1 items-center overflow-hidden pr-2">
         {{ file.name }}
 
         <div class="ml-1 flex-1 text-nowrap text-sm text-muted-foreground">
@@ -69,21 +110,20 @@ watch(
       <Button
         variant="ghost"
         size="icon"
-        class="mr-1 text-muted-foreground"
+        class="mr-1 size-8 text-muted-foreground"
         @click="downloadFile(file)"
       >
         <Download class="size-4" />
       </Button>
       <DeleteDialog
         v-if="file"
-        collection="files"
-        :id="file.id"
         :name="file.name"
         singular="File"
-        :queryKey="['tickets', ticket.id]"
+        @delete="deleteMutation.mutate(file.id)"
       >
-        <Button variant="ghost" size="icon" class="h-8 w-8">
+        <Button variant="ghost" size="icon" class="size-8">
           <Trash2 class="size-4" />
+          <span class="sr-only">Delete File</span>
         </Button>
       </DeleteDialog>
     </div>

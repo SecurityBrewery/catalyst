@@ -1,27 +1,56 @@
+version: "2"
 run:
   go: "1.22"
-  timeout: 5m
 linters:
-  enable-all: true
+  default: all
   disable:
-    # complexity
-    - maintidx
-    - funlen
-
-    # disable
     - depguard
+    - dupl
     - err113
     - exhaustruct
-    - gomnd
+    - funlen
+    - gochecknoglobals
+    - godox
+    - gomoddirectives
     - ireturn
     - lll
+    - maintidx
     - mnd
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - tagalign
+    - tagliatelle
     - testpackage
+    - unparam
     - varnamelen
     - wrapcheck
-linters-settings:
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/SecurityBrewery/catalyst)
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/SecurityBrewery/catalyst)
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

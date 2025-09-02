@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
 
-import {
-  DropdownMenuSubTrigger,
-  type DropdownMenuSubTriggerProps,
-  useForwardProps
-} from 'radix-vue'
-import { type HTMLAttributes, computed } from 'vue'
+import type { DropdownMenuSubTriggerProps } from 'radix-vue'
+import { DropdownMenuSubTrigger, useForwardProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 
 import { cn } from '@/lib/utils'
 
