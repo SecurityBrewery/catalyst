@@ -476,6 +476,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:write'
+      ])
+    }
+
     let urlPath = `/groups/{id}/parents`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -530,6 +537,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:write'
+      ])
+    }
+
     let urlPath = `/users/{id}/groups`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -577,6 +591,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
+
     let urlPath = `/comments`
 
     const response = await this.request(
@@ -623,6 +644,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'file:write'
+      ])
+    }
 
     let urlPath = `/files`
 
@@ -675,6 +703,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:write'
+      ])
+    }
+
     let urlPath = `/groups`
 
     const response = await this.request(
@@ -721,6 +756,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/links`
 
@@ -769,6 +811,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'reaction:write'
+      ])
+    }
+
     let urlPath = `/reactions`
 
     const response = await this.request(
@@ -815,6 +864,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/tasks`
 
@@ -863,6 +919,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
+
     let urlPath = `/tickets`
 
     const response = await this.request(
@@ -909,6 +972,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/timeline`
 
@@ -957,6 +1027,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [])
+    }
+
     let urlPath = `/types`
 
     const response = await this.request(
@@ -1003,6 +1078,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:write'
+      ])
+    }
 
     let urlPath = `/users`
 
@@ -1051,6 +1133,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'webhook:write'
+      ])
+    }
+
     let urlPath = `/webhooks`
 
     const response = await this.request(
@@ -1096,6 +1185,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
+
     let urlPath = `/comments/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1139,6 +1235,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'file:write'
+      ])
+    }
 
     let urlPath = `/files/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1184,6 +1287,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:write'
+      ])
+    }
+
     let urlPath = `/groups/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1227,6 +1337,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/links/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1272,6 +1389,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'reaction:write'
+      ])
+    }
+
     let urlPath = `/reactions/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1315,6 +1439,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/tasks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1360,6 +1491,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
+
     let urlPath = `/tickets/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1403,6 +1541,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/timeline/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1448,6 +1593,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [])
+    }
+
     let urlPath = `/types/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1491,6 +1641,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:write'
+      ])
+    }
 
     let urlPath = `/users/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1536,6 +1693,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'webhook:write'
+      ])
+    }
+
     let urlPath = `/webhooks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1580,6 +1744,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'file:read'
+      ])
+    }
+
     let urlPath = `/files/{id}/download`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1623,6 +1794,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/comments/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1694,6 +1872,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/dashboard_counts`
 
     const response = await this.request(
@@ -1738,6 +1923,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'file:read'
+      ])
+    }
 
     let urlPath = `/files/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1788,6 +1980,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
+
     let urlPath = `/groups/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1832,6 +2031,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/links/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -1878,6 +2084,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'reaction:read'
+      ])
+    }
+
     let urlPath = `/reactions/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -1915,6 +2128,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'settings:read'
+      ])
+    }
+
     let urlPath = `/settings`
 
     const response = await this.request(
@@ -1947,6 +2167,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/sidebar`
 
@@ -1990,6 +2217,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/tasks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2036,6 +2270,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/tickets/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -2080,6 +2321,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/timeline/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2126,6 +2374,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [])
+    }
+
     let urlPath = `/types/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -2170,6 +2423,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:read'
+      ])
+    }
 
     let urlPath = `/users/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2216,6 +2476,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'webhook:read'
+      ])
+    }
+
     let urlPath = `/webhooks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -2260,6 +2527,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
 
     let urlPath = `/groups/{id}/children`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2310,6 +2584,13 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/comments`
 
@@ -2362,6 +2643,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'file:read'
+      ])
+    }
+
     let urlPath = `/files`
 
     const response = await this.request(
@@ -2405,6 +2693,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
 
     let urlPath = `/groups/{id}/users`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2451,6 +2746,13 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
 
     let urlPath = `/groups`
 
@@ -2501,6 +2803,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/links`
 
     const response = await this.request(
@@ -2544,6 +2853,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
 
     let urlPath = `/groups/{id}/parents`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2590,6 +2906,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:read'
+      ])
+    }
+
     let urlPath = `/groups/{id}/permissions`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -2635,6 +2958,13 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'reaction:read'
+      ])
+    }
 
     let urlPath = `/reactions`
 
@@ -2685,6 +3015,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/tasks`
 
     const response = await this.request(
@@ -2729,6 +3066,13 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
 
     let urlPath = `/tickets`
 
@@ -2781,6 +3125,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/timeline`
 
     const response = await this.request(
@@ -2828,6 +3179,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [])
+    }
+
     let urlPath = `/types`
 
     const response = await this.request(
@@ -2871,6 +3227,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:read'
+      ])
+    }
 
     let urlPath = `/users/{id}/groups`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2916,6 +3279,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:read'
+      ])
+    }
 
     let urlPath = `/users/{id}/permissions`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -2963,6 +3333,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:read'
+      ])
+    }
+
     let urlPath = `/users`
 
     const response = await this.request(
@@ -3007,6 +3384,13 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'webhook:read'
+      ])
+    }
 
     let urlPath = `/webhooks`
 
@@ -3058,6 +3442,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:write'
+      ])
+    }
 
     let urlPath = `/groups/{id}/groups/{parentGroupId}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3113,6 +3504,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const queryParameters: any = {}
 
     const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:write'
+      ])
+    }
 
     let urlPath = `/users/{id}/groups/{groupId}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3175,6 +3573,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {}
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:read'
+      ])
+    }
+
     let urlPath = `/ticket_search`
 
     const response = await this.request(
@@ -3227,6 +3632,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/comments/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3283,6 +3695,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'group:write'
+      ])
+    }
+
     let urlPath = `/groups/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -3337,6 +3756,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/links/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3393,6 +3819,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'reaction:write'
+      ])
+    }
+
     let urlPath = `/reactions/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -3440,6 +3873,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'settings:write'
+      ])
+    }
 
     let urlPath = `/settings`
 
@@ -3494,6 +3934,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/tasks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3550,6 +3997,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
+
     let urlPath = `/tickets/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -3604,6 +4058,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'ticket:write'
+      ])
+    }
 
     let urlPath = `/timeline/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
@@ -3660,6 +4121,11 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [])
+    }
+
     let urlPath = `/types/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -3715,6 +4181,13 @@ export class DefaultApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json'
 
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'user:write'
+      ])
+    }
+
     let urlPath = `/users/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
 
@@ -3769,6 +4242,13 @@ export class DefaultApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {}
 
     headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      // oauth required
+      headerParameters['Authorization'] = await this.configuration.accessToken('OAuth2', [
+        'webhook:write'
+      ])
+    }
 
     let urlPath = `/webhooks/{id}`
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])))
