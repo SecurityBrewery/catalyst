@@ -40,8 +40,11 @@ func main() {
 				},
 			},
 			{
-				Name:   "serve",
-				Usage:  "Start the Catalyst server",
+				Name:  "serve",
+				Usage: "Start the Catalyst server",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "http", Usage: "HTTP listen address", Value: ":8090"},
+				},
 				Action: serve,
 			},
 			{
@@ -108,8 +111,10 @@ func serve(ctx context.Context, command *cli.Command) error {
 
 	defer cleanup()
 
+	addr := command.String("http")
+
 	server := &http.Server{
-		Addr:        ":8090",
+		Addr:        addr,
 		Handler:     catalyst,
 		ReadTimeout: 10 * time.Minute,
 	}
