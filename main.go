@@ -40,8 +40,11 @@ func main() {
 				},
 			},
 			{
-				Name:   "serve",
-				Usage:  "Start the Catalyst server",
+				Name:  "serve",
+				Usage: "Start the Catalyst server",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "http", Usage: "HTTP listen address", Value: ":8090"},
+				},
 				Action: serve,
 			},
 			{
