@@ -82,7 +82,7 @@ builds:
       - -s -w -X main.version={{.Version}}
 
 dockers:
-  - ids: [ catalyst ]
+  - ids: [ linux-amd64 ]
     dockerfile: docker/Dockerfile
     image_templates:
       - "ghcr.io/securitybrewery/catalyst:main"
