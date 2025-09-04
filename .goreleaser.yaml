@@ -7,7 +7,7 @@ before:
 builds:
   - id: darwin-amd64
     main: ./
-    binary: golang-cross
+    binary: catalyst
     goos:
       - darwin
     goarch:
@@ -22,7 +22,7 @@ builds:
       - -s -w -X main.version={{.Version}}
   - id: linux-arm64
     main: ./
-    binary: golang-cross
+    binary: catalyst
     goos:
       - linux
     goarch:
@@ -37,7 +37,7 @@ builds:
       - -s -w -X main.version={{.Version}}
   - id: linux-amd64
     main: ./
-    binary: golang-cross
+    binary: catalyst
     goos:
       - linux
     goarch:
@@ -52,7 +52,7 @@ builds:
       - -s -w -X main.version={{.Version}}
   - id: windows-amd64
     main: ./
-    binary: golang-cross
+    binary: catalyst
     goos:
       - windows
     goarch:
@@ -67,7 +67,7 @@ builds:
       - -s -w -X main.version={{.Version}}
   - id: windows-arm64
     main: ./
-    binary: golang-cross
+    binary: catalyst
     goos:
       - windows
     goarch:
