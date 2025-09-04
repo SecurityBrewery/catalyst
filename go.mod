@@ -11,7 +11,7 @@ replace github.com/tus/tusd/v2 v2.8.0 => github.com/SecurityBrewery/tusd/v2 v2.0
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1
-	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-co-op/gocron/v2 v2.16.2
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/martian/v3 v3.3.3
