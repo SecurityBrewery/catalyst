@@ -122,8 +122,6 @@ const initials = (user: { name?: string } | undefined) => {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-      </SidebarContent>
-      <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Tickets</SidebarGroupLabel>
           <SidebarMenu>
