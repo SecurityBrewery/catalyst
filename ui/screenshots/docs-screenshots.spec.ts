@@ -49,3 +49,42 @@ test('reactions screenshot', async ({ page }) => {
   await page.waitForTimeout(7000)
   await page.screenshot({ path: screenshot('reactions') })
 })
+
+test('settings screenshot', async ({ page }) => {
+  await login(page, true)
+  await page.goto('settings')
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+  await page.getByText("Toggle Sidebar").click()
+  await page.waitForTimeout(7000)
+  await page.screenshot({ path: screenshot('settings') })
+})
+
+test('users screenshot', async ({ page }) => {
+  await login(page, true)
+  await page.goto('users')
+  await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible()
+  await page.getByText("Toggle Sidebar").click()
+  await page.getByText("Test User").click()
+  await page.waitForTimeout(7000)
+  await page.screenshot({ path: screenshot('users') })
+})
+
+test('groups screenshot', async ({ page }) => {
+  await login(page, true)
+  await page.goto('groups')
+  await expect(page.getByRole('heading', { name: 'Groups' })).toBeVisible()
+  await page.getByText("Toggle Sidebar").click()
+  await page.getByText("Analyst").click()
+  await page.waitForTimeout(7000)
+  await page.screenshot({ path: screenshot('groups') })
+})
+
+test('types screenshot', async ({ page }) => {
+  await login(page, true)
+  await page.goto('types')
+  await expect(page.getByRole('heading', { name: 'Types' })).toBeVisible()
+  await page.getByText("Toggle Sidebar").click()
+  await page.locator('main').getByText("Incident").click()
+  await page.waitForTimeout(7000)
+  await page.screenshot({ path: screenshot('types') })
+})

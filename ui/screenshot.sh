@@ -9,6 +9,10 @@ files=(
   "ticket.png"
   "tasks.png"
   "reactions.png"
+  "settings.png"
+  "users.png"
+  "groups.png"
+  "types.png"
 )
 
 for file in "${files[@]}"; do
