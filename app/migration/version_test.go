@@ -13,6 +13,7 @@ func TestVersionAndSetVersion(t *testing.T) {
 
 	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err, "failed to open in-memory db")
+
 	defer db.Close()
 
 	ver, err := version(t.Context(), db)

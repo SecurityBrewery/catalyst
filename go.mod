@@ -1,13 +1,11 @@
 module github.com/SecurityBrewery/catalyst
 
-go 1.24
+go 1.25
 
 tool (
 	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 	github.com/sqlc-dev/sqlc/cmd/sqlc
 )
-
-replace github.com/tus/tusd/v2 v2.8.0 => github.com/SecurityBrewery/tusd/v2 v2.0.0-20250628083448-4def5f97f3a6
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1

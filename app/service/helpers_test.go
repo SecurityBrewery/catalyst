@@ -16,6 +16,7 @@ func Test_marshal(t *testing.T) {
 	out := marshal(data)
 
 	var res map[string]any
+
 	err := json.Unmarshal([]byte(out), &res)
 	require.NoError(t, err, "invalid json")
 

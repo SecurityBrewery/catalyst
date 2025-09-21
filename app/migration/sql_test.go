@@ -27,7 +27,7 @@ func TestSQLMigration_UpAndDown(t *testing.T) {
 	require.NoError(t, m.up(t.Context(), queries, dir, uploader))
 
 	// Table should exist
-	_, err = queries.WriteDB.Exec("INSERT INTO test_table (name) VALUES ('foo')")
+	_, err = queries.WriteDB.ExecContext(t.Context(), "INSERT INTO test_table (name) VALUES ('foo')")
 	require.NoError(t, err)
 }
 

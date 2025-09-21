@@ -432,6 +432,7 @@ func weeksAgo(c int) time.Time {
 
 func dates(ticketCount int) (time.Time, time.Time) {
 	const ticketsPerWeek = 10
+
 	weeks := ticketCount / ticketsPerWeek
 
 	created := gofakeit.DateRange(weeksAgo(1), weeksAgo(weeks+1)).UTC()
