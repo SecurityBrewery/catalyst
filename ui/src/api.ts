@@ -5,7 +5,7 @@ export function useAPI() {
   const authStore = useAuthStore()
   return new DefaultApi(
     new Configuration({
-      basePath: 'http://localhost:8090/api',
+      basePath: '/api',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
