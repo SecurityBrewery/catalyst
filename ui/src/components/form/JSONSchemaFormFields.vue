@@ -62,7 +62,7 @@ watch(
   <div v-for="(property, key) in schema?.properties" :key="key">
     <FormField v-if="property.enum" :name="key" v-slot="{ componentField }" v-model="formdata[key]">
       <FormItem>
-        <FormLabel :for="key" class="text-right">
+        <FormLabel :for="key" class="text-left">
           {{ property.title }}
         </FormLabel>
         <Select :id="key" class="col-span-3" v-bind="componentField">
@@ -87,7 +87,7 @@ watch(
       v-model="formdata[key]"
     >
       <FormItem>
-        <FormLabel :for="key" class="text-right">
+        <FormLabel :for="key" class="text-left">
           {{ property.title }}
         </FormLabel>
         <Input :id="key" class="col-span-3" v-bind="componentField" />
@@ -120,7 +120,7 @@ watch(
       v-model="formdata[key]"
     >
       <FormItem>
-        <FormLabel :for="key" class="text-right">
+        <FormLabel :for="key" class="text-left">
           {{ property.title }}
         </FormLabel>
         <Input :id="key" class="col-span-3" type="number" v-bind="componentField" />

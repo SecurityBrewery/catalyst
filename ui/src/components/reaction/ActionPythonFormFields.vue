@@ -13,7 +13,7 @@ import {
 <template>
   <FormField name="actiondata.requirements" v-slot="{ componentField }">
     <FormItem>
-      <FormLabel for="requirements" class="text-right">requirements.txt</FormLabel>
+      <FormLabel for="requirements" class="text-left">requirements.txt</FormLabel>
       <FormControl>
         <GrowTextarea id="requirements" class="col-span-3" v-bind="componentField" />
       </FormControl>
@@ -23,7 +23,7 @@ import {
   </FormField>
   <FormField name="actiondata.script" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="script" class="text-right">Script</FormLabel>
+      <FormLabel for="script" class="text-left">Script</FormLabel>
       <FormControl>
         <GrowTextarea id="script" class="col-span-3" v-bind="componentField" />
       </FormControl>

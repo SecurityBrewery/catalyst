@@ -225,7 +225,7 @@ const onSubmit = handleSubmit((vals) => {
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="meta.appName" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="meta.appName" class="text-right">App Name</FormLabel>
+        <FormLabel for="meta.appName" class="text-left">App Name</FormLabel>
         <Input id="meta.appName" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -233,7 +233,7 @@ const onSubmit = handleSubmit((vals) => {
 
     <FormField name="meta.appUrl" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="meta.appUrl" class="text-right">App URL</FormLabel>
+        <FormLabel for="meta.appUrl" class="text-left">App URL</FormLabel>
         <Input id="meta.appUrl" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -241,7 +241,7 @@ const onSubmit = handleSubmit((vals) => {
 
     <FormField name="meta.senderName" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="meta.senderName" class="text-right">Sender Name</FormLabel>
+        <FormLabel for="meta.senderName" class="text-left">Sender Name</FormLabel>
         <Input id="meta.senderName" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -249,7 +249,7 @@ const onSubmit = handleSubmit((vals) => {
 
     <FormField name="meta.senderAddress" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="meta.senderAddress" class="text-right">Sender Address</FormLabel>
+        <FormLabel for="meta.senderAddress" class="text-left">Sender Address</FormLabel>
         <Input id="meta.senderAddress" type="email" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -262,7 +262,7 @@ const onSubmit = handleSubmit((vals) => {
       <CardContent class="flex flex-col gap-4">
         <FormField name="maxDays" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="maxDays" class="text-right">Max Days</FormLabel>
+            <FormLabel for="maxDays" class="text-left">Max Days</FormLabel>
             <Input id="maxDays" type="number" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -270,7 +270,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="logLevel" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="logLevel" class="text-right">Log Level</FormLabel>
+            <FormLabel for="logLevel" class="text-left">Log Level</FormLabel>
             <FormControl>
               <Select id="logLevel" class="col-span-3" v-bind="componentField">
                 <SelectTrigger class="font-medium">
@@ -328,7 +328,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.host" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="smtp.host" class="text-right">Host</FormLabel>
+            <FormLabel for="smtp.host" class="text-left">Host</FormLabel>
             <Input id="smtp.host" class="col-span-3" v-bind="componentField" />
             <FormMessage />
             <FormDescription>SMTP server hostname (e.g., smtp.gmail.com)</FormDescription>
@@ -337,7 +337,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.port" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="smtp.port" class="text-right">Port</FormLabel>
+            <FormLabel for="smtp.port" class="text-left">Port</FormLabel>
             <Input id="smtp.port" type="number" class="col-span-3" v-bind="componentField" />
             <FormMessage />
             <FormDescription>Common ports: 25, 465 (SSL), 587 (TLS)</FormDescription>
@@ -346,7 +346,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.username" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="smtp.username" class="text-right">Username</FormLabel>
+            <FormLabel for="smtp.username" class="text-left">Username</FormLabel>
             <Input id="smtp.username" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -354,7 +354,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.password" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="smtp.password" class="text-right">Password</FormLabel>
+            <FormLabel for="smtp.password" class="text-left">Password</FormLabel>
             <Input id="smtp.password" type="password" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -362,7 +362,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.authMethod" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="smtp.authMethod" class="text-right"> Authentication Method </FormLabel>
+            <FormLabel for="smtp.authMethod" class="text-left"> Authentication Method </FormLabel>
             <Select id="smtp.authMethod" class="col-span-3" v-bind="componentField">
               <SelectTrigger class="font-medium">
                 <SelectValue placeholder="Select authentication method" />
@@ -392,7 +392,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="smtp.localName" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="smtp.localName" class="text-right">HELO domain</FormLabel>
+            <FormLabel for="smtp.localName" class="text-left">HELO domain</FormLabel>
             <Input id="smtp.localName" class="col-span-3" v-bind="componentField" />
             <FormDescription>Optional. Leave empty to use default hostname.</FormDescription>
             <FormMessage />
@@ -408,7 +408,7 @@ const onSubmit = handleSubmit((vals) => {
       <CardContent class="flex flex-col gap-4">
         <FormField name="cron" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="cron" class="text-right">Cron Expression</FormLabel>
+            <FormLabel for="cron" class="text-left">Cron Expression</FormLabel>
             <Input id="cron" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -416,7 +416,7 @@ const onSubmit = handleSubmit((vals) => {
 
         <FormField name="cronMaxKeep" v-slot="{ componentField }" validate-on-input>
           <FormItem class="w-full">
-            <FormLabel for="cronMaxKeep" class="text-right">Max Keep</FormLabel>
+            <FormLabel for="cronMaxKeep" class="text-left">Max Keep</FormLabel>
             <Input id="cronMaxKeep" type="number" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>

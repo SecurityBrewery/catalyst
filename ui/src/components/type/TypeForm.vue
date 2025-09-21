@@ -138,7 +138,7 @@ const onSubmit = handleSubmit((values) => {
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="singular" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="singular" class="text-right">Singular</FormLabel>
+        <FormLabel for="singular" class="text-left">Singular</FormLabel>
         <Input id="singular" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -146,7 +146,7 @@ const onSubmit = handleSubmit((values) => {
 
     <FormField name="plural" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="plural" class="text-right">Plural</FormLabel>
+        <FormLabel for="plural" class="text-left">Plural</FormLabel>
         <Input id="plural" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>

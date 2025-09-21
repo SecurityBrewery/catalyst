@@ -82,7 +82,7 @@ watch(
       <form @submit="onSubmit" @change="change">
         <FormField name="user" v-slot="{ componentField }">
           <FormItem>
-            <FormLabel for="user" class="text-right"> User</FormLabel>
+            <FormLabel for="user" class="text-left"> User</FormLabel>
             <Select id="user" v-bind="componentField">
               <SelectTrigger>
                 <SelectValue placeholder="Select a user" />

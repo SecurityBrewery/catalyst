@@ -86,7 +86,7 @@ const change = () => validate({ mode: 'silent' }).then((res) => (submitDisabled.
       <form @submit="onSubmit" @change="change">
         <FormField name="name" v-slot="{ componentField }">
           <FormItem>
-            <FormLabel for="name" class="text-right"> Name</FormLabel>
+            <FormLabel for="name" class="text-left"> Name</FormLabel>
             <Input id="name" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -94,7 +94,7 @@ const change = () => validate({ mode: 'silent' }).then((res) => (submitDisabled.
 
         <FormField name="url" v-slot="{ componentField }" class="mt-2">
           <FormItem>
-            <FormLabel for="url" class="text-right"> URL</FormLabel>
+            <FormLabel for="url" class="text-left"> URL</FormLabel>
             <Input id="url" v-bind="componentField" />
             <FormMessage />
           </FormItem>
