@@ -86,7 +86,7 @@ watch(
         <Input
           v-model="mail"
           type="text"
-          placeholder="Username"
+          placeholder="Email"
           class="w-full"
           @keydown.enter="login"
         />
