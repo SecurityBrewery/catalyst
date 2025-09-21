@@ -68,7 +68,7 @@ func isDemoMode(ctx context.Context, queries *sqlc.Queries) bool {
 			}
 		}
 
-		return true, nil
+		return len(features) > 0, nil
 	}); err != nil {
 		slog.ErrorContext(ctx, "Failed to check demo mode", "error", err)
 
