@@ -60,7 +60,7 @@ func runHook(ctx context.Context, queries *sqlc.Queries, collection, event strin
 		Action:     event,
 		Collection: collection,
 		Record:     record,
-		Auth:       auth,
+		Auth:       webhook.SanitizeUser(auth),
 		Admin:      nil,
 	})
 	if err != nil {
