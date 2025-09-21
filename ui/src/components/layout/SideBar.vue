@@ -110,6 +110,21 @@ const initials = (user: { name?: string } | undefined) => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton :tooltip="'Dashboard'" as-child>
+                <RouterLink to="/dashboard">
+                  <Icon name="LayoutDashboard" class="size-4" />
+                  <span>Dashboard</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarContent>
+        <SidebarGroup>
           <SidebarGroupLabel>Tickets</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem v-for="(typ, index) of sidebar" :key="index">
