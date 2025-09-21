@@ -142,7 +142,7 @@ watch(
       <form @submit="onSubmit">
         <FormField name="name" v-slot="{ componentField }" v-model="name">
           <FormItem>
-            <FormLabel for="name" class="text-right">Name</FormLabel>
+            <FormLabel for="name" class="text-left">Name</FormLabel>
             <Input id="name" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>
@@ -150,7 +150,7 @@ watch(
 
         <FormField name="description" v-slot="{ componentField }" v-model="description">
           <FormItem>
-            <FormLabel for="description" class="text-right">Description</FormLabel>
+            <FormLabel for="description" class="text-left">Description</FormLabel>
             <Input id="description" class="col-span-3" v-bind="componentField" />
             <FormMessage />
           </FormItem>

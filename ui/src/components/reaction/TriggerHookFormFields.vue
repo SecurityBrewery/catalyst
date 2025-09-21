@@ -14,7 +14,7 @@ import {
 <template>
   <FormField name="triggerdata.collections" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="collections" class="text-right">Collections</FormLabel>
+      <FormLabel for="collections" class="text-left">Collections</FormLabel>
       <FormControl>
         <TriggerHookFormFieldCollections id="collections" v-bind="componentField" />
       </FormControl>
@@ -25,7 +25,7 @@ import {
 
   <FormField name="triggerdata.events" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="events" class="text-right">Events</FormLabel>
+      <FormLabel for="events" class="text-left">Events</FormLabel>
       <FormControl>
         <TriggerHookFormFieldEvents id="events" v-bind="componentField" />
       </FormControl>

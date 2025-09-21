@@ -133,7 +133,7 @@ const permissionItems = computed(() => config.value?.permissions || [])
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="name" class="text-right">Name</FormLabel>
+        <FormLabel for="name" class="text-left">Name</FormLabel>
         <Input
           id="name"
           class="col-span-3"
@@ -152,7 +152,7 @@ const permissionItems = computed(() => config.value?.permissions || [])
     >
       <FormItem id="permissions" class="w-full">
         <div class="space-y-0.5">
-          <FormLabel for="permissions" class="text-right">Permissions</FormLabel>
+          <FormLabel for="permissions" class="text-left">Permissions</FormLabel>
         </div>
         <FormControl>
           <MultiSelect

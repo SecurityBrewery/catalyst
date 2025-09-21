@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 <template>
   <FormField name="triggerdata.token" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="token" class="text-right">Token</FormLabel>
+      <FormLabel for="token" class="text-left">Token</FormLabel>
       <FormControl>
         <Input id="token" class="col-span-3" v-bind="componentField" placeholder="Enter a token" />
       </FormControl>
@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input'
 
   <FormField name="triggerdata.path" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="path" class="text-right">Path</FormLabel>
+      <FormLabel for="path" class="text-left">Path</FormLabel>
       <FormControl>
         <Input id="path" class="col-span-3" v-bind="componentField" placeholder="Enter a path" />
       </FormControl>

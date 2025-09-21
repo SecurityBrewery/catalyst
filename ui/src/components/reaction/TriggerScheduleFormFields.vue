@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 <template>
   <FormField name="triggerdata.expression" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="expression" class="text-right"> Cron Expression </FormLabel>
+      <FormLabel for="expression" class="text-left"> Cron Expression </FormLabel>
       <FormControl>
         <Input
           id="expression"

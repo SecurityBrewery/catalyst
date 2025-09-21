@@ -153,7 +153,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="name" class="text-right">Name</FormLabel>
+        <FormLabel for="name" class="text-left">Name</FormLabel>
         <Input id="name" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -161,7 +161,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
 
     <FormField name="username" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="username" class="text-right">Username</FormLabel>
+        <FormLabel for="username" class="text-left">Username</FormLabel>
         <Input id="username" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -169,7 +169,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
 
     <FormField name="email" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="email" class="text-right">Email</FormLabel>
+        <FormLabel for="email" class="text-left">Email</FormLabel>
         <Input id="email" type="email" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>

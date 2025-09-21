@@ -267,7 +267,7 @@ const curlExample = computed(() => {
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="name" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="name" class="text-right">Name</FormLabel>
+        <FormLabel for="name" class="text-left">Name</FormLabel>
         <Input id="name" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -280,7 +280,7 @@ const curlExample = computed(() => {
       <CardContent class="flex flex-col gap-4">
         <FormField name="trigger" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="trigger" class="text-right">Type</FormLabel>
+            <FormLabel for="trigger" class="text-left">Type</FormLabel>
             <FormControl>
               <Select id="trigger" class="col-span-3" v-bind="componentField">
                 <SelectTrigger class="font-medium">
@@ -321,7 +321,7 @@ const curlExample = computed(() => {
       <CardContent class="flex flex-col gap-4">
         <FormField name="action" v-slot="{ componentField }" validate-on-input>
           <FormItem>
-            <FormLabel for="action" class="text-right">Type</FormLabel>
+            <FormLabel for="action" class="text-left">Type</FormLabel>
             <FormControl>
               <Select id="action" class="col-span-3" v-bind="componentField">
                 <SelectTrigger class="font-medium">

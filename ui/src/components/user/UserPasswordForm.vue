@@ -111,7 +111,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
   <form @submit="onSubmit" class="flex w-full flex-col items-start gap-4">
     <FormField name="password" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="password" class="text-right">Password</FormLabel>
+        <FormLabel for="password" class="text-left">Password</FormLabel>
         <Input id="password" type="password" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>
@@ -119,7 +119,7 @@ const onSubmit = handleSubmit((values) => emit('submit', values))
 
     <FormField name="passwordConfirm" v-slot="{ componentField }" validate-on-input>
       <FormItem class="w-full">
-        <FormLabel for="passwordConfirm" class="text-right">Confirm Password</FormLabel>
+        <FormLabel for="passwordConfirm" class="text-left">Confirm Password</FormLabel>
         <Input id="passwordConfirm" type="password" class="col-span-3" v-bind="componentField" />
         <FormMessage />
       </FormItem>

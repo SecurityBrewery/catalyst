@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 <template>
   <FormField name="actiondata.headers" v-slot="{ value, handleChange }">
     <FormItem>
-      <FormLabel for="headers" class="text-right">Headers</FormLabel>
+      <FormLabel for="headers" class="text-left">Headers</FormLabel>
       <FormControl>
         <GrowListTextarea
           id="headers"
@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input'
   </FormField>
   <FormField name="actiondata.url" v-slot="{ componentField }" validate-on-input>
     <FormItem>
-      <FormLabel for="url" class="text-right">URL</FormLabel>
+      <FormLabel for="url" class="text-left">URL</FormLabel>
       <FormControl>
         <Input id="url" v-bind="componentField" placeholder="https://example.com/webhook" />
       </FormControl>
