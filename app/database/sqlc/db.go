@@ -15,6 +15,7 @@ type DBTX interface {
 type Queries struct {
 	*ReadQueries
 	*WriteQueries
+
 	ReadDB  *sql.DB
 	WriteDB *sql.DB
 }

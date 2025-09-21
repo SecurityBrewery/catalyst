@@ -10,20 +10,23 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tus/tusd/v2/pkg/handler"
 )
 
-// Test interface implementation of FSStore
-var _ handler.DataStore = RootStore{}
-var _ handler.TerminaterDataStore = RootStore{}
-var _ handler.ConcaterDataStore = RootStore{}
-var _ handler.LengthDeferrerDataStore = RootStore{}
+// Test interface implementation of FSStore.
+var (
+	_ handler.DataStore               = RootStore{}
+	_ handler.TerminaterDataStore     = RootStore{}
+	_ handler.ConcaterDataStore       = RootStore{}
+	_ handler.LengthDeferrerDataStore = RootStore{}
+)
 
 func TestFSStore(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	root, err := os.OpenRoot(t.TempDir())
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -37,73 +40,73 @@ func TestFSStore(t *testing.T) {
 			"hello": "world",
 		},
 	})
-	a.NoError(err)
-	a.NotEqual(nil, upload)
+	require.NoError(t, err)
+	assert.NotNil(t, upload)
 
 	// Check info without writing
 	info, err := upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(0, info.Offset)
-	a.Equal(handler.MetaData{"hello": "world"}, info.MetaData)
-	a.Equal(3, len(info.Storage))
-	a.Equal("rootstore", info.Storage["Type"])
-	a.Equal(info.ID, info.Storage["Path"])
-	a.Equal(info.ID+".info", info.Storage["InfoPath"])
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 0, info.Offset)
+	assert.Equal(t, handler.MetaData{"hello": "world"}, info.MetaData)
+	assert.Len(t, info.Storage, 3)
+	assert.Equal(t, "rootstore", info.Storage["Type"])
+	assert.Equal(t, info.ID, info.Storage["Path"])
+	assert.Equal(t, info.ID+".info", info.Storage["InfoPath"])
 
 	// Write data to upload
 	bytesWritten, err := upload.WriteChunk(ctx, 0, strings.NewReader("hello world"))
-	a.NoError(err)
-	a.EqualValues(len("hello world"), bytesWritten)
+	require.NoError(t, err)
+	assert.EqualValues(t, len("hello world"), bytesWritten)
 
 	// Check new offset
 	info, err = upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(11, info.Offset)
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 11, info.Offset)
 
 	// Read content
 	reader, err := upload.GetReader(ctx)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	content, err := io.ReadAll(reader)
-	a.NoError(err)
-	a.Equal("hello world", string(content))
-	reader.(io.Closer).Close()
+	require.NoError(t, err)
+	assert.Equal(t, "hello world", string(content))
+	reader.Close()
 
 	// Serve content
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/", nil)
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	r.Header.Set("Range", "bytes=0-4")
 
 	err = store.AsServableUpload(upload).ServeContent(t.Context(), w, r)
-	a.Nil(err)
+	require.NoError(t, err)
 
-	a.Equal(http.StatusPartialContent, w.Code)
-	a.Equal("5", w.Header().Get("Content-Length"))
-	a.Equal("text/plain; charset=utf-8", w.Header().Get("Content-Type"))
-	a.Equal("bytes 0-4/11", w.Header().Get("Content-Range"))
-	a.NotEqual("", w.Header().Get("Last-Modified"))
-	a.Equal("hello", w.Body.String())
+	assert.Equal(t, http.StatusPartialContent, w.Code)
+	assert.Equal(t, "5", w.Header().Get("Content-Length"))
+	assert.Equal(t, "text/plain; charset=utf-8", w.Header().Get("Content-Type"))
+	assert.Equal(t, "bytes 0-4/11", w.Header().Get("Content-Range"))
+	assert.NotEmpty(t, w.Header().Get("Last-Modified"))
+	assert.Equal(t, "hello", w.Body.String())
 
 	// Terminate upload
-	a.NoError(store.AsTerminatableUpload(upload).Terminate(ctx))
+	require.NoError(t, store.AsTerminatableUpload(upload).Terminate(ctx))
 
 	// Test if upload is deleted
 	upload, err = store.GetUpload(ctx, info.ID)
-	a.Equal(nil, upload)
-	a.Equal(handler.ErrNotFound, err)
+	assert.Nil(t, upload)
+	assert.Equal(t, handler.ErrNotFound, err)
 }
 
 // TestCreateDirectories tests whether an upload with a slash in its ID causes
 // the correct directories to be created.
 func TestFSStoreCreateDirectories(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	tmp := t.TempDir()
 
 	root, err := os.OpenRoot(tmp)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -118,63 +121,63 @@ func TestFSStoreCreateDirectories(t *testing.T) {
 			"hello": "world",
 		},
 	})
-	a.NoError(err)
-	a.NotEqual(nil, upload)
+	require.NoError(t, err)
+	assert.NotNil(t, upload)
 
 	// Check info without writing
 	info, err := upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(0, info.Offset)
-	a.Equal(handler.MetaData{"hello": "world"}, info.MetaData)
-	a.Equal(3, len(info.Storage))
-	a.Equal("rootstore", info.Storage["Type"])
-	a.Equal(filepath.FromSlash(info.ID), info.Storage["Path"])
-	a.Equal(filepath.FromSlash(info.ID+".info"), info.Storage["InfoPath"])
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 0, info.Offset)
+	assert.Equal(t, handler.MetaData{"hello": "world"}, info.MetaData)
+	assert.Len(t, info.Storage, 3)
+	assert.Equal(t, "rootstore", info.Storage["Type"])
+	assert.Equal(t, filepath.FromSlash(info.ID), info.Storage["Path"])
+	assert.Equal(t, filepath.FromSlash(info.ID+".info"), info.Storage["InfoPath"])
 
 	// Write data to upload
 	bytesWritten, err := upload.WriteChunk(ctx, 0, strings.NewReader("hello world"))
-	a.NoError(err)
-	a.EqualValues(len("hello world"), bytesWritten)
+	require.NoError(t, err)
+	assert.EqualValues(t, len("hello world"), bytesWritten)
 
 	// Check new offset
 	info, err = upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(11, info.Offset)
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 11, info.Offset)
 
 	// Read content
 	reader, err := upload.GetReader(ctx)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	content, err := io.ReadAll(reader)
-	a.NoError(err)
-	a.Equal("hello world", string(content))
-	reader.(io.Closer).Close()
+	require.NoError(t, err)
+	assert.Equal(t, "hello world", string(content))
+	reader.Close()
 
 	// Check that the file and directory exists on disk
 	statInfo, err := os.Stat(filepath.Join(tmp, "hello/world/123"))
-	a.NoError(err)
-	a.True(statInfo.Mode().IsRegular())
-	a.EqualValues(11, statInfo.Size())
+	require.NoError(t, err)
+	assert.True(t, statInfo.Mode().IsRegular())
+	assert.EqualValues(t, 11, statInfo.Size())
 	statInfo, err = os.Stat(filepath.Join(tmp, "hello/world/"))
-	a.NoError(err)
-	a.True(statInfo.Mode().IsDir())
+	require.NoError(t, err)
+	assert.True(t, statInfo.Mode().IsDir())
 
 	// Terminate upload
-	a.NoError(store.AsTerminatableUpload(upload).Terminate(ctx))
+	require.NoError(t, store.AsTerminatableUpload(upload).Terminate(ctx))
 
 	// Test if upload is deleted
 	upload, err = store.GetUpload(ctx, info.ID)
-	a.Equal(nil, upload)
-	a.Equal(handler.ErrNotFound, err)
+	assert.Nil(t, upload)
+	assert.Equal(t, handler.ErrNotFound, err)
 }
 
 func TestFSStoreNotFound(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	root, err := os.OpenRoot(t.TempDir())
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -182,18 +185,18 @@ func TestFSStoreNotFound(t *testing.T) {
 	ctx := t.Context()
 
 	upload, err := store.GetUpload(ctx, "upload-that-does-not-exist")
-	a.Error(err)
-	a.Equal(handler.ErrNotFound, err)
-	a.Equal(nil, upload)
+	require.Error(t, err)
+	assert.Equal(t, handler.ErrNotFound, err)
+	assert.Nil(t, upload)
 }
 
 func TestFSStoreConcatUploads(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	tmp := t.TempDir()
 
 	root, err := os.OpenRoot(tmp)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -202,12 +205,13 @@ func TestFSStoreConcatUploads(t *testing.T) {
 
 	// Create new upload to hold concatenated upload
 	finUpload, err := store.NewUpload(ctx, handler.FileInfo{Size: 9})
-	a.NoError(err)
-	a.NotEqual(nil, finUpload)
+	require.NoError(t, err)
+	assert.NotNil(t, finUpload)
 
 	finInfo, err := finUpload.GetInfo(ctx)
-	a.NoError(err)
-	finId := finInfo.ID
+	require.NoError(t, err)
+
+	finID := finInfo.ID
 
 	// Create three uploads for concatenating
 	partialUploads := make([]handler.Upload, 3)
@@ -216,46 +220,47 @@ func TestFSStoreConcatUploads(t *testing.T) {
 		"def",
 		"ghi",
 	}
-	for i := 0; i < 3; i++ {
+
+	for i := range 3 {
 		upload, err := store.NewUpload(ctx, handler.FileInfo{Size: 3})
-		a.NoError(err)
+		require.NoError(t, err)
 
 		n, err := upload.WriteChunk(ctx, 0, strings.NewReader(contents[i]))
-		a.NoError(err)
-		a.EqualValues(3, n)
+		require.NoError(t, err)
+		assert.EqualValues(t, 3, n)
 
 		partialUploads[i] = upload
 	}
 
 	err = store.AsConcatableUpload(finUpload).ConcatUploads(ctx, partialUploads)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	// Check offset
-	finUpload, err = store.GetUpload(ctx, finId)
-	a.NoError(err)
+	finUpload, err = store.GetUpload(ctx, finID)
+	require.NoError(t, err)
 
 	info, err := finUpload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(9, info.Size)
-	a.EqualValues(9, info.Offset)
+	require.NoError(t, err)
+	assert.EqualValues(t, 9, info.Size)
+	assert.EqualValues(t, 9, info.Offset)
 
 	// Read content
 	reader, err := finUpload.GetReader(ctx)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	content, err := io.ReadAll(reader)
-	a.NoError(err)
-	a.Equal("abcdefghi", string(content))
-	reader.(io.Closer).Close()
+	require.NoError(t, err)
+	assert.Equal(t, "abcdefghi", string(content))
+	reader.Close()
 }
 
 func TestFSStoreDeclareLength(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	tmp := t.TempDir()
 
 	root, err := os.OpenRoot(tmp)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -266,32 +271,32 @@ func TestFSStoreDeclareLength(t *testing.T) {
 		Size:           0,
 		SizeIsDeferred: true,
 	})
-	a.NoError(err)
-	a.NotEqual(nil, upload)
+	require.NoError(t, err)
+	assert.NotNil(t, upload)
 
 	info, err := upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(0, info.Size)
-	a.Equal(true, info.SizeIsDeferred)
+	require.NoError(t, err)
+	assert.EqualValues(t, 0, info.Size)
+	assert.True(t, info.SizeIsDeferred)
 
 	err = store.AsLengthDeclarableUpload(upload).DeclareLength(ctx, 100)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	updatedInfo, err := upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(100, updatedInfo.Size)
-	a.Equal(false, updatedInfo.SizeIsDeferred)
+	require.NoError(t, err)
+	assert.EqualValues(t, 100, updatedInfo.Size)
+	assert.False(t, updatedInfo.SizeIsDeferred)
 }
 
 // TestCustomRelativePath tests whether the upload's destination can be customized
 // relative to the storage directory.
 func TestFSStoreCustomRelativePath(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	tmp := t.TempDir()
 
 	root, err := os.OpenRoot(tmp)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -306,64 +311,64 @@ func TestFSStoreCustomRelativePath(t *testing.T) {
 			"Path": "./folder2/bin",
 		},
 	})
-	a.NoError(err)
-	a.NotEqual(nil, upload)
+	require.NoError(t, err)
+	assert.NotNil(t, upload)
 
 	// Check info without writing
 	info, err := upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(0, info.Offset)
-	a.Equal(3, len(info.Storage))
-	a.Equal("rootstore", info.Storage["Type"])
-	a.Equal(filepath.FromSlash("./folder2/bin"), info.Storage["Path"])
-	a.Equal(filepath.FromSlash("folder1/info.info"), info.Storage["InfoPath"])
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 0, info.Offset)
+	assert.Len(t, info.Storage, 3)
+	assert.Equal(t, "rootstore", info.Storage["Type"])
+	assert.Equal(t, filepath.FromSlash("./folder2/bin"), info.Storage["Path"])
+	assert.Equal(t, filepath.FromSlash("folder1/info.info"), info.Storage["InfoPath"])
 
 	// Write data to upload
 	bytesWritten, err := upload.WriteChunk(ctx, 0, strings.NewReader("hello world"))
-	a.NoError(err)
-	a.EqualValues(len("hello world"), bytesWritten)
+	require.NoError(t, err)
+	assert.EqualValues(t, len("hello world"), bytesWritten)
 
 	// Check new offset
 	info, err = upload.GetInfo(ctx)
-	a.NoError(err)
-	a.EqualValues(42, info.Size)
-	a.EqualValues(11, info.Offset)
+	require.NoError(t, err)
+	assert.EqualValues(t, 42, info.Size)
+	assert.EqualValues(t, 11, info.Offset)
 
 	// Read content
 	reader, err := upload.GetReader(ctx)
-	a.NoError(err)
+	require.NoError(t, err)
 
 	content, err := io.ReadAll(reader)
-	a.NoError(err)
-	a.Equal("hello world", string(content))
-	reader.(io.Closer).Close()
+	require.NoError(t, err)
+	assert.Equal(t, "hello world", string(content))
+	reader.Close()
 
 	// Check that the output file and info file exist on disk
 	statInfo, err := os.Stat(filepath.Join(tmp, "folder2/bin"))
-	a.NoError(err)
-	a.True(statInfo.Mode().IsRegular())
-	a.EqualValues(11, statInfo.Size())
+	require.NoError(t, err)
+	assert.True(t, statInfo.Mode().IsRegular())
+	assert.EqualValues(t, 11, statInfo.Size())
 	statInfo, err = os.Stat(filepath.Join(tmp, "folder1/info.info"))
-	a.NoError(err)
-	a.True(statInfo.Mode().IsRegular())
+	require.NoError(t, err)
+	assert.True(t, statInfo.Mode().IsRegular())
 
 	// Terminate upload
-	a.NoError(store.AsTerminatableUpload(upload).Terminate(ctx))
+	require.NoError(t, store.AsTerminatableUpload(upload).Terminate(ctx))
 
 	// Test if upload is deleted
 	upload, err = store.GetUpload(ctx, info.ID)
-	a.Equal(nil, upload)
-	a.Equal(handler.ErrNotFound, err)
+	assert.Nil(t, upload)
+	assert.Equal(t, handler.ErrNotFound, err)
 }
 
 // TestCustomAbsolutePath tests whether the upload's destination can be customized
 // using an absolute path to the storage directory.
 func TestFSStoreCustomAbsolutePath(t *testing.T) {
-	a := assert.New(t)
+	t.Parallel()
 
 	root, err := os.OpenRoot(t.TempDir())
-	a.NoError(err)
+	require.NoError(t, err)
 
 	t.Cleanup(func() { root.Close() })
 
@@ -379,8 +384,8 @@ func TestFSStoreCustomAbsolutePath(t *testing.T) {
 			"Path": binPath,
 		},
 	})
-	a.Error(err)
+	require.Error(t, err)
 
 	_, err = os.Stat(binPath)
-	a.Error(err)
+	require.Error(t, err)
 }

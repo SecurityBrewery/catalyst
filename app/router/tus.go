@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/SecurityBrewery/catalyst/app/rootstore"
 	"github.com/go-chi/chi/v5"
 	"github.com/tus/tusd/v2/pkg/filelocker"
 	tusd "github.com/tus/tusd/v2/pkg/handler"
@@ -16,6 +15,7 @@ import (
 	"github.com/SecurityBrewery/catalyst/app/auth"
 	"github.com/SecurityBrewery/catalyst/app/database"
 	"github.com/SecurityBrewery/catalyst/app/database/sqlc"
+	"github.com/SecurityBrewery/catalyst/app/rootstore"
 	"github.com/SecurityBrewery/catalyst/app/upload"
 )
 

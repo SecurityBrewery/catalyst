@@ -8,6 +8,7 @@ linters:
     - dupl
     - err113
     - exhaustruct
+    - funcorder
     - funlen
     - gochecknoglobals
     - godox
@@ -16,6 +17,7 @@ linters:
     - lll
     - maintidx
     - mnd
+    - noinlineerr
     - nonamedreturns
     - perfsprint
     - prealloc
@@ -25,6 +27,7 @@ linters:
     - unparam
     - varnamelen
     - wrapcheck
+    - wsl
   exclusions:
     generated: lax
     presets:

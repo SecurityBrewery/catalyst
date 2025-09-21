@@ -14,13 +14,15 @@ import (
 	"github.com/tus/tusd/v2/pkg/handler"
 )
 
-var defaultFilePerm = os.FileMode(0664)
-var defaultDirectoryPerm = os.FileMode(0754)
+var (
+	defaultFilePerm      = os.FileMode(0o664)
+	defaultDirectoryPerm = os.FileMode(0o754)
+)
 
 const (
-	// StorageKeyPath is the key of the path of uploaded file in handler.FileInfo.Storage
+	// StorageKeyPath is the key of the path of uploaded file in handler.FileInfo.Storage.
 	StorageKeyPath = "Path"
-	// StorageKeyInfoPath is the key of the path of .info file in handler.FileInfo.Storage
+	// StorageKeyInfoPath is the key of the path of .info file in handler.FileInfo.Storage.
 	StorageKeyInfoPath = "InfoPath"
 )
 
@@ -43,7 +45,7 @@ func (store RootStore) UseIn(composer *handler.StoreComposer) {
 	composer.UseContentServer(store)
 }
 
-func (store RootStore) NewUpload(ctx context.Context, info handler.FileInfo) (handler.Upload, error) {
+func (store RootStore) NewUpload(_ context.Context, info handler.FileInfo) (handler.Upload, error) {
 	if info.ID == "" {
 		info.ID = rand.Text()
 	}
@@ -86,16 +88,19 @@ func (store RootStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 	return upload, nil
 }
 
-func (store RootStore) GetUpload(ctx context.Context, id string) (handler.Upload, error) {
+func (store RootStore) GetUpload(_ context.Context, id string) (handler.Upload, error) {
 	infoPath := store.infoPath(id)
+
 	data, err := fs.ReadFile(store.root.FS(), filepath.ToSlash(infoPath))
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Interpret os.ErrNotExist as 404 Not Found
 			err = handler.ErrNotFound
 		}
+
 		return nil, err
 	}
+
 	var info handler.FileInfo
 	if err := json.Unmarshal(data, &info); err != nil {
 		return nil, err
@@ -119,6 +124,7 @@ func (store RootStore) GetUpload(ctx context.Context, id string) (handler.Upload
 			// Interpret os.ErrNotExist as 404 Not Found
 			err = handler.ErrNotFound
 		}
+
 		return nil, err
 	}
 
@@ -133,19 +139,19 @@ func (store RootStore) GetUpload(ctx context.Context, id string) (handler.Upload
 }
 
 func (store RootStore) AsTerminatableUpload(upload handler.Upload) handler.TerminatableUpload {
-	return upload.(*fileUpload)
+	return upload.(*fileUpload) //nolint:forcetypeassert
 }
 
 func (store RootStore) AsLengthDeclarableUpload(upload handler.Upload) handler.LengthDeclarableUpload {
-	return upload.(*fileUpload)
+	return upload.(*fileUpload) //nolint:forcetypeassert
 }
 
 func (store RootStore) AsConcatableUpload(upload handler.Upload) handler.ConcatableUpload {
-	return upload.(*fileUpload)
+	return upload.(*fileUpload) //nolint:forcetypeassert
 }
 
 func (store RootStore) AsServableUpload(upload handler.Upload) handler.ServableUpload {
-	return upload.(*fileUpload)
+	return upload.(*fileUpload) //nolint:forcetypeassert
 }
 
 // defaultBinPath returns the path to the file storing the binary data, if it is
@@ -170,11 +176,11 @@ type fileUpload struct {
 	binPath string
 }
 
-func (upload *fileUpload) GetInfo(ctx context.Context) (handler.FileInfo, error) {
+func (upload *fileUpload) GetInfo(_ context.Context) (handler.FileInfo, error) {
 	return upload.info, nil
 }
 
-func (upload *fileUpload) WriteChunk(ctx context.Context, offset int64, src io.Reader) (int64, error) {
+func (upload *fileUpload) WriteChunk(_ context.Context, _ int64, src io.Reader) (int64, error) {
 	file, err := upload.root.OpenFile(upload.binPath, os.O_WRONLY|os.O_APPEND, defaultFilePerm)
 	if err != nil {
 		return 0, err
@@ -184,19 +190,21 @@ func (upload *fileUpload) WriteChunk(ctx context.Context, offset int64, src io.R
 
 	n, err := io.Copy(file, src)
 	upload.info.Offset += n
+
 	if err != nil {
 		file.Close()
+
 		return n, err
 	}
 
 	return n, file.Close()
 }
 
-func (upload *fileUpload) GetReader(ctx context.Context) (io.ReadCloser, error) {
+func (upload *fileUpload) GetReader(_ context.Context) (io.ReadCloser, error) {
 	return upload.root.Open(upload.binPath)
 }
 
-func (upload *fileUpload) Terminate(ctx context.Context) error {
+func (upload *fileUpload) Terminate(_ context.Context) error {
 	// We ignore errors indicating that the files cannot be found because we want
 	// to delete them anyways. The files might be removed by a cron job for cleaning up
 	// or some file might have been removed when tusd crashed during the termination.
@@ -213,11 +221,12 @@ func (upload *fileUpload) Terminate(ctx context.Context) error {
 	return nil
 }
 
-func (upload *fileUpload) ConcatUploads(ctx context.Context, uploads []handler.Upload) (err error) {
+func (upload *fileUpload) ConcatUploads(_ context.Context, uploads []handler.Upload) (err error) {
 	file, err := upload.root.OpenFile(upload.binPath, os.O_WRONLY|os.O_APPEND, defaultFilePerm)
 	if err != nil {
 		return err
 	}
+
 	defer func() {
 		// Ensure that close error is propagated, if it occurs.
 		// See https://github.com/tus/tusd/issues/698.
@@ -228,7 +237,7 @@ func (upload *fileUpload) ConcatUploads(ctx context.Context, uploads []handler.U
 	}()
 
 	for _, partialUpload := range uploads {
-		if err := partialUpload.(*fileUpload).appendTo(file); err != nil {
+		if err := partialUpload.(*fileUpload).appendTo(file); err != nil { //nolint:forcetypeassert
 			return err
 		}
 	}
@@ -244,15 +253,17 @@ func (upload *fileUpload) appendTo(file *os.File) error {
 
 	if _, err := io.Copy(file, src); err != nil {
 		src.Close()
+
 		return err
 	}
 
 	return src.Close()
 }
 
-func (upload *fileUpload) DeclareLength(ctx context.Context, length int64) error {
+func (upload *fileUpload) DeclareLength(_ context.Context, length int64) error {
 	upload.info.Size = length
 	upload.info.SizeIsDeferred = false
+
 	return upload.writeInfo()
 }
 
@@ -268,11 +279,11 @@ func (upload *fileUpload) writeInfo() error {
 	return upload.root.WriteFile(upload.infoPath, data, defaultFilePerm)
 }
 
-func (upload *fileUpload) FinishUpload(ctx context.Context) error {
+func (upload *fileUpload) FinishUpload(_ context.Context) error {
 	return nil
 }
 
-func (upload *fileUpload) ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+func (upload *fileUpload) ServeContent(_ context.Context, w http.ResponseWriter, r *http.Request) error {
 	http.ServeFileFS(w, r, upload.root.FS(), filepath.ToSlash(upload.binPath))
 
 	return nil
