@@ -58,14 +58,6 @@ const count = (id: string) => {
               Open Catalyst Handbook
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>
-            <a
-              href="/_/"
-              target="_blank"
-              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
-            >
-              Open Admin Interface
-              <ExternalLink class="ml-2 h-4 w-4" />
-            </a>
           </CardContent>
         </Card>
         <Card>
@@ -116,14 +108,6 @@ const count = (id: string) => {
               class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
             >
               Open Catalyst Handbook
-              <ExternalLink class="ml-2 h-4 w-4" />
-            </a>
-            <a
-              href="/_/"
-              target="_blank"
-              class="flex items-center rounded border p-2 text-blue-500 hover:bg-accent"
-            >
-              Open Admin Interface
               <ExternalLink class="ml-2 h-4 w-4" />
             </a>
           </CardContent>
