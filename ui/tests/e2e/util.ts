@@ -19,9 +19,9 @@ export const test = baseTest.extend({
 export const login = async (page, admin: boolean = true) => {
   await page.goto('login')
   if (admin) {
-    await page.getByPlaceholder('Username').fill('admin@catalyst-soar.com')
+    await page.getByPlaceholder('Email').fill('admin@catalyst-soar.com')
   } else {
-    await page.getByPlaceholder('Username').fill('user@catalyst-soar.com')
+    await page.getByPlaceholder('Email').fill('user@catalyst-soar.com')
   }
   await page.getByPlaceholder('Password').fill('1234567890')
   await page.getByRole('button', { name: 'Login' }).click()
