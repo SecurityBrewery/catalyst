@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/SecurityBrewery/catalyst/app/auth/usercontext"
 	"github.com/SecurityBrewery/catalyst/app/database"
@@ -35,11 +36,43 @@ func BindHooks(hooks *hook.Hooks, queries *sqlc.Queries) {
 }
 
 type Payload struct {
-	Action     string     `json:"action"`
-	Collection string     `json:"collection"`
-	Record     any        `json:"record"`
-	Auth       *sqlc.User `json:"auth,omitempty"`
-	Admin      *sqlc.User `json:"admin,omitempty"`
+	Action     string    `json:"action"`
+	Collection string    `json:"collection"`
+	Record     any       `json:"record"`
+	Auth       *AuthUser `json:"auth,omitempty"`
+	Admin      *AuthUser `json:"admin,omitempty"`
+}
+
+type AuthUser struct {
+	ID                     string     `json:"id"`
+	Username               string     `json:"username"`
+	Active                 bool       `json:"active"`
+	Name                   *string    `json:"name,omitempty"`
+	Email                  *string    `json:"email,omitempty"`
+	Avatar                 *string    `json:"avatar,omitempty"`
+	Lastresetsentat        *time.Time `json:"lastresetsentat,omitempty"`
+	Lastverificationsentat *time.Time `json:"lastverificationsentat,omitempty"`
+	Created                time.Time  `json:"created"`
+	Updated                time.Time  `json:"updated"`
+}
+
+func SanitizeUser(user *sqlc.User) *AuthUser {
+	if user == nil {
+		return nil
+	}
+
+	return &AuthUser{
+		ID:                     user.ID,
+		Username:               user.Username,
+		Active:                 user.Active,
+		Name:                   user.Name,
+		Email:                  user.Email,
+		Avatar:                 user.Avatar,
+		Lastresetsentat:        user.Lastresetsentat,
+		Lastverificationsentat: user.Lastverificationsentat,
+		Created:                user.Created,
+		Updated:                user.Updated,
+	}
 }
 
 func event(ctx context.Context, queries *sqlc.Queries, event, collection string, record any) {
@@ -67,7 +100,7 @@ func event(ctx context.Context, queries *sqlc.Queries, event, collection string,
 		Action:     event,
 		Collection: collection,
 		Record:     record,
-		Auth:       user,
+		Auth:       SanitizeUser(user),
 		Admin:      nil,
 	})
 	if err != nil {
