@@ -21,7 +21,7 @@ const closeModal = () => {
     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
     @click.self="closeModal"
   >
-    <div class="relative rounded-lg bg-white p-4 shadow-xl">
+    <div class="relative rounded-lg bg-white p-2 shadow-xl">
       <img :src="imageUrl" :alt="fileName" class="max-h-[80vh] max-w-[80vw]" />
       <Button
         variant="ghost"
