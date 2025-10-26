@@ -36,5 +36,5 @@ jobs:
             -w /go/src/github.com/SecurityBrewery/catalyst \
             -e CGO_ENABLED=1 \
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/goreleaser/goreleaser-cross:v1.25.2 \
+            ghcr.io/goreleaser/goreleaser-cross:v1.25.1 \
             release --clean
