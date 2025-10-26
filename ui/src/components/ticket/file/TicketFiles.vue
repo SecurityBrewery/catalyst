@@ -5,6 +5,7 @@ import '@uppy/dashboard/dist/style.min.css'
 import DeleteDialog from '@/components/common/DeleteDialog.vue'
 import TicketPanel from '@/components/ticket/TicketPanel.vue'
 import FileAddDialog from '@/components/ticket/file/FileAddDialog.vue'
+import ImageModal from '@/components/ticket/file/ImageModal.vue'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast/use-toast'
 
@@ -30,6 +31,36 @@ const props = defineProps<{
   files: Array<ModelFile> | undefined
 }>()
 
+const isImageModalOpen = ref(false)
+const selectedImageUrl = ref('')
+const selectedImageName = ref('')
+
+const isImage = (fileName: string) => {
+  const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg']
+  const extension = fileName.split('.').pop()?.toLowerCase()
+  return extension ? imageExtensions.includes(extension) : false
+}
+
+const openImageModal = async (file: ModelFile) => {
+  if (!isImage(file.name)) return
+  try {
+    const response = await fetch(`/api/files/${file.id}/download`, {
+      headers: { Authorization: `Bearer ${authStore.token}` }
+    })
+    const blob = await response.blob()
+    selectedImageUrl.value = window.URL.createObjectURL(blob)
+    selectedImageName.value = file.name
+    isImageModalOpen.value = true
+  } catch (err) {
+    console.error('Error fetching image:', err)
+    toast({
+      title: 'Error',
+      description: 'Could not load image for preview.',
+      variant: 'destructive'
+    })
+  }
+}
+
 const downloadFile = (file: any) => {
   fetch(`/api/files/${file.id}/download`, {
     headers: { Authorization: `Bearer ${authStore.token}` }
@@ -44,6 +75,8 @@ const downloadFile = (file: any) => {
       link.download = file.name
       document.body.appendChild(link)
       link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(_url)
     })
     .catch((err) => {
       console.log(err)
@@ -82,11 +115,24 @@ watch(
   },
   { immediate: true }
 )
+
+watch(isImageModalOpen, (isOpen) => {
+  if (!isOpen && selectedImageUrl.value) {
+    window.URL.revokeObjectURL(selectedImageUrl.value)
+    selectedImageUrl.value = ''
+    selectedImageName.value = ''
+  }
+})
 </script>
 
 <template>
   <TicketPanel title="Files" @add="dialogOpen = true" :hideAdd="isDemo">
     <FileAddDialog v-if="!isDemo" v-model="dialogOpen" :ticket="ticket" />
+    <ImageModal
+      v-model="isImageModalOpen"
+      :image-url="selectedImageUrl"
+      :file-name="selectedImageName"
+    />
     <div
       v-if="!files || files.length === 0"
       class="flex h-10 items-center p-4 text-muted-foreground"
@@ -99,7 +145,11 @@ watch(
       :title="file.name"
       class="flex w-full items-center border-t py-1 pl-2 pr-1 first:rounded-t first:border-none last:rounded-b"
     >
-      <div class="flex flex-1 items-center overflow-hidden pr-2">
+      <div
+        class="flex flex-1 items-center overflow-hidden pr-2"
+        :class="isImage(file.name) ? 'cursor-pointer' : ''"
+        @click="openImageModal(file)"
+      >
         {{ file.name }}
 
         <div class="ml-1 flex-1 text-nowrap text-sm text-muted-foreground">
