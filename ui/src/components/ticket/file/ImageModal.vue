@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+
+import { X } from 'lucide-vue-next'
 
 defineProps<{
   modelValue: boolean
@@ -26,7 +27,7 @@ const closeModal = () => {
       <Button
         variant="ghost"
         size="icon"
-        class="absolute -top-1 -right-1 h-8 w-8 rounded-full bg-white"
+        class="absolute -right-1 -top-1 h-8 w-8 rounded-full bg-white"
         @click="closeModal"
       >
         <X class="h-5 w-5" />
