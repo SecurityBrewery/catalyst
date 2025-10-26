@@ -146,7 +146,8 @@ watch(isImageModalOpen, (isOpen) => {
       class="flex w-full items-center border-t py-1 pl-2 pr-1 first:rounded-t first:border-none last:rounded-b"
     >
       <div
-        class="flex flex-1 cursor-pointer items-center overflow-hidden pr-2"
+        class="flex flex-1 items-center overflow-hidden pr-2"
+        :class="isImage(file.name) ? 'cursor-pointer' : ''"
         @click="openImageModal(file)"
       >
         {{ file.name }}
