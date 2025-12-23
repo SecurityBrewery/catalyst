@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    open-pull-requests-limit: 10
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      gomod-backward-compatible:
+        update-types: [minor, patch]
+    cooldown:
+      default-days: 7
+  - package-ecosystem: github-actions
+    open-pull-requests-limit: 5
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions-backward-compatible:
+        update-types: [minor, patch]
+    cooldown:
+      default-days: 7
