@@ -9,7 +9,7 @@ jobs:
     name: Generate Go
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - run: make install-golangci-lint generate-go
@@ -19,7 +19,7 @@ jobs:
     name: Generate UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v1
       - run: make install-ui generate-ui
       - run: git diff --exit-code
@@ -28,7 +28,7 @@ jobs:
     name: Fmt Go
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - run: make install-golangci-lint fmt-go
@@ -38,7 +38,7 @@ jobs:
     name: Fmt UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v1
       - run: make install-ui fmt-ui
 
@@ -46,7 +46,7 @@ jobs:
     name: Lint Go
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - run: make install-golangci-lint lint-go
@@ -55,7 +55,7 @@ jobs:
     name: Lint UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v1
       - run: make install-ui lint-ui
 
@@ -63,7 +63,7 @@ jobs:
     name: Build UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v1
       - run: make install-ui build-ui
 
@@ -71,7 +71,7 @@ jobs:
     name: Test Go
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - run: make test-coverage
@@ -84,7 +84,7 @@ jobs:
     name: Test UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - uses: oven-sh/setup-bun@v1
@@ -94,7 +94,7 @@ jobs:
     name: Test Playwright
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - uses: oven-sh/setup-bun@v1
@@ -106,7 +106,7 @@ jobs:
     outputs:
       folders: ${{ steps.set-dirs.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: set-dirs
         run: |
           FOLDERS=$(ls -d ./testing/data/*/ | xargs -n 1 basename | jq -R . | jq -c -s .)
@@ -120,7 +120,7 @@ jobs:
       matrix:
         folder: ${{ fromJson(needs.list-upgrade-test-folders.outputs.folders) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - uses: oven-sh/setup-bun@v1
