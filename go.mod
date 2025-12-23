@@ -8,20 +8,20 @@ tool (
 )
 
 require (
-	github.com/brianvoe/gofakeit/v7 v7.2.1
-	github.com/go-chi/chi/v5 v5.2.2
-	github.com/go-co-op/gocron/v2 v2.16.2
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/brianvoe/gofakeit/v7 v7.12.1
+	github.com/go-chi/chi/v5 v5.2.3
+	github.com/go-co-op/gocron/v2 v2.19.0
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/martian/v3 v3.3.3
-	github.com/mattn/go-sqlite3 v1.14.28
-	github.com/oapi-codegen/runtime v1.1.1
-	github.com/stretchr/testify v1.10.0
+	github.com/mattn/go-sqlite3 v1.14.32
+	github.com/oapi-codegen/runtime v1.1.2
+	github.com/stretchr/testify v1.11.1
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/tus/tusd/v2 v2.8.0
-	github.com/urfave/cli/v3 v3.3.8
-	github.com/wneessen/go-mail v0.7.1
-	golang.org/x/crypto v0.45.0
+	github.com/urfave/cli/v3 v3.6.1
+	github.com/wneessen/go-mail v0.7.2
+	golang.org/x/crypto v0.46.0
 )
 
 require (
@@ -82,12 +82,12 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
-	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/sync v0.18.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.31.0 // indirect
-	golang.org/x/tools v0.38.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
