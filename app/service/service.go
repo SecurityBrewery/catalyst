@@ -1881,7 +1881,7 @@ func marshal(state map[string]any) json.RawMessage {
 
 func marshalPointer(state *map[string]any) json.RawMessage {
 	if state == nil {
-		return json.RawMessage("{}")
+		return nil
 	}
 
 	b, _ := json.Marshal(*state) //nolint:errchkjson
