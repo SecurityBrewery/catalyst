@@ -75,7 +75,7 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.25' }
       - run: make test-coverage
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           files: ./coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
