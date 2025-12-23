@@ -68,7 +68,7 @@ func Test_marshalPointer(t *testing.T) {
 
 	m := map[string]any{"x": 1}
 	assert.JSONEq(t, `{"x":1}`, string(marshalPointer(&m)))
-	assert.JSONEq(t, "{}", string(marshalPointer(nil)))
+	assert.Nil(t, marshalPointer(nil))
 }
 
 func Test_generateID(t *testing.T) {
@@ -129,4 +129,31 @@ func TestService_DownloadFile_Errors(t *testing.T) {
 
 	_, err = s.DownloadFile(t.Context(), openapi.DownloadFileRequestObject{Id: "f_invalid_base64"})
 	require.Error(t, err)
+}
+
+func TestService_UpdateTicket_PreservesStateOnNil(t *testing.T) {
+	t.Parallel()
+
+	s := newTestService(t)
+
+	before, err := s.queries.Ticket(t.Context(), "test-ticket")
+	require.NoError(t, err)
+
+	open := false
+	resp, err := s.UpdateTicket(t.Context(), openapi.UpdateTicketRequestObject{
+		Id: "test-ticket",
+		Body: &openapi.TicketUpdate{
+			Open: &open,
+		},
+	})
+	require.NoError(t, err)
+
+	updated, ok := resp.(openapi.UpdateTicket200JSONResponse)
+	require.True(t, ok)
+
+	assert.Equal(t, unmarshal(before.State), updated.State)
+
+	after, err := s.queries.Ticket(t.Context(), "test-ticket")
+	require.NoError(t, err)
+	assert.Equal(t, before.State, after.State)
 }
