@@ -8,7 +8,6 @@
     "baseColor": "slate",
     "cssVariables": true
   },
-  "framework": "vite",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils"

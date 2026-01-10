@@ -8,17 +8,16 @@ import StatusIcon from '@/components/ticket/StatusIcon.vue'
 import TicketActionBar from '@/components/ticket/TicketActionBar.vue'
 import TicketCloseBar from '@/components/ticket/TicketCloseBar.vue'
 import TicketHeader from '@/components/ticket/TicketHeader.vue'
-import TicketTab from '@/components/ticket/TicketTab.vue'
 import TicketComments from '@/components/ticket/comment/TicketComments.vue'
 import TicketFiles from '@/components/ticket/file/TicketFiles.vue'
 import TicketLinks from '@/components/ticket/link/TicketLinks.vue'
 import TicketTasks from '@/components/ticket/task/TicketTasks.vue'
 import TicketTimeline from '@/components/ticket/timeline/TicketTimeline.vue'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/toast/use-toast'
 
 import { Edit } from 'lucide-vue-next'
@@ -166,51 +165,64 @@ const updateDescription = (value: string | undefined) => (message.value = value 
                 class="min-h-14"
               />
             </Card>
-            <Separator />
-            <Tabs default-value="timeline" class="flex flex-1 flex-col">
-              <TabsList>
-                <TabsTrigger value="timeline">
-                  Timeline
-                  <Badge
-                    v-if="timeline && timeline.length > 0"
-                    variant="outline"
-                    class="ml-2 hidden sm:inline-flex"
-                  >
-                    {{ timeline.length }}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="tasks">
-                  Tasks
-                  <Badge
-                    v-if="tasks && tasks.length > 0"
-                    variant="outline"
-                    class="ml-2 hidden sm:inline-flex"
-                  >
-                    {{ tasks.length }}
-                    <StatusIcon :status="taskStatus" class="size-6" />
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="comments">
-                  Comments
-                  <Badge
-                    v-if="comments && comments.length > 0"
-                    variant="outline"
-                    class="ml-2 hidden sm:inline-flex"
-                  >
-                    {{ comments.length }}
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-              <TicketTab value="timeline">
-                <TicketTimeline :ticket="ticket" :timeline="timeline" />
-              </TicketTab>
-              <TicketTab value="tasks">
-                <TicketTasks :ticket="ticket" :tasks="tasks" />
-              </TicketTab>
-              <TicketTab value="comments">
-                <TicketComments :ticket="ticket" :comments="comments" />
-              </TicketTab>
-            </Tabs>
+            <Accordion
+              type="multiple"
+              :default-value="['tasks', 'comments', 'timeline']"
+              class="w-full divide-y rounded-md border"
+            >
+              <AccordionItem value="tasks" class="border-0">
+                <AccordionTrigger class="px-3 py-2 hover:no-underline">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">Tasks</span>
+                    <Badge
+                      v-if="tasks && tasks.length > 0"
+                      variant="outline"
+                      class="hidden sm:inline-flex"
+                    >
+                      {{ tasks.length }}
+                      <StatusIcon :status="taskStatus" class="size-6" />
+                    </Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent class="px-3 pt-2">
+                  <TicketTasks :ticket="ticket" :tasks="tasks" />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="comments" class="border-0">
+                <AccordionTrigger class="px-3 py-2 hover:no-underline">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">Comments</span>
+                    <Badge
+                      v-if="comments && comments.length > 0"
+                      variant="outline"
+                      class="hidden sm:inline-flex"
+                    >
+                      {{ comments.length }}
+                    </Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent class="px-3 pt-2">
+                  <TicketComments :ticket="ticket" :comments="comments" />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="timeline" class="border-0">
+                <AccordionTrigger class="px-3 py-2 hover:no-underline">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">Timeline</span>
+                    <Badge
+                      v-if="timeline && timeline.length > 0"
+                      variant="outline"
+                      class="hidden sm:inline-flex"
+                    >
+                      {{ timeline.length }}
+                    </Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent class="px-3 pt-2">
+                  <TicketTimeline :ticket="ticket" :timeline="timeline" />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <Separator class="xl:hidden" />
           </div>
           <div class="flex flex-col gap-4 xl:w-96 xl:flex-initial">
