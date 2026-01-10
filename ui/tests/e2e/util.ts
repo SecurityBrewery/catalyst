@@ -39,23 +39,26 @@ export const createTicket = async (page, name: string) => {
 }
 
 export const createTimeline = async (page, message: string) => {
-  await page.getByRole('tab', { name: 'Timeline' }).click()
   await page.getByRole('button', { name: 'Add Timeline Item' }).click()
-  await page.getByRole('tabpanel', { name: 'Timeline' }).getByRole('textbox').fill(message)
+  const editor = page.locator('.EasyMDEContainer .CodeMirror').last()
+  await expect(editor).toBeVisible()
+  await editor.click()
+  await page.keyboard.type(message)
   await page.getByRole('button', { name: 'Save' }).click()
   await expect(page.getByText(message)).toBeVisible()
 }
 
 export const createComment = async (page, message: string) => {
-  await page.getByRole('tab', { name: 'Comments' }).click()
   await page.getByRole('button', { name: 'Add Comment' }).click()
-  await page.getByRole('tabpanel', { name: 'Comments' }).getByRole('textbox').fill(message)
+  const editor = page.locator('.EasyMDEContainer .CodeMirror').last()
+  await expect(editor).toBeVisible()
+  await editor.click()
+  await page.keyboard.type(message)
   await page.getByRole('button', { name: 'Save' }).click()
   await expect(page.getByText(message)).toBeVisible()
 }
 
 export const createTask = async (page, name: string, done: boolean) => {
-  await page.getByRole('tab', { name: 'Tasks' }).click()
   await page.getByRole('button', { name: 'Add Task' }).click()
   await page.getByPlaceholder('Add a task...').fill(name)
   await page.getByRole('button', { name: 'Save' }).click()
