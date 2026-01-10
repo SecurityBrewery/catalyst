@@ -13,7 +13,12 @@ import TicketFiles from '@/components/ticket/file/TicketFiles.vue'
 import TicketLinks from '@/components/ticket/link/TicketLinks.vue'
 import TicketTasks from '@/components/ticket/task/TicketTasks.vue'
 import TicketTimeline from '@/components/ticket/timeline/TicketTimeline.vue'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
