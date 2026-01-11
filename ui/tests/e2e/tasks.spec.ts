@@ -17,9 +17,8 @@ test.describe('update a task', () => {
       update: async (page, taskName: string) => {
         await page.getByText("Toggle Sidebar").click()
 
-        await page.getByRole('tab', { name: 'Tasks' }).click()
         await page.getByText(taskName).click()
-        await page.getByRole('tabpanel', { name: 'Tasks' }).getByRole('textbox').fill('Updated Task')
+        await page.locator('input[autofocus]').fill('Updated Task')
         await page.keyboard.press('Enter')
       },
       assert: async (page) => {
@@ -29,7 +28,6 @@ test.describe('update a task', () => {
     {
       field: 'status',
       update: async (page) => {
-        await page.getByRole('tab', { name: 'Tasks' }).click()
         const cb = page.getByRole('checkbox').first()
         await cb.click()
       },
@@ -59,7 +57,6 @@ test('can delete a task', async ({ page }) => {
   await createTicket(page, ticketName)
   const taskName = `task-${randomUUID()}`
   await createTask(page, taskName, false)
-  await page.getByRole('tab', { name: 'Tasks' }).click()
   await page.locator('button', { hasText: 'Delete Task' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()
   await expect(page.getByText(taskName)).toHaveCount(0)

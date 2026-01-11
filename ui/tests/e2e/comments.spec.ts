@@ -15,10 +15,9 @@ test.describe('update a comment', () => {
     {
       field: 'message',
       update: async (page) => {
-        await page.getByRole('tab', { name: 'Comments' }).click()
         await page.getByRole('button', { name: 'More' }).click()
         await page.getByRole('menuitem', { name: 'Edit' }).click()
-        await page.locator('textarea').nth(1).fill('Updated Comment')
+        await page.locator('.CodeMirror textarea').first().fill('Updated Comment')
         await page.getByRole('button', { name: 'Save' }).click()
       },
       assert: async (page) => {
@@ -46,7 +45,6 @@ test('can delete a comment', async ({ page }) => {
   await createTicket(page, ticketName)
   const message = `comment-${randomUUID()}`
   await createComment(page, message)
-  await page.getByRole('tab', { name: 'Comments' }).click()
   await page.getByRole('button', { name: 'More' }).click()
   await page.getByRole('menuitem', { name: 'Delete' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click()
