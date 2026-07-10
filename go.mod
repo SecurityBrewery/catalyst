@@ -21,7 +21,7 @@ require (
 	github.com/tus/tusd/v2 v2.9.2
 	github.com/urfave/cli/v3 v3.8.0
 	github.com/wneessen/go-mail v0.7.2
-	golang.org/x/crypto v0.51.0
+	golang.org/x/crypto v0.52.0
 )
 
 require (
